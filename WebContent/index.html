@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>OpenChain Self Certification</title>
+    <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="resources/jquery-ui/jquery-ui.min.css">
+    <link rel="stylesheet" href="resources/jquery.jui_dropdown.css">
+    <script src="resources/jquery-ui/external/jquery/jquery.js"></script>
+    <script src="resources/jquery-ui/jquery-ui.min.js"></script>
+    <script src="resources/jquery.jui_dropdown.min.js"></script>
+    <script src="resources/certsurvey.js"></script>
+  </head>
+  <body>
+    <div class="navbar" id="topnav">
+        <div id="homelink" class="navlink" style="float:left"><a href="index.html"><span class="ui-icon ui-icon-home"></span>Home</a>&nbsp;&nbsp;&nbsp;</div>        
+        <div id="surveylink" class="navlink" style="float:left"><a href="survey.html"><span class="ui-icon ui-icon-pencil"></span>Conformance Check</a>&nbsp;&nbsp;&nbsp;</div>
+        <div id="usermenu" style="float:right;overflow:visible">
+            <div id="user-dropdown_container">
+                <button id="user-dropdown_launcher">User Menu</button>
+            </div>
+            <ul id="user-dropdown_menu">
+            </ul>
+        </div>
+    </div>
+    <div id="TitleArea">
+        <h1>OpenChain Self Certification</h1>
+    </div>
+    <div id="Introduction">
+    <h2>Welcome</h2>
+    The OpenChain Specification lays out a set of best practices that should be applied across a supply chain for efficient and effective compliance with open source licenses. By completing the Conformance Check, participants are able to confirm they are in compliance with the Specification’s requirements.
+    </div>
+    <div id="GettingStarted">
+    <h2>Getting Started</h2>
+    To complete the OpenChain Conformance Check, applicants must provide a self-confirmation. The Conformance Check requires you to:
+    <ul>
+    <li>Fulfill all requirements set forth in the Specification [LINK to Specification].</li>
+    <li>Create an account by selecting sign-up in the user menu.
+    <li>Name a contact person to handle inquiries.</li>
+    <li>Have an authorized representative complete the web-based Conformance Check by answering all the questions.</li>
+    <li>Fill out the submission form.</li>
+    <li>Archive a Reference Copy of all Verification Artifacts as a record in support of the Conformance Check.</li>
+    </ul>
+    </div>
+    <div id="errors"></div>
+    <div id="status"></div>
+    <div id="login">
+        <form>
+            <p class="validateTips"></p>
+            <fieldset>
+                <label for="login-username">Username</label>
+                <input type="text" name="login-username" id="login-username" class="text ui-widget-content ui-corner-all">
+                <label for="login-password">Password</label>
+                <input type="password" name="login-password" id="login-password" class="text ui-widget-content ui-corner-all">
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div>
+    <div id="signup">
+        <form name="signup-form" id="signup-form">
+            <p class="validateTips"></p>
+            <fieldset>
+                <label for="signup-username">Username</label>
+                <input type="text" name="signup-username" id="signup-username" class="text ui-widget-content ui-corner-all">
+                <label for="signup-password">Password</label>
+                <input type="password" name="signup-password" id="signup-password" class="text ui-widget-content ui-corner-all">
+                <label for="signup-passwordverify">Re-enter Password</label>
+                <input type="password" name="signup-passwordverify" id="signup-passwordverify" class="text ui-widget-content ui-corner-all">
+                <label for="signup-name">Name</label>
+                <input type="text" name="signup-name" id="signup-name" class="text ui-widget-content ui-corner-all">
+                <label for="signup-organization">Organization</label>
+                <input type="text" name="signup-organization" id="signup-organization" class="text ui-widget-content ui-corner-all">
+                <label for="signup-email">Email</label>
+                <input type="text" name="signup-email" id="signup-email" class="text ui-widget-content ui-corner-all">
+                <label for="signup-address">Postal Address</label>
+                <textarea rows="8" cols="50" name="signup-address" id="signup-address" class="text ui-widget-content ui-corner-all" form="signup-form"></textarea>
+                
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div>
+  </body>
+</html>

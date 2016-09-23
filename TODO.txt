@@ -1,0 +1,4 @@
+- Push to Github
+- Add logging
+- Add resend verification email, once done in the EmailUtility, check for the expiration date in the register method
+- Add reset password
