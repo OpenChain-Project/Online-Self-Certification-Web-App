@@ -18,14 +18,31 @@ package org.openchain.certification;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.ServletConfig;
 
 import org.apache.log4j.Logger;
+import org.openchain.certification.dbdao.SurveyDatabase;
+import org.openchain.certification.dbdao.SurveyDbDao;
+import org.openchain.certification.dbdao.SurveyResponseDao;
 import org.openchain.certification.dbdao.UserDb;
+import org.openchain.certification.model.Answer;
+import org.openchain.certification.model.Question;
+import org.openchain.certification.model.QuestionTypeException;
+import org.openchain.certification.model.SurveyResponse;
+import org.openchain.certification.model.SurveyResponseException;
 import org.openchain.certification.model.User;
+import org.openchain.certification.model.YesNoAnswer;
+import org.openchain.certification.model.YesNoAnswerWithEvidence;
+import org.openchain.certification.model.YesNoQuestion;
+import org.openchain.certification.model.YesNoQuestion.YesNo;
+import org.openchain.certification.model.YesNoQuestionWithEvidence;
 import org.openchain.certification.utility.EmailUtilException;
 import org.openchain.certification.utility.EmailUtility;
 import org.openchain.certification.utility.PasswordUtil;
@@ -44,6 +61,8 @@ public class UserSession {
 	private transient String password;
 	private String lastError;
 	private transient ServletConfig config;
+	private transient SurveyResponse surveyResponse = null;
+	
 	public UserSession(String username, String password, ServletConfig config) {
 		this.username = username;
 		this.password = password;
@@ -158,5 +177,95 @@ public class UserSession {
 	
 	public boolean isLoggedIn() {
 		return this.loggedIn;
+	}
+	public SurveyResponse getSurveyResponse() throws SQLException, QuestionTypeException, SurveyResponseException {
+		if (this.surveyResponse == null) {
+			_getSurveyResponse();
+		}
+		return this.surveyResponse;
+	}
+	private void _getSurveyResponse() throws SQLException, QuestionTypeException, SurveyResponseException {
+		Connection con = SurveyDatabase.createConnection(config);
+		try {
+			SurveyResponseDao dao = new SurveyResponseDao(con);
+			this.surveyResponse = dao.getSurveyResponse(this.username, null);
+			if (this.surveyResponse == null) {
+				// Create one
+				this.surveyResponse = new SurveyResponse();
+				User user = UserDb.getUserDb(config).getUser(username);
+				surveyResponse.setResponder(user);
+				surveyResponse.setResponses(new HashMap<String, Answer>());
+				surveyResponse.setSpecVersion(dao.getLatestSpecVersion());
+				surveyResponse.setSurvey(SurveyDbDao.getSurvey(con, surveyResponse.getSpecVersion()));
+				con.commit();
+				dao.addSurveyResponse(surveyResponse);
+			}
+		} finally {
+			con.close();
+		}
+	}
+	public void updateAnswers(List<ResponseAnswer> responses) throws SQLException, QuestionTypeException, SurveyResponseException {
+		if (this.surveyResponse == null) {
+			_getSurveyResponse();
+		}
+		Map<String, Answer> currentResponses = this.surveyResponse.getResponses();
+		for (ResponseAnswer response:responses) {
+			if (!response.isChecked()) {
+				continue;
+			}
+			Question question = this.surveyResponse.getSurvey().getQuestion(response.getQuestionNumber());
+			if (question != null && response.getValue() != null && !response.getValue().trim().isEmpty()) {
+				YesNo ynAnswer;
+				if (response.getValue().toUpperCase().trim().equals("YES")) {
+					ynAnswer = YesNo.Yes;
+				} else if (response.getValue().toUpperCase().trim().equals("NO")) {
+					ynAnswer = YesNo.No;
+				} else {
+					logger.error("Invalid yes no value: "+response.getValue());
+					throw(new QuestionTypeException("Invalid yes/no value: "+response.getValue()));
+				}
+				Answer answer;
+				if (question instanceof YesNoQuestionWithEvidence) {
+					answer = new YesNoAnswerWithEvidence(ynAnswer, response.getEvidence());
+				} else if (question instanceof YesNoQuestion) {
+					answer = new YesNoAnswer(ynAnswer);
+				} else {
+					logger.error("Invalid answer type for question "+response.getQuestionNumber());
+					throw(new QuestionTypeException("Invalid answer type for question "+response.getQuestionNumber()));
+				}
+				currentResponses.put(response.getQuestionNumber(), answer);
+			} else {
+				logger.warn("Skipping a response answer "+response.getQuestionNumber());
+			}
+		}
+		Connection con = SurveyDatabase.createConnection(config);
+		try {
+			SurveyResponseDao dao = new SurveyResponseDao(con);
+			dao.updateSurveyResponseAnswers(this.surveyResponse);
+		} finally {
+			con.close();
+		}
+	}
+	/**
+	 * Final submission of questions
+	 * @throws SQLException 
+	 * @throws QuestionTypeException 
+	 * @throws SurveyResponseException 
+	 * @throws EmailUtilException 
+	 */
+	public void finalSubmission() throws SQLException, SurveyResponseException, QuestionTypeException, EmailUtilException {
+		Connection con = SurveyDatabase.createConnection(config);
+		_getSurveyResponse();
+		this.surveyResponse.setSubmitted(true);
+		try {
+			SurveyResponseDao dao = new SurveyResponseDao(con);
+			dao.setSubmitted(username, this.surveyResponse.getSpecVersion(), true);
+		} finally {
+			con.close();
+		}
+		EmailUtility.emailCompleteSubmission(this.username,
+				this.surveyResponse.getResponder().getName(),
+				this.surveyResponse.getResponder().getEmail(),
+				this.surveyResponse.getSpecVersion(), config);
 	}
 }

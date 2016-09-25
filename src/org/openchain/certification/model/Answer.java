@@ -17,10 +17,15 @@
 package org.openchain.certification.model;
 
 /**
- * Response to a Question from a Responder
+ * Answer to a Question from a Responder
  * @author Gary O'Neall
  *
  */
-public abstract class Response {
+public abstract class Answer {
 
+	@Override
+	public abstract boolean equals(Object o);
+	
+	@Override
+	public abstract int hashCode();
 }

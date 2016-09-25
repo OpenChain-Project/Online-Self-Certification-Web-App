@@ -62,4 +62,8 @@ fieldset {
 	font-size: 14px;
 	padding: 3px;
 }
-
+#CertFormButtons {
+	padding:3px;
+	margin:auto; 
+	width: 50%;
+}

@@ -15,39 +15,55 @@
  *
 */
 package org.openchain.certification.model;
+
+import java.util.Objects;
+
+import org.openchain.certification.model.YesNoQuestion.YesNo;
+
 /**
+ * Response to a Yes/No question
  * @author Gary O'Neall
  *
  */
-public class YesNoQuestion extends Question {
+public class YesNoAnswer extends Answer {
+
+	protected YesNo answer;
 	
-	public enum YesNo {Yes, No}
-	public static final String TYPE_NAME = "YES_NO";
-	protected YesNo correctAnswer;
-	
-	public YesNoQuestion(String question, String sectionName, String number, YesNo correctAnswer) {
-		super(question, sectionName, number);
-		this.correctAnswer = correctAnswer;
+	public YesNoAnswer(YesNo answer) {
+		this.answer = answer;
 	}
-	
+
 	/**
-	 * @return the correctAnswer
+	 * @return the answer
 	 */
-	public YesNo getCorrectAnswer() {
-		return correctAnswer;
+	public YesNo getAnswer() {
+		return answer;
 	}
+
 	/**
-	 * @param correctAnswer the correctAnswer to set
+	 * @param answer the answer to set
 	 */
-	public void setCorrectAnswer(YesNo correctAnswer) {
-		this.correctAnswer = correctAnswer;
+	public void setAnswer(YesNo answer) {
+		this.answer = answer;
 	}
+
 	@Override
-	public boolean validate(Object answer) {
-		if (!(answer instanceof YesNo)) {
+	public boolean equals(Object o) {
+		if (!(o instanceof YesNoAnswer)) {
 			return false;
 		}
-		return answer.equals(correctAnswer);
+		return Objects.equals(this.answer, ((YesNoAnswer)o).getAnswer());
 	}
+
+	@Override
+	public int hashCode() {
+		int prime = 977;
+		if (this.answer != null) {
+			return this.answer.hashCode();
+		} else {
+			return prime;
+		}
+	}
+	
 	
 }

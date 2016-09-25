@@ -28,12 +28,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.openchain.certification.PostResponse.Status;
-import org.openchain.certification.dbdao.AnswersDbDao;
 import org.openchain.certification.dbdao.SurveyDatabase;
 import org.openchain.certification.dbdao.SurveyDbDao;
 import org.openchain.certification.model.QuestionTypeException;
 import org.openchain.certification.model.Survey;
+import org.openchain.certification.model.SurveyResponseException;
+import org.openchain.certification.utility.EmailUtilException;
 import org.openchain.certification.utility.EmailUtility;
 
 import com.google.gson.Gson;
@@ -43,6 +45,7 @@ import com.google.gson.stream.JsonReader;
  * Servlet implementation class CertificationServlet
  */
 public class CertificationServlet extends HttpServlet {
+	static final Logger logger = Logger.getLogger(CertificationServlet.class);
 	private static final long serialVersionUID = 1L;
 	static final String version = "0.0.1";
 	static final String SESSION_ATTRIBUTE_USER = "user";
@@ -51,12 +54,14 @@ public class CertificationServlet extends HttpServlet {
 	public static final String PARAMETER_UUID = "uuid";
 	private static final String GET_VERSION_REQUEST = "version";
 	private static final String GET_SURVEY = "getsurvey";
+	private static final String GET_SURVEY_RESPONSE = "getsurveyResponse";
 	private static final String GET_USER = "getuser";
 	private static final String REGISTER_USER = "register";
 	private static final String LOGIN_REQUEST = "login";
 	private static final String SIGNUP_REQUEST = "signup";
 	private static final String UPDATE_ANSWERS_REQUEST = "updateAnswers";
 	private static final String LOGOUT_REQUEST = "logout";
+	private static final String FINAL_SUBMISSION_REQUEST = "finalSubmission";
 	
        
     /**
@@ -108,12 +113,21 @@ public class CertificationServlet extends HttpServlet {
 	            		con.close();
 	            	}
 	            	gson.toJson(survey, out);
+	            } else if (requestParam.equals(GET_SURVEY_RESPONSE)) {
+	            	gson.toJson(user.getSurveyResponse(), out);
 	            }
+			} catch (SurveyResponseException e) {
+				logger.error("Survey response error in servlet"+".  Request="+request,e);
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				response.setContentType("text"); 
+				out.print("Unexpected survey response exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
 			} catch (SQLException e) {
+				logger.error("SQL error in servlet"+".  Request="+request,e);
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.setContentType("text"); 
 				out.print("Unexpected SQL exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
 			} catch (QuestionTypeException e) {
+				logger.error("Question type error in servlet"+".  Request="+request,e);
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.setContentType("text"); 
 				out.print("Unexpected data exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
@@ -167,23 +181,37 @@ public class CertificationServlet extends HttpServlet {
         		postResponse.setError("User is not logged in");
         	} else if (rj.getRequest().equals(UPDATE_ANSWERS_REQUEST)) {
         		if (rj.getAnswers() != null && rj.getAnswers().size() > 0) {
-            		Connection con = SurveyDatabase.createConnection(getServletConfig());
-                	try {
-                		AnswersDbDao dao = new AnswersDbDao(con);
-                		dao.addOrUpdateAnswers(rj.getAnswers(), user.getUsername());
-                		postResponse.setSectionName(dao.getSectionName(rj.getAnswers().get(0)));
-                	} finally {
-                		con.close();
-                	}
+            		user.updateAnswers(rj.getAnswers());
         		}
+        	} else if (rj.getRequest().equals(FINAL_SUBMISSION_REQUEST)) {
+        		if (rj.getAnswers() != null && rj.getAnswers().size() > 0) {
+            		user.updateAnswers(rj.getAnswers());
+        		}
+        		user.finalSubmission();
         	} else if (rj.getRequest().equals(LOGOUT_REQUEST)) {
         		user.logout();
         	}
         	gson.toJson(postResponse, out);
         } catch (SQLException e) {
+        	logger.error("SQL Error in post"+".  Request="+rj.getRequest(),e);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.setContentType("text"); 
 			out.print("Unexpected SQL exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
+		} catch (QuestionTypeException e) {
+        	logger.error("Question Error in post"+".  Request="+rj.getRequest(),e);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.setContentType("text"); 
+			out.print("Unexpected Question Type exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
+		} catch (SurveyResponseException e) {
+        	logger.error("Survey Response error in post"+".  Request="+rj.getRequest(),e);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.setContentType("text"); 
+			out.print("Unexpected survey response exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
+		} catch (EmailUtilException e) {
+        	logger.error("Error sending email in post"+".  Request="+rj.getRequest(),e);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.setContentType("text"); 
+			out.print("Your submission was saved, however, there was a problem sending the notification to the OpenChain team.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
 		} finally {
         	out.close();
         }

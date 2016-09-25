@@ -272,23 +272,6 @@ function createNavMenu() {
 	});
 }
 
-function getVersion() {
-	$.ajax({
-	    url: "CertificationServlet",
-	    data: {
-	        request: "version"
-	    },
-	    type: "GET",
-	    dataType : "json",
-	    success: function( json ) {
-	    	$( "#version" ).text( json );
-	    },
-	    error: function( xhr, status, errorThrown ) {
-	    	handleError( xhr, status, errorThrown);
-	    }
-	});
-}
-
 function getQuestionFormHtml(questions) {
 	var html = '<table>\n<col class=number_col /><col class=question_col />\n';
 	for (var i = 0; i < questions.length; i++) {
@@ -303,20 +286,23 @@ function getQuestionFormHtml(questions) {
 }
 function getSurvey() {
 	var certForm = $("#CertForm");
-	if (!certForm) {
+	if (!certForm.length ) {
 		return;
 	}
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
-	        request: "getsurvey"
+	        request: "getsurveyResponse"
 	    },
 	    type: "GET",
 	    dataType : "json",
-	    success: function( survey ) {
+	    success: function( surveyResponse ) {
+	    	$( "#version" ).text( surveyResponse.specVersion );
 	    	certForm.empty();
 	    	var htmlList = '<ul>\n';
 	    	var htmlDivs = '';
+	    	var survey = surveyResponse.survey;
+	    	var responses = surveyResponse.responses;
 	    	var sections = survey.sections;
 	    	for ( var i = 0; i < sections.length; i++ ) {
 	    		var tabReference = 'section_' + sections[i].name;
@@ -324,15 +310,34 @@ function getSurvey() {
 	    		htmlDivs += '<div id="' + tabReference + '">\n';
 	    		htmlDivs += '<h3>' + sections[i].name + ': ' + sections[i].title + "</h3>\n";
 	    		htmlDivs += getQuestionFormHtml(sections[i].questions);
-	    		var saveButtonText = 'Save & Continue';
-	    		htmlDivs += '<div style="text-align:center"><button type="button" id="save_answers_'+sections[i].name+'" class="ui-button">'+saveButtonText+'</button></div>\n';
+	    		if (i < sections.length-1) {
+	    			htmlDivs += '<div style="text-align:center"><button type="button" id="save_answers_'+sections[i].name+'" class="ui-button">Save & Continue</button></div>\n';
+	    		}
 	    		htmlDivs += '</div>\n';
 	    	}
 	    	htmlList += '</ul>\n';
 	    	certForm.html(htmlList + htmlDivs);
 	    	certForm.tabs();
+	    	// Set any alread answered questions
+	    	certForm.find(":input").each(function(index){
+	    		var id = $(this).attr('id');
+	    		if (id.substring(0,7) == 'answer-') {
+	    			var questionNumber = id.substring(7,id.lastIndexOf('_'));
+	    			var myresponse = responses[questionNumber];
+	    			if (myresponse) {
+	    				// Fill in the existing value
+	    				if (myresponse.answer == 'Yes' && $(this).attr('value') == 'yes') {
+	    					$(this).prop('checked',true);
+	    				} else if (myresponse.answer == 'No' && $(this).attr('value') == 'no') {
+	    					$(this).prop('checked',true);
+	    				} else {
+	    					$(this).prop('checked',false);
+	    				}
+	    			}
+	    		}
+	    	});
 	    	// Add actions to the buttons
-	    	for ( var i = 0; i < sections.length; i++ ) {
+	    	for ( var i = 0; i < sections.length-1; i++ ) {
 	    		$("#save_answers_"+sections[i].name).click(function() {
 	    			var answers = [];
 	    			$(this).parent().parent().find(":input").each(function(index) {
@@ -354,18 +359,11 @@ function getSurvey() {
 	    			    success: function( json ) {		    	
 	    			    	//TODO: Move to the next tab
 	    			    	if (json.status == "OK") {
-	    			    		$( "#status" ).dialog({
-		    			    		title: "Status",
-		    			    		resizable: false,
-		    			    	    height: 150,
-		    			    	    width: 200,
-		    			    	    modal: true,
-		    			    	    buttons: {
-		    			    	        "Ok" : function () {
-		    			    	            $( this ).dialog( "close" );
-		    			    	        }
-		    			    	    }
-		    			    	}).text('Updated answer for section '+json.sectionName);
+	    			    		var currentActive = certForm.tabs("option","active");
+	    			    		var numTabs = $('#CertForm >ul >li').size();
+	    			    		if (currentActive < numTabs-1) {
+	    			    			certForm.tabs("option","active",currentActive+1);
+	    			    		} 
 	    			    	} else {
 	    			    		displayError(json.error);
 	    			    	}
@@ -384,6 +382,93 @@ function getSurvey() {
 	});
 }
 
+function saveAll() {
+	var answers = [];
+	$("#CertForm").find(":input").each(function(index) {
+		var id = $(this).attr('id');
+		if (id.substring(0,7) == 'answer-') {
+			var value = $(this).attr('value');
+			var checked = this.checked;
+			var questionNumber = id.substring(7,id.lastIndexOf('_'));
+			answers.push({'questionNumber':questionNumber, 'value':value, 'checked':checked});
+		}
+	});
+	
+	var data = JSON.stringify({request: "updateAnswers", 'answers': answers});
+	$.ajax({
+	    url: "CertificationServlet",
+	    data: data,
+	    contentType: "json",
+	    type: "POST",
+	    dataType : "json",
+	    success: function( json ) {
+	    	if (json.status == "OK") {
+	    		$( "#status" ).dialog({
+	    			title: "Saved",
+	    			resizable: false,
+	    		    height: 200,
+	    		    width: 200,
+	    		    modal: true,
+	    		    buttons: {
+	    		        "Ok" : function () {
+	    		            $( this ).dialog( "close" );
+	    		        }
+	    		    }
+	    		}).text( "Save Successful" );
+	    	} else {
+	    		displayError(json.error);
+	    	}
+	    	
+	    },
+    error: function( xhr, status, errorThrown ) {
+    	handleError( xhr, status, errorThrown);
+    }
+  });
+}
+
+function finalSubmission() {
+	var answers = [];
+	$("#CertForm").find(":input").each(function(index) {
+		var id = $(this).attr('id');
+		if (id.substring(0,7) == 'answer-') {
+			var value = $(this).attr('value');
+			var checked = this.checked;
+			var questionNumber = id.substring(7,id.lastIndexOf('_'));
+			answers.push({'questionNumber':questionNumber, 'value':value, 'checked':checked});
+		}
+	});
+	
+	var data = JSON.stringify({request: "finalSubmission", 'answers': answers});
+	$.ajax({
+	    url: "CertificationServlet",
+	    data: data,
+	    contentType: "json",
+	    type: "POST",
+	    dataType : "json",
+	    success: function( json ) {
+	    	if (json.status == "OK") {
+	    		$( "#status" ).dialog({
+	    			title: "Saved",
+	    			resizable: false,
+	    		    height: 200,
+	    		    width: 200,
+	    		    modal: true,
+	    		    buttons: {
+	    		        "Ok" : function () {
+	    		            $( this ).dialog( "close" );
+	    		        }
+	    		    }
+	    		}).text( "Thank you - your information has been submitted" );
+	    	} else {
+	    		displayError(json.error);
+	    	}
+	    	
+	    },
+    error: function( xhr, status, errorThrown ) {
+    	handleError( xhr, status, errorThrown);
+    }
+  });
+}
 $(document).ready( function() {
 	$("#login").dialog({
 		title: "Login",
@@ -428,14 +513,16 @@ $(document).ready( function() {
 		event.preventDefault();
 		signupUser();
 	});
-	getVersion();
+	$("#btSaveAnswers").button();
+	$("#btSaveAnswers").click(function(event) {
+      event.preventDefault();
+      saveAll();
+    });
+	$("#btSaveAndSubmit").button();
+	$("#btSaveAndSubmit").click(function(event) {
+	      event.preventDefault();
+	      finalSubmission();
+	});
 	createNavMenu();
 	getSurvey();
-//    $("#myform").dform('CertificationServlet?request=getsurveyform', function(data) {
-
-//    });
-//	getSurvey();
-    
-          //TODO: Add display of errors on 500
-
 });

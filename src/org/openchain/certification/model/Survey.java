@@ -17,6 +17,9 @@
 package org.openchain.certification.model;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Top level class for the survey itself.  The survey consists of sections.  
@@ -40,6 +43,33 @@ public class Survey {
 	 */
 	public void setSections(List<Section> sections) {
 		this.sections = sections;
+	}
+
+	/**
+	 * @return a set of all question numbers in the survey
+	 */
+	public Set<String> getQuestionNumbers() {
+		HashSet<String> retval = new HashSet<String>();
+		for (Section section:sections) {
+			List<Question> questions = section.getQuestions();
+			for (Question question:questions) {
+				retval.add(question.getNumber());
+			}
+		}
+		return retval;
+	}
+
+	public Question getQuestion(String questionNumber) {
+		// TODO this is not the fastest, but it is accurate
+		for (Section section:sections) {
+			List<Question> questions = section.getQuestions();
+			for (Question question:questions) {
+				if (Objects.equals(question.getNumber(), questionNumber)) {
+					return question;
+				}
+			}
+		}
+		return null;
 	}
 	
 }

@@ -14,66 +14,58 @@
  *   limitations under the License.
  *
 */
-package org.openchain.certification;
+package org.openchain.certification.model;
+
+import java.util.Objects;
+
+import org.openchain.certification.model.YesNoQuestion.YesNo;
 
 /**
- * Holds the response answers from the UI
+ * Answer for a question which requests evidence
  * @author Gary O'Neall
  *
  */
-public class ResponseAnswer {
-	
-	private String questionNumber;
-	private String value;
-	private boolean checked;
+public class YesNoAnswerWithEvidence extends YesNoAnswer {
 	private String evidence;
-	/**
-	 * @return the questionNumber
-	 */
-	public String getQuestionNumber() {
-		return questionNumber;
+
+	public YesNoAnswerWithEvidence(YesNo answer, String evidence) {
+		super(answer);
+		this.evidence = evidence;
 	}
-	/**
-	 * @return the value
-	 */
-	public String getValue() {
-		return value;
-	}
-	/**
-	 * @return the checked
-	 */
-	public boolean isChecked() {
-		return checked;
-	}
+
 	/**
 	 * @return the evidence
 	 */
 	public String getEvidence() {
 		return evidence;
 	}
+
 	/**
 	 * @param evidence the evidence to set
 	 */
 	public void setEvidence(String evidence) {
 		this.evidence = evidence;
 	}
-	/**
-	 * @param questionNumber the questionNumber to set
-	 */
-	public void setQuestionNumber(String questionNumber) {
-		this.questionNumber = questionNumber;
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof YesNoAnswerWithEvidence)) {
+			return false;
+		}
+		return Objects.equals(this.answer, ((YesNoAnswerWithEvidence)o).getAnswer()) &&
+				Objects.equals(this.evidence, ((YesNoAnswerWithEvidence)o).getEvidence());
 	}
-	/**
-	 * @param value the value to set
-	 */
-	public void setValue(String value) {
-		this.value = value;
-	}
-	/**
-	 * @param checked the checked to set
-	 */
-	public void setChecked(boolean checked) {
-		this.checked = checked;
+
+	@Override
+	public int hashCode() {
+		int retval = 349;
+		if (this.answer != null) {
+			retval = retval ^ this.answer.hashCode();
+		} 
+		if (this.evidence != null) {
+			retval = retval ^ this.evidence.hashCode();
+		}
+		return retval;
 	}
 	
 }

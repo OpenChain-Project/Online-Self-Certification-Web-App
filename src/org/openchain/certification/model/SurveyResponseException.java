@@ -16,34 +16,23 @@
 */
 package org.openchain.certification.model;
 
-import org.openchain.certification.model.YesNoQuestion.YesNo;
-
 /**
- * Response to a Yes/No question
+ * Exceptions related to surveys and survey responses
  * @author Gary O'Neall
  *
  */
-public class YesNoResponse extends Response {
-
-	private YesNo answer;
-	
-	public YesNoResponse(YesNo answer) {
-		this.answer = answer;
-	}
+public class SurveyResponseException extends Exception {
 
 	/**
-	 * @return the answer
+	 * 
 	 */
-	public YesNo getAnswer() {
-		return answer;
-	}
+	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @param answer the answer to set
-	 */
-	public void setAnswer(YesNo answer) {
-		this.answer = answer;
+	public SurveyResponseException(String msg) {
+		super(msg);
 	}
 	
-	
+	public SurveyResponseException(String msg, Throwable inner) {
+		super(msg, inner);
+	}
 }

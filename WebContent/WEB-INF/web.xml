@@ -47,4 +47,8 @@
       <param-name>email_ses_region</param-name>
       <param-value>us-east-1</param-value>
   </context-param>
+  <context-param>
+      <param-name>notification_email</param-name>
+      <param-value>gary@sourceauditor.com</param-value>
+  </context-param>
 </web-app>

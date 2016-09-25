@@ -127,5 +127,48 @@ public class EmailUtility {
 			throw(new EmailUtilException("Unexpected Invalid Key exception completing verification.  Please report this error to the OpenChain group"));
 		}
 	}
+
+	public static void emailCompleteSubmission(String username, String name, String email,
+			String specVersion, ServletConfig config) throws EmailUtilException {
+		String regionName = config.getServletContext().getInitParameter("email_ses_region");
+		if (regionName == null || regionName.isEmpty()) {
+			logger.error("Missing email_ses_region parameter in the web.xml file");
+			throw(new EmailUtilException("The region name for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+		}
+		String fromEmail = config.getServletContext().getInitParameter("return_email");
+		if (fromEmail == null || fromEmail.isEmpty()) {
+			logger.error("Missing return_email parameter in the web.xml file");
+			throw(new EmailUtilException("The from email for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+		}
+		String toEmail = config.getServletContext().getInitParameter("notification_email");
+		if (toEmail == null || toEmail.isEmpty()) {
+			logger.error("Missing notification_email parameter in the web.xml file");
+			throw(new EmailUtilException("The to email for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+		}
+		StringBuilder msg = new StringBuilder("<div>User ");
+		msg.append(name);
+		msg.append(" with username ");
+		msg.append(username);
+		msg.append(" and email ");
+		msg.append(email);
+		msg.append(" has just submitted a cerification request.");
+		Destination destination = new Destination().withToAddresses(new String[]{toEmail});
+		Content subject = new Content().withData("Notification - new OpenChain submission [do not reply]");
+		Content bodyData = new Content().withData(msg.toString());
+		Body body = new Body();
+		body.setHtml(bodyData);
+		Message message = new Message().withSubject(subject).withBody(body);
+		SendEmailRequest request = new SendEmailRequest().withSource(fromEmail).withDestination(destination).withMessage(message);
+		try {
+			AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient();
+			Region region = Region.getRegion(Regions.fromName(regionName));
+			client.setRegion(region);
+			client.sendEmail(request);
+			logger.info("Notification email sent for "+email);
+		} catch (Exception ex) {
+			logger.error("Email send failed",ex);
+			throw(new EmailUtilException("Exception occured during the emailing of the submission notification",ex));
+		}
+	}
 	
 }

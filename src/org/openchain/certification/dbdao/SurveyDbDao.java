@@ -24,10 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.openchain.certification.model.Question;
 import org.openchain.certification.model.QuestionTypeException;
 import org.openchain.certification.model.Section;
 import org.openchain.certification.model.Survey;
+import org.openchain.certification.model.SurveyResponseException;
 import org.openchain.certification.model.YesNoQuestion;
 import org.openchain.certification.model.YesNoQuestion.YesNo;
 import org.openchain.certification.model.YesNoQuestionWithEvidence;
@@ -39,18 +41,40 @@ import org.openchain.certification.model.YesNoQuestionWithEvidence;
  */
 public class SurveyDbDao {
 	
+	static final Logger logger = Logger.getLogger(SurveyDbDao.class);
+	
 	Connection connection = null;
 	
 	public SurveyDbDao(Connection connection) {
 		this.connection = connection;
 	}
+	
+	public Survey getSurvey() throws SQLException, QuestionTypeException, SurveyResponseException {
+		return getSurvey(this.connection, null);
+	}
 
-	public Survey getSurvey() throws SQLException, QuestionTypeException {
+	/**
+	 * @param specVersion Version of the specification.  If null, will get the latest spec version available
+	 * @return Survey with questions (static information) for the latest version
+	 * @throws SQLException
+	 * @throws QuestionTypeException
+	 * @throws SurveyResponseException 
+	 */
+	public static Survey getSurvey(Connection con, String specVersion) throws SQLException, QuestionTypeException, SurveyResponseException {
 		Survey retval = new Survey();
-		Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+		Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet result = null;
 		try {
-			result = stmt.executeQuery("select name, title, id from section order by name asc");
+			if (specVersion == null) {
+				// Get the latest from the spec
+				result = stmt.executeQuery("select max(version) from spec");
+				if (!result.next()) {
+					throw new SurveyResponseException("No specs found in database");
+				}
+				specVersion = result.getString(1);
+				result.close();
+			}
+			result = stmt.executeQuery("select name, title, id from section where spec_version=(select id from spec where version='"+specVersion+"') order by name asc");
 			List<Section> sections = new ArrayList<Section>();
 			List<Long> sectionIds = new ArrayList<Long>();
 			while (result.next()) {
@@ -65,8 +89,8 @@ public class SurveyDbDao {
 			// fill in the questions
 			for (int i = 0; i < sections.size(); i++) {
 				result.close();
-				result = stmt.executeQuery("select name, question, type, correct_answer, evidence_prompt, evidence_validation from question where section_id="+
-								String.valueOf(sectionIds.get(i)) + " order by name asc");
+				result = stmt.executeQuery("select number, question, type, correct_answer, evidence_prompt, evidence_validation from question where section_id="+
+								String.valueOf(sectionIds.get(i)) + " order by number asc");
 				Section section = sections.get(i);
 				List<Question> questions = section.getQuestions();
 				while (result.next()) {
@@ -77,11 +101,11 @@ public class SurveyDbDao {
 					Question question;
 					if (type.equals(YesNoQuestion.TYPE_NAME)) {
 						question = new YesNoQuestion(result.getString("question"), section.getName(), 
-								result.getString("name"), 
+								result.getString("number"), 
 								YesNo.valueOf(result.getString("correct_answer")));
 					} else if (type.equals(YesNoQuestionWithEvidence.TYPE_NAME)) {
 						question = new YesNoQuestionWithEvidence(result.getString("question"), section.getName(), 
-								result.getString("name"), 
+								result.getString("number"), 
 								YesNo.valueOf(result.getString("correct_answer")), 
 								result.getString("evidence_prompt"), 
 								Pattern.compile(result.getString("evidence_validation")));
@@ -93,8 +117,8 @@ public class SurveyDbDao {
 			}
 			return retval;
 		} catch (SQLException ex) {
+			logger.error("SQL Error getting survey", ex);
 			throw ex;
-			//TODO: add logging
 		} finally {
 			if (result != null) {
 				result.close();
