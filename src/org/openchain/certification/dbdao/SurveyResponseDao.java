@@ -30,6 +30,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.openchain.certification.model.QuestionTypeException;
+import org.openchain.certification.model.SubQuestion;
+import org.openchain.certification.model.SubQuestionAnswers;
 import org.openchain.certification.model.Survey;
 import org.openchain.certification.model.SurveyResponse;
 import org.openchain.certification.model.SurveyResponseException;
@@ -37,6 +39,7 @@ import org.openchain.certification.model.User;
 import org.openchain.certification.model.Answer;
 import org.openchain.certification.model.YesNoAnswer;
 import org.openchain.certification.model.YesNoAnswerWithEvidence;
+import org.openchain.certification.model.YesNoNotApplicableQuestion;
 import org.openchain.certification.model.YesNoQuestion;
 import org.openchain.certification.model.YesNoQuestionWithEvidence;
 import org.openchain.certification.model.YesNoQuestion.YesNo;
@@ -60,6 +63,7 @@ public class SurveyResponseDao {
 	private PreparedStatement deleteAnswerQuery;
 	private PreparedStatement getSubmittedQuery;
 	private PreparedStatement setSubmittedQuery;
+	private PreparedStatement getQuestionNameQuery;
 	
 	public SurveyResponseDao(Connection con) throws SQLException {
 		this.con = con;
@@ -71,7 +75,7 @@ public class SurveyResponseDao {
 		getLatestSpecVersionForUserQuery = con.prepareStatement("select max(version) from survey_response join " +
 				"spec on survey_response.spec_version=spec.id where user_id=?",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		getAnswersQuery = con.prepareStatement("select number, answer, evidence, type from " +
+		getAnswersQuery = con.prepareStatement("select number, answer, evidence, type, question_id, subquestion_of from " +
 				"answer join survey_response on answer.response_id=survey_response.id " +
 				"join question on answer.question_id=question.id " +
 				"join spec on survey_response.spec_version=spec.id " +
@@ -99,6 +103,8 @@ public class SurveyResponseDao {
 		setSubmittedQuery = con.prepareStatement("update survey_response set submitted=? where " +
 				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		getQuestionNameQuery = con.prepareStatement("select number from question where id=?",
+				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 	}
 
 	/**
@@ -176,10 +182,13 @@ public class SurveyResponseDao {
 		try {
 			getAnswersQuery.setLong(1,userId);
 			getAnswersQuery.setString(2,specVersion);
-			result = getAnswersQuery.executeQuery();			
+			result = getAnswersQuery.executeQuery();	
+			Map<Long,SubQuestionAnswers> questionNumSubQuestionAnswer = new HashMap<Long,SubQuestionAnswers>();
 			while (result.next()) {
 				String questionNumber = result.getString("number");
 				String type = result.getString("type");
+				long questionId = result.getLong("question_id");
+				long subQuestionOfId = result.getLong("subquestion_of");
 				Answer answer;
 				if (type == null) {
 					throw(new QuestionTypeException("No question type stored in the database"));
@@ -189,8 +198,26 @@ public class SurveyResponseDao {
 				} else if (type.equals(YesNoQuestionWithEvidence.TYPE_NAME)) {
 					answer = new YesNoAnswerWithEvidence(YesNo.valueOf(result.getString("answer")),
 							result.getString("evidence"));
+				} else if (type.equals(YesNoNotApplicableQuestion.TYPE_NAME)) {
+					answer = new YesNoAnswer(YesNo.valueOf(result.getString("answer")));
+				} else if (type.equals(SubQuestion.TYPE_NAME)) {
+					answer = questionNumSubQuestionAnswer.get(questionId);
+					if (answer == null) {
+						answer = new SubQuestionAnswers();
+						questionNumSubQuestionAnswer.put(questionId, (SubQuestionAnswers)answer);
+					}
 				} else {
 					throw(new QuestionTypeException("Unknown question type in database: "+type));
+				}
+				if (subQuestionOfId > 0) {
+					SubQuestionAnswers parentAnswer = questionNumSubQuestionAnswer.get(subQuestionOfId);
+					if (parentAnswer == null) {
+						parentAnswer = new SubQuestionAnswers();
+						questionNumSubQuestionAnswer.put(subQuestionOfId, parentAnswer);
+						String parentQuestionNumber = getQuestionNumber(subQuestionOfId);
+						responses.put(parentQuestionNumber, parentAnswer);
+					}
+					parentAnswer.addSubAnswer(questionNumber, answer);
 				}
 				responses.put(questionNumber, answer);
 			}
@@ -202,6 +229,25 @@ public class SurveyResponseDao {
 		}
 	}
 	
+	private String getQuestionNumber(long questionId) throws SQLException {
+		getQuestionNameQuery.setLong(1, questionId);
+		ResultSet result = null;
+		try {
+			result = getQuestionNameQuery.executeQuery();
+			if (result.next()) {
+				return result.getString(1);
+			} else {
+				return null;
+			}
+		} finally {
+			if (result != null) {
+				result.close();
+			}
+		}
+		
+		
+	}
+
 	/**
 	 * @return the latest (most recent) version of the spec
 	 * @throws SQLException

@@ -44,7 +44,7 @@ public class SurveyDatabase {
         	throw new SQLException("NO database configuration found");
         }
         dataSource.setDatabaseName(dbName);
-        String userName = System.getProperty("RDS_USER"); 
+        String userName = System.getProperty("RDS_USERNAME"); 
         if (userName == null) {
         	userName = servletConfig.getServletContext().getInitParameter("openchaindb_user");
         }

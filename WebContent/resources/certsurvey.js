@@ -273,13 +273,32 @@ function createNavMenu() {
 }
 
 function getQuestionFormHtml(questions) {
-	var html = '<table>\n<col class=number_col /><col class=question_col />\n';
+	var html = '<table class="questiontable ui-corner-all">\n<col class="number_col" /><col class="question_col" /><col class="answer_col" /><col class="answer_col" /><col class="answer_col" />\n';
+	var inSubQuestions = false;
 	for (var i = 0; i < questions.length; i++) {
-		html += '<tr><td>' + questions[i].number + ':</td><td>' + questions[i].question + '</td>';
-		html += '<td><input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes" value="yes" />';
-		html += '<label for="answer-' + questions[i].number + '_yes">Yes</label></td>';
-		html += '<td><input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no" value="no" />';
-		html += '<label for="answer-' + questions[i].number + '_no">No</label></td></tr>\n';
+		var type = questions[i].type;
+		var isSubQuestion = (questions[i].hasOwnProperty('subQuestionNumber'));
+		html += '<tr><td>'+questions[i].number + ':</td>';
+		if (isSubQuestion && inSubQuestions) {
+			html += '<td class=tablebullet>&bull;&nbsp;';
+		} else {
+			html += '<td>';
+		}
+		html+= questions[i].question + '</td>';
+		html += '<td class="question_cell"><input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes" value="yes" />';
+		html += '<label for="answer-' + questions[i].number + '_yes">Yes</label></td>';		
+		html += '<td class="question_cell"><input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no" value="no" />';
+		html += '<label for="answer-' + questions[i].number + '_no">No</label></td>';
+		if (questions[i].hasOwnProperty('notApplicablePrompt')) {
+			html += '<td class="question_cell"><input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_na" value="na" />';		
+			html += '<label for="answer-' + questions[i].number + '_na">'+questions[i].notApplicablePrompt+'</label></td>';
+		}
+		html += '</tr>\n';
+		if (type == 'SUBQUESTIONS') {
+			inSubQuestions = true;
+		} else if (!isSubQuestion) {
+			inSubQuestions = false;
+		}
 	}
 	html += '</table>\n';
 	return html;
@@ -311,7 +330,7 @@ function getSurvey() {
 	    		htmlDivs += '<h3>' + sections[i].name + ': ' + sections[i].title + "</h3>\n";
 	    		htmlDivs += getQuestionFormHtml(sections[i].questions);
 	    		if (i < sections.length-1) {
-	    			htmlDivs += '<div style="text-align:center"><button type="button" id="save_answers_'+sections[i].name+'" class="ui-button">Save & Continue</button></div>\n';
+	    			htmlDivs += '<div style="text-align:center" class="formbutton"><button type="button" id="save_answers_'+sections[i].name+'" class="ui-corners-all ui-dialog-buttons">Save & Continue</button></div>\n';
 	    		}
 	    		htmlDivs += '</div>\n';
 	    	}

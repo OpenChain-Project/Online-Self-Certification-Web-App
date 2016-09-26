@@ -220,6 +220,8 @@ public class UserSession {
 					ynAnswer = YesNo.Yes;
 				} else if (response.getValue().toUpperCase().trim().equals("NO")) {
 					ynAnswer = YesNo.No;
+				} else if (response.getValue().toUpperCase().trim().equals("NA")) {
+					ynAnswer = YesNo.NotApplicable;
 				} else {
 					logger.error("Invalid yes no value: "+response.getValue());
 					throw(new QuestionTypeException("Invalid yes/no value: "+response.getValue()));

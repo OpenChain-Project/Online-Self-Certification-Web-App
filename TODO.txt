@@ -1,2 +1,5 @@
 - Add resend verification email, once done in the EmailUtility, check for the expiration date in the register method
 - Add reset password
+- add property subquestion to indent and make a list
+- implement YES_NO_EVIDENCE
+- Add unit tests

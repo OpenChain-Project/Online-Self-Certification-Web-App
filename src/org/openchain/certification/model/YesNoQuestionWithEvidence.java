@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public class YesNoQuestionWithEvidence extends YesNoQuestion {
 	
-	public static String TYPE_NAME = "YES_NO_WITH_EVIDENCE";
+	public static String TYPE_NAME = "YES_NO_EVIDENCE";
 
 	private String evidencePrompt;
 	private Pattern evidenceValidation;
@@ -35,6 +35,7 @@ public class YesNoQuestionWithEvidence extends YesNoQuestion {
 		super(question, sectionName, number, correctAnswer);
 		this.evidencePrompt = evidencePrompt;
 		this.evidenceValidation = evidenceValidation;
+		this.type = TYPE_NAME;
 	}
 
 	/**

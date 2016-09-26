@@ -28,8 +28,10 @@ import org.apache.log4j.Logger;
 import org.openchain.certification.model.Question;
 import org.openchain.certification.model.QuestionTypeException;
 import org.openchain.certification.model.Section;
+import org.openchain.certification.model.SubQuestion;
 import org.openchain.certification.model.Survey;
 import org.openchain.certification.model.SurveyResponseException;
+import org.openchain.certification.model.YesNoNotApplicableQuestion;
 import org.openchain.certification.model.YesNoQuestion;
 import org.openchain.certification.model.YesNoQuestion.YesNo;
 import org.openchain.certification.model.YesNoQuestionWithEvidence;
@@ -89,7 +91,7 @@ public class SurveyDbDao {
 			// fill in the questions
 			for (int i = 0; i < sections.size(); i++) {
 				result.close();
-				result = stmt.executeQuery("select number, question, type, correct_answer, evidence_prompt, evidence_validation from question where section_id="+
+				result = stmt.executeQuery("select number, question, type, correct_answer, evidence_prompt, evidence_validation, subquestion_of from question where section_id="+
 								String.valueOf(sectionIds.get(i)) + " order by number asc");
 				Section section = sections.get(i);
 				List<Question> questions = section.getQuestions();
@@ -104,13 +106,37 @@ public class SurveyDbDao {
 								result.getString("number"), 
 								YesNo.valueOf(result.getString("correct_answer")));
 					} else if (type.equals(YesNoQuestionWithEvidence.TYPE_NAME)) {
+						Pattern evidenceValidation = null;
+						String evidenceValString = result.getString("evidence_validation");
+						if (evidenceValString != null) {
+							evidenceValidation = Pattern.compile(evidenceValString);
+						}
 						question = new YesNoQuestionWithEvidence(result.getString("question"), section.getName(), 
 								result.getString("number"), 
 								YesNo.valueOf(result.getString("correct_answer")), 
 								result.getString("evidence_prompt"), 
-								Pattern.compile(result.getString("evidence_validation")));
+								evidenceValidation);
+					} else if (type.equals(YesNoNotApplicableQuestion.TYPE_NAME)) {
+						question = new YesNoNotApplicableQuestion(result.getString("question"), section.getName(), 
+								result.getString("number"), 
+								YesNo.valueOf(result.getString("correct_answer")),
+										"Not required by IL");
+					} else if (type.equals(SubQuestion.TYPE_NAME)) {
+						int minValidQuestions = 0;
+						try {
+							minValidQuestions = Integer.parseInt(result.getString("correct_answer"));
+						} catch (Exception ex) {
+							logger.error("Can not parse min correct answers in DB: "+result.getString("correct_answer"));
+							throw new QuestionTypeException("Unexpected error getting sub question information from the database.");
+						}
+						question = new SubQuestion(result.getString("question"), section.getName(), 
+								result.getString("number"), minValidQuestions);
 					} else {
 						throw(new QuestionTypeException("Unknown question type in database: "+type));
+					}
+					long subQuestionId = result.getLong("subquestion_of");
+					if (subQuestionId > 0) {
+						question.addSubQuestionOf(getQuestionNumber(subQuestionId, con));
 					}
 					questions.add(question);
 				}
@@ -126,5 +152,26 @@ public class SurveyDbDao {
 			stmt.close();
 		}
 		
+	}
+
+	private static String getQuestionNumber(long subQuestionId, Connection con) throws SQLException {
+		ResultSet result = null;
+		Statement stmt = null;
+		try {
+			stmt = con.createStatement();
+			result = stmt.executeQuery("select number from question where id="+String.valueOf(subQuestionId));
+			if (result.next()) {
+				return result.getString(1);
+			} else {
+				return "";
+			}
+		} finally {
+			if (result != null) {
+				result.close();
+			}
+			if (stmt != null) {
+				stmt.close();
+			}
+		}
 	}
 }

@@ -21,13 +21,18 @@ package org.openchain.certification.model;
  */
 public class YesNoQuestion extends Question {
 	
-	public enum YesNo {Yes, No}
+	/**
+	 * Yes means yes, no means no, Any means either yes or no can be considered correct
+	 * NotApplicable means that answer does not apply and NotAnswered indicates no response was given
+	 */
+	public enum YesNo {Yes, No, Any, NotApplicable, NotAnswered};
 	public static final String TYPE_NAME = "YES_NO";
 	protected YesNo correctAnswer;
 	
 	public YesNoQuestion(String question, String sectionName, String number, YesNo correctAnswer) {
 		super(question, sectionName, number);
 		this.correctAnswer = correctAnswer;
+		this.type = TYPE_NAME;
 	}
 	
 	/**
@@ -44,10 +49,13 @@ public class YesNoQuestion extends Question {
 	}
 	@Override
 	public boolean validate(Object answer) {
-		if (!(answer instanceof YesNo)) {
+		if ((answer instanceof YesNo)) {
+			return answer.equals(correctAnswer);
+		} else if (answer instanceof YesNoAnswer) {
+			return answer.equals(((YesNoAnswer)answer).getAnswer());
+		} else {
 			return false;
 		}
-		return answer.equals(correctAnswer);
 	}
 	
 }

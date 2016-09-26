@@ -25,6 +25,8 @@ public abstract class Question {
 	protected String question;
 	protected String sectionName;
 	protected String number;
+	private String subQuestionNumber = null;
+	protected String type;
 
 	public Question(String question, String sectionName, String number) {
 		this.question = question;
@@ -77,6 +79,14 @@ public abstract class Question {
 	 */
 	public void setNumber(String number) {
 		this.number = number;
+	}
+
+	public void addSubQuestionOf(String subQuestionNumber) {
+		this.subQuestionNumber = subQuestionNumber;
+	}
+	
+	public String getSubQuestionNumber() {
+		return this.subQuestionNumber;
 	}
 	
 }
