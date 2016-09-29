@@ -17,22 +17,48 @@
 package org.openchain.certification.model;
 
 /**
+ * Exceptions related to survery questions
  * @author Gary O'Neall
  *
  */
-public class QuestionTypeException extends QuestionException {
-	
+public class QuestionException extends Exception {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public QuestionTypeException(String msg) {
-		super(msg);
+	/**
+	 * @param arg0
+	 */
+	public QuestionException(String arg0) {
+		super(arg0);
 	}
-	
-	public QuestionTypeException(String msg, Throwable inner) {
-		super(msg, inner);
+
+	/**
+	 * @param arg0
+	 */
+	public QuestionException(Throwable arg0) {
+		super(arg0);
+	}
+
+	/**
+	 * @param arg0
+	 * @param arg1
+	 */
+	public QuestionException(String arg0, Throwable arg1) {
+		super(arg0, arg1);
+	}
+
+	/**
+	 * @param arg0
+	 * @param arg1
+	 * @param arg2
+	 * @param arg3
+	 */
+	public QuestionException(String arg0, Throwable arg1, boolean arg2,
+			boolean arg3) {
+		super(arg0, arg1, arg2, arg3);
 	}
 
 }

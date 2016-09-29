@@ -29,8 +29,8 @@ public class YesNoNotApplicableQuestion extends YesNoQuestion {
 	String notApplicablePrompt;
 
 	public YesNoNotApplicableQuestion(String question, String sectionName,
-			String number, YesNo correctAnswer, String notApplicablePrompt) {
-		super(question, sectionName, number, correctAnswer);
+			String number, String specVersion, YesNo correctAnswer, String notApplicablePrompt) throws QuestionException {
+		super(question, sectionName, number, specVersion, correctAnswer);
 		this.notApplicablePrompt = notApplicablePrompt;
 		this.type = TYPE_NAME;
 	}

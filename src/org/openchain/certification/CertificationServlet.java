@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 import org.openchain.certification.PostResponse.Status;
 import org.openchain.certification.dbdao.SurveyDatabase;
 import org.openchain.certification.dbdao.SurveyDbDao;
-import org.openchain.certification.model.QuestionTypeException;
+import org.openchain.certification.model.QuestionException;
 import org.openchain.certification.model.Survey;
 import org.openchain.certification.model.SurveyResponseException;
 import org.openchain.certification.utility.EmailUtilException;
@@ -126,8 +126,8 @@ public class CertificationServlet extends HttpServlet {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.setContentType("text"); 
 				out.print("Unexpected SQL exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
-			} catch (QuestionTypeException e) {
-				logger.error("Question type error in servlet"+".  Request="+request,e);
+			} catch (QuestionException e) {
+				logger.error("Question error in servlet"+".  Request="+request,e);
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.setContentType("text"); 
 				out.print("Unexpected data exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
@@ -197,7 +197,7 @@ public class CertificationServlet extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.setContentType("text"); 
 			out.print("Unexpected SQL exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
-		} catch (QuestionTypeException e) {
+		} catch (QuestionException e) {
         	logger.error("Question Error in post"+".  Request="+rj.getRequest(),e);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.setContentType("text"); 

@@ -1,5 +1,8 @@
+- Sort by question doesn't work - need "1.10" after 1.2
+- Add CSV import/export for questions
+- Fully support question versions - perhaps add a version column in the questions table (there are TODO: comments in the code where this is an issue)
+- Add Maven build to manage dependencies
+- Add SPDX file (after Maven - use the Maven SPDX plugin)
 - Add resend verification email, once done in the EmailUtility, check for the expiration date in the register method
 - Add reset password
-- add property subquestion to indent and make a list
-- implement YES_NO_EVIDENCE
 - Add unit tests

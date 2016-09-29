@@ -21,6 +21,7 @@ import java.sql.SQLException;
 
 import javax.servlet.ServletConfig;
 
+import org.apache.log4j.Logger;
 import org.postgresql.ds.PGSimpleDataSource;
 
 /**
@@ -29,6 +30,8 @@ import org.postgresql.ds.PGSimpleDataSource;
  *
  */
 public class SurveyDatabase {
+	
+	static final Logger logger = Logger.getLogger(SurveyDatabase.class);
 	//TODO: Add connection pooling if needed for performance
 	
 	private static SurveyDatabase surveyDatabase;
@@ -37,33 +40,42 @@ public class SurveyDatabase {
 	private SurveyDatabase(ServletConfig servletConfig) throws SQLException {
 		dataSource = new PGSimpleDataSource();
         String dbName = System.getProperty("RDS_DB_NAME"); 
-        if (dbName == null) {
+        //TODO: Find out why the environment variable is not taking for the DB
+        // name in AWS - showing EBDB instead of what was set!
+//        if (dbName == null) {
+//        	logger.debug("Using servlet dbname");
         	dbName = servletConfig.getServletContext().getInitParameter("openchaindb_dbname");
-        }
+//        }
         if (dbName == null) {
         	throw new SQLException("NO database configuration found");
         }
         dataSource.setDatabaseName(dbName);
         String userName = System.getProperty("RDS_USERNAME"); 
         if (userName == null) {
+        	logger.debug("Using servlet dbuser");
         	userName = servletConfig.getServletContext().getInitParameter("openchaindb_user");
         }
         dataSource.setUser(userName);
         String password = System.getProperty("RDS_PASSWORD");
         if (password == null) {
+        	logger.debug("Using servlet db password");
         	password = servletConfig.getServletContext().getInitParameter("openchaindb_password");
         }
         dataSource.setPassword(password);
         String hostname = System.getProperty("RDS_HOSTNAME");
         if (hostname == null) {
+        	logger.debug("Using servlet dbhost name");
         	hostname = servletConfig.getServletContext().getInitParameter("openchaindb_server");
         }
         dataSource.setServerName(hostname);
         String port = System.getProperty("RDS_PORT");
         if (port == null) {
+        	logger.debug("Using servlet dbport");
         	port = servletConfig.getServletContext().getInitParameter("openchaindb_port");
         }
         dataSource.setPortNumber(Integer.parseInt(port));
+        logger.info("Database connection with database name "+dbName+
+        		" on host" + hostname + "with user" + userName);
 	}
 	
 	public static synchronized Connection createConnection(ServletConfig servletConfig) throws SQLException {

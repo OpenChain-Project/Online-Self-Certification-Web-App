@@ -16,22 +16,39 @@
 */
 package org.openchain.certification.model;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * A question asked in the self certification
  * @author Gary O'Neall
  *
  */
-public abstract class Question {
+public abstract class Question implements Comparable<Question> {
 	protected String question;
 	protected String sectionName;
-	protected String number;
+	private String number;
 	private String subQuestionNumber = null;
 	protected String type;
+	protected String specVersion;
+	static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)(\\.\\d+)?(\\.\\d+)?");
+	private Matcher numberMatch;
 
-	public Question(String question, String sectionName, String number) {
+	public Question(String question, String sectionName, String number, String specVersion) throws QuestionException {
+		if (specVersion == null) {
+			throw(new QuestionException("Spec version for question was not specified"));
+		}
+		if (number == null) {
+			throw(new QuestionException("Question number for question was not specified"));
+		}
+		this.numberMatch = NUMBER_PATTERN.matcher(number);
+		if (!this.numberMatch.matches()) {
+			throw(new QuestionException("Invalid format for question number "+number+".  Must be of the format N or N.N or N.N.N"));
+		}
 		this.question = question;
 		this.sectionName = sectionName;
 		this.number = number;
+		this.specVersion = specVersion;
 	}
 
 	/**
@@ -76,8 +93,17 @@ public abstract class Question {
 
 	/**
 	 * @param number the number to set
+	 * @throws QuestionException 
 	 */
-	public void setNumber(String number) {
+	public void setNumber(String number) throws QuestionException {
+		if (number == null) {
+			throw(new QuestionException("Question number for question was not specified"));
+		}
+		this.numberMatch = NUMBER_PATTERN.matcher(number);
+		if (!this.numberMatch.matches()) {
+			this.numberMatch = NUMBER_PATTERN.matcher(this.number);
+			throw(new QuestionException("Invalid format for question number "+number+".  Must be of the format N or N.N or N.N.N"));
+		}
 		this.number = number;
 	}
 
@@ -89,4 +115,55 @@ public abstract class Question {
 		return this.subQuestionNumber;
 	}
 	
+	
+	
+	/**
+	 * @return the specVersion
+	 */
+	public String getSpecVersion() {
+		return specVersion;
+	}
+
+	/**
+	 * @param specVersion the specVersion to set
+	 */
+	public void setSpecVersion(String specVersion) {
+		this.specVersion = specVersion;
+	}
+	
+	public Matcher getNumberMatch() {
+		return this.numberMatch;
+	}
+
+	@Override
+	public int compareTo(Question compare) {
+		int retval = this.specVersion.compareToIgnoreCase(compare.getSpecVersion());
+		if (retval == 0) {
+			Matcher compareMatch = compare.getNumberMatch();
+			retval = this.numberMatch.group(2).compareToIgnoreCase(compareMatch.group(2));
+			if (retval == 0) {
+				if (this.numberMatch.groupCount() > 2) {
+					if (compareMatch.groupCount() > 2) {
+						retval = this.numberMatch.group(3).compareToIgnoreCase(compareMatch.group(3));
+						if (retval == 0) {
+							if (this.numberMatch.groupCount() > 3) {
+								if (compareMatch.groupCount() > 3) {
+									return this.numberMatch.group(4).compareToIgnoreCase(compareMatch.group(4));
+								} else {
+									return -1;
+								}
+							} else if (compareMatch.groupCount() > 3) {
+								return 1;
+							}
+						}
+					} else {
+						return -1;
+					}
+				} else if (compareMatch.groupCount() > 2) {
+					return 1;
+				}
+			}
+		}
+		return retval;
+	}
 }

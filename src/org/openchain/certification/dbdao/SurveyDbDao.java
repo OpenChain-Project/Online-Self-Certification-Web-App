@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.openchain.certification.model.Question;
+import org.openchain.certification.model.QuestionException;
 import org.openchain.certification.model.QuestionTypeException;
 import org.openchain.certification.model.Section;
 import org.openchain.certification.model.SubQuestion;
@@ -51,7 +52,7 @@ public class SurveyDbDao {
 		this.connection = connection;
 	}
 	
-	public Survey getSurvey() throws SQLException, QuestionTypeException, SurveyResponseException {
+	public Survey getSurvey() throws SQLException, QuestionException, SurveyResponseException {
 		return getSurvey(this.connection, null);
 	}
 
@@ -59,10 +60,10 @@ public class SurveyDbDao {
 	 * @param specVersion Version of the specification.  If null, will get the latest spec version available
 	 * @return Survey with questions (static information) for the latest version
 	 * @throws SQLException
-	 * @throws QuestionTypeException
 	 * @throws SurveyResponseException 
+	 * @throws QuestionException 
 	 */
-	public static Survey getSurvey(Connection con, String specVersion) throws SQLException, QuestionTypeException, SurveyResponseException {
+	public static Survey getSurvey(Connection con, String specVersion) throws SQLException, SurveyResponseException, QuestionException {
 		Survey retval = new Survey();
 		Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet result = null;
@@ -103,7 +104,7 @@ public class SurveyDbDao {
 					Question question;
 					if (type.equals(YesNoQuestion.TYPE_NAME)) {
 						question = new YesNoQuestion(result.getString("question"), section.getName(), 
-								result.getString("number"), 
+								result.getString("number"), specVersion, 
 								YesNo.valueOf(result.getString("correct_answer")));
 					} else if (type.equals(YesNoQuestionWithEvidence.TYPE_NAME)) {
 						Pattern evidenceValidation = null;
@@ -112,13 +113,13 @@ public class SurveyDbDao {
 							evidenceValidation = Pattern.compile(evidenceValString);
 						}
 						question = new YesNoQuestionWithEvidence(result.getString("question"), section.getName(), 
-								result.getString("number"), 
+								result.getString("number"), specVersion,
 								YesNo.valueOf(result.getString("correct_answer")), 
 								result.getString("evidence_prompt"), 
 								evidenceValidation);
 					} else if (type.equals(YesNoNotApplicableQuestion.TYPE_NAME)) {
 						question = new YesNoNotApplicableQuestion(result.getString("question"), section.getName(), 
-								result.getString("number"), 
+								result.getString("number"),  specVersion,
 								YesNo.valueOf(result.getString("correct_answer")),
 										"Not required by IL");
 					} else if (type.equals(SubQuestion.TYPE_NAME)) {
@@ -130,7 +131,7 @@ public class SurveyDbDao {
 							throw new QuestionTypeException("Unexpected error getting sub question information from the database.");
 						}
 						question = new SubQuestion(result.getString("question"), section.getName(), 
-								result.getString("number"), minValidQuestions);
+								result.getString("number"),  specVersion, minValidQuestions);
 					} else {
 						throw(new QuestionTypeException("Unknown question type in database: "+type));
 					}
@@ -145,6 +146,9 @@ public class SurveyDbDao {
 		} catch (SQLException ex) {
 			logger.error("SQL Error getting survey", ex);
 			throw ex;
+		} catch (QuestionException e) {
+			logger.error("Invalid question found in database",e);
+			throw(e);
 		} finally {
 			if (result != null) {
 				result.close();

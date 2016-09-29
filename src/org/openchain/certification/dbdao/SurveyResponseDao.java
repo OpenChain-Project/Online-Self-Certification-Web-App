@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.openchain.certification.model.QuestionException;
 import org.openchain.certification.model.QuestionTypeException;
 import org.openchain.certification.model.SubQuestion;
 import org.openchain.certification.model.SubQuestionAnswers;
@@ -114,7 +115,7 @@ public class SurveyResponseDao {
 	 * @return
 	 * @throws QuestionTypeException 
 	 */
-	public synchronized SurveyResponse getSurveyResponse(String username, String specVersion) throws SQLException, QuestionTypeException, SurveyResponseException {
+	public synchronized SurveyResponse getSurveyResponse(String username, String specVersion) throws SQLException, QuestionException, SurveyResponseException {
 		ResultSet result = null;
 		try {
 			getUserQuery.setString(1, username);

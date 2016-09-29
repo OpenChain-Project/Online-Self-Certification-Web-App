@@ -34,6 +34,7 @@ import org.openchain.certification.dbdao.SurveyResponseDao;
 import org.openchain.certification.dbdao.UserDb;
 import org.openchain.certification.model.Answer;
 import org.openchain.certification.model.Question;
+import org.openchain.certification.model.QuestionException;
 import org.openchain.certification.model.QuestionTypeException;
 import org.openchain.certification.model.SurveyResponse;
 import org.openchain.certification.model.SurveyResponseException;
@@ -178,13 +179,13 @@ public class UserSession {
 	public boolean isLoggedIn() {
 		return this.loggedIn;
 	}
-	public SurveyResponse getSurveyResponse() throws SQLException, QuestionTypeException, SurveyResponseException {
+	public SurveyResponse getSurveyResponse() throws SQLException, QuestionException, SurveyResponseException {
 		if (this.surveyResponse == null) {
 			_getSurveyResponse();
 		}
 		return this.surveyResponse;
 	}
-	private void _getSurveyResponse() throws SQLException, QuestionTypeException, SurveyResponseException {
+	private void _getSurveyResponse() throws SQLException, QuestionException, SurveyResponseException {
 		Connection con = SurveyDatabase.createConnection(config);
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
@@ -204,7 +205,7 @@ public class UserSession {
 			con.close();
 		}
 	}
-	public void updateAnswers(List<ResponseAnswer> responses) throws SQLException, QuestionTypeException, SurveyResponseException {
+	public void updateAnswers(List<ResponseAnswer> responses) throws SQLException, QuestionException, SurveyResponseException {
 		if (this.surveyResponse == null) {
 			_getSurveyResponse();
 		}
@@ -255,7 +256,7 @@ public class UserSession {
 	 * @throws SurveyResponseException 
 	 * @throws EmailUtilException 
 	 */
-	public void finalSubmission() throws SQLException, SurveyResponseException, QuestionTypeException, EmailUtilException {
+	public void finalSubmission() throws SQLException, SurveyResponseException, QuestionException, EmailUtilException {
 		Connection con = SurveyDatabase.createConnection(config);
 		_getSurveyResponse();
 		this.surveyResponse.setSubmitted(true);

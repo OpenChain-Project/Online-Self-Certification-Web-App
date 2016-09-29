@@ -30,9 +30,9 @@ public class YesNoQuestionWithEvidence extends YesNoQuestion {
 	private Pattern evidenceValidation;
 	
 	public YesNoQuestionWithEvidence(String question, String sectionName, 
-			String number, YesNo correctAnswer,
-			String evidencePrompt, Pattern evidenceValidation) {
-		super(question, sectionName, number, correctAnswer);
+			String number, String specVersion, YesNo correctAnswer,
+			String evidencePrompt, Pattern evidenceValidation) throws QuestionException {
+		super(question, sectionName, number, specVersion, correctAnswer);
 		this.evidencePrompt = evidencePrompt;
 		this.evidenceValidation = evidenceValidation;
 		this.type = TYPE_NAME;

@@ -29,8 +29,9 @@ public class YesNoQuestion extends Question {
 	public static final String TYPE_NAME = "YES_NO";
 	protected YesNo correctAnswer;
 	
-	public YesNoQuestion(String question, String sectionName, String number, YesNo correctAnswer) {
-		super(question, sectionName, number);
+	public YesNoQuestion(String question, String sectionName, String number, 
+			String specVersion, YesNo correctAnswer) throws QuestionException {
+		super(question, sectionName, number, specVersion);
 		this.correctAnswer = correctAnswer;
 		this.type = TYPE_NAME;
 	}
