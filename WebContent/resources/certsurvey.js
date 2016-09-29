@@ -375,8 +375,7 @@ function getSurvey() {
 	    			    contentType: "json",
 	    			    type: "POST",
 	    			    dataType : "json",
-	    			    success: function( json ) {		    	
-	    			    	//TODO: Move to the next tab
+	    			    success: function( json ) {		    
 	    			    	if (json.status == "OK") {
 	    			    		var currentActive = certForm.tabs("option","active");
 	    			    		var numTabs = $('#CertForm >ul >li').size();

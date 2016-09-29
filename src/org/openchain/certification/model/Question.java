@@ -140,27 +140,36 @@ public abstract class Question implements Comparable<Question> {
 		int retval = this.specVersion.compareToIgnoreCase(compare.getSpecVersion());
 		if (retval == 0) {
 			Matcher compareMatch = compare.getNumberMatch();
-			retval = this.numberMatch.group(2).compareToIgnoreCase(compareMatch.group(2));
+			int digit1 = Integer.parseInt(this.numberMatch.group(1));
+			int compareDigit1 = Integer.parseInt(compareMatch.group(1));
+			retval = digit1 - compareDigit1;
 			if (retval == 0) {
-				if (this.numberMatch.groupCount() > 2) {
-					if (compareMatch.groupCount() > 2) {
-						retval = this.numberMatch.group(3).compareToIgnoreCase(compareMatch.group(3));
+				if (this.numberMatch.groupCount() > 1 && this.numberMatch.group(2) != null) {
+					if (compareMatch.groupCount() > 1 && compareMatch.group(2) != null) {
+						int digit2 = Integer.parseInt(this.numberMatch.group(2).substring(1));
+						int compareDigit2 = Integer.parseInt(compareMatch.group(2).substring(1));
+						retval = digit2 - compareDigit2;
 						if (retval == 0) {
-							if (this.numberMatch.groupCount() > 3) {
-								if (compareMatch.groupCount() > 3) {
-									return this.numberMatch.group(4).compareToIgnoreCase(compareMatch.group(4));
+							if (this.numberMatch.groupCount() > 2 && this.numberMatch.group(3) != null) {
+								if (compareMatch.groupCount() > 2 && compareMatch.group(3) != null) {
+									int digit3 = Integer.parseInt(this.numberMatch.group(3).substring(1));
+									int compareDigit3 = Integer.parseInt(compareMatch.group(3).substring(1));
+									return digit3 - compareDigit3;
 								} else {
-									return -1;
+									return 1;
 								}
-							} else if (compareMatch.groupCount() > 3) {
-								return 1;
+							} else {
+								if (compareMatch.groupCount() > 2 && compareMatch.group(3) != null) {
+									return -1;
+							}
+								
 							}
 						}
 					} else {
-						return -1;
+						return 1;
 					}
-				} else if (compareMatch.groupCount() > 2) {
-					return 1;
+				} else if (compareMatch.groupCount() > 1 && compareMatch.group(2) != null) {
+					return -1;
 				}
 			}
 		}

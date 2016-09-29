@@ -1,4 +1,5 @@
 *settings.xml
+build/
 # The following is from github's Eclipse.gitignore
 .metadata
 bin/

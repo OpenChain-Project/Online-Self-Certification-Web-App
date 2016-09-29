@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -141,6 +142,7 @@ public class SurveyDbDao {
 					}
 					questions.add(question);
 				}
+				Collections.sort(questions);
 			}
 			return retval;
 		} catch (SQLException ex) {

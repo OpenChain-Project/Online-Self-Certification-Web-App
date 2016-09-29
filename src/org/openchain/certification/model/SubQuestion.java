@@ -35,7 +35,7 @@ public class SubQuestion extends Question {
 	
 	public SubQuestion(String question, String sectionName, String number,
 			String specVersion, int minNumberValidatedAnswers) throws QuestionException {
-		super(question, sectionName, specVersion, number);
+		super(question, sectionName, number, specVersion);
 		this.minNumberValidatedAnswers = minNumberValidatedAnswers;
 		this.subQuestions = new HashMap<String,Question>();
 		this.type = TYPE_NAME;
