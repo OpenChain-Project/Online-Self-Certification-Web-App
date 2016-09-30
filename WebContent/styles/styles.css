@@ -6,6 +6,7 @@ body {
 	text-rendering: optimizeLegibility;
 }
 
+/* Dialog css */
 label, input { 
 	display:block; 
 }
@@ -26,11 +27,16 @@ fieldset {
 	border: 1px solid transparent; 
 	padding: 0.3em; 
 }
-.questiontable {
-	
-}
+
 .formbutton {
 	padding: .5em;
+}
+.fileinput {
+	
+}
+/* table css */
+.questiontable {
+    
 }
 .questiontable tr:nth-child(even) {
 	 background: #CCC
@@ -89,6 +95,12 @@ input.radio {
 	list-style: none;
 }
 
+#usermenu {
+	width: 120px;
+}
+#user-dropdown_container {
+	width: 120px;
+}
 #user-dropdown_launcher {
 	display: inline-block;
 }

@@ -16,10 +16,14 @@
 */
 package org.openchain.certification.model;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.HashSet;
+
+import com.opencsv.CSVWriter;
 
 /**
  * Top level class for the survey itself.  The survey consists of sections.  
@@ -29,6 +33,11 @@ import java.util.HashSet;
  *
  */
 public class Survey {
+	public static final String[] CSV_COLUMNS = new String[] {
+		"Section Name", "Question Number", "Spec Reference Number", "Question Text",
+		"Answer Type", "Correct Answer", "Evidence Prompt", "Evidence Validation",
+		"Sub-Question Of Number"
+	};
 	private List<Section> sections;
 
 	/**
@@ -70,6 +79,26 @@ public class Survey {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Prints the survey questions in a CSV file format
+	 * @param out
+	 * @throws IOException 
+	 */
+	public void printCsv(PrintWriter out) throws IOException {
+		CSVWriter csv = new CSVWriter(out);
+		try {
+			csv.writeNext(CSV_COLUMNS);
+			for (Section section:sections) {
+				for (Question question:section.getQuestions()) {
+					String[] questionRow = question.toCsvRow();
+					csv.writeNext(questionRow);
+				}
+			}
+		} finally {
+			csv.close();
+		}
 	}
 	
 }

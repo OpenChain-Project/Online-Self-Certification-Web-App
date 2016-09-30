@@ -52,10 +52,12 @@ public class CertificationServlet extends HttpServlet {
 	public static final String PARAMETER_REQUEST = "request";
 	public static final String PARAMETER_USERNAME = "username";
 	public static final String PARAMETER_UUID = "uuid";
+	public static final String PARAMETER_SPEC_VERSION = "specVersion";
 	private static final String GET_VERSION_REQUEST = "version";
 	private static final String GET_SURVEY = "getsurvey";
 	private static final String GET_SURVEY_RESPONSE = "getsurveyResponse";
 	private static final String GET_USER = "getuser";
+	private static final String DOWNLOAD_SURVEY = "downloadSurvey";
 	private static final String REGISTER_USER = "register";
 	private static final String LOGIN_REQUEST = "login";
 	private static final String SIGNUP_REQUEST = "signup";
@@ -115,6 +117,20 @@ public class CertificationServlet extends HttpServlet {
 	            	gson.toJson(survey, out);
 	            } else if (requestParam.equals(GET_SURVEY_RESPONSE)) {
 	            	gson.toJson(user.getSurveyResponse(), out);
+	            } else if (requestParam.equals(DOWNLOAD_SURVEY)) {
+	            	if (!user.isAdmin()) {
+	            		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	            	} else {
+		            	String specVersion = request.getParameter(PARAMETER_SPEC_VERSION);
+		                response.setContentType("text/csv");
+		                response.setHeader("Content-Disposition", "attachment;filename=\"openchain-survey-version-"+specVersion+".csv\"");
+		            	printSurvey(specVersion, out);
+	            	}
+	            } else {
+	            	logger.error("Unknown get request: "+requestParam);
+	            	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+	            	response.setContentType("text"); 
+					out.print("Unknown server request: "+requestParam);
 	            }
 			} catch (SurveyResponseException e) {
 				logger.error("Survey response error in servlet"+".  Request="+request,e);
@@ -133,6 +149,27 @@ public class CertificationServlet extends HttpServlet {
 				out.print("Unexpected data exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
 			} finally {
 				out.close();
+			}
+		}
+	}
+
+	/**
+	 * Print a CSV version of a survey to an output stream
+	 * @param specVersion
+	 * @param out
+	 * @throws SQLException 
+	 * @throws QuestionException 
+	 * @throws SurveyResponseException 
+	 * @throws IOException 
+	 */
+	private void printSurvey(String specVersion, PrintWriter out) throws SQLException, SurveyResponseException, QuestionException, IOException {
+		Connection con = SurveyDatabase.createConnection(getServletConfig());
+		try {
+			Survey survey = SurveyDbDao.getSurvey(con, specVersion);
+			survey.printCsv(out);
+		} finally {
+			if (con != null) {
+				con.close();
 			}
 		}
 	}

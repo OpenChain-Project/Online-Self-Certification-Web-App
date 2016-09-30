@@ -31,8 +31,10 @@ public abstract class Question implements Comparable<Question> {
 	private String subQuestionNumber = null;
 	protected String type;
 	protected String specVersion;
-	static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)(\\.\\d+)?(\\.\\d+)?");
-	private Matcher numberMatch;
+	transient static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)(\\.\\d+)?(\\.\\d+)?");
+	transient private Matcher numberMatch;
+	//TODO: Add spec reference to the database and model
+	private String specReference = "";
 
 	public Question(String question, String sectionName, String number, String specVersion) throws QuestionException {
 		if (specVersion == null) {
@@ -173,6 +175,35 @@ public abstract class Question implements Comparable<Question> {
 				}
 			}
 		}
+		return retval;
+	}
+
+	protected abstract Object getCorrectAnswer();
+	
+	/**
+	 * @return the qusetion information formatted in a CSV row for a Survey CSV file
+	 */
+	public String[] toCsvRow() {
+		String[] retval = new String[Survey.CSV_COLUMNS.length];
+		retval[0] = this.sectionName;
+		retval[1] = this.number;
+		retval[2] = this.specReference ;
+		retval[3] = this.question;
+		retval[4] = this.type;
+		retval[5] = this.getCorrectAnswer().toString();
+		if (this instanceof YesNoQuestionWithEvidence) {
+			YesNoQuestionWithEvidence me = (YesNoQuestionWithEvidence)this;
+			retval[6] = me.getEvidencePrompt();
+			if (me.getEvidenceValidation() == null) {
+				retval[7] = "";
+			} else {
+				retval[7] = me.getEvidenceValidation().toString();
+			}		
+		} else {
+			retval[6] = "";
+			retval[7] = "";
+		}
+		retval[8] = this.subQuestionNumber;
 		return retval;
 	}
 }

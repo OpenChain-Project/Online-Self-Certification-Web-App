@@ -63,6 +63,8 @@ public class UserSession {
 	private String lastError;
 	private transient ServletConfig config;
 	private transient SurveyResponse surveyResponse = null;
+
+	private boolean admin = false;
 	
 	public UserSession(String username, String password, ServletConfig config) {
 		this.username = username;
@@ -80,6 +82,7 @@ public class UserSession {
 		this.loggedIn = false;
 		this.username = null;
 		this.password = null;
+		this.admin = false;
 	}
 	public boolean login() {
 		this.loggedIn = false;
@@ -114,6 +117,7 @@ public class UserSession {
 			return false;
 		}
 		this.loggedIn = true;
+		this.admin  = user.isAdmin();
 		return true;
 	}
 	public String getLastError() {
@@ -270,5 +274,8 @@ public class UserSession {
 				this.surveyResponse.getResponder().getName(),
 				this.surveyResponse.getResponder().getEmail(),
 				this.surveyResponse.getSpecVersion(), config);
+	}
+	public boolean isAdmin() {
+		return this.admin;
 	}
 }

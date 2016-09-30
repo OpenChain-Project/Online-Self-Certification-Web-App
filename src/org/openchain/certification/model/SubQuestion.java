@@ -63,4 +63,9 @@ public class SubQuestion extends Question {
 		return numValid >= this.minNumberValidatedAnswers;
 	}
 
+	@Override
+	protected String getCorrectAnswer() {
+		return String.valueOf(this.minNumberValidatedAnswers);
+	}
+
 }

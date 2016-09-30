@@ -227,6 +227,28 @@ function openSignInDialog() {
 	$("#login").dialog("open");
 }
 
+function openDownloadSurveyDialog() {
+	$("#downloadsurvey").dialog("open");
+}
+
+function downloadSurvey() {
+	var specVersion = $("#downloadsurvey-version").val();
+	window.location="CertificationServlet?request=downloadSurvey&specVersion="+specVersion;
+	/*
+	$.ajax({
+	    url: "CertificationServlet",
+	    data: {
+	        request: "downloadSurvey",
+	        specVersion: specVersion
+	    },
+	    type: "GET",
+	    dataType : "text/csv",
+	    error: function( xhr, status, errorThrown ) {
+	    	handleError( xhr, status, errorThrown);
+	    }
+	});
+	*/
+}
 /**
  * Create a navigation menu based on whether the user is logged in
  */
@@ -246,7 +268,9 @@ function createNavMenu() {
 	    		html += '<li id="user-dropdown_signin"><a href="javascript:void(0);"><span class="ui-icon-plusthick">&nbsp;Sign in</span></a></li>\n';
 	    		html += '<li id="user-dropdown_signup"><a href="javascript:void(0);"><span class="ui-icon-pencil">&nbsp;Sign up</span></a></li>\n';
 	    	}
-	    	html += '</ul>\n';
+	    	if (json.admin) {
+	    		html += '<li id="user-dropdown_downloadsurvey"><a href="javascript:void(0);"><span class="ui-icon-pencil">&nbsp;Download Survey</span></a></li>\n';
+	    	}
 	    	$("#user-dropdown_menu").html(html);
 	    	$("#usermenu").jui_dropdown( {
 	    	    launcher_id: 'user-dropdown_launcher',
@@ -262,6 +286,8 @@ function createNavMenu() {
 	    	    		signout();
 	    	    	} else if (data.id == "user-dropdown_signin") {
 	    	    		openSignInDialog();
+	    	    	} else if (data.id == "user-dropdown_downloadsurvey") {
+	    	    		openDownloadSurveyDialog();
 	    	    	}
 	    	    }
 	    	  });
@@ -540,6 +566,28 @@ $(document).ready( function() {
 	$("#btSaveAndSubmit").click(function(event) {
 	      event.preventDefault();
 	      finalSubmission();
+	});
+	$("#downloadsurvey").dialog({
+		title: "Download Survey",
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: [{
+			text: "Download",
+			click: function() {
+				$(this).dialog("close");
+				downloadSurvey();
+			}
+		}, {
+			text: "Cancel",
+			click: function() {
+				$(this).dialog("close");
+			}
+		}]
+	}).find("form").on("submit", function(event) {
+		event.preventDefault();
+		downloadSurvey();
 	});
 	createNavMenu();
 	getSurvey();
