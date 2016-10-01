@@ -22,8 +22,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -65,6 +67,7 @@ public class SurveyResponseDao {
 	private PreparedStatement getSubmittedQuery;
 	private PreparedStatement setSubmittedQuery;
 	private PreparedStatement getQuestionNameQuery;
+	private PreparedStatement getUsersWithResponsesQuery;
 	
 	public SurveyResponseDao(Connection con) throws SQLException {
 		this.con = con;
@@ -105,6 +108,12 @@ public class SurveyResponseDao {
 				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		getQuestionNameQuery = con.prepareStatement("select number from question where id=?",
+				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+		getUsersWithResponsesQuery = con.prepareStatement("select username, password_token, name, address, email," +
+				"verified, passwordReset, admin, verificationExpirationDate," +
+				" uuid, organization, openchain_user.id, submitted, version from survey_response join openchain_user " +
+				"on survey_response.user_id=openchain_user.id join spec on survey_response.spec_version=spec.id" +
+				" order by username asc",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 	}
 
@@ -152,10 +161,10 @@ public class SurveyResponseDao {
 				}
 			}
 			Survey survey = SurveyDbDao.getSurvey(con, specVersion);
-			Map<String, Answer>responses = getResponses(userId, specVersion);			
+			Map<String, Answer>answers = getAnswers(userId, specVersion);			
 			SurveyResponse retval = new SurveyResponse();
 			retval.setResponder(user);
-			retval.setResponses(responses);
+			retval.setResponses(answers);
 			retval.setSurvey(survey);
 			retval.setSpecVersion(specVersion);
 			retval.setSubmitted(getSubmitted(userId, specVersion));
@@ -177,7 +186,67 @@ public class SurveyResponseDao {
 		}
 	}
 	
-	private Map<String, Answer> getResponses(long userId, String specVersion) throws SQLException, QuestionTypeException, SurveyResponseException {
+	/**
+	 * @return All survey responses
+	 * @throws SQLException 
+	 * @throws QuestionException 
+	 * @throws SurveyResponseException 
+	 */
+	public synchronized List<SurveyResponse> getSurveyResponses() throws SQLException, SurveyResponseException, QuestionException {
+		ResultSet result = null;
+		List<SurveyResponse> retval = new ArrayList<SurveyResponse>();
+		Map<String, Survey> surveys = new HashMap<String, Survey>();	// Cache of spec version to survey
+		try {
+			result = getUsersWithResponsesQuery.executeQuery();
+			while (result.next()) {
+				SurveyResponse response = new SurveyResponse();
+				User user = new User();
+				user.setAddress(result.getString("address"));
+				user.setAdmin(result.getBoolean("admin"));
+				user.setEmail(result.getString("email"));
+				user.setName(result.getString("name"));
+				user.setPasswordReset(result.getBoolean("passwordReset"));
+				user.setPasswordToken(result.getString("password_token"));
+				user.setUsername(result.getString("username"));
+				user.setUuid(result.getString("uuid"));
+				user.setVerificationExpirationDate(result.getDate("verificationExpirationDate"));
+				user.setVerified(result.getBoolean("verified"));
+				user.setOrganization(result.getString("organization"));
+				long userId = result.getLong("id");
+				response.setResponder(user);
+				response.setSubmitted(result.getBoolean("submitted"));
+				String specVersion = result.getString("version");
+				response.setSpecVersion(specVersion);
+				Survey survey = surveys.get(specVersion);
+				if (survey == null) {
+					survey = SurveyDbDao.getSurvey(con, specVersion);
+					surveys.put(specVersion, survey);
+				}
+				response.setSurvey(survey);
+				response.setResponses(getAnswers(userId, specVersion));
+				retval.add(response);
+			}
+			return retval;
+		} catch (SQLException e) {
+			logger.error("SQL error getting users with responses",e);
+			throw(e);
+		} finally {
+			if (result != null) {
+				result.close();
+			}
+		}
+	}
+	
+	/**
+	 * Get all answers for a given user ID and specVersion
+	 * @param userId
+	 * @param specVersion
+	 * @return
+	 * @throws SQLException
+	 * @throws QuestionTypeException
+	 * @throws SurveyResponseException
+	 */
+	private Map<String, Answer> getAnswers(long userId, String specVersion) throws SQLException, QuestionTypeException, SurveyResponseException {
 		ResultSet result = null;
 		Map<String, Answer> responses = new HashMap<String, Answer>();
 		try {
@@ -403,7 +472,7 @@ public class SurveyResponseDao {
 		// First, verify the question numbers
 		Set<String> numbers = response.getSurvey().getQuestionNumbers();
 		try {
-			Map<String, Answer> storedResponses = getResponses(userId, response.getSpecVersion());
+			Map<String, Answer> storedAnswers = getAnswers(userId, response.getSpecVersion());
 			this.addAnswerQuery.clearBatch();
 			this.updateAnswerQuery.clearBatch();
 			this.deleteAnswerQuery.clearBatch();
@@ -420,7 +489,7 @@ public class SurveyResponseDao {
 					
 					throw(new SurveyResponseException("Can not update answers.  Question "+entry.getKey()+" does not exist."));
 				}
-				if (storedResponses.containsKey(entry.getKey())) {
+				if (storedAnswers.containsKey(entry.getKey())) {
 					// already there
 					if (entry.getKey() == null) {
 						// Delete the entry
@@ -432,7 +501,7 @@ public class SurveyResponseDao {
 						numDeletes++;
 					} else {
 						// We don't want to update with a null value
-						Answer storedAnswer = storedResponses.get(entry.getKey());
+						Answer storedAnswer = storedAnswers.get(entry.getKey());
 						if (storedAnswer == null || !storedAnswer.equals(entry.getValue())) {
 							// must update
 							this.updateAnswerQuery.clearParameters();
@@ -461,6 +530,8 @@ public class SurveyResponseDao {
 					if (entry.getValue() instanceof YesNoAnswer) {
 						YesNoAnswer yn = (YesNoAnswer)entry.getValue();
 						this.addAnswerQuery.setString(4, yn.getAnswer().toString());
+					} else {
+						this.addAnswerQuery.setString(4, null);
 					}
 					if (entry.getValue() instanceof YesNoAnswerWithEvidence) {
 						this.addAnswerQuery.setString(5, ((YesNoAnswerWithEvidence)entry.getValue()).getEvidence());

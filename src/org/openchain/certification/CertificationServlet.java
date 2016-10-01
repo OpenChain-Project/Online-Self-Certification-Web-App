@@ -21,6 +21,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,8 +34,11 @@ import org.apache.log4j.Logger;
 import org.openchain.certification.PostResponse.Status;
 import org.openchain.certification.dbdao.SurveyDatabase;
 import org.openchain.certification.dbdao.SurveyDbDao;
+import org.openchain.certification.dbdao.SurveyResponseDao;
 import org.openchain.certification.model.QuestionException;
+import org.openchain.certification.model.Submission;
 import org.openchain.certification.model.Survey;
+import org.openchain.certification.model.SurveyResponse;
 import org.openchain.certification.model.SurveyResponseException;
 import org.openchain.certification.utility.EmailUtilException;
 import org.openchain.certification.utility.EmailUtility;
@@ -45,9 +50,14 @@ import com.google.gson.stream.JsonReader;
  * Servlet implementation class CertificationServlet
  */
 public class CertificationServlet extends HttpServlet {
+	/**
+	 * Version of this software - should be updated before every release
+	 */
+	static final String version = "0.0.5";
+	
 	static final Logger logger = Logger.getLogger(CertificationServlet.class);
-	private static final long serialVersionUID = 1L;
-	static final String version = "0.0.1";
+	
+	private static final long serialVersionUID = 1L;	
 	static final String SESSION_ATTRIBUTE_USER = "user";
 	public static final String PARAMETER_REQUEST = "request";
 	public static final String PARAMETER_USERNAME = "username";
@@ -56,6 +66,7 @@ public class CertificationServlet extends HttpServlet {
 	private static final String GET_VERSION_REQUEST = "version";
 	private static final String GET_SURVEY = "getsurvey";
 	private static final String GET_SURVEY_RESPONSE = "getsurveyResponse";
+	private static final String GET_SUBMISSIONS = "getsubmissions";
 	private static final String GET_USER = "getuser";
 	private static final String DOWNLOAD_SURVEY = "downloadSurvey";
 	private static final String REGISTER_USER = "register";
@@ -117,6 +128,13 @@ public class CertificationServlet extends HttpServlet {
 	            	gson.toJson(survey, out);
 	            } else if (requestParam.equals(GET_SURVEY_RESPONSE)) {
 	            	gson.toJson(user.getSurveyResponse(), out);
+	            } else if (requestParam.equals(GET_SUBMISSIONS)) {
+	            	if (!user.isAdmin()) {
+	            		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	            	} else {
+		            	List<Submission> submissions = getSubmissions();
+		            	gson.toJson(submissions, out);
+	            	}
 	            } else if (requestParam.equals(DOWNLOAD_SURVEY)) {
 	            	if (!user.isAdmin()) {
 	            		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -150,6 +168,21 @@ public class CertificationServlet extends HttpServlet {
 			} finally {
 				out.close();
 			}
+		}
+	}
+
+	private List<Submission> getSubmissions() throws SQLException, SurveyResponseException, QuestionException {
+		Connection con = SurveyDatabase.createConnection(getServletConfig());
+		try {
+			SurveyResponseDao dao = new SurveyResponseDao(con);
+			List<SurveyResponse> allResponses = dao.getSurveyResponses();
+			List<Submission> retval = new ArrayList<Submission>();
+			for (SurveyResponse response:allResponses) {
+				retval.add(new Submission(response));
+			}
+			return retval;
+		} finally {
+			con.close();
 		}
 	}
 

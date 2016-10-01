@@ -83,7 +83,4 @@ public class SubQuestionAnswers extends Answer {
 		}
 		return retval;
 	}
-	
-	
-
 }

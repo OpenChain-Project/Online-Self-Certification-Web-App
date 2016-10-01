@@ -62,10 +62,31 @@ public class SubQuestion extends Question {
 		}
 		return numValid >= this.minNumberValidatedAnswers;
 	}
+	
+	public void addSubQuestion(Question subQuestion) {
+		this.subQuestions.put(subQuestion.getNumber(), subQuestion);
+	}
+	
+	public void removeSubQuestion(Question subQuestion) {
+		this.subQuestions.remove(subQuestion.getNumber());
+	}
 
 	@Override
 	protected String getCorrectAnswer() {
 		return String.valueOf(this.minNumberValidatedAnswers);
 	}
 
+	/**
+	 * @return the minNumberValidatedAnswers
+	 */
+	public int getMinNumberValidatedAnswers() {
+		return minNumberValidatedAnswers;
+	}
+
+	/**
+	 * @param minNumberValidatedAnswers the minNumberValidatedAnswers to set
+	 */
+	public void setMinNumberValidatedAnswers(int minNumberValidatedAnswers) {
+		this.minNumberValidatedAnswers = minNumberValidatedAnswers;
+	}
 }

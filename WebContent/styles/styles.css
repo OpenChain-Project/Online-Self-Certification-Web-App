@@ -38,11 +38,11 @@ fieldset {
 .questiontable {
     
 }
-.questiontable tr:nth-child(even) {
+table tr:nth-child(even) {
 	 background: #CCC
 
 }
-.questiontable tr:nth-child(odd) {
+table tr:nth-child(odd) {
 	background: #FFF
 }
 .questiontable td {
@@ -73,8 +73,24 @@ input.radio {
     clear: none;
     margin: 2px 0 0 2px;
 }
-	
-	
+
+.admin-table {
+	border: 1px solid black;
+}
+
+.submitted_col {
+	text-align:center;
+}
+
+.completed_col {
+	text-align:center;
+}
+
+.score_col {
+    text-align:center;
+}
+
+/* Navbar */
 .navbar {
 	display: inline-block;
 	background-color: #EAECEE;
@@ -82,8 +98,6 @@ input.radio {
     padding: 1px;
     overflow: auto;
 }
-
-
 
 .navbar button {
     padding: 3px !important;
@@ -119,4 +133,11 @@ input.radio {
 }
 .tablebullet {
     padding-left:3em
+}
+
+/* admin page */
+#manage-survey {
+	padding:3px;
+    margin:auto; 
+    width: 50%;
 }

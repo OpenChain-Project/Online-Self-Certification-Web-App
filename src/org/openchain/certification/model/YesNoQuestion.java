@@ -53,7 +53,7 @@ public class YesNoQuestion extends Question {
 		if ((answer instanceof YesNo)) {
 			return answer.equals(correctAnswer);
 		} else if (answer instanceof YesNoAnswer) {
-			return answer.equals(((YesNoAnswer)answer).getAnswer());
+			return correctAnswer.equals(((YesNoAnswer)answer).getAnswer());
 		} else {
 			return false;
 		}

@@ -22,7 +22,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -91,6 +93,7 @@ public class SurveyDbDao {
 			}
 			retval.setSections(sections);
 			// fill in the questions
+			Map<String, SubQuestion> foundSubQuestions = new HashMap<String, SubQuestion>();
 			for (int i = 0; i < sections.size(); i++) {
 				result.close();
 				result = stmt.executeQuery("select number, question, type, correct_answer, evidence_prompt, evidence_validation, subquestion_of from question where section_id="+
@@ -124,21 +127,36 @@ public class SurveyDbDao {
 								YesNo.valueOf(result.getString("correct_answer")),
 										"Not required by IL");
 					} else if (type.equals(SubQuestion.TYPE_NAME)) {
-						int minValidQuestions = 0;
+						int minValidAnswers = 0;
 						try {
-							minValidQuestions = Integer.parseInt(result.getString("correct_answer"));
+							minValidAnswers = Integer.parseInt(result.getString("correct_answer"));
 						} catch (Exception ex) {
 							logger.error("Can not parse min correct answers in DB: "+result.getString("correct_answer"));
 							throw new QuestionTypeException("Unexpected error getting sub question information from the database.");
 						}
-						question = new SubQuestion(result.getString("question"), section.getName(), 
-								result.getString("number"),  specVersion, minValidQuestions);
+						question = foundSubQuestions.get(result.getString("number"));
+						if (question == null) {
+							question = new SubQuestion(result.getString("question"), section.getName(), 
+									result.getString("number"),  specVersion, minValidAnswers);
+							foundSubQuestions.put(question.getNumber(), (SubQuestion)question);
+						} else {
+							question.setQuestion(result.getString("question"));
+							((SubQuestion)question).setMinNumberValidatedAnswers(minValidAnswers);
+						}
+						
 					} else {
 						throw(new QuestionTypeException("Unknown question type in database: "+type));
 					}
 					long subQuestionId = result.getLong("subquestion_of");
 					if (subQuestionId > 0) {
-						question.addSubQuestionOf(getQuestionNumber(subQuestionId, con));
+						String subQuestionNumber = getQuestionNumber(subQuestionId, con);
+						question.addSubQuestionOf(subQuestionNumber);
+						SubQuestion parent = foundSubQuestions.get(subQuestionNumber);
+						if (parent == null) {
+							parent = new SubQuestion("", section.getName(), subQuestionNumber, specVersion, 0);
+							foundSubQuestions.put(subQuestionNumber, parent);
+						}
+						parent.addSubQuestion(question);
 					}
 					questions.add(question);
 				}
