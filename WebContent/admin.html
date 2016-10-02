@@ -31,20 +31,33 @@
     <h2>Site Status</h2>
     Site Software Version: <div id="software-version"></div><br />
     <h2>Submission Status:</h2>
+    <div id="submission-status-loading">
+        Loading <img src="resources/loading.gif" alt="Loading" class="loading">
+    </div>
     <table id="submission-status" class="admin-table ui-corner-all">
     </table>
     <h2>
         Manage Survey Question Content
     </h2>
     <div id="manage-survey">
-        <button id="btDownloadSurvey" class="ui-button ui-widget ui-corner-all">Download Survey</button>
-        <button id="btUploadSurvey" class="ui-button ui-widget ui-corner-all">Upload Survey</button>
+        <button id="btDownloadSurvey" class="ui-button ui-widget ui-corner-all">Download Survey Questions</button>
+        <button id="btUploadSurvey" class="ui-button ui-widget ui-corner-all">Upload Survey Questions</button>
     </div>
     <div id="downloadsurvey">
         <form name="downloadsurvey-form" id="downloadsurvey-form">
         <fieldset>
             <label for="downloadsurvey-version">Specification Version</label>
             <input type="text" name="downloadsurvey-version" id="downloadsurvey-version" class="text ui-widget-content ui-corner-all">
+        </fieldset>
+        </form>
+    </div>
+        <div id="uploadsurvey">
+        <form name="uploadsurvey-form" id="upload-survey-questions-form">
+        <fieldset>
+            <label for="uploadsurvey-version">Specification Version</label>
+            <input type="text" name="uploadsurvey-version" id="uploadsurvey-version" class="text ui-widget-content ui-corner-all">
+            <label for="uploadsurvey-file">File</label>
+            <input type="file" onchange="storeCsvFile(event)" name="uploadsurvey-file" id="uploadsurvey-file" />
         </fieldset>
         </form>
     </div>

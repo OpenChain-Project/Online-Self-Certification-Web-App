@@ -33,6 +33,8 @@ public class RequestJson {
 	private String address;
 	private String organization;
 	private String email;
+	private String specVersion;
+	private String[] csvLines;
 	
 	/**
 	 * @return the request
@@ -129,6 +131,30 @@ public class RequestJson {
 	 */
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	/**
+	 * @return the specVersion
+	 */
+	public String getSpecVersion() {
+		return specVersion;
+	}
+	/**
+	 * @param specVersion the specVersion to set
+	 */
+	public void setSpecVersion(String specVersion) {
+		this.specVersion = specVersion;
+	}
+	/**
+	 * @return the csvLines
+	 */
+	public String[] getCsvLines() {
+		return csvLines;
+	}
+	/**
+	 * @param csvLines the csvLines to set
+	 */
+	public void setCsvLines(String[] csvLines) {
+		this.csvLines = csvLines;
 	}
 
 	

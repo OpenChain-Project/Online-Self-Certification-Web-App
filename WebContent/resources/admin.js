@@ -20,12 +20,91 @@ function openDownloadSurveyDialog() {
 }
 
 function openUploadSurveyDialog() {
-	displayError("This uploading survey has not yet been implemented.");
+	$("#uploadsurvey").dialog("open");
 }
 
 function downloadSurvey() {
 	var specVersion = $("#downloadsurvey-version").val();
 	window.location="CertificationServlet?request=downloadSurvey&specVersion="+specVersion;
+}
+
+var csvFileForUpload;
+
+var storeCsvFile = function(event) {
+	csvFileForUpload = event.target.files[0];
+};
+
+function readCsvFromFile(file) {
+    var request = new XMLHttpRequest();
+    request.open("GET", file, false);
+    request.onreadystatechange = function () {
+        if(request.readyState === 4) {
+            if(request.status === 200 || request.status == 0) {
+                var text = rawFile.responseText;
+                return text.split('\n');
+            } else {
+            	return null;
+            }
+        } else {
+        	return null;
+        }
+    };
+    request.send(null);
+}
+
+function uploadSurvey() {
+	$("#btUploadSurvey").button("disable");
+	var specVersion = $("#uploadsurvey-version").val();
+	if (csvFileForUpload == null) {
+		dislplayError("No file choosen for upload");
+		return;
+	}
+	var csvLines;
+	var reader = new FileReader();
+	reader.onload = function(){
+		var text = reader.result;
+		csvLines = text.split('\n');
+		$.ajax({
+		    url: "CertificationServlet",
+		    data:JSON.stringify({
+		        request: "uploadsurvey",
+		        specVersion: specVersion,
+		        csvLines: csvLines
+		    }),
+		    type: "POST",
+		    dataType : "json",
+		    contentType: "json",
+		    success: function( json ) {
+		    	$("#btUploadSurvey").button("enable");
+		    	if (json.status == "OK") {
+		    		$( "#status" ).dialog({
+		    			title: "Uploaded",
+		    			resizable: false,
+		    		    height: 200,
+		    		    width: 200,
+		    		    modal: true,
+		    		    buttons: {
+		    		        "Ok" : function () {
+		    		            $( this ).dialog( "close" );
+		    		        }
+		    		    }
+		    		}).text( "Questions successfully uploaded" );
+		    	} else {
+		    		displayError(json.status);
+		    	}
+		    },
+		    error: function( xhr, status, errorThrown ) {
+		    	$("#btUploadSurvey").button("enable");
+		    	handleError( xhr, status, errorThrown);
+		    }
+		});
+	};
+	reader.onloadend = function(){
+		if (reader.error != null) {
+			displayError(reader.error.message);
+		}
+	};
+	reader.readAsText(csvFileForUpload);
 }
 
 function fillSubmissionStatusTable(submissions) {
@@ -75,6 +154,29 @@ $(document).ready( function() {
 		downloadSurvey();
 	});
 	
+	$("#uploadsurvey").dialog({
+		title: "Upload Survey",
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: [{
+			text: "Upload",
+			click: function() {
+				$(this).dialog("close");
+				uploadSurvey();
+			}
+		}, {
+			text: "Cancel",
+			click: function() {
+				$(this).dialog("close");
+			}
+		}]
+	}).find("form").on("submit", function(event) {
+		event.preventDefault();
+		uploadSurvey();
+	});
+	
 	$("#btDownloadSurvey").button().click(function(event) {
 	      event.preventDefault();
 	      openDownloadSurveyDialog();
@@ -99,6 +201,7 @@ $(document).ready( function() {
 	    }
 	});
 	
+	$("#submission-status-loading").show();
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
@@ -107,9 +210,11 @@ $(document).ready( function() {
 	    type: "GET",
 	    dataType : "json",
 	    success: function( json ) {
+	    	$("#submission-status-loading").hide();
 	    	fillSubmissionStatusTable(json);
 	    },
 	    error: function( xhr, status, errorThrown ) {
+	    	$("#submission-status-loading").hide();
 	    	handleError( xhr, status, errorThrown);
 	    }
 	});

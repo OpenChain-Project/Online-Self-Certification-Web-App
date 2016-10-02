@@ -114,7 +114,7 @@ function displayError( error ) {
 
 function handleError(xhr, status, errorThrown, msg) {
 	if ( msg === undefined ) {
-		if ( xhr.responseText != null && xhr.responseText!= "" ) {
+		if ( xhr.responseType == "text" && xhr.responseText != null && xhr.responseText!= "" ) {
 			msg = "Sorry - there was a problem loading data: " + xhr.responseText;
 		} else {
 			msg = "Sorry - there was a problem loading data: " + errorThrown;
@@ -323,16 +323,6 @@ $(document).ready( function() {
 	}).find("form").on("submit", function(event) {
 		event.preventDefault();
 		signupUser();
-	});
-	$("#btSaveAnswers").button();
-	$("#btSaveAnswers").click(function(event) {
-      event.preventDefault();
-      saveAll();
-    });
-	$("#btSaveAndSubmit").button();
-	$("#btSaveAndSubmit").click(function(event) {
-	      event.preventDefault();
-	      finalSubmission();
 	});
 	createNavMenu();
 });

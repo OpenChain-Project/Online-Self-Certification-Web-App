@@ -19,6 +19,8 @@ package org.openchain.certification.model;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.openchain.certification.model.YesNoQuestion.YesNo;
+
 /**
  * A question asked in the self certification
  * @author Gary O'Neall
@@ -33,7 +35,6 @@ public abstract class Question implements Comparable<Question> {
 	protected String specVersion;
 	transient static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)(\\.\\d+)?(\\.\\d+)?");
 	transient private Matcher numberMatch;
-	//TODO: Add spec reference to the database and model
 	private String specReference = "";
 
 	public Question(String question, String sectionName, String number, String specVersion) throws QuestionException {
@@ -180,6 +181,43 @@ public abstract class Question implements Comparable<Question> {
 
 	protected abstract Object getCorrectAnswer();
 	
+	
+	
+	/**
+	 * @return the specReference
+	 */
+	public String getSpecReference() {
+		return specReference;
+	}
+
+	/**
+	 * @param specReference the specReference to set
+	 */
+	public void setSpecReference(String specReference) {
+		this.specReference = specReference;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * @param sectionName the sectionName to set
+	 */
+	public void setSectionName(String sectionName) {
+		this.sectionName = sectionName;
+	}
+
+	/**
+	 * @param subQuestionNumber the subQuestionNumber to set
+	 */
+	public void setSubQuestionNumber(String subQuestionNumber) {
+		this.subQuestionNumber = subQuestionNumber;
+	}
+
 	/**
 	 * @return the qusetion information formatted in a CSV row for a Survey CSV file
 	 */
@@ -199,11 +237,70 @@ public abstract class Question implements Comparable<Question> {
 			} else {
 				retval[7] = me.getEvidenceValidation().toString();
 			}		
+		} else if (this instanceof YesNoNotApplicableQuestion) {
+			retval[6] = ((YesNoNotApplicableQuestion)this).getNotApplicablePrompt();
 		} else {
 			retval[6] = "";
 			retval[7] = "";
 		}
 		retval[8] = this.subQuestionNumber;
+		return retval;
+	}
+
+	public static Question fromCsv(String[] row, String specVersion) throws QuestionException {
+		if (row.length < 8) {
+			throw(new QuestionTypeException("Not enough columns.  Expected 8, found "+String.valueOf(row.length)));
+		}
+		String sectionName = row[0];
+		String number = row[1];
+		String specReference = row[2];
+		String question = row[3];
+		String type = row[4];
+		String correctAnswer = row[5];
+		String evidencePrompt = row[6];
+		String evidenceValidation = row[7];
+		String subQuestionNumber = row[8];
+		if (sectionName == null || sectionName.isEmpty()) {
+			throw(new QuestionTypeException("No section name specified in CSV row"));
+		}
+		if (number == null || number.isEmpty()) {
+			throw(new QuestionTypeException("No number specified in CSV row"));
+		}
+		if (type == null) {
+			throw(new QuestionTypeException("No type specified in CSV row"));
+		}
+		Question retval = null;
+		if (type.equals(SubQuestion.TYPE_NAME)) {
+			int minAnswers = 0;
+			try {
+				minAnswers = Integer.parseInt(correctAnswer);
+			} catch(Exception ex) {
+				throw(new QuestionException("Invalid minimum number of answers for subquestion number "+
+							number+":"+correctAnswer+".  Must be a number."));
+			}
+			retval = new SubQuestion(question, sectionName, number, specVersion, minAnswers);
+		} else if (type.equals(YesNoQuestion.TYPE_NAME)) {
+			retval = new YesNoQuestion(question, sectionName, number, specVersion, 
+					YesNo.valueOf(correctAnswer));
+		} else if (type.equals(YesNoQuestionWithEvidence.TYPE_NAME)) {
+			Pattern valPattern = null;
+			if (evidenceValidation != null && !evidenceValidation.isEmpty()) {
+				valPattern = Pattern.compile(evidenceValidation);
+			}
+			retval = new YesNoQuestionWithEvidence(question, sectionName, number, specVersion, 
+					YesNo.valueOf(correctAnswer), evidencePrompt, valPattern);
+		} else if (type.equals(YesNoNotApplicableQuestion.TYPE_NAME)) {
+			retval = new YesNoNotApplicableQuestion(question, sectionName, number, specVersion, 
+					YesNo.valueOf(correctAnswer), evidencePrompt);
+		} else {
+			throw(new QuestionTypeException("Unknown question type: "+type));
+		}
+		if (specReference != null) {
+			retval.setSpecReference(specReference);
+		}
+		if (subQuestionNumber != null && !subQuestionNumber.isEmpty()) {
+			retval.addSubQuestionOf(subQuestionNumber);
+		}
 		return retval;
 	}
 }

@@ -22,7 +22,11 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,7 +39,9 @@ import org.openchain.certification.PostResponse.Status;
 import org.openchain.certification.dbdao.SurveyDatabase;
 import org.openchain.certification.dbdao.SurveyDbDao;
 import org.openchain.certification.dbdao.SurveyResponseDao;
+import org.openchain.certification.model.Question;
 import org.openchain.certification.model.QuestionException;
+import org.openchain.certification.model.SubQuestion;
 import org.openchain.certification.model.Submission;
 import org.openchain.certification.model.Survey;
 import org.openchain.certification.model.SurveyResponse;
@@ -45,6 +51,8 @@ import org.openchain.certification.utility.EmailUtility;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import com.opencsv.CSVParser;
+import com.sun.org.apache.xalan.internal.utils.Objects;
 
 /**
  * Servlet implementation class CertificationServlet
@@ -53,7 +61,7 @@ public class CertificationServlet extends HttpServlet {
 	/**
 	 * Version of this software - should be updated before every release
 	 */
-	static final String version = "0.0.5";
+	static final String version = "0.0.7";
 	
 	static final Logger logger = Logger.getLogger(CertificationServlet.class);
 	
@@ -75,6 +83,7 @@ public class CertificationServlet extends HttpServlet {
 	private static final String UPDATE_ANSWERS_REQUEST = "updateAnswers";
 	private static final String LOGOUT_REQUEST = "logout";
 	private static final String FINAL_SUBMISSION_REQUEST = "finalSubmission";
+	private static final String UPLOAD_SURVEY_REQUEST = "uploadsurvey";
 	
        
     /**
@@ -146,7 +155,7 @@ public class CertificationServlet extends HttpServlet {
 	            	}
 	            } else {
 	            	logger.error("Unknown get request: "+requestParam);
-	            	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+	            	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 	            	response.setContentType("text"); 
 					out.print("Unknown server request: "+requestParam);
 	            }
@@ -258,8 +267,22 @@ public class CertificationServlet extends HttpServlet {
             		user.updateAnswers(rj.getAnswers());
         		}
         		user.finalSubmission();
+        	} else if (rj.getRequest().equals(UPLOAD_SURVEY_REQUEST)) {
+        		try {
+					updateSurveyQuestions(rj.getSpecVersion(), rj.getCsvLines());
+				} catch (UpdateSurveyException e) {
+					logger.warn("Invalid survey question update",e);
+					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+	    			response.setContentType("text"); 
+	    			out.print(e.getMessage());
+				}
         	} else if (rj.getRequest().equals(LOGOUT_REQUEST)) {
         		user.logout();
+        	} else {
+        		logger.error("Unknown post request: "+rj.getRequest());
+    			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    			response.setContentType("text"); 
+    			out.print("Unknown post request: "+rj.getRequest()+".  Please notify the OpenChain technical group.");
         	}
         	gson.toJson(postResponse, out);
         } catch (SQLException e) {
@@ -285,5 +308,82 @@ public class CertificationServlet extends HttpServlet {
 		} finally {
         	out.close();
         }
+	}
+
+	private void updateSurveyQuestions(String specVersion, String[] csvLines) throws SQLException, QuestionException, SurveyResponseException, UpdateSurveyException, IOException {
+		logger.info("Updating survey questions for spec version "+specVersion);
+		Connection con = null;
+		CSVParser csvParser = new CSVParser();
+		
+		try {
+			con = SurveyDatabase.createConnection(getServletConfig());
+			SurveyDbDao dao = new SurveyDbDao(con);
+			Survey existing = dao.getSurvey(specVersion);
+			if (existing == null) {
+				throw(new UpdateSurveyException("Survey version "+specVersion+" does not exist.  Can only update questions for an existing survey."));
+			}
+			List<Question> updatedQuestions = new ArrayList<Question>();
+			List<Question> addedQuestions = new ArrayList<Question>();
+			Set<String> foundQuestionNumbers = new HashSet<String>();
+			Set<String> existingQuestionNumbers = existing.getQuestionNumbers();
+			Map<String, SubQuestion> questionsWithSubs = new HashMap<String, SubQuestion>();
+			if (csvLines.length > 0) {
+				String[] headerCols = csvParser.parseLine(csvLines[0]);
+				if (headerCols.length != Survey.CSV_COLUMNS.length) {
+					throw(new UpdateSurveyException("Invalid CSV format.  Number of columns do not match.  Expected "+
+							String.valueOf(Survey.CSV_COLUMNS.length)+" columns."));
+				}
+				for (int i = 0; i < headerCols.length; i++) {
+					if (!Objects.equals(Survey.CSV_COLUMNS[i], headerCols[i])) {
+						throw(new UpdateSurveyException("Invalid CSV column.  Expected "+
+								Survey.CSV_COLUMNS[i] + ", found "+headerCols[i]));
+					}
+				}
+			}
+			for (int i = 1; i < csvLines.length; i++) {
+				if (csvLines[i] == null || csvLines[i].isEmpty()) {
+					logger.warn("Skipping blank CSV line");
+					continue;
+				}
+				Question question = Question.fromCsv(csvParser.parseLine(csvLines[i]), specVersion);
+				if (foundQuestionNumbers.contains(question.getNumber())) {
+					throw(new UpdateSurveyException("Duplicate questions in question update: "+question.getNumber()));
+				}
+				foundQuestionNumbers.add(question.getNumber());
+				if (question.getSubQuestionNumber() != null) {
+					SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionNumber());
+					if (parentQuestion == null) {
+						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionNumber(), specVersion, 0);
+						questionsWithSubs.put(question.getSubQuestionNumber(), parentQuestion);
+					}
+					parentQuestion.addSubQuestion(question);
+				}
+				if (question instanceof SubQuestion) {
+					SubQuestion toBeReplaced = questionsWithSubs.get(question.getNumber());
+					if (toBeReplaced != null) {
+						for(Question qtoadd:toBeReplaced.getAllSubquestions()) {
+							((SubQuestion) question).addSubQuestion(qtoadd);
+						}
+					}
+					questionsWithSubs.put(question.getNumber(), (SubQuestion) question);
+				}
+				if (existingQuestionNumbers.contains(question.getNumber())) {
+					updatedQuestions.add(question);
+				} else {
+					addedQuestions.add(question);
+				}
+			}
+			if (!existingQuestionNumbers.containsAll(foundQuestionNumbers)) {
+				throw(new UpdateSurveyException("Not all questions are present in the update.  Questions can not be removed during update.  A new specvesion should be created if questions are to be removed."));
+			}
+			// set the subquestions
+			
+			dao.updateQuestions(updatedQuestions);
+			dao.addQuestions(addedQuestions);
+		} finally {
+			if (con != null) {
+				con.close();
+			}
+		}
 	}
 }

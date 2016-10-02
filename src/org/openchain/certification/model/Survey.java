@@ -39,7 +39,11 @@ public class Survey {
 		"Sub-Question Of Number"
 	};
 	private List<Section> sections;
-
+	private String specVersion;
+	
+	public Survey(String specVersion) {
+		this.specVersion = specVersion;
+	}
 	/**
 	 * @return the sections
 	 */
@@ -47,6 +51,18 @@ public class Survey {
 		return sections;
 	}
 
+	/**
+	 * @return the specVersion
+	 */
+	public String getSpecVersion() {
+		return specVersion;
+	}
+	/**
+	 * @param specVersion the specVersion to set
+	 */
+	public void setSpecVersion(String specVersion) {
+		this.specVersion = specVersion;
+	}
 	/**
 	 * @param sections the sections to set
 	 */

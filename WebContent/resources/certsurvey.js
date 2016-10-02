@@ -56,6 +56,7 @@ function getSurvey() {
 	if (!certForm.length ) {
 		return;
 	}
+	certForm.html('Loading <img src="resources/loading.gif" alt="Loading" class="loading" id="survey-loading">');
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
@@ -85,7 +86,7 @@ function getSurvey() {
 	    	htmlList += '</ul>\n';
 	    	certForm.html(htmlList + htmlDivs);
 	    	certForm.tabs();
-	    	// Set any alread answered questions
+	    	// Set any already answered questions
 	    	certForm.find(":input").each(function(index){
 	    		var id = $(this).attr('id');
 	    		if (id.substring(0,7) == 'answer-') {
@@ -149,6 +150,8 @@ function getSurvey() {
 }
 
 function saveAll() {
+	$("#btSaveAnswers").button("disable");
+	$("#btSaveAndSubmit").button("disable");
 	var answers = [];
 	$("#CertForm").find(":input").each(function(index) {
 		var id = $(this).attr('id');
@@ -168,6 +171,8 @@ function saveAll() {
 	    type: "POST",
 	    dataType : "json",
 	    success: function( json ) {
+	    	$("#btSaveAnswers").button("enable");
+	    	$("#btSaveAndSubmit").button("enable");
 	    	if (json.status == "OK") {
 	    		$( "#status" ).dialog({
 	    			title: "Saved",
@@ -187,12 +192,16 @@ function saveAll() {
 	    	
 	    },
     error: function( xhr, status, errorThrown ) {
+    	$("#btSaveAnswers").button("enable");
+    	$("#btSaveAndSubmit").button("enable");
     	handleError( xhr, status, errorThrown);
     }
   });
 }
 
 function finalSubmission() {
+	$("#btSaveAndSubmit").button("disable");
+	$("#btSaveAnswers").button("disable");
 	var answers = [];
 	$("#CertForm").find(":input").each(function(index) {
 		var id = $(this).attr('id');
@@ -213,6 +222,8 @@ function finalSubmission() {
 	    dataType : "json",
 	    success: function( json ) {
 	    	if (json.status == "OK") {
+	    		$("#btSaveAndSubmit").button("enable");
+	    		$("#btSaveAnswers").button("enable");
 	    		$( "#status" ).dialog({
 	    			title: "Saved",
 	    			resizable: false,
@@ -231,10 +242,22 @@ function finalSubmission() {
 	    	
 	    },
     error: function( xhr, status, errorThrown ) {
+    	$("#btSaveAndSubmit").button("enable");
+    	$("#btSaveAnswers").button("enable");
     	handleError( xhr, status, errorThrown);
     }
   });
 }
 $(document).ready( function() {
+	$("#btSaveAnswers").button();
+	$("#btSaveAnswers").click(function(event) {
+      event.preventDefault();
+      saveAll();
+    });
+	$("#btSaveAndSubmit").button();
+	$("#btSaveAndSubmit").click(function(event) {
+	      event.preventDefault();
+	      finalSubmission();
+	});
 	getSurvey();
 });

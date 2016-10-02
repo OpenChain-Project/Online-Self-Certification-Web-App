@@ -36,7 +36,8 @@
 	      REFERENCES section (id),
 	  subquestion_of bigint,
 	  CONSTRAINT fk_question_subquestion_of FOREIGN KEY (subquestion_of)
-	      REFERENCES question (id)
+	      REFERENCES question (id),
+	  spec_reference text
 	);
 	alter TABLE question OWNER TO openchain;
 	CREATE INDEX fki_question_section
