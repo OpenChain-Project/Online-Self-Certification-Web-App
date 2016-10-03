@@ -218,6 +218,12 @@ public class SurveyDbDao {
 		}
 	}
 
+	/**
+	 * Update the questions identified by the question number and spec version
+	 * @param updatedQuestions
+	 * @throws SQLException
+	 * @throws QuestionException
+	 */
 	public synchronized void updateQuestions(List<Question> updatedQuestions) throws SQLException, QuestionException {
 		Savepoint save = this.connection.setSavepoint();
 		try {
@@ -326,146 +332,16 @@ public class SurveyDbDao {
 		}
 	}
 
+	/**
+	 * Add questions to a survey
+	 * @param addedQuestions
+	 * @throws SQLException
+	 * @throws QuestionException
+	 */
 	public synchronized void addQuestions(List<Question> addedQuestions) throws SQLException, QuestionException {
 		Savepoint save = this.connection.setSavepoint();
-		//DEBUGGING
-		Statement stmt = connection.createStatement();
-		ResultSet result = stmt.executeQuery("select id, name, title, spec_version from section");
-		List<Long> ids = new ArrayList<Long>();
-		List<String> names = new ArrayList<String>();
-		List<String> titles = new ArrayList<String>();
-		List<Long> specs = new ArrayList<Long>();
-		while (result.next()) {
-			ids.add(result.getLong("id"));
-			names.add(result.getString("name"));
-			titles.add(result.getString("title"));
-			specs.add(result.getLong("spec_version"));
-		}
 		try {
-			if (addQuestionQuery == null) {
-				addQuestionQuery = this.connection.prepareStatement(
-						"insert into question (number, question, type, correct_answer," +
-						"evidence_prompt, evidence_validation, " +
-						"subquestion_of, spec_reference, section_id) values " +
-						"(?, ?, ?, ?, ?, ?, ?, ?, (select id from section where name=? and " +
-						"spec_version=(select id from spec where version=?)))");
-			}
-			// Need to add the subquestions first
-			addQuestionQuery.clearBatch();
-			int numAdded = 0;
-			for (Question question:addedQuestions) {
-				if (question instanceof SubQuestion) {
-					numAdded++;
-					addQuestionQuery.setString(1, question.getNumber());
-					addQuestionQuery.setString(2, question.getQuestion());
-					addQuestionQuery.setString(3, question.getType());
-					String correctAnswer = null;
-					if (question instanceof YesNoQuestion) {
-						correctAnswer = ((YesNoQuestion)question).getCorrectAnswer().toString();
-					} else if (question instanceof SubQuestion) {
-						correctAnswer = String.valueOf(((SubQuestion)question).getMinNumberValidatedAnswers());
-					} else {
-						throw(new QuestionTypeException("Unknown question type"));
-					}
-					addQuestionQuery.setString(4, correctAnswer);
-					if (question instanceof YesNoQuestionWithEvidence) {
-						addQuestionQuery.setString(5, ((YesNoQuestionWithEvidence)question).getEvidencePrompt());
-						Pattern validate = ((YesNoQuestionWithEvidence)question).getEvidenceValidation();
-						if (validate != null) {
-							addQuestionQuery.setString(6, validate.toString());
-						} else {
-							addQuestionQuery.setString(6, null);
-						}	
-					} else if (question instanceof YesNoNotApplicableQuestion) {
-						addQuestionQuery.setString(5, ((YesNoNotApplicableQuestion)question).getNotApplicablePrompt());
-						addQuestionQuery.setString(6, null);
-					} else {
-						addQuestionQuery.setString(5, null);
-						addQuestionQuery.setString(6, null);
-					}
-					if (question.getSubQuestionNumber() != null && !question.getSubQuestionNumber().isEmpty()) {
-						long subQuestionId = getQuestionId(question.getSubQuestionNumber(), question.getSectionName(), question.getSpecVersion());
-						if (subQuestionId < 0) {
-							throw(new QuestionException("Invalud subquestion number "+question.getSubQuestionNumber()));
-						}
-						addQuestionQuery.setLong(7,subQuestionId);
-					} else {
-						addQuestionQuery.setNull(7, Types.BIGINT);
-					}
-					addQuestionQuery.setString(8, question.getSpecReference());
-					addQuestionQuery.setString(9, question.getSectionName());
-					addQuestionQuery.setString(10, question.getSpecVersion());
-					addQuestionQuery.addBatch();
-				}
-			}
-			int[] counts = addQuestionQuery.executeBatch();
-			if (counts.length != numAdded) {
-				logger.warn("Number of batch added subquestion counts do not match.  Expected" +
-						String.valueOf(numAdded)+".  Actual="+String.valueOf(counts.length));
-			}
-			for (int count:counts) {
-				if (count != 1) {
-					logger.warn("Unexpected update count.  Expected 1, found "+String.valueOf(count));
-				}
-			}
-			// Now we add the rest
-			addQuestionQuery.clearBatch();
-			numAdded = 0;
-			for (Question question:addedQuestions) {
-				if (!(question instanceof SubQuestion)) {
-					numAdded++;
-					addQuestionQuery.setString(1, question.getNumber());
-					addQuestionQuery.setString(2, question.getQuestion());
-					addQuestionQuery.setString(3, question.getType());
-					String correctAnswer = null;
-					if (question instanceof YesNoQuestion) {
-						correctAnswer = ((YesNoQuestion)question).getCorrectAnswer().toString();
-					} else if (question instanceof SubQuestion) {
-						correctAnswer = String.valueOf(((SubQuestion)question).getMinNumberValidatedAnswers());
-					} else {
-						throw(new QuestionTypeException("Unknown question type"));
-					}
-					addQuestionQuery.setString(4, correctAnswer);
-					if (question instanceof YesNoQuestionWithEvidence) {
-						addQuestionQuery.setString(5, ((YesNoQuestionWithEvidence)question).getEvidencePrompt());
-						Pattern validate = ((YesNoQuestionWithEvidence)question).getEvidenceValidation();
-						if (validate != null) {
-							addQuestionQuery.setString(6, validate.toString());
-						} else {
-							addQuestionQuery.setString(6, null);
-						}
-					} else if (question instanceof YesNoNotApplicableQuestion) {
-						addQuestionQuery.setString(5, ((YesNoNotApplicableQuestion)question).getNotApplicablePrompt());
-						addQuestionQuery.setString(6, null);
-					} else {
-						addQuestionQuery.setString(5, null);
-						addQuestionQuery.setString(6, null);
-					}
-					if (question.getSubQuestionNumber() != null && !question.getSubQuestionNumber().isEmpty()) {
-						long subQuestionId = getQuestionId(question.getSubQuestionNumber(), question.getSectionName(), question.getSpecVersion());
-						if (subQuestionId < 0) {
-							throw(new QuestionException("Invalid subquestion number "+question.getSubQuestionNumber()));
-						}
-						addQuestionQuery.setLong(7,subQuestionId);
-					} else {
-						addQuestionQuery.setNull(7, Types.BIGINT);
-					}
-					addQuestionQuery.setString(8, question.getSpecReference());
-					addQuestionQuery.setString(9, question.getSectionName());
-					addQuestionQuery.setString(10, question.getSpecVersion());
-					addQuestionQuery.addBatch();
-				}
-			}
-			counts = addQuestionQuery.executeBatch();
-			if (counts.length != numAdded) {
-				logger.warn("Number of batch added question counts do not match.  Expected" +
-						String.valueOf(numAdded)+".  Actual="+String.valueOf(counts.length));
-			}
-			for (int count:counts) {
-				if (count != 1) {
-					logger.warn("Unexpected update count.  Expected 1, found "+String.valueOf(count));
-				}
-			}
+			_addQuestions(addedQuestions);
 		} catch(QuestionException ex) {
 			if (save != null) {
 				try {
@@ -492,6 +368,133 @@ public class SurveyDbDao {
 
 	}
 	
+	private void _addQuestions(List<Question> addedQuestions) throws SQLException, QuestionException {
+		if (addQuestionQuery == null) {
+			addQuestionQuery = this.connection.prepareStatement(
+					"insert into question (number, question, type, correct_answer," +
+					"evidence_prompt, evidence_validation, " +
+					"subquestion_of, spec_reference, section_id) values " +
+					"(?, ?, ?, ?, ?, ?, ?, ?, (select id from section where name=? and " +
+					"spec_version=(select id from spec where version=?)))");
+		}
+		// Need to add the subquestions first
+		addQuestionQuery.clearBatch();
+		int numAdded = 0;
+		for (Question question:addedQuestions) {
+			if (question instanceof SubQuestion) {
+				numAdded++;
+				addQuestionQuery.setString(1, question.getNumber());
+				addQuestionQuery.setString(2, question.getQuestion());
+				addQuestionQuery.setString(3, question.getType());
+				String correctAnswer = null;
+				if (question instanceof YesNoQuestion) {
+					correctAnswer = ((YesNoQuestion)question).getCorrectAnswer().toString();
+				} else if (question instanceof SubQuestion) {
+					correctAnswer = String.valueOf(((SubQuestion)question).getMinNumberValidatedAnswers());
+				} else {
+					throw(new QuestionTypeException("Unknown question type"));
+				}
+				addQuestionQuery.setString(4, correctAnswer);
+				if (question instanceof YesNoQuestionWithEvidence) {
+					addQuestionQuery.setString(5, ((YesNoQuestionWithEvidence)question).getEvidencePrompt());
+					Pattern validate = ((YesNoQuestionWithEvidence)question).getEvidenceValidation();
+					if (validate != null) {
+						addQuestionQuery.setString(6, validate.toString());
+					} else {
+						addQuestionQuery.setString(6, null);
+					}	
+				} else if (question instanceof YesNoNotApplicableQuestion) {
+					addQuestionQuery.setString(5, ((YesNoNotApplicableQuestion)question).getNotApplicablePrompt());
+					addQuestionQuery.setString(6, null);
+				} else {
+					addQuestionQuery.setString(5, null);
+					addQuestionQuery.setString(6, null);
+				}
+				if (question.getSubQuestionNumber() != null && !question.getSubQuestionNumber().isEmpty()) {
+					long subQuestionId = getQuestionId(question.getSubQuestionNumber(), question.getSectionName(), question.getSpecVersion());
+					if (subQuestionId < 0) {
+						throw(new QuestionException("Invalud subquestion number "+question.getSubQuestionNumber()));
+					}
+					addQuestionQuery.setLong(7,subQuestionId);
+				} else {
+					addQuestionQuery.setNull(7, Types.BIGINT);
+				}
+				addQuestionQuery.setString(8, question.getSpecReference());
+				addQuestionQuery.setString(9, question.getSectionName());
+				addQuestionQuery.setString(10, question.getSpecVersion());
+				addQuestionQuery.addBatch();
+			}
+		}
+		int[] counts = addQuestionQuery.executeBatch();
+		if (counts.length != numAdded) {
+			logger.warn("Number of batch added subquestion counts do not match.  Expected" +
+					String.valueOf(numAdded)+".  Actual="+String.valueOf(counts.length));
+		}
+		for (int count:counts) {
+			if (count != 1) {
+				logger.warn("Unexpected update count.  Expected 1, found "+String.valueOf(count));
+			}
+		}
+		// Now we add the rest
+		addQuestionQuery.clearBatch();
+		numAdded = 0;
+		for (Question question:addedQuestions) {
+			if (!(question instanceof SubQuestion)) {
+				numAdded++;
+				addQuestionQuery.setString(1, question.getNumber());
+				addQuestionQuery.setString(2, question.getQuestion());
+				addQuestionQuery.setString(3, question.getType());
+				String correctAnswer = null;
+				if (question instanceof YesNoQuestion) {
+					correctAnswer = ((YesNoQuestion)question).getCorrectAnswer().toString();
+				} else if (question instanceof SubQuestion) {
+					correctAnswer = String.valueOf(((SubQuestion)question).getMinNumberValidatedAnswers());
+				} else {
+					throw(new QuestionTypeException("Unknown question type"));
+				}
+				addQuestionQuery.setString(4, correctAnswer);
+				if (question instanceof YesNoQuestionWithEvidence) {
+					addQuestionQuery.setString(5, ((YesNoQuestionWithEvidence)question).getEvidencePrompt());
+					Pattern validate = ((YesNoQuestionWithEvidence)question).getEvidenceValidation();
+					if (validate != null) {
+						addQuestionQuery.setString(6, validate.toString());
+					} else {
+						addQuestionQuery.setString(6, null);
+					}
+				} else if (question instanceof YesNoNotApplicableQuestion) {
+					addQuestionQuery.setString(5, ((YesNoNotApplicableQuestion)question).getNotApplicablePrompt());
+					addQuestionQuery.setString(6, null);
+				} else {
+					addQuestionQuery.setString(5, null);
+					addQuestionQuery.setString(6, null);
+				}
+				if (question.getSubQuestionNumber() != null && !question.getSubQuestionNumber().isEmpty()) {
+					long subQuestionId = getQuestionId(question.getSubQuestionNumber(), question.getSectionName(), question.getSpecVersion());
+					if (subQuestionId < 0) {
+						throw(new QuestionException("Invalid subquestion number "+question.getSubQuestionNumber()));
+					}
+					addQuestionQuery.setLong(7,subQuestionId);
+				} else {
+					addQuestionQuery.setNull(7, Types.BIGINT);
+				}
+				addQuestionQuery.setString(8, question.getSpecReference());
+				addQuestionQuery.setString(9, question.getSectionName());
+				addQuestionQuery.setString(10, question.getSpecVersion());
+				addQuestionQuery.addBatch();
+			}
+		}
+		counts = addQuestionQuery.executeBatch();
+		if (counts.length != numAdded) {
+			logger.warn("Number of batch added question counts do not match.  Expected" +
+					String.valueOf(numAdded)+".  Actual="+String.valueOf(counts.length));
+		}
+		for (int count:counts) {
+			if (count != 1) {
+				logger.warn("Unexpected update count.  Expected 1, found "+String.valueOf(count));
+			}
+		}
+	}
+
 	public synchronized void addSurvey(Survey survey) throws SQLException, SurveyResponseException, QuestionException {
 		if (survey.getSpecVersion() == null) {
 			throw(new SurveyResponseException("Spec version missing for survey"));
@@ -542,7 +545,7 @@ public class SurveyDbDao {
 			}
 			// Add the questions
 			for (Section section:survey.getSections()) {
-				addQuestions(section.getQuestions());
+				_addQuestions(section.getQuestions());
 			}
 		} catch(SQLException ex) {
 			if (save != null) {

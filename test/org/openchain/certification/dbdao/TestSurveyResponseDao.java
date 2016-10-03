@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openchain.certification.TestHelper;
 import org.openchain.certification.model.Answer;
 import org.openchain.certification.model.Question;
 import org.openchain.certification.model.QuestionException;
@@ -71,10 +72,8 @@ public class TestSurveyResponseDao {
 	YesNoQuestion s2q3;
 	String s2q3SpecRef = "s2q3SpecRef";
 	SurveyDbDao surveyDao;
-	UserDb userDao;
 	User user;
 	
-	@SuppressWarnings("deprecation")
 	@Before
 	public void setUp() throws Exception {
 		con = TestHelper.getConnection();
@@ -135,9 +134,7 @@ public class TestSurveyResponseDao {
 		user.setUuid(UUID.randomUUID().toString());
 		user.setVerificationExpirationDate(new Date());
 		user.setVerified(true);
-		userDao = new UserDb(con);
-		userDao.addUser(user);
-		
+		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);	
 	}
 
 	@After

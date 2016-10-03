@@ -27,6 +27,21 @@ public class ResponseAnswer {
 	private String value;
 	private boolean checked;
 	private String evidence;
+	
+	public ResponseAnswer() {
+		questionNumber = null;
+		value = null;
+		checked = false;
+		evidence = null;
+	}
+	
+	public ResponseAnswer(String questionNumber, String value, boolean checked, String evidence) {
+		this.questionNumber = questionNumber;
+		this.value = value;
+		this.checked = checked;
+		this.evidence = evidence;
+	}
+	
 	/**
 	 * @return the questionNumber
 	 */

@@ -65,6 +65,7 @@ public class UserDb {
 	private UserDb(ServletConfig servletConfig) throws SQLException {
 		this.servletConfig = servletConfig;
 		this.connection = SurveyDatabase.createConnection(servletConfig);
+		this.connection.setAutoCommit(false);
 		prepareStatements();
 	}
 	
@@ -79,18 +80,6 @@ public class UserDb {
 				"verified, passwordReset, admin, verificationExpirationDate," +
 				" uuid, organization) values (?,?,?,?,?,?,?,?,?,?,?)");
 		updateVerifiedQuery = connection.prepareStatement("update openchain_user set verified=? where username=?");
-	}
-
-	/**
-	 * This method is only intended to be used for testing
-	 * @param con
-	 * @throws SQLException 
-	 */
-	@Deprecated
-	public UserDb(Connection con) throws SQLException {
-		this.connection = con;
-		this.connection.setAutoCommit(false);
-		prepareStatements();
 	}
 
 	public synchronized User getUser(String username) throws SQLException {

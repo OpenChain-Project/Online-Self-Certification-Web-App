@@ -186,6 +186,7 @@ public class UserSession {
 		return this.loggedIn;
 	}
 	public SurveyResponse getSurveyResponse() throws SQLException, QuestionException, SurveyResponseException {
+		checkLoggedIn();
 		if (this.surveyResponse == null) {
 			_getSurveyResponse();
 		}
@@ -211,6 +212,12 @@ public class UserSession {
 			con.close();
 		}
 	}
+	
+	private void checkLoggedIn() throws SurveyResponseException {
+		if (!this.isLoggedIn()) {
+			throw new SurveyResponseException("User is not logged in");
+		}
+	}
 	/**
 	 * Update the answers from a list of response answers.  This does NOT remove
 	 * any already answered questions
@@ -220,50 +227,53 @@ public class UserSession {
 	 * @throws SurveyResponseException
 	 */
 	public void updateAnswers(List<ResponseAnswer> responses) throws SQLException, QuestionException, SurveyResponseException {
+		checkLoggedIn();
 		if (this.surveyResponse == null) {
 			_getSurveyResponse();
 		}
 		Map<String, Answer> currentResponses = this.surveyResponse.getResponses();
 		// Keep track of the subquestions found so that we can update the answers
-		Map<String, SubQuestionAnswers> foundSubquestionAnswer = new HashMap<String, SubQuestionAnswers>();
 		for (ResponseAnswer response:responses) {
 			if (!response.isChecked()) {
 				continue;
 			}
 			Question question = this.surveyResponse.getSurvey().getQuestion(response.getQuestionNumber());
 			if (question != null && response.getValue() != null && !response.getValue().trim().isEmpty()) {
-				YesNo ynAnswer;
-				if (response.getValue().toUpperCase().trim().equals("YES")) {
-					ynAnswer = YesNo.Yes;
-				} else if (response.getValue().toUpperCase().trim().equals("NO")) {
-					ynAnswer = YesNo.No;
-				} else if (response.getValue().toUpperCase().trim().equals("NA")) {
-					ynAnswer = YesNo.NotApplicable;
-				} else {
-					logger.error("Invalid yes no value: "+response.getValue());
-					throw(new QuestionTypeException("Invalid yes/no value: "+response.getValue()));
+				YesNo ynAnswer = null;
+				if (question instanceof YesNoQuestion) {
+					if (response.getValue() == null) {
+						logger.error("No answer provided for a yes/no question");
+						throw(new QuestionTypeException("No value specified for a yes/no question"));
+					}
+					if (response.getValue().toUpperCase().trim().equals("YES")) {
+						ynAnswer = YesNo.Yes;
+					} else if (response.getValue().toUpperCase().trim().equals("NO")) {
+						ynAnswer = YesNo.No;
+					} else if (response.getValue().toUpperCase().trim().equals("NA")) {
+						ynAnswer = YesNo.NotApplicable;
+					} else {
+						logger.error("Invalid yes no value: "+response.getValue());
+						throw(new QuestionTypeException("Invalid yes/no value: "+response.getValue()));
+					}
 				}
+
 				Answer answer;
 				if (question instanceof YesNoQuestionWithEvidence) {
 					answer = new YesNoAnswerWithEvidence(ynAnswer, response.getEvidence());
 				} else if (question instanceof YesNoQuestion) {
 					answer = new YesNoAnswer(ynAnswer);
 				} else if (question instanceof SubQuestion) {
-					answer = foundSubquestionAnswer.get(question.getNumber());
-					if (answer == null) {
-						answer = new SubQuestionAnswers();
-						foundSubquestionAnswer.put(question.getNumber(), (SubQuestionAnswers)answer);
-					}
+					answer = new SubQuestionAnswers();
 				} else {
 					logger.error("Invalid answer type for question "+response.getQuestionNumber());
 					throw(new QuestionTypeException("Invalid answer type for question "+response.getQuestionNumber()));
 				}
 				currentResponses.put(response.getQuestionNumber(), answer);
 				if (question.getSubQuestionNumber() != null) {
-					SubQuestionAnswers subQuestionAnswer = foundSubquestionAnswer.get(question.getSubQuestionNumber());
+					SubQuestionAnswers subQuestionAnswer = (SubQuestionAnswers)currentResponses.get(question.getSubQuestionNumber());
 					if (subQuestionAnswer == null) {
 						subQuestionAnswer = new SubQuestionAnswers();
-						foundSubquestionAnswer.put(question.getSubQuestionNumber(), subQuestionAnswer);
+						currentResponses.put(question.getSubQuestionNumber(), subQuestionAnswer);
 					}
 					subQuestionAnswer.addSubAnswer(question.getNumber(), answer);
 				}
@@ -287,6 +297,7 @@ public class UserSession {
 	 * @throws EmailUtilException 
 	 */
 	public void finalSubmission() throws SQLException, SurveyResponseException, QuestionException, EmailUtilException {
+		checkLoggedIn();
 		Connection con = SurveyDatabase.createConnection(config);
 		_getSurveyResponse();
 		this.surveyResponse.setSubmitted(true);
