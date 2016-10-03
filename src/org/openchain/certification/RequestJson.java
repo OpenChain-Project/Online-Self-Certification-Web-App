@@ -35,6 +35,7 @@ public class RequestJson {
 	private String email;
 	private String specVersion;
 	private String[] csvLines;
+	private SectionTextJson[] sectionTexts;
 	
 	/**
 	 * @return the request
@@ -156,7 +157,17 @@ public class RequestJson {
 	public void setCsvLines(String[] csvLines) {
 		this.csvLines = csvLines;
 	}
-
-	
+	/**
+	 * @return the sectionText
+	 */
+	public SectionTextJson[] getSectionTexts() {
+		return sectionTexts;
+	}
+	/**
+	 * @param sectionText the sectionText to set
+	 */
+	public void setSectionTexts(SectionTextJson[] sectionTexts) {
+		this.sectionTexts = sectionTexts;
+	}
 
 }

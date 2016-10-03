@@ -92,13 +92,16 @@ public class SurveyResponseDao {
 		addSurveyResponseQuery = con.prepareStatement("insert into survey_response (user_id, spec_version) values (?,?)",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		deleteAnswerQuery = con.prepareStatement("delete from answer where response_id in (select id from " +
-				"survey_response where user_id=? and spec_version=?) and question_id in (select id from question where number=?)",
+				"survey_response where user_id=? and spec_version=?) and question_id in (select id from question where number=? and section_id in " +
+				"(select id from section where spec_version=?))",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		updateAnswerQuery = con.prepareStatement("update answer set answer=?, evidence=? where response_id in (select id from " +
-				"survey_response where user_id=? and spec_version=?) and question_id in (select id from question where number=?)",
+				"survey_response where user_id=? and spec_version=?) and question_id in (select id from question where number=? and section_id in " +
+				"(select id from section where spec_version=?))",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		addAnswerQuery = con.prepareStatement("insert into answer (response_id, question_id, answer, evidence) values((select id from " +
-				"survey_response where user_id=? and spec_version=?), (select id from question where number=?), ?, ?)",
+				"survey_response where user_id=? and spec_version=?), (select id from question where number=? and section_id in " +
+				"(select id from section where spec_version=?)), ?, ?)",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		getSubmittedQuery = con.prepareStatement("select submitted from survey_response " +
 				"join spec on survey_response.spec_version=spec.id " +
@@ -233,6 +236,7 @@ public class SurveyResponseDao {
 		} finally {
 			if (result != null) {
 				result.close();
+				this.con.commit();
 			}
 		}
 	}
@@ -366,7 +370,11 @@ public class SurveyResponseDao {
 			_updateSurveyResponseAnswers(response, userId, versionId);
 		} catch(SQLException ex) {
 			logger.error("SQL exception updating survey response answers for "+response.getResponder().getUsername(),ex);
-			con.rollback(save);
+			try {
+				con.rollback(save);
+			} catch (SQLException ex2) {
+				logger.error("Error rolling back transaction",ex2);
+			}
 			throw(ex);
 		} finally {
 			if (save != null) {
@@ -459,7 +467,11 @@ public class SurveyResponseDao {
 			_updateSurveyResponseAnswers(response, userId, versionId);
 		} catch(SQLException ex) {
 			logger.error("SQL exception updating survey response answers for "+response.getResponder().getUsername(),ex);
-			con.rollback(save);
+			try {
+				con.rollback(save);
+			} catch (SQLException ex2) {
+				logger.error("Error rolling back transaction",ex2);
+			}
 			throw(ex);
 		} finally {
 			if (save != null) {
@@ -497,6 +509,7 @@ public class SurveyResponseDao {
 						this.deleteAnswerQuery.setLong(1, userId);
 						this.deleteAnswerQuery.setLong(2, versionId);
 						this.deleteAnswerQuery.setString(3, entry.getKey());
+						this.deleteAnswerQuery.setLong(4, versionId);
 						this.deleteAnswerQuery.addBatch();
 						numDeletes++;
 					} else {
@@ -508,6 +521,8 @@ public class SurveyResponseDao {
 							this.updateAnswerQuery.setLong(3, userId);
 							this.updateAnswerQuery.setLong(4, versionId);
 							this.updateAnswerQuery.setString(5, entry.getKey());
+							
+							this.updateAnswerQuery.setLong(6, versionId);
 							if (entry.getValue() instanceof YesNoAnswer) {
 								YesNoAnswer yn = (YesNoAnswer)entry.getValue();
 								this.updateAnswerQuery.setString(1, yn.getAnswer().toString());
@@ -527,20 +542,34 @@ public class SurveyResponseDao {
 					this.addAnswerQuery.setLong(1, userId);
 					this.addAnswerQuery.setLong(2, versionId);
 					this.addAnswerQuery.setString(3, entry.getKey());
+					this.addAnswerQuery.setLong(4, versionId);
 					if (entry.getValue() instanceof YesNoAnswer) {
 						YesNoAnswer yn = (YesNoAnswer)entry.getValue();
-						this.addAnswerQuery.setString(4, yn.getAnswer().toString());
-					} else {
-						this.addAnswerQuery.setString(4, null);
-					}
-					if (entry.getValue() instanceof YesNoAnswerWithEvidence) {
-						this.addAnswerQuery.setString(5, ((YesNoAnswerWithEvidence)entry.getValue()).getEvidence());
+						this.addAnswerQuery.setString(5, yn.getAnswer().toString());
 					} else {
 						this.addAnswerQuery.setString(5, null);
+					}
+					if (entry.getValue() instanceof YesNoAnswerWithEvidence) {
+						this.addAnswerQuery.setString(6, ((YesNoAnswerWithEvidence)entry.getValue()).getEvidence());
+					} else {
+						this.addAnswerQuery.setString(6, null);
 					}
 					this.addAnswerQuery.addBatch();
 					numAdds++;
 				}
+				storedAnswers.remove(entry.getKey());
+			}
+			// Delete the entries not found
+			iter = storedAnswers.entrySet().iterator();
+			while (iter.hasNext()) {
+				Entry<String, Answer> entry = iter.next();
+				this.deleteAnswerQuery.clearParameters();
+				this.deleteAnswerQuery.setLong(1, userId);
+				this.deleteAnswerQuery.setLong(2, versionId);
+				this.deleteAnswerQuery.setString(3, entry.getKey());
+				this.deleteAnswerQuery.setLong(4, versionId);
+				this.deleteAnswerQuery.addBatch();
+				numDeletes++;
 			}
 			if (numAdds > 0) {
 				int[] counts = this.addAnswerQuery.executeBatch();
@@ -578,6 +607,5 @@ public class SurveyResponseDao {
 		} finally {
 			// Didn't open a resultset, but leaving this as a hook if we add something that needs to be cleaned up
 		}
-		
 	}
 }

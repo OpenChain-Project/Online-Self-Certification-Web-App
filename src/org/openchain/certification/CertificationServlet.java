@@ -41,6 +41,7 @@ import org.openchain.certification.dbdao.SurveyDbDao;
 import org.openchain.certification.dbdao.SurveyResponseDao;
 import org.openchain.certification.model.Question;
 import org.openchain.certification.model.QuestionException;
+import org.openchain.certification.model.Section;
 import org.openchain.certification.model.SubQuestion;
 import org.openchain.certification.model.Submission;
 import org.openchain.certification.model.Survey;
@@ -84,7 +85,7 @@ public class CertificationServlet extends HttpServlet {
 	private static final String LOGOUT_REQUEST = "logout";
 	private static final String FINAL_SUBMISSION_REQUEST = "finalSubmission";
 	private static final String UPLOAD_SURVEY_REQUEST = "uploadsurvey";
-	
+	private static final String UPDATE_SURVEY_REQUEST = "updatesurvey";
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -268,49 +269,191 @@ public class CertificationServlet extends HttpServlet {
         		}
         		user.finalSubmission();
         	} else if (rj.getRequest().equals(UPLOAD_SURVEY_REQUEST)) {
-        		try {
-					updateSurveyQuestions(rj.getSpecVersion(), rj.getCsvLines());
-				} catch (UpdateSurveyException e) {
-					logger.warn("Invalid survey question update",e);
-					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-	    			response.setContentType("text"); 
-	    			out.print(e.getMessage());
-				}
+        		if (user.isAdmin()) {
+        			try {
+    					uploadSurvey(rj.getSpecVersion(), rj.getSectionTexts(),
+    							rj.getCsvLines());
+    				} catch (UpdateSurveyException e) {
+    					logger.warn("Invalid survey question update",e);
+    					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    	        		postResponse.setStatus(Status.ERROR);
+    	        		postResponse.setError("Invalid survey question update: "+e.getMessage());
+    				}
+        		} else {
+        			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        			postResponse.setStatus(Status.ERROR);
+	        		postResponse.setError("Must have admin privileges to upload a survey");
+        		}
+        		
+        	} else if (rj.getRequest().equals(UPDATE_SURVEY_REQUEST)) {
+        		if (user.isAdmin()) {
+        			try {
+    					updateSurveyQuestions(rj.getSpecVersion(), rj.getCsvLines());
+    				} catch (UpdateSurveyException e) {
+    					logger.warn("Invalid survey question update",e);
+    					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    	        		postResponse.setStatus(Status.ERROR);
+    	        		postResponse.setError("Invalid survey upload: "+e.getMessage());
+    				}
+        		} else {
+        			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        			postResponse.setStatus(Status.ERROR);
+	        		postResponse.setError("Must have admin privileges to update a survey");
+        		}
+        		
         	} else if (rj.getRequest().equals(LOGOUT_REQUEST)) {
         		user.logout();
         	} else {
         		logger.error("Unknown post request: "+rj.getRequest());
     			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-    			response.setContentType("text"); 
-    			out.print("Unknown post request: "+rj.getRequest()+".  Please notify the OpenChain technical group.");
+    			postResponse.setStatus(Status.ERROR);
+    			postResponse.setError("Unknown post request: "+rj.getRequest()+".  Please notify the OpenChain technical group.");
         	}
         	gson.toJson(postResponse, out);
         } catch (SQLException e) {
         	logger.error("SQL Error in post"+".  Request="+rj.getRequest(),e);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.setContentType("text"); 
-			out.print("Unexpected SQL exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
+			postResponse.setStatus(Status.ERROR);
+			postResponse.setError("Unexpected SQL exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
+			gson.toJson(postResponse, out);
 		} catch (QuestionException e) {
         	logger.error("Question Error in post"+".  Request="+rj.getRequest(),e);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.setContentType("text"); 
-			out.print("Unexpected Question Type exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
+			postResponse.setStatus(Status.ERROR);
+			postResponse.setError("Unexpected Question Type exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
+			gson.toJson(postResponse, out);
 		} catch (SurveyResponseException e) {
         	logger.error("Survey Response error in post"+".  Request="+rj.getRequest(),e);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.setContentType("text"); 
-			out.print("Unexpected survey response exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
+			postResponse.setStatus(Status.ERROR);
+			postResponse.setError("Unexpected survey response exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
+			gson.toJson(postResponse, out);
 		} catch (EmailUtilException e) {
         	logger.error("Error sending email in post"+".  Request="+rj.getRequest(),e);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.setContentType("text"); 
-			out.print("Your submission was saved, however, there was a problem sending the notification to the OpenChain team.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
+			postResponse.setStatus(Status.ERROR);
+			postResponse.setError("Your submission was saved, however, there was a problem sending the notification to the OpenChain team.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
+			gson.toJson(postResponse, out);
 		} finally {
         	out.close();
         }
 	}
 
+	/**
+	 * Upload a new version of a survey
+	 * @param specVersion
+	 * @param sectionText
+	 * @param csvLines
+	 * @throws UpdateSurveyException
+	 * @throws SQLException 
+	 * @throws QuestionException 
+	 * @throws SurveyResponseException 
+	 * @throws IOException 
+	 */
+	private void uploadSurvey(String specVersion,
+			SectionTextJson[] sectionTexts, String[] csvLines) throws UpdateSurveyException, SQLException, SurveyResponseException, QuestionException, IOException {
+		// Check if the version is aready in the database
+		cleanUpLines(csvLines);
+		Survey survey = new Survey(specVersion);
+		Map<String, List<Question>> sectionQuestions = new HashMap<String, List<Question>>();
+		List<Section> sections = new ArrayList<Section>();
+		for (SectionTextJson sectionText:sectionTexts) {
+			Section section = new Section();
+			if (sectionText.getName() == null || sectionText.getName().isEmpty()) {
+				throw(new UpdateSurveyException("No name specified for a section"));
+			}
+			if (sectionText.getTitle() == null || sectionText.getTitle().isEmpty()) {
+				throw(new UpdateSurveyException("No title specified for a section"));
+			}
+			section.setName(sectionText.getName());
+			section.setTitle(sectionText.getTitle());
+			List<Question> questions = new ArrayList<Question>();
+			section.setQuestions(questions);
+			sectionQuestions.put(sectionText.getName(), questions);
+			sections.add(section);
+		}
+		survey.setSections(sections);
+		CSVParser csvParser = new CSVParser();
+		Set<String> foundQuestionNumbers = new HashSet<String>();
+		Map<String, SubQuestion> questionsWithSubs = new HashMap<String, SubQuestion>();
+		validateCsvHeader(csvLines, csvParser);
+		for (int i = 1; i < csvLines.length; i++) {
+			if (csvLines[i] == null || csvLines[i].isEmpty()) {
+				logger.warn("Skipping blank CSV line");
+				continue;
+			}
+			Question question = Question.fromCsv(csvParser.parseLine(csvLines[i]), specVersion);
+			if (foundQuestionNumbers.contains(question.getNumber())) {
+				throw(new UpdateSurveyException("Duplicate questions in survey upload: "+question.getNumber()));
+			}
+			foundQuestionNumbers.add(question.getNumber());
+			if (question.getSubQuestionNumber() != null) {
+				SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionNumber());
+				if (parentQuestion == null) {
+					parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionNumber(), specVersion, 0);
+					questionsWithSubs.put(question.getSubQuestionNumber(), parentQuestion);
+				}
+				parentQuestion.addSubQuestion(question);
+			}
+			if (question instanceof SubQuestion) {
+				SubQuestion toBeReplaced = questionsWithSubs.get(question.getNumber());
+				if (toBeReplaced != null) {
+					for(Question qtoadd:toBeReplaced.getAllSubquestions()) {
+						((SubQuestion) question).addSubQuestion(qtoadd);
+					}
+				}
+				questionsWithSubs.put(question.getNumber(), (SubQuestion) question);
+			}
+			List<Question> questionList = sectionQuestions.get(question.getSectionName());
+			if (questionList == null) {
+				throw(new UpdateSurveyException("The section "+question.getSectionName()+" does not exist for question "+question.getNumber()));
+			}
+			questionList.add(question);
+		}
+		logger.info("Uploading new survey for spec version "+specVersion);
+		Connection con = null;
+		try {
+			con = SurveyDatabase.createConnection(getServletConfig());
+			SurveyDbDao dao = new SurveyDbDao(con);
+			if (dao.surveyExists(specVersion)) {
+				throw(new UpdateSurveyException("Survey version "+specVersion+" already exists.  Can not add.  Use update to update the questions."));
+			}
+			dao.addSurvey(survey);
+		} finally {
+			if (con != null) {
+				con.close();
+			}
+		}
+	}
+
+	/**
+	 * Clean up the lines, removing any trailing new lines or line feeds
+	 * @param csvLines
+	 */
+	private void cleanUpLines(String[] csvLines) {
+		for (int i = 0; i < csvLines.length; i++) {
+			if (csvLines[i].endsWith("\n")) {
+				csvLines[i] = csvLines[i].substring(0, csvLines[i].length()-1);
+			}
+			if (csvLines[i].endsWith("\r")) {
+				csvLines[i] = csvLines[i].substring(0, csvLines[i].length()-1);
+			}
+		}
+	}
+
+	/**
+	 * Update questions for an existing survey.  Note that questions can not be deleted, 
+	 * only added and updated.  
+	 * @param specVersion
+	 * @param csvLines
+	 * @throws SQLException
+	 * @throws QuestionException
+	 * @throws SurveyResponseException
+	 * @throws UpdateSurveyException
+	 * @throws IOException
+	 */
 	private void updateSurveyQuestions(String specVersion, String[] csvLines) throws SQLException, QuestionException, SurveyResponseException, UpdateSurveyException, IOException {
+		cleanUpLines(csvLines);
 		logger.info("Updating survey questions for spec version "+specVersion);
 		Connection con = null;
 		CSVParser csvParser = new CSVParser();
@@ -327,19 +470,7 @@ public class CertificationServlet extends HttpServlet {
 			Set<String> foundQuestionNumbers = new HashSet<String>();
 			Set<String> existingQuestionNumbers = existing.getQuestionNumbers();
 			Map<String, SubQuestion> questionsWithSubs = new HashMap<String, SubQuestion>();
-			if (csvLines.length > 0) {
-				String[] headerCols = csvParser.parseLine(csvLines[0]);
-				if (headerCols.length != Survey.CSV_COLUMNS.length) {
-					throw(new UpdateSurveyException("Invalid CSV format.  Number of columns do not match.  Expected "+
-							String.valueOf(Survey.CSV_COLUMNS.length)+" columns."));
-				}
-				for (int i = 0; i < headerCols.length; i++) {
-					if (!Objects.equals(Survey.CSV_COLUMNS[i], headerCols[i])) {
-						throw(new UpdateSurveyException("Invalid CSV column.  Expected "+
-								Survey.CSV_COLUMNS[i] + ", found "+headerCols[i]));
-					}
-				}
-			}
+			validateCsvHeader(csvLines, csvParser);
 			for (int i = 1; i < csvLines.length; i++) {
 				if (csvLines[i] == null || csvLines[i].isEmpty()) {
 					logger.warn("Skipping blank CSV line");
@@ -383,6 +514,29 @@ public class CertificationServlet extends HttpServlet {
 		} finally {
 			if (con != null) {
 				con.close();
+			}
+		}
+	}
+
+	/**
+	 * Verifies the header for a CSV questions file and throws an exception if not valid
+	 * @param csvLines
+	 * @param csvParser
+	 * @throws UpdateSurveyException
+	 * @throws IOException
+	 */
+	private void validateCsvHeader(String[] csvLines, CSVParser csvParser) throws UpdateSurveyException, IOException {
+		if (csvLines.length > 0) {
+			String[] headerCols = csvParser.parseLine(csvLines[0]);
+			if (headerCols.length != Survey.CSV_COLUMNS.length) {
+				throw(new UpdateSurveyException("Invalid CSV format.  Number of columns do not match.  Expected "+
+						String.valueOf(Survey.CSV_COLUMNS.length)+" columns."));
+			}
+			for (int i = 0; i < headerCols.length; i++) {
+				if (!Objects.equals(Survey.CSV_COLUMNS[i], headerCols[i])) {
+					throw(new UpdateSurveyException("Invalid CSV column.  Expected "+
+							Survey.CSV_COLUMNS[i] + ", found "+headerCols[i]));
+				}
 			}
 		}
 	}

@@ -50,6 +50,9 @@ public class YesNoQuestion extends Question {
 	}
 	@Override
 	public boolean validate(Object answer) {
+		if (correctAnswer.equals(YesNo.Any)) {
+			return true;
+		}
 		if ((answer instanceof YesNo)) {
 			return answer.equals(correctAnswer);
 		} else if (answer instanceof YesNoAnswer) {

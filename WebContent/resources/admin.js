@@ -23,38 +23,92 @@ function openUploadSurveyDialog() {
 	$("#uploadsurvey").dialog("open");
 }
 
+function openUpdateSurveyDialog() {
+	$("#updatesurvey").dialog("open");
+}
+
 function downloadSurvey() {
 	var specVersion = $("#downloadsurvey-version").val();
 	window.location="CertificationServlet?request=downloadSurvey&specVersion="+specVersion;
 }
 
 var csvFileForUpload;
-
-var storeCsvFile = function(event) {
+var csvFileForUpdate;
+var storeCsvFileUpload = function(event) {
 	csvFileForUpload = event.target.files[0];
 };
+var storeCsvFileUpdate = function(event) {
+	csvFileForUpdate = event.target.files[0];
+};
 
-function readCsvFromFile(file) {
-    var request = new XMLHttpRequest();
-    request.open("GET", file, false);
-    request.onreadystatechange = function () {
-        if(request.readyState === 4) {
-            if(request.status === 200 || request.status == 0) {
-                var text = rawFile.responseText;
-                return text.split('\n');
-            } else {
-            	return null;
-            }
-        } else {
-        	return null;
-        }
-    };
-    request.send(null);
+function updateSurvey() {
+	$("#btUpdateSurvey").button("disable");
+	var specVersion = $("#updatesurvey-version").val();
+	if (csvFileForUpdate == null) {
+		dislplayError("No file choosen for update");
+		return;
+	}
+	var csvLines;
+	var reader = new FileReader();
+	reader.onload = function(){
+		var text = reader.result;
+		csvLines = text.split('\n');
+		$.ajax({
+		    url: "CertificationServlet",
+		    data:JSON.stringify({
+		        request: "updatesurvey",
+		        specVersion: specVersion,
+		        csvLines: csvLines
+		    }),
+		    type: "POST",
+		    dataType : "json",
+		    contentType: "json",
+		    success: function( json ) {
+		    	$("#btUpdateSurvey").button("enable");
+		    	if (json.status == "OK") {
+		    		$( "#status" ).dialog({
+		    			title: "Updated",
+		    			resizable: false,
+		    		    height: 200,
+		    		    width: 200,
+		    		    modal: true,
+		    		    buttons: {
+		    		        "Ok" : function () {
+		    		            $( this ).dialog( "close" );
+		    		        }
+		    		    }
+		    		}).text( "Questions successfully updated" );
+		    	} else {
+		    		displayError(json.error);
+		    	}
+		    },
+		    error: function( xhr, status, errorThrown ) {
+		    	$("#btUpdateSurvey").button("enable");
+		    	handleError( xhr, status, errorThrown);
+		    }
+		});
+	};
+	reader.onloadend = function(){
+		if (reader.error != null) {
+			displayError(reader.error.message);
+		}
+	};
+	reader.readAsText(csvFileForUpdate);
 }
+
 
 function uploadSurvey() {
 	$("#btUploadSurvey").button("disable");
 	var specVersion = $("#uploadsurvey-version").val();
+	var sectionTexts = [];
+	$("#sectiontext-input-area").find(".section-text-group").each(function(index){
+		var id = $(this).attr('id');
+		var sectionName = $("#"+id+"-sname").val();
+		var sectionTitle = $("#"+id+"-stitle").val();
+		if (sectionName != null && sectionName.trim().length > 0) {
+			sectionTexts.push({name:sectionName, title:sectionTitle});
+		}
+	});
 	if (csvFileForUpload == null) {
 		dislplayError("No file choosen for upload");
 		return;
@@ -69,7 +123,8 @@ function uploadSurvey() {
 		    data:JSON.stringify({
 		        request: "uploadsurvey",
 		        specVersion: specVersion,
-		        csvLines: csvLines
+		        csvLines: csvLines,
+		        sectionTexts: sectionTexts
 		    }),
 		    type: "POST",
 		    dataType : "json",
@@ -90,7 +145,7 @@ function uploadSurvey() {
 		    		    }
 		    		}).text( "Questions successfully uploaded" );
 		    	} else {
-		    		displayError(json.status);
+		    		displayError(json.error);
 		    	}
 		    },
 		    error: function( xhr, status, errorThrown ) {
@@ -157,8 +212,8 @@ $(document).ready( function() {
 	$("#uploadsurvey").dialog({
 		title: "Upload Survey",
 		autoOpen: false,
-		height: 300,
-		width: 350,
+		height: 600,
+		width: 550,
 		modal: true,
 		buttons: [{
 			text: "Upload",
@@ -177,6 +232,29 @@ $(document).ready( function() {
 		uploadSurvey();
 	});
 	
+	$("#updatesurvey").dialog({
+		title: "Update Survey Questions",
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: [{
+			text: "Update",
+			click: function() {
+				$(this).dialog("close");
+				updateSurvey();
+			}
+		}, {
+			text: "Cancel",
+			click: function() {
+				$(this).dialog("close");
+			}
+		}]
+	}).find("form").on("submit", function(event) {
+		event.preventDefault();
+		updateSurvey();
+	});
+	
 	$("#btDownloadSurvey").button().click(function(event) {
 	      event.preventDefault();
 	      openDownloadSurveyDialog();
@@ -184,6 +262,11 @@ $(document).ready( function() {
 	$("#btUploadSurvey").button().button().click(function(event) {
 	      event.preventDefault();
 	      openUploadSurveyDialog();
+	});
+	
+	$("#btUpdateSurvey").button().button().click(function(event) {
+	      event.preventDefault();
+	      openUpdateSurveyDialog();
 	});
 	
 	$.ajax({

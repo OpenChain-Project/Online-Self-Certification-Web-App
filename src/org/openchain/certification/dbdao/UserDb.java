@@ -20,11 +20,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletConfig;
 
+import org.apache.log4j.Logger;
 import org.openchain.certification.model.User;
 
 /**
@@ -37,22 +39,36 @@ import org.openchain.certification.model.User;
  */
 public class UserDb {
 	
+	static final Logger logger = Logger.getLogger(UserDb.class);
+	
 	private static UserDb _userDb;
 	private Connection connection;
 	private PreparedStatement getUserQuery;
 	private PreparedStatement getAllUserQuery;
 	private PreparedStatement addUserQuery;
 	private PreparedStatement updateVerifiedQuery;
+	private ServletConfig servletConfig;
 	
 	public static synchronized UserDb getUserDb(ServletConfig servletConfig) throws SQLException {
 		if (_userDb == null) {
 			_userDb = new UserDb(servletConfig);
 		}
+		_userDb.checkConnection();
 		return _userDb;
 	}
 	
+	protected void checkConnection() throws SQLException {
+		if (this.connection == null || this.connection.isClosed()) {
+			this.connection = SurveyDatabase.createConnection(servletConfig);
+		}
+	}
 	private UserDb(ServletConfig servletConfig) throws SQLException {
+		this.servletConfig = servletConfig;
 		this.connection = SurveyDatabase.createConnection(servletConfig);
+		prepareStatements();
+	}
+	
+	private void prepareStatements() throws SQLException {
 		getUserQuery = connection.prepareStatement("select password_token, name, address, email," +
 				"verified, passwordReset, admin, verificationExpirationDate," +
 				" uuid, organization from openchain_user where username=?");
@@ -64,7 +80,19 @@ public class UserDb {
 				" uuid, organization) values (?,?,?,?,?,?,?,?,?,?,?)");
 		updateVerifiedQuery = connection.prepareStatement("update openchain_user set verified=? where username=?");
 	}
-	
+
+	/**
+	 * This method is only intended to be used for testing
+	 * @param con
+	 * @throws SQLException 
+	 */
+	@Deprecated
+	public UserDb(Connection con) throws SQLException {
+		this.connection = con;
+		this.connection.setAutoCommit(false);
+		prepareStatements();
+	}
+
 	public synchronized User getUser(String username) throws SQLException {
 		ResultSet result = null;
 		try {
@@ -89,6 +117,7 @@ public class UserDb {
 		} finally {
 			if (result != null) {
 				result.close();
+				connection.commit();
 			}
 		}
 	}
@@ -117,29 +146,62 @@ public class UserDb {
 		} finally {
 			if (result != null) {
 				result.close();
+				connection.commit();
 			}
 		}
 	}
 	
 	public synchronized int addUser(User user) throws SQLException {
-		this.addUserQuery.setString(1, user.getUsername());
-		this.addUserQuery.setString(2, user.getPasswordToken());
-		this.addUserQuery.setString(3, user.getName());
-		this.addUserQuery.setString(4, user.getAddress());
-		this.addUserQuery.setString(5, user.getEmail());
-		this.addUserQuery.setBoolean(6, user.isVerified());
-		this.addUserQuery.setBoolean(7, user.isPasswordReset());
-		this.addUserQuery.setBoolean(8, user.isAdmin());
-		java.sql.Date sqlDate = new java.sql.Date(user.getVerificationExpirationDate().getTime());
-		this.addUserQuery.setDate(9, sqlDate);
-		this.addUserQuery.setString(10, user.getUuid());
-		this.addUserQuery.setString(11, user.getOrganization());
-		return this.addUserQuery.executeUpdate();
+		Savepoint save = connection.setSavepoint();
+		try {
+			this.addUserQuery.setString(1, user.getUsername());
+			this.addUserQuery.setString(2, user.getPasswordToken());
+			this.addUserQuery.setString(3, user.getName());
+			this.addUserQuery.setString(4, user.getAddress());
+			this.addUserQuery.setString(5, user.getEmail());
+			this.addUserQuery.setBoolean(6, user.isVerified());
+			this.addUserQuery.setBoolean(7, user.isPasswordReset());
+			this.addUserQuery.setBoolean(8, user.isAdmin());
+			java.sql.Date sqlDate = new java.sql.Date(user.getVerificationExpirationDate().getTime());
+			this.addUserQuery.setDate(9, sqlDate);
+			this.addUserQuery.setString(10, user.getUuid());
+			this.addUserQuery.setString(11, user.getOrganization());
+			return this.addUserQuery.executeUpdate();
+		} catch(SQLException ex) {
+			if (save != null) {
+				try {
+					connection.rollback(save);
+				} catch (SQLException ex2) {
+					logger.error("Error rolling back transaction",ex2);
+				}
+			}
+			throw(ex);
+		} finally {
+			if (save != null) {
+				this.connection.commit();
+			}
+		}
 	}
 
 	public synchronized int setVerified(String username, boolean verified) throws SQLException {
-		this.updateVerifiedQuery.setBoolean(1, verified);
-		this.updateVerifiedQuery.setString(2, username);
-		return this.updateVerifiedQuery.executeUpdate();
+		Savepoint save = this.connection.setSavepoint();
+		try {
+			this.updateVerifiedQuery.setBoolean(1, verified);
+			this.updateVerifiedQuery.setString(2, username);
+			return this.updateVerifiedQuery.executeUpdate();
+		} catch(SQLException ex) {
+			if (save != null) {
+				try {
+					connection.rollback(save);
+				} catch (SQLException ex2) {
+					logger.error("Error rolling back transaction",ex2);
+				}
+			}
+			throw(ex);
+		} finally {
+			if (save != null) {
+				this.connection.commit();
+			}
+		}
 	}
 }

@@ -114,8 +114,12 @@ function displayError( error ) {
 
 function handleError(xhr, status, errorThrown, msg) {
 	if ( msg === undefined ) {
-		if ( xhr.responseType == "text" && xhr.responseText != null && xhr.responseText!= "" ) {
+		var responseType = xhr.getResponseHeader("content-type") || "";
+		if ( responseType.indexOf('text') > 1 && xhr.responseText != null && xhr.responseText!= "" ) {
 			msg = "Sorry - there was a problem loading data: " + xhr.responseText;
+		} else if ( responseType.indexOf('json') > 1 && xhr.responseText != null && xhr.responseText!= "" ) {
+			response = JSON.parse(xhr.responseText);
+			msg = response.error;
 		} else {
 			msg = "Sorry - there was a problem loading data: " + errorThrown;
 		}

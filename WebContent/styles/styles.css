@@ -144,3 +144,32 @@ input.radio {
     margin:auto; 
     width: 50%;
 }
+/* admin page inputs */
+.fileupload {
+	display: inline;
+	padding: .4em;
+}
+.specversion {
+	display: inline;
+	margin-bottom: 12px;
+	padding: .4em;
+}
+.section-text-group {
+	border:1px solid grey;
+	padding: .4em;
+}
+.sectionname {
+    display: inline;
+    margin-bottom: 12px;
+    padding: .4em;
+    width: 300px;
+}
+.sectiontitle {
+    display: inline;
+    margin-bottom: 12px;
+    padding: .4em;
+    width: 400px;
+}
+.inline-label {
+	display: inline;
+}
