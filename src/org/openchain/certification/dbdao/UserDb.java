@@ -27,6 +27,7 @@ import java.util.List;
 import javax.servlet.ServletConfig;
 
 import org.apache.log4j.Logger;
+import org.openchain.certification.InvalidUserException;
 import org.openchain.certification.model.User;
 
 /**
@@ -47,6 +48,8 @@ public class UserDb {
 	private PreparedStatement getAllUserQuery;
 	private PreparedStatement addUserQuery;
 	private PreparedStatement updateVerifiedQuery;
+	private PreparedStatement updateUserQuery;
+	private PreparedStatement getUserIdQuery;
 	private ServletConfig servletConfig;
 	
 	public static synchronized UserDb getUserDb(ServletConfig servletConfig) throws SQLException {
@@ -80,6 +83,10 @@ public class UserDb {
 				"verified, passwordReset, admin, verificationExpirationDate," +
 				" uuid, organization) values (?,?,?,?,?,?,?,?,?,?,?)");
 		updateVerifiedQuery = connection.prepareStatement("update openchain_user set verified=? where username=?");
+		updateUserQuery = connection.prepareStatement("update openchain_user set password_token=?, " +
+				"name=?, address=?, verified=?, passwordReset=?, admin=?, " +
+				"verificationExpirationDate=?, uuid=?, organization=?, email=? where username=?");
+		getUserIdQuery = connection.prepareStatement("select id from openchain_user where username=?");
 	}
 
 	public synchronized User getUser(String username) throws SQLException {
@@ -140,8 +147,12 @@ public class UserDb {
 		}
 	}
 	
-	public synchronized int addUser(User user) throws SQLException {
+	public synchronized int addUser(User user) throws SQLException, InvalidUserException {
 		Savepoint save = connection.setSavepoint();
+		long userId = getUserId(user.getUsername());
+		if (userId >0) {
+			throw(new InvalidUserException("Can not add user "+user.getUsername()+": already exists."));
+		}
 		try {
 			this.addUserQuery.setString(1, user.getUsername());
 			this.addUserQuery.setString(2, user.getPasswordToken());
@@ -172,6 +183,30 @@ public class UserDb {
 		}
 	}
 
+	private long getUserId(String username) throws SQLException {
+		ResultSet result = null;
+		try {
+			getUserIdQuery.setString(1, username);
+			result = getUserIdQuery.executeQuery();
+			if (result.next()) {
+				return result.getLong(1);
+			} else {
+				return -1;
+			}
+		} finally {
+			if (result != null) {
+				result.close();
+			}
+		}
+	}
+
+	public synchronized boolean userExists(String username) throws SQLException {
+		try {
+			return getUserId(username) > 0;
+		} finally {
+			this.connection.commit();
+		}
+	}
 	public synchronized int setVerified(String username, boolean verified) throws SQLException {
 		Savepoint save = this.connection.setSavepoint();
 		try {
@@ -191,6 +226,40 @@ public class UserDb {
 			if (save != null) {
 				this.connection.commit();
 			}
+		}
+	}
+
+	/**
+	 * Update all fields in the user with the username user.username
+	 * @param user
+	 * @throws SQLException 
+	 * @throws InvalidUserException 
+	 */
+	public synchronized void updateUser(User user) throws SQLException, InvalidUserException {
+//		"update openchain_user set password_token=?, " +
+//				"name=?, address=?, verified=?, passwordReset=?, admin=?, " +
+//				"verificationExpirationDate=?, uuid=?, organization=? where username=?"
+		if (user == null || user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+			throw(new InvalidUserException("Can not update user.  No username specified"));
+		}
+		try {
+			updateUserQuery.setString(1, user.getPasswordToken());
+			updateUserQuery.setString(2, user.getName());
+			updateUserQuery.setString(3, user.getAddress());
+			updateUserQuery.setBoolean(4, user.isVerified());
+			updateUserQuery.setBoolean(5, user.isPasswordReset());
+			updateUserQuery.setBoolean(6, user.isAdmin());
+			updateUserQuery.setDate(7, new java.sql.Date(user.getVerificationExpirationDate().getTime()));
+			updateUserQuery.setString(8, user.getUuid());
+			updateUserQuery.setString(9, user.getOrganization());
+			updateUserQuery.setString(10, user.getEmail());
+			updateUserQuery.setString(11, user.getUsername());
+			int count = updateUserQuery.executeUpdate();
+			if (count != 1) {
+				logger.warn("Unexpected count result from update user query.  Expected 1, found "+String.valueOf(count));
+			}
+		} finally {
+			this.connection.commit();
 		}
 	}
 }

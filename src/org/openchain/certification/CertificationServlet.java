@@ -62,7 +62,7 @@ public class CertificationServlet extends HttpServlet {
 	/**
 	 * Version of this software - should be updated before every release
 	 */
-	static final String version = "0.0.7";
+	static final String version = "0.0.9";
 	
 	static final Logger logger = Logger.getLogger(CertificationServlet.class);
 	
@@ -86,6 +86,10 @@ public class CertificationServlet extends HttpServlet {
 	private static final String FINAL_SUBMISSION_REQUEST = "finalSubmission";
 	private static final String UPLOAD_SURVEY_REQUEST = "uploadsurvey";
 	private static final String UPDATE_SURVEY_REQUEST = "updatesurvey";
+
+	private static final String RESEND_VERIFICATION = "resendverify";
+
+	private static final String DOWNLOAD_ANSWERS = "downloadanswers";
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -145,6 +149,10 @@ public class CertificationServlet extends HttpServlet {
 		            	List<Submission> submissions = getSubmissions();
 		            	gson.toJson(submissions, out);
 	            	}
+	            } else if (requestParam.equals(DOWNLOAD_ANSWERS)) {
+	            	response.setContentType("text/csv");
+	                response.setHeader("Content-Disposition", "attachment;filename=\"openchain-answers.csv\"");
+	            	printAnswers(user, out);
 	            } else if (requestParam.equals(DOWNLOAD_SURVEY)) {
 	            	if (!user.isAdmin()) {
 	            		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -180,6 +188,7 @@ public class CertificationServlet extends HttpServlet {
 			}
 		}
 	}
+
 
 	private List<Submission> getSubmissions() throws SQLException, SurveyResponseException, QuestionException {
 		Connection con = SurveyDatabase.createConnection(getServletConfig());
@@ -218,6 +227,18 @@ public class CertificationServlet extends HttpServlet {
 	}
 
 	/**
+	 * Print answers to the user survey in a CSV format
+	 * @param out
+	 * @throws SurveyResponseException 
+	 * @throws QuestionException 
+	 * @throws SQLException 
+	 * @throws IOException 
+	 */
+	private void printAnswers(UserSession session, PrintWriter out) throws SQLException, QuestionException, SurveyResponseException, IOException {
+		session.getSurveyResponse().printCsv(out);
+	}
+
+	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -240,9 +261,24 @@ public class CertificationServlet extends HttpServlet {
         		UserSession newUser = new UserSession(rj.getUsername(),rj.getPassword(), getServletConfig());
         		if (newUser.login()) {
         			session.setAttribute(SESSION_ATTRIBUTE_USER, newUser);
+        		} else if (newUser.isValidPasswordAnNotVerified()) {
+        			postResponse.setStatus(Status.NOT_VERIFIED);
+        			postResponse.setError("User has not been verified.");
         		} else {
         			postResponse.setStatus(Status.ERROR);
         			postResponse.setError("Login failed: "+newUser.getLastError());
+        		}
+        	} else if (rj.getRequest().equals(RESEND_VERIFICATION)) {
+        		if (user != null && user.isLoggedIn()) {
+        			postResponse.setStatus(Status.ERROR);
+        			postResponse.setError("Can not send a re-registration email for a user that is already logged in.  Log-out first then select resend invitation");
+        		} else {
+            		UserSession newUser = new UserSession(rj.getUsername(),rj.getPassword(), getServletConfig());
+            		String verificationUrl = request.getRequestURL().toString();
+            		if (!newUser.resendVerification(rj.getUsername(), rj.getPassword(), verificationUrl)) {
+            			postResponse.setStatus(Status.ERROR);
+            			postResponse.setError("Error signing up: "+newUser.getLastError());
+            		}
         		}
         	} else if (rj.getRequest().equals(SIGNUP_REQUEST)) {
         		if (user != null) {

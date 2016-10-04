@@ -23,7 +23,8 @@ package org.openchain.certification;
  */
 public class PostResponse {
 	
-	public enum Status {OK, ERROR};
+	// NOT_VERIFIED indicates the user has a valid password but has not been verified
+	public enum Status {OK, ERROR, NOT_VERIFIED};
 	private Status status;
 	private String sectionName;
 	private String error;

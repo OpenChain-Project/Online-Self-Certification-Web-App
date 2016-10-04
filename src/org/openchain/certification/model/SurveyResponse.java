@@ -16,7 +16,14 @@
 */
 package org.openchain.certification.model;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Iterator;
+import java.util.TreeMap;
+
+import com.opencsv.CSVWriter;
 
 /**
  * Responses to a survey from a responder
@@ -24,6 +31,10 @@ import java.util.Map;
  *
  */
 public class SurveyResponse {
+	
+	transient static final String[] CSV_COLUMNS = new String[] {
+		"Number", "Question", "Answer", "Additional Information"
+	};
 
 	User responder;
 	/**
@@ -93,6 +104,41 @@ public class SurveyResponse {
 	 */
 	public void setSubmitted(boolean submitted) {
 		this.submitted = submitted;
+	}
+	public void printCsv(PrintWriter out) throws IOException {
+		CSVWriter csv = new CSVWriter(out);
+		try {
+			csv.writeNext(new String[] {"Questionnaire Version=",this.getSpecVersion()});
+			csv.writeNext(CSV_COLUMNS);
+			
+			// sort the responses by question number
+			TreeMap<String, Answer> sortedMap = new TreeMap<String, Answer>();
+			sortedMap.putAll(responses);
+			Iterator<Entry<String, Answer>> iter = sortedMap.entrySet().iterator();
+			while (iter.hasNext()) {
+				Entry<String, Answer> entry = iter.next();
+				Question question = this.survey.getQuestion(entry.getKey());
+				if (question != null) {
+					if (entry.getValue() instanceof SubQuestionAnswers &&
+							((SubQuestionAnswers)entry.getValue()).getSubAnswers().size() == 0) {
+						continue;	// skip any subquestion answers that do not have any subquestions
+					}
+					String[] nextLine = new String[CSV_COLUMNS.length];
+					nextLine[0] = question.getNumber();
+					nextLine[1] = question.getQuestion();
+					nextLine[2] = entry.getValue().getAnswerString();
+					if (entry.getValue() instanceof YesNoAnswerWithEvidence) {
+						nextLine[3] = ((YesNoAnswerWithEvidence)entry.getValue()).getEvidence();
+					} else {
+						nextLine[3] = "";
+					}
+					csv.writeNext(nextLine);
+				}
+				
+			}
+		} finally {
+			csv.close();
+		}
 	}
 	
 	

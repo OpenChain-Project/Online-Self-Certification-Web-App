@@ -83,4 +83,9 @@ public class SubQuestionAnswers extends Answer {
 		}
 		return retval;
 	}
+
+	@Override
+	public String getAnswerString() {
+		return "";	// no answer for a subquestionanswer
+	}
 }

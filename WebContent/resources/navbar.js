@@ -59,6 +59,50 @@ function updateTips( t ) {
 var username;
 var tips;
 
+function openResendVerificationDialog(username, password) {
+	$( "#resendveify" ).dialog({
+		title: "Resend Verification",
+		resizable: false,
+	    height: 200,
+	    width: 200,
+	    modal: true,
+	    buttons: [{
+	    		text: "No",
+	    		click: function () {
+	    			$( this ).dialog( "close" );
+	        }
+	    	}, {
+	    		text: "Yes",
+	    		click: function () {
+	    			$.ajax({
+	    			    url: "CertificationServlet",
+	    			    data:JSON.stringify({
+	    			        request:  "resendverify",
+	    			        username: username.val(),
+	    			        password: password.val()
+	    			    }),
+	    			    type: "POST",
+	    			    dataType : "json",
+	    			    contentType: "json",
+	    			    async: false, 
+	    			    success: function( json ) {
+	    			    	if ( json.status == "OK" ) {
+	    			    		// redirect to the successful signup page
+	    			    		window.location = "signupsuccess.html";
+	    			    	} else {
+	    			    		displayError( json.error );
+	    			    	} 	
+	    			    },
+	    			    error: function( xhr, status, errorThrown ) {
+	    			    	handleError(xhr, status, errorThrown);
+	    			    }
+	    			});
+	    			$( this ).dialog( "close" );
+	    		}
+	    	}]
+	    
+	}).text( "You have not verified the username.  Would you like to resend a verify email to the email address you registered?" );
+}
 
 function loginUser() {
 	username = $("#login-username");
@@ -87,6 +131,8 @@ function loginUser() {
 		    	if ( json.status == "OK" ) {
 		    		// redirect to the survey page
 		    		window.location = "survey.html";
+		    	} else if (json.status == "NOT_VERIFIED") {
+		    		openResendVerificationDialog(username, password);
 		    	} else {
 		    		displayError( json.error );
 		    	} 	

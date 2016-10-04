@@ -64,6 +64,15 @@ public class YesNoAnswer extends Answer {
 			return prime;
 		}
 	}
+
+	@Override
+	public String getAnswerString() {
+		if (answer == null) {
+			return "";
+		} else {
+			return answer.toString();
+		}
+	}
 	
 	
 }

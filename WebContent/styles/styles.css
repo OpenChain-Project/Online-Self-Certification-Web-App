@@ -64,6 +64,9 @@ table tr:nth-child(odd) {
     float: left;
     clear: none;
 }
+.number_cell {
+    text-align:center;
+}
 .question_cell label {
 	float: left;
     clear: none;

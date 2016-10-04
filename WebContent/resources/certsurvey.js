@@ -16,8 +16,9 @@
 */
 
 function getQuestionFormHtml(questions) {
-	var html = '<table class="questiontable ui-corner-all">\n<col class="number_col" /><col class="question_col" /><col class="answer_col" /><col class="answer_col" /><col class="answer_col" />\n';
+	var html = '<table class="questiontable ui-corner-all">\n<col class="number_col" /><col class="question_col" /><col class="answer_col" /><col class="answer_col" /><col class="answer_col" />\n<col class="number_col" />\n';
 	var inSubQuestions = false;
+	html += '<th class="number_col">#</th><th class="question_col">Question</th><th class="answer_col">Answer</th>\n<th class="number_col">Spec Ref</th>\n';
 	for (var i = 0; i < questions.length; i++) {
 		var type = questions[i].type;
 		var isSubQuestion = (questions[i].hasOwnProperty('subQuestionNumber'));
@@ -32,6 +33,7 @@ function getQuestionFormHtml(questions) {
 		if (type == 'SUBQUESTIONS') {
 			html += '<td class="question_cell"></td>';
 			html += '<td class="question_cell"></td>';
+			html += '<td class="question_cell"></td>';
 			inSubQuestions = true;
 		} else {
 			html += '<td class="question_cell"><input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes" value="yes" />';		
@@ -41,11 +43,16 @@ function getQuestionFormHtml(questions) {
 			if (questions[i].hasOwnProperty('notApplicablePrompt')) {
 				html += '<td class="question_cell"><input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_na" value="na" />';		
 				html += '<label for="answer-' + questions[i].number + '_na">'+questions[i].notApplicablePrompt+'</label></td>';
+			} else {
+				html += '<td class="question_cell"></td>';
 			}
 			if (!isSubQuestion) {
 				inSubQuestions = false;
 			}
 		}
+		html += '<td class="number_cell">';
+		html += questions[i].specReference;
+		html += '</td>';
 		html += '</tr>\n';
 	}
 	html += '</table>\n';
@@ -248,6 +255,10 @@ function finalSubmission() {
     }
   });
 }
+
+function downloadAnswers() {
+	window.location="CertificationServlet?request=downloadanswers";
+}
 $(document).ready( function() {
 	$("#btSaveAnswers").button();
 	$("#btSaveAnswers").click(function(event) {
@@ -258,6 +269,11 @@ $(document).ready( function() {
 	$("#btSaveAndSubmit").click(function(event) {
 	      event.preventDefault();
 	      finalSubmission();
+	});
+	$("#btDownloadAnswers").button();
+	$("#btDownloadAnswers").click(function(event) {
+	      event.preventDefault();
+	      downloadAnswers();
 	});
 	getSurvey();
 });

@@ -86,6 +86,45 @@ public class UserSession {
 		this.password = null;
 		this.admin = false;
 	}
+	
+	/**
+	 * @return true if the password is valid, but the user has not been registered
+	 */
+	public boolean isValidPasswordAnNotVerified() {
+		if (this.loggedIn) {
+			return false;
+		}
+		User user = null;
+		try {
+			user = UserDb.getUserDb(config).getUser(username);
+		} catch (SQLException e) {
+			this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
+			logger.error("SQL Exception logging in user",e);
+			return false;
+		}
+		if (user == null) {
+			this.lastError = "User "+username+" does not exist.  Please review the username or sign up as a new user.";
+			return false;
+		}
+		if (user.isVerified()) {
+			return false;
+		}
+		try {
+			if (!PasswordUtil.validate(password, user.getPasswordToken())) {
+				this.lastError = "Passwords do not match.  Please retry or reset your password";
+				return false;
+			}
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Unexpected No Such Algorithm error logging in user",e);
+			this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+			return false;
+		} catch (InvalidKeySpecException e) {
+			this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected Invalid Key Spec error logging in user",e);
+			return false;
+		}
+		return true;
+	}
 	public boolean login() {
 		this.loggedIn = false;
 		User user = null;
@@ -175,6 +214,10 @@ public class UserSession {
 		} catch (EmailUtilException e) {
 			logger.error("Error emailing invitation",e);
 			this.lastError = "Unable to email the invitiation: "+e.getMessage();
+			return false;
+		} catch (InvalidUserException e) {
+			logger.error("Invalid user specified in add user request",e);
+			this.lastError = "Error adding user: "+e.getMessage();
 			return false;
 		}
 	}
@@ -314,5 +357,81 @@ public class UserSession {
 	}
 	public boolean isAdmin() {
 		return this.admin;
+	}
+	
+	/**
+	 * Resend a verification email for the user specified
+	 * @param username
+	 * @param password
+	 * @param responseServletUrl
+	 * @return
+	 */
+	public boolean resendVerification(String username, String password, String responseServletUrl) {
+		this.username = username;
+		if (this.loggedIn) {
+			return false;
+		}
+		User user = null;
+		try {
+			user = UserDb.getUserDb(config).getUser(username);
+		} catch (SQLException e) {
+			this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
+			logger.error("SQL Exception logging in user",e);
+			return false;
+		}
+		if (user == null) {
+			this.lastError = "User "+username+" does not exist.  Please review the username or sign up as a new user.";
+			return false;
+		}
+		if (user.isVerified()) {
+			return false;
+		}
+		try {
+			if (!PasswordUtil.validate(password, user.getPasswordToken())) {
+				this.lastError = "Passwords do not match.  Please retry or reset your password";
+				return false;
+			}
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Unexpected No Such Algorithm error logging in user",e);
+			this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+			return false;
+		} catch (InvalidKeySpecException e) {
+			this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected Invalid Key Spec error logging in user",e);
+			return false;
+		}
+		UUID uuid = UUID.randomUUID();
+		String hashedUuid;
+		try {
+			hashedUuid = PasswordUtil.getToken(uuid.toString());
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Unexpected No Such Algorithm error logging in user",e);
+			this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+			return false;
+		} catch (InvalidKeySpecException e) {
+			this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected Invalid Key Spec error logging in user",e);
+			return false;
+		}
+		user.setUuid(hashedUuid);
+		try {
+			UserDb.getUserDb(config).updateUser(user);
+		} catch (SQLException e) {
+			this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
+			logger.error("SQL Exception updating user during re-verification",e);
+			return false;
+		} catch (InvalidUserException e) {
+			this.lastError = "Unexpected invalid user error.  Please report this error to the OpenChain team: "+e.getMessage();
+			logger.error("Invalid user error in resending verification",e);
+		}
+		try {
+			EmailUtility.emailVerification(user.getName(), user.getEmail(), 
+					uuid, username, responseServletUrl, config);
+		} catch (EmailUtilException e) {
+			logger.error("Error emailing invitation",e);
+			this.lastError = "Unable to re-email the invitiation: "+e.getMessage();
+			return false;
+		}
+		return true;
 	}
 }

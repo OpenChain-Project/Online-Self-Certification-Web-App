@@ -28,4 +28,9 @@ public abstract class Answer {
 	
 	@Override
 	public abstract int hashCode();
+
+	/**
+	 * @return The string value of the answer
+	 */
+	public abstract String getAnswerString();
 }
