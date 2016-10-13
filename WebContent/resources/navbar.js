@@ -357,7 +357,7 @@ $(document).ready( function() {
 		title: "Sign Up",
 		autoOpen: false,
 		height: 600,
-		width: 400,
+		width: 450,
 		modal: true,
 		buttons: [{
 			text: "Sign Up",
