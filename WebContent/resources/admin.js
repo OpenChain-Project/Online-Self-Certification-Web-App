@@ -163,26 +163,44 @@ function uploadSurvey() {
 }
 
 function fillSubmissionStatusTable(submissions) {
-	$("#submission-status").empty();
-	var html = '<tr><th>User Name</th><th>Organization</th><th>Email</th><th>Submitted</th><th>% Complete</th><th>Score</th></tr>\n';
+	$("#submitted-awaiting-approval").empty();
+	$("#submitted-approved").empty();
+	$("#submitted-rejected").empty();
+	$("#not-submitted").empty();
+	var submittedAwaitingApprovalHtml = '<tr><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
+	var submittedRejectedHtml = '<tr><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
+	var notSubmittedHtml = '<tr><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
+	var submittedApproved = '<tr><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
 	for (var i = 0; i < submissions.length; i++) {
-		html += '<tr id="submission-';
+		var html = '<tr id="submission-';
 		html += submissions[i].user.username;
-		html += '"  class="username_col"><td>';
+		html += '"><td class="username_col">';
 		html += submissions[i].user.username;
 		html += '</td><td class="organization_col">';
 		html += submissions[i].user.organization;
 		html += '</td><td class="email_col">';
-		html += submissions[i].user.email;
-		html += '</td><td class="submitted_col">';
-		html += submissions[i].submitted;
+		html += submissions[i].user.email;		
 		html += '</td><td class="completed_col">';
 		html += submissions[i].percentComplete;
 		html += '</td><td class="score_col">';
 		html += submissions[i].score;
 		html += '</td></tr>\n';
+		if (submissions[i].submitted) {
+			if (submissions[i].approved) {
+				submittedApproved += html;
+			} else if (submissions[i].rejected) {
+				submittedRejectedHtml += html;
+			} else {
+				submittedAwaitingApprovalHtml += html;
+			}
+		} else {
+			notSubmittedHtml += html;
+		}
 	}
-	$("#submission-status").html(html);
+	$("#submitted-awaiting-approval").html(submittedAwaitingApprovalHtml);
+	$("#submitted-approved").html(submittedApproved);
+	$("#submitted-rejected").html(submittedRejectedHtml);
+	$("#not-submitted").html(notSubmittedHtml);
 }
 
 $(document).ready( function() {

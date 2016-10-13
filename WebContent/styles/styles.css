@@ -1,4 +1,3 @@
-
 /* Dialog css */
 label, input { 
 	display:block; 
@@ -31,6 +30,9 @@ fieldset {
 	
 }
 /* table css */
+td, th {
+	padding 2px 0 0 2px;
+}
 .questiontable {
     
 }
@@ -76,12 +78,22 @@ input.radio {
 
 .admin-table {
 	border: 1px solid black;
+	margin: 12px 0 0 2px;
+	padding: 2px 0 0 2px;
 }
 
+.username_col {
+	padding: 2px 0 0 2px;
+}
 .submitted_col {
 	text-align:center;
 }
-
+.approved_col {
+    text-align:center;
+}
+.rejected_col {
+    text-align:center;
+}
 .completed_col {
 	text-align:center;
 }

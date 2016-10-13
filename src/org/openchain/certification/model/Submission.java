@@ -41,17 +41,24 @@ public class Submission {
 	 * Score calculated by the number of correct answers divided by the total answers
 	 */
 	private int score;
+	private boolean approved;
+	private boolean rejected;
 	
-	public Submission(User user, boolean submitted, int percentComplete, int score) {
+	public Submission(User user, boolean submitted, int percentComplete, int score,
+			boolean approved, boolean rejected) {
 		this.user = user;
 		this.submitted = submitted;
 		this.percentComplete = percentComplete;
 		this.score = score;
+		this.approved = approved;
+		this.rejected = rejected;
 	}
 	
 	public Submission(SurveyResponse response) {
 		this.user = response.getResponder();
 		this.submitted = response.isSubmitted();
+		this.approved = response.isApproved();
+		this.rejected = response.isRejected();
 		this.percentComplete = calcPercentComplete(response.getSurvey(), response.getResponses());
 		this.score = calcScore(response.getSurvey(), response.getResponses());
 	}
@@ -145,5 +152,33 @@ public class Submission {
 	 */
 	public void setScore(int score) {
 		this.score = score;
+	}
+
+	/**
+	 * @return the approved
+	 */
+	public boolean isApproved() {
+		return approved;
+	}
+
+	/**
+	 * @param approved the approved to set
+	 */
+	public void setApproved(boolean approved) {
+		this.approved = approved;
+	}
+
+	/**
+	 * @return the rejected
+	 */
+	public boolean isRejected() {
+		return rejected;
+	}
+
+	/**
+	 * @param rejected the rejected to set
+	 */
+	public void setRejected(boolean rejected) {
+		this.rejected = rejected;
 	}
 }

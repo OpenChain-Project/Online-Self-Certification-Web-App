@@ -166,6 +166,8 @@ public class TestSurveyResponseDao {
 		response.setSpecVersion(specVersion);
 		response.setSubmitted(false);
 		response.setSurvey(survey);
+		response.setApproved(true);
+		response.setRejected(false);
 		SurveyResponseDao dao = new SurveyResponseDao(con);
 		dao.addSurveyResponse(response);
 		String laterSpecVersion = specVersion + ".1";
@@ -285,7 +287,53 @@ public class TestSurveyResponseDao {
 		result = dao.getSurveyResponse(user.getUsername(), null);
 		assertTrue(result.isSubmitted());
 	}
+	
+	@Test
+	public void testSetApproved() throws SQLException, SurveyResponseException, QuestionException {
+		SurveyResponse response = new SurveyResponse();
+		response.setResponder(user);
+		Map<String, Answer> responses = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer = new YesNoAnswer(YesNo.No);
+		YesNoAnswer s1q2answer = new YesNoAnswer(YesNo.NotAnswered);
 
+		responses.put(s1q1Number, s1q1answer);
+		responses.put(s1q2Number, s1q2answer);
+		response.setResponses(responses);
+		response.setSpecVersion(specVersion);
+		response.setApproved(false);
+		response.setSurvey(survey);
+		SurveyResponseDao dao = new SurveyResponseDao(con);
+		dao.addSurveyResponse(response);
+		SurveyResponse result = dao.getSurveyResponse(user.getUsername(), null);
+		assertFalse(result.isApproved());
+		dao.setApproved(user.getUsername(), specVersion, true);
+		result = dao.getSurveyResponse(user.getUsername(), null);
+		assertTrue(result.isApproved());
+	}
+	
+	@Test
+	public void testSetRejected() throws SQLException, SurveyResponseException, QuestionException {
+		SurveyResponse response = new SurveyResponse();
+		response.setResponder(user);
+		Map<String, Answer> responses = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer = new YesNoAnswer(YesNo.No);
+		YesNoAnswer s1q2answer = new YesNoAnswer(YesNo.NotAnswered);
+
+		responses.put(s1q1Number, s1q1answer);
+		responses.put(s1q2Number, s1q2answer);
+		response.setResponses(responses);
+		response.setSpecVersion(specVersion);
+		response.setRejected(false);
+		response.setSurvey(survey);
+		SurveyResponseDao dao = new SurveyResponseDao(con);
+		dao.addSurveyResponse(response);
+		SurveyResponse result = dao.getSurveyResponse(user.getUsername(), null);
+		assertFalse(result.isApproved());
+		dao.setRejected(user.getUsername(), specVersion, true);
+		result = dao.getSurveyResponse(user.getUsername(), null);
+		assertTrue(result.isRejected());
+	}
+	
 	@Test
 	public void testUpdateSurveyResponseAnswers() throws SQLException, SurveyResponseException, QuestionException {
 		SurveyResponse response = new SurveyResponse();

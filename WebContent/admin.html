@@ -30,12 +30,22 @@
         <h1>OpenChain Self Certification Administration</h1>
     </div>
     <h2>Site Status</h2>
-    Site Software Version: <div id="software-version"></div><br />
-    <h2>Submission Status:</h2>
+    Site Software Version: <span id="software-version"></span><br />
+    <h2>Submission Status</h2>
     <div id="submission-status-loading">
         Loading <img src="resources/loading.gif" alt="Loading" class="loading">
     </div>
-    <table id="submission-status" class="admin-table ui-corner-all">
+    <h3>Submitted Awaiting Approval</h3>
+    <table id="submitted-awaiting-approval" class="admin-table ui-corner-all">
+    </table>
+    <h3>Submitted Rejected</h3>
+    <table id="submitted-rejected" class="admin-table ui-corner-all">
+    </table>
+    <h3>Not Submitted</h3>
+    <table id="not-submitted" class="admin-table ui-corner-all">
+    </table>
+    <h3>Approved</h3>
+    <table id="submitted-approved" class="admin-table ui-corner-all">
     </table>
     <h2>
         Manage Survey Question Content

@@ -44,6 +44,10 @@ public class SurveyResponse {
 	String specVersion;
 	Survey survey;
 	boolean submitted;
+
+	private boolean approved;
+
+	private boolean rejected;
 	
 	/**
 	 * @return the responder
@@ -140,6 +144,22 @@ public class SurveyResponse {
 			csv.close();
 		}
 	}
-	
-	
+	public boolean isApproved() {
+		return this.approved;
+	}
+	public boolean isRejected() {
+		return this.rejected;
+	}
+	/**
+	 * @param approved the approved to set
+	 */
+	public void setApproved(boolean approved) {
+		this.approved = approved;
+	}
+	/**
+	 * @param rejected the rejected to set
+	 */
+	public void setRejected(boolean rejected) {
+		this.rejected = rejected;
+	}
 }

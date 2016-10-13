@@ -75,7 +75,9 @@
 	    spec_version bigint,
 	    CONSTRAINT fk_response_version FOREIGN KEY (spec_version)
 	      REFERENCES spec (id),
-	    submitted boolean
+	    submitted boolean,
+	    approved boolean,
+	    rejected boolean
 	 );
 	 alter TABLE survey_response OWNER TO openchain;
 	    
