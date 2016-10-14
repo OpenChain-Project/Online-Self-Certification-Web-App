@@ -48,6 +48,8 @@ public class SurveyResponse {
 	private boolean approved;
 
 	private boolean rejected;
+
+	private String id;
 	
 	/**
 	 * @return the responder
@@ -161,5 +163,13 @@ public class SurveyResponse {
 	 */
 	public void setRejected(boolean rejected) {
 		this.rejected = rejected;
+	}
+	
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	public String getId() {
+		return this.id;
 	}
 }

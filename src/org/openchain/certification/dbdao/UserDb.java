@@ -60,9 +60,11 @@ public class UserDb {
 		return _userDb;
 	}
 	
-	protected void checkConnection() throws SQLException {
+	protected synchronized void checkConnection() throws SQLException {
 		if (this.connection == null || this.connection.isClosed()) {
 			this.connection = SurveyDatabase.createConnection(servletConfig);
+			this.connection.setAutoCommit(false);
+			prepareStatements();
 		}
 	}
 	private UserDb(ServletConfig servletConfig) throws SQLException {

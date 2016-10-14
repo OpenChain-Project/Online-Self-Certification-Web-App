@@ -43,6 +43,7 @@ public class Submission {
 	private int score;
 	private boolean approved;
 	private boolean rejected;
+	private String id;
 	
 	public Submission(User user, boolean submitted, int percentComplete, int score,
 			boolean approved, boolean rejected) {
@@ -61,6 +62,7 @@ public class Submission {
 		this.rejected = response.isRejected();
 		this.percentComplete = calcPercentComplete(response.getSurvey(), response.getResponses());
 		this.score = calcScore(response.getSurvey(), response.getResponses());
+		this.id = response.getId();
 	}
 	@SuppressWarnings("unused")
 	private int calcScore(Survey survey, Map<String, Answer> answers) {
@@ -180,5 +182,19 @@ public class Submission {
 	 */
 	public void setRejected(boolean rejected) {
 		this.rejected = rejected;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(String id) {
+		this.id = id;
 	}
 }

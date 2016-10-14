@@ -73,6 +73,7 @@ public class TestSurveyResponseDao {
 	String s2q3SpecRef = "s2q3SpecRef";
 	SurveyDbDao surveyDao;
 	User user;
+	User user2;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -135,6 +136,19 @@ public class TestSurveyResponseDao {
 		user.setVerificationExpirationDate(new Date());
 		user.setVerified(true);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);	
+		user2 = new User();
+		user2.setAddress("Address");
+		user2.setAdmin(false);
+		user2.setEmail("test2@openchain.com");
+		user2.setName("Test User2");
+		user2.setOrganization("Test Og2.");
+		user2.setPasswordReset(false);
+		user2.setPasswordToken("TOKEN2");
+		user2.setUsername("testuser2");
+		user2.setUuid(UUID.randomUUID().toString());
+		user2.setVerificationExpirationDate(new Date());
+		user2.setVerified(true);
+		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user2);	
 	}
 
 	@After
@@ -243,7 +257,7 @@ public class TestSurveyResponseDao {
 		Answer resultAnswer2 = resultResponses.get(s1q2Number);
 		assertTrue(resultAnswer2 instanceof YesNoAnswer);
 		assertEquals(s1q2answer.getAnswer(), ((YesNoAnswer)resultAnswer2).getAnswer());
-
+		assertEquals(response.getId(), result.getId());
 		// test latest version
 		result = dao.getSurveyResponse(user.getUsername(), null);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
@@ -263,6 +277,7 @@ public class TestSurveyResponseDao {
 		Answer resultSubAnswer = resultResponses.get(s2q1Number);
 		Answer subAnswer = ((SubQuestionAnswers)resultSubAnswer).getSubAnswers().get(s2q3Number);
 		assertEquals(s2q3answer.getAnswer(), ((YesNoAnswer)subAnswer).getAnswer());	
+		assertEquals(response2.getId(), result.getId());
 	}
 
 	@Test
@@ -312,6 +327,55 @@ public class TestSurveyResponseDao {
 	}
 	
 	@Test
+	public void testSetApprovedIds() throws SQLException, SurveyResponseException, QuestionException {
+		SurveyResponse response = new SurveyResponse();
+		response.setResponder(user);
+		Map<String, Answer> responses = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer = new YesNoAnswer(YesNo.No);
+		YesNoAnswer s1q2answer = new YesNoAnswer(YesNo.NotAnswered);
+
+		responses.put(s1q1Number, s1q1answer);
+		responses.put(s1q2Number, s1q2answer);
+		response.setResponses(responses);
+		response.setSpecVersion(specVersion);
+		response.setApproved(false);
+		response.setSurvey(survey);
+		SurveyResponseDao dao = new SurveyResponseDao(con);
+		dao.addSurveyResponse(response);
+		
+		SurveyResponse response2 = new SurveyResponse();
+		response2.setResponder(user2);
+		Map<String, Answer> responses2 = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer2 = new YesNoAnswer(YesNo.No);
+		YesNoAnswer s1q2answer2 = new YesNoAnswer(YesNo.NotAnswered);
+
+		responses2.put(s1q1Number, s1q1answer2);
+		responses2.put(s1q2Number, s1q2answer2);
+		response2.setResponses(responses2);
+		response2.setSpecVersion(specVersion);
+		response2.setApproved(true);
+		response2.setSurvey(survey);
+		dao.addSurveyResponse(response2);	
+		
+		SurveyResponse result = dao.getSurveyResponse(user.getUsername(), null);
+		assertFalse(result.isApproved());
+		result = dao.getSurveyResponse(user2.getUsername(), null);
+		assertTrue(result.isApproved());
+		String[] ids = new String[] {response.getId(), response2.getId()};
+		
+		dao.setApproved(ids, true);
+		result = dao.getSurveyResponse(user.getUsername(), null);
+		assertTrue(result.isApproved());
+		result = dao.getSurveyResponse(user2.getUsername(), null);
+		assertTrue(result.isApproved());
+		dao.setApproved(ids, false);
+		result = dao.getSurveyResponse(user.getUsername(), null);
+		assertFalse(result.isApproved());
+		result = dao.getSurveyResponse(user2.getUsername(), null);
+		assertFalse(result.isApproved());
+	}
+	
+	@Test
 	public void testSetRejected() throws SQLException, SurveyResponseException, QuestionException {
 		SurveyResponse response = new SurveyResponse();
 		response.setResponder(user);
@@ -332,6 +396,55 @@ public class TestSurveyResponseDao {
 		dao.setRejected(user.getUsername(), specVersion, true);
 		result = dao.getSurveyResponse(user.getUsername(), null);
 		assertTrue(result.isRejected());
+	}
+	
+	@Test
+	public void testSetRejectedIds() throws SQLException, SurveyResponseException, QuestionException {
+		SurveyResponse response = new SurveyResponse();
+		response.setResponder(user);
+		Map<String, Answer> responses = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer = new YesNoAnswer(YesNo.No);
+		YesNoAnswer s1q2answer = new YesNoAnswer(YesNo.NotAnswered);
+
+		responses.put(s1q1Number, s1q1answer);
+		responses.put(s1q2Number, s1q2answer);
+		response.setResponses(responses);
+		response.setSpecVersion(specVersion);
+		response.setRejected(false);
+		response.setSurvey(survey);
+		SurveyResponseDao dao = new SurveyResponseDao(con);
+		dao.addSurveyResponse(response);
+		
+		SurveyResponse response2 = new SurveyResponse();
+		response2.setResponder(user2);
+		Map<String, Answer> responses2 = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer2 = new YesNoAnswer(YesNo.No);
+		YesNoAnswer s1q2answer2 = new YesNoAnswer(YesNo.NotAnswered);
+
+		responses2.put(s1q1Number, s1q1answer2);
+		responses2.put(s1q2Number, s1q2answer2);
+		response2.setResponses(responses2);
+		response2.setSpecVersion(specVersion);
+		response2.setRejected(true);
+		response2.setSurvey(survey);
+		dao.addSurveyResponse(response2);	
+		
+		SurveyResponse result = dao.getSurveyResponse(user.getUsername(), null);
+		assertFalse(result.isRejected());
+		result = dao.getSurveyResponse(user2.getUsername(), null);
+		assertTrue(result.isRejected());
+		String[] ids = new String[] {response.getId(), response2.getId()};
+		
+		dao.setRejected(ids, true);
+		result = dao.getSurveyResponse(user.getUsername(), null);
+		assertTrue(result.isRejected());
+		result = dao.getSurveyResponse(user2.getUsername(), null);
+		assertTrue(result.isRejected());
+		dao.setRejected(ids, false);
+		result = dao.getSurveyResponse(user.getUsername(), null);
+		assertFalse(result.isRejected());
+		result = dao.getSurveyResponse(user2.getUsername(), null);
+		assertFalse(result.isRejected());
 	}
 	
 	@Test

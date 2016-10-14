@@ -167,14 +167,23 @@ function fillSubmissionStatusTable(submissions) {
 	$("#submitted-approved").empty();
 	$("#submitted-rejected").empty();
 	$("#not-submitted").empty();
-	var submittedAwaitingApprovalHtml = '<tr><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
-	var submittedRejectedHtml = '<tr><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
+	$(".status-button").button("disable");
+	var submittedAwaitingApprovalHtml = '<tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
+	var submittedRejectedHtml = '<tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
 	var notSubmittedHtml = '<tr><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
-	var submittedApproved = '<tr><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
+	var submittedApprovedHtml = '<tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
 	for (var i = 0; i < submissions.length; i++) {
 		var html = '<tr id="submission-';
-		html += submissions[i].user.username;
-		html += '"><td class="username_col">';
+		html += submissions[i].id;
+		html += '">';
+		if (submissions[i].submitted) {
+			html += '<td class="cb_col"><input class="status-cb" id = "submission-checked-';
+			html += submissions[i].id;
+			html += '" type="checkbox" name="submission-checked-';
+			html += submissions[i].id;
+			html += '" /></td>';
+		}
+		html += '<td class="username_col">';
 		html += submissions[i].user.username;
 		html += '</td><td class="organization_col">';
 		html += submissions[i].user.organization;
@@ -187,7 +196,7 @@ function fillSubmissionStatusTable(submissions) {
 		html += '</td></tr>\n';
 		if (submissions[i].submitted) {
 			if (submissions[i].approved) {
-				submittedApproved += html;
+				submittedApprovedHtml += html;
 			} else if (submissions[i].rejected) {
 				submittedRejectedHtml += html;
 			} else {
@@ -197,10 +206,116 @@ function fillSubmissionStatusTable(submissions) {
 			notSubmittedHtml += html;
 		}
 	}
-	$("#submitted-awaiting-approval").html(submittedAwaitingApprovalHtml);
-	$("#submitted-approved").html(submittedApproved);
-	$("#submitted-rejected").html(submittedRejectedHtml);
-	$("#not-submitted").html(notSubmittedHtml);
+	var submittedAwaitingApproval = $("#submitted-awaiting-approval");
+	submittedAwaitingApproval.html(submittedAwaitingApprovalHtml);
+	var submittedApproved = $("#submitted-approved");
+	submittedApproved.html(submittedApprovedHtml);
+	var submittedRejected = $("#submitted-rejected");
+	submittedRejected.html(submittedRejectedHtml);
+	var notSubmitted = $("#not-submitted");
+	notSubmitted.html(notSubmittedHtml);
+	addCheckboxButtonEnablers(submittedAwaitingApproval, $(".submitted-awaiting-approval-button"));
+	addCheckboxButtonEnablers(submittedRejected, $(".submitted-rejected-button"));
+	addCheckboxButtonEnablers(submittedApproved, $(".submitted-approved-button"));
+}
+
+function addCheckboxButtonEnablers(context, buttons) {
+	var selector = $('td input:checkbox',context);
+	selector.change(function() {
+		if($(this).prop('checked')) {
+			buttons.button("enable");
+		} else {
+			var somethingChecked = false;
+			selector.each(function() {
+				if($(this).prop('checked')) {
+					somethingChecked = true;
+				}
+			});
+			if (!somethingChecked) {
+				buttons.button("disable");
+			}
+		}
+	});
+}
+
+/**
+ * Request a status change for a submission
+ * @param request One of setApproved, resetApproved, setRejected, resetRejeted
+ * @param ids
+ */
+function requestStatusChange(request, ids) {
+	disableSubmitCheckboxes();
+	$.ajax({
+	    url: "CertificationServlet",
+	    data:JSON.stringify({
+	        request: request,
+	        ids: ids
+	    }),
+	    type: "POST",
+	    dataType : "json",
+	    contentType: "json",
+	    success: function( json ) {
+	    	enableSubmitCheckboxes();
+	    	if (json.status == "OK") {
+	    		reloadSubmissionStatus();
+	    	} else {
+	    		displayError(json.error);
+	    	}
+	    },
+	    error: function( xhr, status, errorThrown ) {
+	    	enableSubmitCheckboxes();
+	    	handleError( xhr, status, errorThrown);
+	    }
+	});
+}
+
+/**
+ * @param context Selector for the table containing the checkmarks
+ * @return Array of ID's for each row in the table that has a checkmark
+ */
+function getCheckedIds(context) {
+	var retval = [];
+	$('td input:checkbox',context).each(function() {
+		if($(this).prop('checked')) {
+			var idString = $(this).attr("id");
+			var id = idString.substring("submission-checked-".length,idString.length);
+			retval.push(id);
+		}
+	});
+	return retval;
+}
+
+function disableSubmitCheckboxes() {
+	$(".status-cb").attr("disabled", true);
+}
+
+function enableSubmitCheckboxes() {
+	$(".status-cb").removeAttr("disabled");
+}
+
+function reloadSubmissionStatus() {
+	$("#submitted-awaiting-approval").empty();
+	$("#submitted-approved").empty();
+	$("#submitted-rejected").empty();
+	$("#not-submitted").empty();
+	$(".status-button").button("disable");
+	$("#submission-status-loading").show();
+	$.ajax({
+	    url: "CertificationServlet",
+	    data: {
+	        request: "getsubmissions"
+	    },
+	    type: "GET",
+	    dataType : "json",
+	    success: function( json ) {
+	    	$("#submission-status-loading").hide();
+	    	fillSubmissionStatusTable(json);
+	    },
+	    error: function( xhr, status, errorThrown ) {
+	    	$("#submission-status-loading").hide();
+	    	handleError( xhr, status, errorThrown);
+	    }
+	});
 }
 
 $(document).ready( function() {
@@ -287,6 +402,26 @@ $(document).ready( function() {
 	      openUpdateSurveyDialog();
 	});
 	
+	$("#btApprove").button().button().click(function(event) {
+	      event.preventDefault();
+	      requestStatusChange("setApproved", getCheckedIds($("#submitted-awaiting-approval")));
+	});
+	
+	$("#btReject").button().button().click(function(event) {
+	      event.preventDefault();
+	      requestStatusChange("setRejected", getCheckedIds($("#submitted-awaiting-approval")));
+	});
+	
+	$("#btUnReject").button().button().click(function(event) {
+	      event.preventDefault();
+	      requestStatusChange("resetRejected", getCheckedIds($("#submitted-rejected")));
+	});
+	
+	$("#btUnApprove").button().button().click(function(event) {
+	      event.preventDefault();
+	      requestStatusChange("resetApproved", getCheckedIds($("#submitted-approved")));
+	});
+	
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
@@ -302,21 +437,5 @@ $(document).ready( function() {
 	    }
 	});
 	
-	$("#submission-status-loading").show();
-	$.ajax({
-	    url: "CertificationServlet",
-	    data: {
-	        request: "getsubmissions"
-	    },
-	    type: "GET",
-	    dataType : "json",
-	    success: function( json ) {
-	    	$("#submission-status-loading").hide();
-	    	fillSubmissionStatusTable(json);
-	    },
-	    error: function( xhr, status, errorThrown ) {
-	    	$("#submission-status-loading").hide();
-	    	handleError( xhr, status, errorThrown);
-	    }
-	});
+	reloadSubmissionStatus();
 });

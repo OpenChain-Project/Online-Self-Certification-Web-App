@@ -86,11 +86,13 @@ public class CertificationServlet extends HttpServlet {
 	private static final String FINAL_SUBMISSION_REQUEST = "finalSubmission";
 	private static final String UPLOAD_SURVEY_REQUEST = "uploadsurvey";
 	private static final String UPDATE_SURVEY_REQUEST = "updatesurvey";
-
 	private static final String RESEND_VERIFICATION = "resendverify";
-
 	private static final String DOWNLOAD_ANSWERS = "downloadanswers";
-       
+	private static final String SET_APPROVED = "setApproved";
+	private static final String RESET_APPROVED = "resetApproved";
+	private static final String SET_REJECTED = "setRejected";
+	private static final String RESET_REJECTED = "resetRejected";  
+	
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -337,6 +339,62 @@ public class CertificationServlet extends HttpServlet {
 	        		postResponse.setError("Must have admin privileges to update a survey");
         		}
         		
+        	} else if (rj.getRequest().equals(SET_APPROVED)) {
+        		if (user.isAdmin()) {
+        			Connection con = SurveyDatabase.createConnection(getServletConfig());
+        			try {
+            			SurveyResponseDao dao = new SurveyResponseDao(con);
+            			dao.setApproved(rj.getIds(),true);
+        			} finally {
+        				con.close();
+        			}
+        		} else {
+        			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        			postResponse.setStatus(Status.ERROR);
+	        		postResponse.setError("Must have admin privileges to set submission status");
+        		}
+        	} else if (rj.getRequest().equals(RESET_APPROVED)) {
+        		if (user.isAdmin()) {
+        			Connection con = SurveyDatabase.createConnection(getServletConfig());
+        			try {
+            			SurveyResponseDao dao = new SurveyResponseDao(con);
+            			dao.setApproved(rj.getIds(),false);
+        			} finally {
+        				con.close();
+        			}
+        		} else {
+        			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        			postResponse.setStatus(Status.ERROR);
+	        		postResponse.setError("Must have admin privileges to set submission status");
+        		}
+        	} else if (rj.getRequest().equals(SET_REJECTED)) {
+        		if (user.isAdmin()) {
+        			Connection con = SurveyDatabase.createConnection(getServletConfig());
+        			try {
+            			SurveyResponseDao dao = new SurveyResponseDao(con);
+            			dao.setRejected(rj.getIds(),true);
+        			} finally {
+        				con.close();
+        			}
+        		} else {
+        			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        			postResponse.setStatus(Status.ERROR);
+	        		postResponse.setError("Must have admin privileges to set submission status");
+        		}
+        	} else if (rj.getRequest().equals(RESET_REJECTED)) {
+        		if (user.isAdmin()) {
+        			Connection con = SurveyDatabase.createConnection(getServletConfig());
+        			try {
+            			SurveyResponseDao dao = new SurveyResponseDao(con);
+            			dao.setRejected(rj.getIds(),false);
+        			} finally {
+        				con.close();
+        			}
+        		} else {
+        			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        			postResponse.setStatus(Status.ERROR);
+	        		postResponse.setError("Must have admin privileges to set submission status");
+        		}
         	} else if (rj.getRequest().equals(LOGOUT_REQUEST)) {
         		user.logout();
         	} else {

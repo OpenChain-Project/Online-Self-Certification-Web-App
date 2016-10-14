@@ -36,6 +36,7 @@ public class RequestJson {
 	private String specVersion;
 	private String[] csvLines;
 	private SectionTextJson[] sectionTexts;
+	private String[] ids;
 	
 	/**
 	 * @return the request
@@ -168,6 +169,18 @@ public class RequestJson {
 	 */
 	public void setSectionTexts(SectionTextJson[] sectionTexts) {
 		this.sectionTexts = sectionTexts;
+	}
+	/**
+	 * @return the ids
+	 */
+	public String[] getIds() {
+		return ids;
+	}
+	/**
+	 * @param ids the ids to set
+	 */
+	public void setIds(String[] ids) {
+		this.ids = ids;
 	}
 
 }

@@ -1,3 +1,6 @@
+h1, h2, h3, h4, h5 {
+	margin: 6px 6px 6px 6px;
+	}
 /* Dialog css */
 label, input { 
 	display:block; 
@@ -78,8 +81,8 @@ input.radio {
 
 .admin-table {
 	border: 1px solid black;
-	margin: 12px 0 0 2px;
-	padding: 2px 0 0 2px;
+	margin: 12px 6px 6px 6px;
+	padding: 2px 0 0 6px;
 }
 
 .username_col {
@@ -100,6 +103,16 @@ input.radio {
 
 .score_col {
     text-align:center;
+}
+
+.cb-col {
+	text-align:center;
+}
+
+.status-cb {
+    text-align:center;
+    margin: 2px 2px 2px 2px;
+    padding: 2px 2px 2px 2px;
 }
 
 /* Navbar */
@@ -138,7 +151,7 @@ input.radio {
 	font-size: 14px;
 	padding: 3px;
 }
-#CertFormButtons {
+.admin-buttons {
 	padding:3px;
 	margin:auto; 
 	width: 50%;

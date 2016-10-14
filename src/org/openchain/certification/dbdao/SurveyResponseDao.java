@@ -49,6 +49,8 @@ import org.openchain.certification.model.YesNoQuestion.YesNo;
 
 /**
  * Manage data access for Survey Responses
+ * NOTE: There is an assumption that there is only one response per user.  If this
+ * assumption is changed, some code redesign will be in order
  * @author Gary O'Neall
  *
  */
@@ -64,14 +66,14 @@ public class SurveyResponseDao {
 	private PreparedStatement addAnswerQuery;
 	private PreparedStatement updateAnswerQuery;
 	private PreparedStatement deleteAnswerQuery;
-	private PreparedStatement getSubmittedQuery;
 	private PreparedStatement setSubmittedQuery;
-	private PreparedStatement getApprovedQuery;
 	private PreparedStatement setApprovedQuery;
-	private PreparedStatement getRejectedQuery;
 	private PreparedStatement setRejectedQuery;
 	private PreparedStatement getQuestionNameQuery;
 	private PreparedStatement getUsersWithResponsesQuery;
+	private PreparedStatement setApprovedIdsQuery;
+	private PreparedStatement setRejectedIdsQuery;
+	private PreparedStatement getStatusQuery;
 	
 	public SurveyResponseDao(Connection con) throws SQLException {
 		this.con = con;
@@ -93,8 +95,8 @@ public class SurveyResponseDao {
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		getSpecVersionIdQuery = con.prepareStatement("select id from spec where version=?",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		addSurveyResponseQuery = con.prepareStatement("insert into survey_response (user_id, spec_version) values (?,?)",
-				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		addSurveyResponseQuery = con.prepareStatement("insert into survey_response (user_id, spec_version, submitted, approved, rejected) values (?,?,?,?,?)",
+				Statement.RETURN_GENERATED_KEYS);
 		deleteAnswerQuery = con.prepareStatement("delete from answer where response_id in (select id from " +
 				"survey_response where user_id=? and spec_version=?) and question_id in (select id from question where number=? and section_id in " +
 				"(select id from section where spec_version=?))",
@@ -107,32 +109,29 @@ public class SurveyResponseDao {
 				"survey_response where user_id=? and spec_version=?), (select id from question where number=? and section_id in " +
 				"(select id from section where spec_version=?)), ?, ?)",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		getSubmittedQuery = con.prepareStatement("select submitted from survey_response " +
-				"join spec on survey_response.spec_version=spec.id " +
-				" where user_id=? and version=?",
-				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		setSubmittedQuery = con.prepareStatement("update survey_response set submitted=? where " +
 				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		getApprovedQuery = con.prepareStatement("select approved from survey_response " +
+		getStatusQuery = con.prepareStatement("select survey_response.id as id, approved, rejected, submitted from survey_response " +
 				"join spec on survey_response.spec_version=spec.id " +
 				" where user_id=? and version=?",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		setApprovedQuery = con.prepareStatement("update survey_response set approved=? where " +
 				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		getRejectedQuery = con.prepareStatement("select rejected from survey_response " +
-				"join spec on survey_response.spec_version=spec.id " +
-				" where user_id=? and version=?",
+		setApprovedIdsQuery = con.prepareStatement("update survey_response set approved=? where id=?",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		setRejectedQuery = con.prepareStatement("update survey_response set rejected=? where " +
 				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)",
+				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		setRejectedIdsQuery = con.prepareStatement("update survey_response set rejected=? where id=?",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		getQuestionNameQuery = con.prepareStatement("select number from question where id=?",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		getUsersWithResponsesQuery = con.prepareStatement("select username, password_token, name, address, email," +
 				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization, openchain_user.id, submitted, approved, rejected, version from survey_response join openchain_user " +
+				" uuid, organization, openchain_user.id as id, submitted, approved, rejected, version, " +
+				"survey_response.id as responseid from survey_response join openchain_user " +
 				"on survey_response.user_id=openchain_user.id join spec on survey_response.spec_version=spec.id" +
 				" order by username asc",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -188,9 +187,18 @@ public class SurveyResponseDao {
 			retval.setResponses(answers);
 			retval.setSurvey(survey);
 			retval.setSpecVersion(specVersion);
-			retval.setSubmitted(getSubmitted(userId, specVersion));
-			retval.setApproved(getApproved(userId, specVersion));
-			retval.setRejected(getRejected(userId, specVersion));
+			getStatusQuery.setLong(1, userId);
+			getStatusQuery.setString(2, specVersion);
+			result.close();
+			result = getStatusQuery.executeQuery();
+			if (!result.next()) {
+				logger.warn("Failed to obtain status");
+				return null;
+			}
+			retval.setSubmitted(result.getBoolean("submitted"));
+			retval.setApproved(result.getBoolean("approved"));
+			retval.setRejected(result.getBoolean("rejected"));
+			retval.setId(String.valueOf(result.getLong("id")));
 			return retval;
 		} catch (QuestionTypeException e) {
 			logger.error("Invalid question type getting survey response for user "+username,e);
@@ -241,6 +249,7 @@ public class SurveyResponseDao {
 				response.setApproved(result.getBoolean("approved"));
 				response.setRejected(result.getBoolean("rejected"));
 				String specVersion = result.getString("version");
+				response.setId(String.valueOf(result.getLong("responseid")));
 				response.setSpecVersion(specVersion);
 				Survey survey = surveys.get(specVersion);
 				if (survey == null) {
@@ -380,16 +389,28 @@ public class SurveyResponseDao {
 	 */
 	public synchronized void addSurveyResponse(SurveyResponse response) throws SQLException, SurveyResponseException, QuestionTypeException {
 		Savepoint save = con.setSavepoint();
+		ResultSet result = null;
 		try {
 			long userId = getUserId(response.getResponder().getUsername());
 			long versionId = getVersionId(response.getSpecVersion());
 			addSurveyResponseQuery.setLong(1, userId);
 			addSurveyResponseQuery.setLong(2, versionId);
+			addSurveyResponseQuery.setBoolean(3, response.isSubmitted());
+			addSurveyResponseQuery.setBoolean(4, response.isApproved());
+			addSurveyResponseQuery.setBoolean(5, response.isRejected());
 			int count = addSurveyResponseQuery.executeUpdate();
 			if (count != 1) {
 				logger.error("Unexpected count for adding survey response.  Expected one, returned "+String.valueOf(count));
 			}
+			result = addSurveyResponseQuery.getGeneratedKeys();
+			if (!result.next()) {
+				throw new SQLException("No key generated for add survey response");
+			}
+			response.setId(String.valueOf(result.getLong(1)));
 			_updateSurveyResponseAnswers(response, userId, versionId);
+			
+			// Fill in the ID for the survey response
+			
 		} catch(SQLException ex) {
 			logger.error("SQL exception updating survey response answers for "+response.getResponder().getUsername(),ex);
 			try {
@@ -399,26 +420,11 @@ public class SurveyResponseDao {
 			}
 			throw(ex);
 		} finally {
-			if (save != null) {
-				con.commit();
-			}
-		}
-	}
-	
-	private boolean getSubmitted(long userId, String specVersion) throws SQLException, SurveyResponseException {
-		ResultSet result = null;
-		try {
-			getSubmittedQuery.setLong(1, userId);
-			getSubmittedQuery.setString(2, specVersion);
-			result = getSubmittedQuery.executeQuery();
-			if (result.next()) {
-				return result.getBoolean(1);
-			} else {
-				throw new SurveyResponseException("No survey response found for user ID "+String.valueOf(userId));
-			}
-		} finally {
 			if (result != null) {
 				result.close();
+			}
+			if (save != null) {
+				con.commit();
 			}
 		}
 	}
@@ -439,23 +445,6 @@ public class SurveyResponseDao {
 			}
 		}
 	}
-	private boolean getApproved(long userId, String specVersion) throws SQLException, SurveyResponseException {
-		ResultSet result = null;
-		try {
-			getApprovedQuery.setLong(1, userId);
-			getApprovedQuery.setString(2, specVersion);
-			result = getApprovedQuery.executeQuery();
-			if (result.next()) {
-				return result.getBoolean(1);
-			} else {
-				throw new SurveyResponseException("No survey response found for user ID "+String.valueOf(userId));
-			}
-		} finally {
-			if (result != null) {
-				result.close();
-			}
-		}
-	}
 	
 	public synchronized void setApproved(String userName, String specVersion, boolean approved) throws SQLException {
 		Savepoint save = con.setSavepoint();
@@ -470,23 +459,6 @@ public class SurveyResponseDao {
 		} finally {
 			if (save != null) {
 				con.commit();
-			}
-		}
-	}
-	private boolean getRejected(long userId, String specVersion) throws SQLException, SurveyResponseException {
-		ResultSet result = null;
-		try {
-			getRejectedQuery.setLong(1, userId);
-			getRejectedQuery.setString(2, specVersion);
-			result = getRejectedQuery.executeQuery();
-			if (result.next()) {
-				return result.getBoolean(1);
-			} else {
-				throw new SurveyResponseException("No survey response found for user ID "+String.valueOf(userId));
-			}
-		} finally {
-			if (result != null) {
-				result.close();
 			}
 		}
 	}
@@ -695,6 +667,92 @@ public class SurveyResponseDao {
 			}
 		} finally {
 			// Didn't open a resultset, but leaving this as a hook if we add something that needs to be cleaned up
+		}
+	}
+
+	/**
+	 * @param ids any responses for any of these ID's will be set to approved
+	 * @param value value to set approved to
+	 * @throws SQLException 
+	 * @throws SurveyResponseException 
+	 */
+	public synchronized void setApproved(String[] ids, boolean value) throws SQLException, SurveyResponseException {
+		this.setApprovedIdsQuery.clearBatch();
+		Savepoint save = con.setSavepoint();
+		try {
+			for (String id:ids) {
+				setApprovedIdsQuery.setBoolean(1, value);
+				try {
+					setApprovedIdsQuery.setLong(2, Long.parseLong(id));
+				} catch (Exception ex2) {
+					throw new SurveyResponseException("Invalid ID - must be a number:"+id);
+				}
+				setApprovedIdsQuery.addBatch();
+			}
+			int[] counts = setApprovedIdsQuery.executeBatch();
+			if (counts.length != ids.length) {
+				logger.warn("Number of counts from batch does not match.  Expected "+
+						String.valueOf(ids.length) + ", found "+String.valueOf(counts.length));
+			}
+			for (int count:counts) {
+				if (count != 1) {
+					logger.warn("Unexpected count.  Expected 1, found "+String.valueOf(count));
+				}
+			}
+		} catch(SQLException ex) {
+			logger.error("SQL Exception: ",ex);
+			con.rollback(save);
+			throw(ex);
+		} catch(SurveyResponseException ex) {
+			con.rollback(save);
+			throw(ex);
+		} finally {
+			if (save != null) {
+				con.commit();
+			}
+		}
+	}
+
+	/**
+	 * @param ids any responses for any of these ID's will be set to rejected
+	 * @param value value to set rejected to
+	 * @throws SQLException 
+	 * @throws SurveyResponseException 
+	 */
+	public void setRejected(String[] ids, boolean value) throws SQLException, SurveyResponseException {
+		this.setRejectedIdsQuery.clearBatch();
+		Savepoint save = con.setSavepoint();
+		try {
+			for (String id:ids) {
+				setRejectedIdsQuery.setBoolean(1, value);
+				try {
+					setRejectedIdsQuery.setLong(2, Long.parseLong(id));
+				} catch (Exception ex2) {
+					throw new SurveyResponseException("Invalid ID - must be a number:"+id);
+				}
+				setRejectedIdsQuery.addBatch();
+			}
+			int[] counts = setRejectedIdsQuery.executeBatch();
+			if (counts.length != ids.length) {
+				logger.warn("Number of counts from batch does not match.  Expected "+
+						String.valueOf(ids.length) + ", found "+String.valueOf(counts.length));
+			}
+			for (int count:counts) {
+				if (count != 1) {
+					logger.warn("Unexpected count.  Expected 1, found "+String.valueOf(count));
+				}
+			}
+		} catch(SQLException ex) {
+			logger.error("SQL Exception: ",ex);
+			con.rollback(save);
+			throw(ex);
+		} catch(SurveyResponseException ex) {
+			con.rollback(save);
+			throw(ex);
+		} finally {
+			if (save != null) {
+				con.commit();
+			}
 		}
 	}
 }

@@ -31,6 +31,14 @@
     </div>
     <h2>Site Status</h2>
     Site Software Version: <span id="software-version"></span><br />
+        <h2>
+        Manage Survey Question Content
+    </h2>
+    <div id="manage-survey" class="admin-buttons">
+        <button id="btDownloadSurvey" class="ui-button ui-widget ui-corner-all">Download Survey Questions</button>
+        <button id="btUploadSurvey" class="ui-button ui-widget ui-corner-all">Upload New Survey Version</button>
+        <button id="btUpdateSurvey" class="ui-button ui-widget ui-corner-all">Update Survey Questions</button>
+    </div>
     <h2>Submission Status</h2>
     <div id="submission-status-loading">
         Loading <img src="resources/loading.gif" alt="Loading" class="loading">
@@ -38,23 +46,25 @@
     <h3>Submitted Awaiting Approval</h3>
     <table id="submitted-awaiting-approval" class="admin-table ui-corner-all">
     </table>
+    <div id="submitted-awaiting-approval-buttons" class="admin-buttons">
+    <button id="btApprove" class="submitted-awaiting-approval-button status-button ui-button ui-widget ui-corner-all">Approve Selected</button>
+    <button id="btReject" class="submitted-awaiting-approval-button status-button ui-button ui-widget ui-corner-all">Reject Selected</button>
+    </div>    
     <h3>Submitted Rejected</h3>
     <table id="submitted-rejected" class="admin-table ui-corner-all">
     </table>
-    <h3>Not Submitted</h3>
-    <table id="not-submitted" class="admin-table ui-corner-all">
-    </table>
+    <div id="submitted-rejected-buttons" class="admin-buttons">
+    <button id="btUnReject" class="submitted-rejected-button status-button ui-button ui-widget ui-corner-all">UnReject Selected</button>
+    </div>
     <h3>Approved</h3>
     <table id="submitted-approved" class="admin-table ui-corner-all">
     </table>
-    <h2>
-        Manage Survey Question Content
-    </h2>
-    <div id="manage-survey">
-        <button id="btDownloadSurvey" class="ui-button ui-widget ui-corner-all">Download Survey Questions</button>
-        <button id="btUploadSurvey" class="ui-button ui-widget ui-corner-all">Upload New Survey Version</button>
-        <button id="btUpdateSurvey" class="ui-button ui-widget ui-corner-all">Update Survey Questions</button>
+    <div id="submitted-approved-buttons" class="admin-buttons">
+    <button id="btUnApprove" class="submitted-approved-button status-button ui-button ui-widget ui-corner-all">UnApprove Selected</button>
     </div>
+    <h3>Not Submitted</h3>
+    <table id="not-submitted" class="admin-table ui-corner-all">
+    </table>
     <div id="downloadsurvey">
         <form name="downloadsurvey-form" id="downloadsurvey-form">
         <fieldset>
