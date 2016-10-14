@@ -47,6 +47,7 @@ import org.openchain.certification.model.Submission;
 import org.openchain.certification.model.Survey;
 import org.openchain.certification.model.SurveyResponse;
 import org.openchain.certification.model.SurveyResponseException;
+import org.openchain.certification.model.User;
 import org.openchain.certification.utility.EmailUtilException;
 import org.openchain.certification.utility.EmailUtility;
 
@@ -92,6 +93,7 @@ public class CertificationServlet extends HttpServlet {
 	private static final String RESET_APPROVED = "resetApproved";
 	private static final String SET_REJECTED = "setRejected";
 	private static final String RESET_REJECTED = "resetRejected";  
+	private static final String GET_CERTIFIED_REQUEST = "getcertified";
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -115,6 +117,19 @@ public class CertificationServlet extends HttpServlet {
 	            response.setContentType("application/json"); 
 	            if (requestParam.equals(GET_VERSION_REQUEST)) {
 	            	gson.toJson(version, out);
+	            } else if (requestParam.equals(GET_CERTIFIED_REQUEST)) {
+	            	List<Submission> submissions = getSubmissions();
+	            	List<Submission> certifiedSubmissions = new ArrayList<Submission>();
+	            	for (Submission submission:submissions) {
+	            		if (submission.isApproved()) {
+	            			User certifiedUser = User.createNonPrivateInfo(submission.getUser());
+	            			Submission certifiedSubmission = new Submission(certifiedUser, true, 
+	            					submission.getPercentComplete(), submission.getScore(), 
+	            					submission.isApproved(), submission.isRejected());
+	            			certifiedSubmissions.add(certifiedSubmission);
+	            		}
+	            	}
+	            	gson.toJson(certifiedSubmissions, out);
 	            } else if (requestParam.equals(REGISTER_USER)) {
 	            	String username = request.getParameter(PARAMETER_USERNAME);
 	            	String uuid = request.getParameter(PARAMETER_UUID);
@@ -263,6 +278,7 @@ public class CertificationServlet extends HttpServlet {
         		UserSession newUser = new UserSession(rj.getUsername(),rj.getPassword(), getServletConfig());
         		if (newUser.login()) {
         			session.setAttribute(SESSION_ATTRIBUTE_USER, newUser);
+        			postResponse.setAdmin(newUser.isAdmin());
         		} else if (newUser.isValidPasswordAnNotVerified()) {
         			postResponse.setStatus(Status.NOT_VERIFIED);
         			postResponse.setError("User has not been verified.");

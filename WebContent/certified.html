@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-  <head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>OpenChain Registration Failed</title>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>OpenChain Certified</title>
     <link rel="stylesheet" href="styles/openchain.css" type="text/css" media="screen">
     <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen">
     <link rel="stylesheet" href="resources/jquery-ui/jquery-ui.min.css">
@@ -11,11 +11,12 @@
     <script src="resources/jquery-ui/jquery-ui.min.js"></script>
     <script src="resources/jquery.jui_dropdown.min.js"></script>
     <script src="resources/navbar.js"></script>
-  </head>
-  <body>
-    <div class="navbar" id="topnav">
+    <script src="resources/certified.js"></script>
+</head>
+<body>
+   <div class="navbar" id="topnav">
         <div id="homelink" class="navlink" style="float:left"><a href="index.html"><span class="ui-icon ui-icon-home"></span>Home</a>&nbsp;&nbsp;&nbsp;</div>        
-        <div id="certifiedlink" class="navlink" style="float:left"><a href="certified.html"><span class="ui-icon ui-icon-check"></span>Certified Submissions</a>&nbsp;&nbsp;&nbsp;</div> 
+        <div id="certifiedlink" class="navlink" style="float:left"><a href="certified.html"><span class="ui-icon ui-icon-check"></span>Certified Submissions</a>&nbsp;&nbsp;&nbsp;</div>        
         <div id="surveylink" class="navlink" style="float:left"><a href="survey.html"><span class="ui-icon ui-icon-pencil"></span>Conformance Check</a>&nbsp;&nbsp;&nbsp;</div>
         <div id="adminlink" class="navlink" style="float:left"></div>
         <div id="usermenu" style="float:right;overflow:visible">
@@ -27,13 +28,15 @@
         </div>
     </div>
     <div id="TitleArea">
-        <h1>Registration Failed</h1>
+        <h1>Certified Organizations</h1>
+        The following organizations [NEED TO ADD TEXT DESCRIPTION]
     </div>
-    <div>
-        Something seems to have gone wrong in the registration.  The registration may have expired.
-        Please contact the OpenChain team for additional help.
+    <div id="status-loading">
+        Loading <img src="resources/loading.gif" alt="Loading" class="loading">
     </div>
-    <div id="errors"></div>
+    <table id="certified-table" class="admin-table ui-corner-all">
+    </table>
+        <div id="errors"></div>
     <div id="status"></div>
     <div id="resendveify"></div>
     <div id="login">
@@ -66,12 +69,11 @@
                 <label for="signup-email">Email</label>
                 <input type="text" name="signup-email" id="signup-email" class="text ui-widget-content ui-corner-all">
                 <label for="signup-address">Postal Address</label>
-                <textarea rows="8" cols="50" name="signup-address" id="signup-address" class="text ui-widget-content ui-corner-all" form="signup-form"></textarea>
-                
+                <textarea rows="8" cols="50" name="signup-address" id="signup-address" class="text ui-widget-content ui-corner-all" form="signup-form"></textarea>               
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </fieldset>
         </form>
     </div>
-  </body>
+</body>
 </html>

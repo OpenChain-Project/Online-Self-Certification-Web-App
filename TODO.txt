@@ -1,6 +1,4 @@
-- Add CSV import/export for questions
 - Add Maven build to manage dependencies
 - Add SPDX file (after Maven - use the Maven SPDX plugin)
-- Add resend verification email, once done in the EmailUtility, check for the expiration date in the register method
 - Add reset password
-- Add unit tests
+- Add paging to certified table and to the not submitted table

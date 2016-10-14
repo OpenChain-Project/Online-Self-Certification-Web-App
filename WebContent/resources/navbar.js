@@ -109,6 +109,7 @@ function loginUser() {
 	var password = $("#login-password");
 	tips = $(".validateTips");
 	tips.text('');
+	password.text('');
 	var valid = true;
 	username.removeClass("ui-state-error");
 	password.removeClass("ui-state-error");
@@ -129,8 +130,11 @@ function loginUser() {
 		    async: false, 
 		    success: function( json ) {
 		    	if ( json.status == "OK" ) {
-		    		// redirect to the survey page
-		    		window.location = "survey.html";
+		    		if (json.admin) {
+		    			window.location = "admin.html";
+		    		} else {
+		    			window.location = "survey.html";
+		    		}
 		    	} else if (json.status == "NOT_VERIFIED") {
 		    		openResendVerificationDialog(username, password);
 		    	} else {
@@ -345,6 +349,7 @@ $(document).ready( function() {
 		}, {
 			text: "Cancel",
 			click: function() {
+				window.location = "index.html";
 				$(this).dialog("close");
 			}
 		}]

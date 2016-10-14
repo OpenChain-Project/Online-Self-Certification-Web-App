@@ -28,6 +28,7 @@ public class PostResponse {
 	private Status status;
 	private String sectionName;
 	private String error;
+	private boolean admin;
 
 	public PostResponse(Status status) {
 		this.status = status;
@@ -74,7 +75,13 @@ public class PostResponse {
 	public void setError(String error) {
 		this.error = error;
 	}
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
+	}
 	
-	
+	public boolean isAdmin() {
+		return this.admin;
+	}
 
 }

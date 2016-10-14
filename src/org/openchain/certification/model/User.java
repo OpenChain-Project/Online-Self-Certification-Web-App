@@ -39,6 +39,20 @@ public class User {
 	 * This is a hashed version of the uuid used for the email verification
 	 */
 	private String uuid;
+	
+	/**
+	 * Copies all of the non-private information from a user into a new instance of a user
+	 * @param user
+	 * @return
+	 */
+	public static User createNonPrivateInfo(User user) {
+		User retval = new User();
+		retval.setEmail(user.getEmail());
+		retval.setName(user.getName());
+		retval.setOrganization(user.getOrganization());
+		return retval;
+	}
+	
 	/**
 	 * @return the verificationDate
 	 */
