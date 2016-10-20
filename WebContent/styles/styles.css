@@ -1,6 +1,16 @@
 h1, h2, h3, h4, h5 {
 	margin: 6px 6px 6px 6px;
+	    color: #58595b;
 	}
+body {
+	margin: 6px;
+}
+a {
+	color: #888;
+}
+a:visited {
+    color: #27CFC3;
+}
 /* Dialog css */
 label, input { 
 	display:block; 
@@ -62,6 +72,7 @@ table tr:nth-child(odd) {
 .question_cell {
     float: left;
     clear: none;
+    width: 60px;
 }
 .number_cell {
     text-align:center;
@@ -118,7 +129,7 @@ input.radio {
 /* Navbar */
 .navbar {
 	display: inline-block;
-	background-color: #EAECEE;
+	background-color: white;
 	width: 100%;
     padding: 1px;
     overflow: auto;

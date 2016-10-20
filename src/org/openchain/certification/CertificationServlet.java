@@ -63,7 +63,7 @@ public class CertificationServlet extends HttpServlet {
 	/**
 	 * Version of this software - should be updated before every release
 	 */
-	static final String version = "0.0.10";
+	static final String version = "0.0.12";
 	
 	static final Logger logger = Logger.getLogger(CertificationServlet.class);
 	
@@ -200,6 +200,11 @@ public class CertificationServlet extends HttpServlet {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.setContentType("text"); 
 				out.print("Unexpected data exception.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
+			} catch (Exception e) {
+				logger.error("Uncaught exception",e);
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				response.setContentType("text"); 
+				out.print("An unexpected error occurred.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
 			} finally {
 				out.close();
 			}
@@ -332,6 +337,16 @@ public class CertificationServlet extends HttpServlet {
     					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     	        		postResponse.setStatus(Status.ERROR);
     	        		postResponse.setError("Invalid survey question update: "+e.getMessage());
+    				} catch (SurveyResponseException e) {
+    					logger.warn("Invalid survey question update",e);
+    					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    	        		postResponse.setStatus(Status.ERROR);
+    	        		postResponse.setError("Invalid survey question update: "+e.getMessage());
+    				} catch (QuestionException e) {
+    					logger.warn("Invalid survey question update",e);
+    					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    	        		postResponse.setStatus(Status.ERROR);
+    	        		postResponse.setError("Invalid survey question update: "+e.getMessage());
     				}
         		} else {
         			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -444,6 +459,12 @@ public class CertificationServlet extends HttpServlet {
 			postResponse.setStatus(Status.ERROR);
 			postResponse.setError("Your submission was saved, however, there was a problem sending the notification to the OpenChain team.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
 			gson.toJson(postResponse, out);
+		} catch (Exception e) {
+        	logger.error("Uncaught exception",e);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			postResponse.setStatus(Status.ERROR);
+			postResponse.setError("An unexpected error occurred.  Please notify the OpenChain technical group that the following error has occured: "+e.getMessage());
+			gson.toJson(postResponse, out);
 		} finally {
         	out.close();
         }
@@ -500,7 +521,11 @@ public class CertificationServlet extends HttpServlet {
 			if (question.getSubQuestionNumber() != null) {
 				SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionNumber());
 				if (parentQuestion == null) {
-					parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionNumber(), specVersion, 0);
+					try {
+						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionNumber(), specVersion, 0);
+					} catch(QuestionException ex) {
+						throw new UpdateSurveyException("Invalid parent question number for question number "+question.getNumber());
+					}
 					questionsWithSubs.put(question.getSubQuestionNumber(), parentQuestion);
 				}
 				parentQuestion.addSubQuestion(question);

@@ -346,7 +346,7 @@ $(document).ready( function() {
 		title: "Upload Survey",
 		autoOpen: false,
 		height: 600,
-		width: 550,
+		width: 600,
 		modal: true,
 		buttons: [{
 			text: "Upload",

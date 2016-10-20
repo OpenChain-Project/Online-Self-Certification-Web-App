@@ -34,6 +34,7 @@ public abstract class Question implements Comparable<Question> {
 	protected String type;
 	protected String specVersion;
 	transient static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)(\\.\\d+)?(\\.\\d+)?");
+	transient static final Pattern NUM_ALPH_AROMAN_PATTERN = Pattern.compile("(\\d+)(\\.[a-z]+)?(\\.[ivxlmcd]+)?");
 	transient private Matcher numberMatch;
 	private String specReference = "";
 
@@ -44,9 +45,13 @@ public abstract class Question implements Comparable<Question> {
 		if (number == null) {
 			throw(new QuestionException("Question number for question was not specified"));
 		}
-		this.numberMatch = NUMBER_PATTERN.matcher(number);
+		this.setNumberMatcher(number, specVersion);
 		if (!this.numberMatch.matches()) {
-			throw(new QuestionException("Invalid format for question number "+number+".  Must be of the format N or N.N or N.N.N"));
+			if (specVersion.compareTo("1.0.2") < 0) {
+				throw(new QuestionException("Invalid format for question number "+number+".  Must be of the format N or N.N or N.N.N"));
+			} else {
+				throw(new QuestionException("Invalid format for question number "+number+".  Must be of the format N or N.a or N.a.i"));
+			}
 		}
 		this.question = question;
 		this.sectionName = sectionName;
@@ -102,9 +107,9 @@ public abstract class Question implements Comparable<Question> {
 		if (number == null) {
 			throw(new QuestionException("Question number for question was not specified"));
 		}
-		this.numberMatch = NUMBER_PATTERN.matcher(number);
+		setNumberMatcher(number, this.specVersion);
 		if (!this.numberMatch.matches()) {
-			this.numberMatch = NUMBER_PATTERN.matcher(this.number);
+			setNumberMatcher(this.number, this.specVersion);
 			throw(new QuestionException("Invalid format for question number "+number+".  Must be of the format N or N.N or N.N.N"));
 		}
 		this.number = number;
@@ -138,42 +143,139 @@ public abstract class Question implements Comparable<Question> {
 		return this.numberMatch;
 	}
 
+	/**
+	 * Create a number matcher.
+	 * @param number
+	 */
+	private void setNumberMatcher(String number, String specVersion) {
+		// Since we changed numbering systems after spec version 1.0.2, we need
+		// to set the appropriate pattern matches
+		if (specVersion.compareTo("1.0.2") < 0) {
+			this.numberMatch = NUMBER_PATTERN.matcher(number);
+		} else {
+			this.numberMatch = NUM_ALPH_AROMAN_PATTERN.matcher(number);
+		}
+	}
+	
 	@Override
 	public int compareTo(Question compare) {
 		int retval = this.specVersion.compareToIgnoreCase(compare.getSpecVersion());
+		if (retval != 0) {
+			return retval;
+		} else if (this.specVersion.compareTo("1.0.2") < 0) {
+				return compareNumeric(compare);
+		} else {
+			return compareNumAlphaRoman(compare);
+		}
+	}
+
+	private int compareNumAlphaRoman(Question compare) {
+		Matcher compareMatch = compare.getNumberMatch();
+		int digit1 = Integer.parseInt(this.numberMatch.group(1));
+		int compareDigit1 = Integer.parseInt(compareMatch.group(1));
+		int retval = digit1 - compareDigit1;
 		if (retval == 0) {
-			Matcher compareMatch = compare.getNumberMatch();
-			int digit1 = Integer.parseInt(this.numberMatch.group(1));
-			int compareDigit1 = Integer.parseInt(compareMatch.group(1));
-			retval = digit1 - compareDigit1;
-			if (retval == 0) {
-				if (this.numberMatch.groupCount() > 1 && this.numberMatch.group(2) != null) {
-					if (compareMatch.groupCount() > 1 && compareMatch.group(2) != null) {
-						int digit2 = Integer.parseInt(this.numberMatch.group(2).substring(1));
-						int compareDigit2 = Integer.parseInt(compareMatch.group(2).substring(1));
-						retval = digit2 - compareDigit2;
-						if (retval == 0) {
-							if (this.numberMatch.groupCount() > 2 && this.numberMatch.group(3) != null) {
-								if (compareMatch.groupCount() > 2 && compareMatch.group(3) != null) {
-									int digit3 = Integer.parseInt(this.numberMatch.group(3).substring(1));
-									int compareDigit3 = Integer.parseInt(compareMatch.group(3).substring(1));
-									return digit3 - compareDigit3;
-								} else {
-									return 1;
-								}
+			if (this.numberMatch.groupCount() > 1 && this.numberMatch.group(2) != null) {
+				if (compareMatch.groupCount() > 1 && compareMatch.group(2) != null) {
+					int lev2 = alphaToInt(this.numberMatch.group(2).substring(1));
+					int compareLev2 = alphaToInt(compareMatch.group(2).substring(1));
+					retval = lev2 - compareLev2;
+					if (retval == 0) {
+						if (this.numberMatch.groupCount() > 2 && this.numberMatch.group(3) != null) {
+							if (compareMatch.groupCount() > 2 && compareMatch.group(3) != null) {
+								int lev3 = romanToInt(this.numberMatch.group(3).substring(1));
+								int compareLev3 = romanToInt(compareMatch.group(3).substring(1));
+								return lev3 - compareLev3;
 							} else {
-								if (compareMatch.groupCount() > 2 && compareMatch.group(3) != null) {
-									return -1;
+								return 1;
 							}
-								
+						} else {
+							if (compareMatch.groupCount() > 2 && compareMatch.group(3) != null) {
+								return -1;
+							}		
+						}
+					}
+				} else {
+					return 1;
+				}
+			} else if (compareMatch.groupCount() > 1 && compareMatch.group(2) != null) {
+				return -1;
+			}
+		}
+		return retval;
+	}
+
+	private int romanToInt(char letter) {
+		// NOTE: the letter is assumed to be upper case
+		switch(letter) {
+		case 'M': return 1000;
+		case 'D': return 500;
+		case 'C': return 100;
+		case 'L': return 50;
+		case 'X': return 10;
+		case 'V': return 5;
+		case 'I': return 1;
+		default: return 0;
+	}
+}
+	private int alphaToInt(String alpha) {
+		int retval = 0;
+		int numCharsUsed = 27; // Assum standard alphabet lowercase only
+		int valueOfa = Character.getNumericValue('a')-1;
+		String lowerAlppha = alpha.toLowerCase();
+		for (int i = lowerAlppha.length()-1; i >= 0; i--) {
+			retval = retval * numCharsUsed + (Character.getNumericValue(lowerAlppha.charAt(i))-valueOfa);
+		}
+		return retval;
+	}
+
+	private int romanToInt(String roman) {
+		int retval = 0;
+		String upperRoman = roman.toUpperCase();
+		for (int i = 0; i < upperRoman.length()-1; i++) {
+			int d1 = romanToInt(upperRoman.charAt(i));
+			int d2 = romanToInt(upperRoman.charAt(i+1));
+			if (d1 < d2) {
+				retval = retval - d1;
+			} else {
+				retval = retval + d1;
+			}
+		}
+		retval = retval + romanToInt(upperRoman.charAt(upperRoman.length()-1));
+		return retval;
+	}
+
+	private int compareNumeric(Question compare) {
+		Matcher compareMatch = compare.getNumberMatch();
+		int digit1 = Integer.parseInt(this.numberMatch.group(1));
+		int compareDigit1 = Integer.parseInt(compareMatch.group(1));
+		int retval = digit1 - compareDigit1;
+		if (retval == 0) {
+			if (this.numberMatch.groupCount() > 1 && this.numberMatch.group(2) != null) {
+				if (compareMatch.groupCount() > 1 && compareMatch.group(2) != null) {
+					int digit2 = Integer.parseInt(this.numberMatch.group(2).substring(1));
+					int compareDigit2 = Integer.parseInt(compareMatch.group(2).substring(1));
+					retval = digit2 - compareDigit2;
+					if (retval == 0) {
+						if (this.numberMatch.groupCount() > 2 && this.numberMatch.group(3) != null) {
+							if (compareMatch.groupCount() > 2 && compareMatch.group(3) != null) {
+								int digit3 = Integer.parseInt(this.numberMatch.group(3).substring(1));
+								int compareDigit3 = Integer.parseInt(compareMatch.group(3).substring(1));
+								return digit3 - compareDigit3;
+							} else {
+								return 1;
+							}
+						} else {
+							if (compareMatch.groupCount() > 2 && compareMatch.group(3) != null) {
+								return -1;
 							}
 						}
-					} else {
-						return 1;
 					}
-				} else if (compareMatch.groupCount() > 1 && compareMatch.group(2) != null) {
-					return -1;
+				} else {
+					return 1;
 				}
+			} else if (compareMatch.groupCount() > 1 && compareMatch.group(2) != null) {
+				return -1;
 			}
 		}
 		return retval;
