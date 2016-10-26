@@ -74,20 +74,67 @@ table tr:nth-child(odd) {
     clear: none;
     width: 60px;
 }
+.answer_cell label, input {
+    display:inline
+}
+
 .number_cell {
     text-align:center;
 }
-.question_cell label {
-	float: left;
-    clear: none;
-    display: block;
-    padding: 2px 1em 1px 5px;
+
+.yesno-switch {
+    font-family: sans-serif;
+    font-size: 12px;
+    width: 17em;
+    height: 2em;
+    text-align: center;
+    background: #cdcde5;
+    transition: all 0.2s ease;
+    border-radius: 10px;
 }
-.question_cell input[type=radio],
-input.radio {
-    float: left;
-    clear: none;
-    margin: 8px 0 0 2px;
+.answer_cell input[type=radio] {
+    display: none;
+}
+.yesno-switch label {
+    cursor: pointer;
+    color: rgba(0,0,0,0.2);
+    width: 3em;
+    padding: .3em;
+    line-height: 1.5em;
+    transition: all 0.2s ease;
+}
+
+.choice-yes:checked ~ .yesno-switch {
+    background: #00bc9c;
+}
+
+.choice-no:checked ~ .yesno-switch {
+    background: #eb4f37;
+}
+
+.yesno-switch span:after {
+    color: #fff;
+    content: "|";
+}
+
+.choice-yes:checked ~ .yesno-switch span:after {
+    color: #fff;
+    content: "\2714";
+    /* that's a check mark */
+}
+
+.choice-no:checked ~ .yesno-switch span:after {
+    color: #fff;
+    content: "\2718";
+    /* that's an x mark */
+}
+
+.choice-yes:checked ~ .yesno-switch label:first-child {
+    color: #fff;
+}
+
+.choice-no:checked ~ .yesno-switch label:last-child{
+    color: #fff;
 }
 
 .admin-table {

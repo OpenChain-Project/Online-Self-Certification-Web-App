@@ -16,9 +16,9 @@
 */
 
 function getQuestionFormHtml(questions) {
-	var html = '<table class="questiontable ui-corner-all">\n<col class="number_col" /><col class="question_col" /><col class="answer_col" /><col class="answer_col" /><col class="answer_col" />\n<col class="number_col" />\n';
+	var html = '<table class="questiontable ui-corner-all">\n<col class="number_col" /><col class="question_col" /><col class="answer_col" /><col class="answer_col" />\n<col class="number_col" />\n';
 	var inSubQuestions = false;
-	html += '<th class="number_col">#</th><th class="question_col">Question</th><th class="answer_col">Answer</th>\n<th class="number_col">Spec Ref</th>\n';
+	html += '<th class="number_col">#</th><th class="question_col">Question</th><th class="answer_col">Answer</th><th class="answer_col"></th><th class="number_col">Spec Ref</th>\n';
 	for (var i = 0; i < questions.length; i++) {
 		var type = questions[i].type;
 		var isSubQuestion = (questions[i].hasOwnProperty('subQuestionNumber'));
@@ -31,20 +31,23 @@ function getQuestionFormHtml(questions) {
 		html+= questions[i].question + '</td>';
 		
 		if (type == 'SUBQUESTIONS') {
-			html += '<td class="question_cell"></td>';
-			html += '<td class="question_cell"></td>';
-			html += '<td class="question_cell"></td>';
+			html += '<td class="answer_cell"></td>';
+			html += '<td class="answer_cell"></td>';
 			inSubQuestions = true;
 		} else {
-			html += '<td class="question_cell"><input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes" value="yes" />';		
-			html += '<label for="answer-' + questions[i].number + '_yes">Yes</label></td>';		
-			html += '<td class="question_cell"><input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no" value="no" />';
-			html += '<label for="answer-' + questions[i].number + '_no">No</label></td>';
+			html += '<td class="answer_cell"><span>';
+			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"  class="choice-yes"  value="yes" />';		
+			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no" class="choice-no" value="no" />';
+			html += '<span class="yesno-switch">';
+			html += '<label for="answer-' + questions[i].number + '_yes">Yes</label>';		
+			html += '<span></span>';
+			html += '<label for="answer-' + questions[i].number + '_no">No</label>';
+			html += '</span></span></td>';
 			if (questions[i].hasOwnProperty('notApplicablePrompt')) {
-				html += '<td class="question_cell"><input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_na" value="na" />';		
+				html += '<td class="answer_cell"><input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_na" value="na" />';		
 				html += '<label for="answer-' + questions[i].number + '_na">'+questions[i].notApplicablePrompt+'</label></td>';
 			} else {
-				html += '<td class="question_cell"></td>';
+				html += '<td class="answer_cell"></td>';
 			}
 			if (!isSubQuestion) {
 				inSubQuestions = false;
