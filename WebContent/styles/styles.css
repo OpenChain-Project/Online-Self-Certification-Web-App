@@ -137,6 +137,11 @@ table tr:nth-child(odd) {
     color: #fff;
 }
 
+#CertFormButtons {
+	text-align:center;
+	padding: 2px 0 0 6px;
+}
+
 .admin-table {
 	border: 1px solid black;
 	margin: 12px 6px 6px 6px;

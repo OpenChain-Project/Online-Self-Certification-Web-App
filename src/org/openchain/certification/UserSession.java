@@ -434,4 +434,39 @@ public class UserSession {
 		}
 		return true;
 	}
+	/**
+	 * Delete all answers and start a new survey
+	 * @throws SurveyResponseException 
+	 * @throws QuestionException 
+	 */
+	public void resetAnswers() throws SurveyResponseException, QuestionException {
+		Connection con;
+		try {
+			con = SurveyDatabase.createConnection(config);
+		} catch (SQLException e) {
+			logger.error("Unable to get connection for resetting answers",e);
+			throw new SurveyResponseException("Unable to get connection for resetting answers.  Please report this error to the OpenChain team",e);
+		}
+		try {
+			SurveyResponseDao dao = new SurveyResponseDao(con);
+			User saveUser = surveyResponse.getResponder(); 
+			dao.deleteSurveyResponseAnswers(this.surveyResponse);
+			this.surveyResponse = new SurveyResponse();
+			surveyResponse.setResponder(saveUser);
+			surveyResponse.setResponses(new HashMap<String, Answer>());
+			surveyResponse.setSpecVersion(dao.getLatestSpecVersion());
+			surveyResponse.setSurvey(SurveyDbDao.getSurvey(con, surveyResponse.getSpecVersion()));
+			con.commit();
+			dao.addSurveyResponse(surveyResponse);
+		} catch (SQLException e) {
+			logger.error("SQL Exception resetting answers",e);
+			throw new SurveyResponseException("Unexpectes SQL error resetting answers.  Please report this error to the OpenChain team",e);
+		} finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				logger.warn("Error closing connection",e);
+			}
+		}
+	}
 }

@@ -66,6 +66,9 @@ function getSurvey() {
 	if (!certForm.length ) {
 		return;
 	}
+	if (certForm.is(':ui-tabs')) {
+		certForm.tabs("destroy");
+	}
 	certForm.html('Loading <img src="resources/loading.gif" alt="Loading" class="loading" id="survey-loading">');
 	$.ajax({
 	    url: "CertificationServlet",
@@ -277,6 +280,57 @@ $(document).ready( function() {
 	$("#btDownloadAnswers").click(function(event) {
 	      event.preventDefault();
 	      downloadAnswers();
+	});
+	$("#btResetAnswers").button();
+	$("#btResetAnswers").click(function(event) {
+	      event.preventDefault();
+	  	$( "#oktoreset" ).dialog({
+			title: "Reset Answers",
+			resizable: false,
+		    height: 200,
+		    width: 300,
+		    modal: true,
+		    buttons: [{
+		    		text: "Yes",
+		    		click: function () {
+		    			var certForm = $("#CertForm");
+		    			if (certForm.is(':ui-tabs')) {
+		    				certForm.tabs("destroy");
+		    			}
+		    			certForm.html('Loading <img src="resources/loading.gif" alt="Loading" class="loading" id="survey-loading">');
+		    			// This will be cleared when the form is loaded
+		    			$.ajax({
+		    			    url: "CertificationServlet",
+		    			    data:JSON.stringify({
+		    			        request:  "resetanswers"
+		    			    }),
+		    			    type: "POST",
+		    			    dataType : "json",
+		    			    contentType: "json",
+		    			    async: true, 
+		    			    success: function( json ) {
+		    			    	if ( json.status == "OK" ) {
+		    			    		getSurvey();
+		    			    	} else {
+		    			    		displayError( json.error );
+		    			    	} 	
+		    			    },
+		    			    error: function( xhr, status, errorThrown ) {
+		    			    	handleError(xhr, status, errorThrown);
+		    			    }
+		    			});
+		    			$( this ).dialog( "close" );
+		    		},
+		    		
+		    	},
+		    	{
+		    		text: "Cancel",
+		    		click: function () {
+		    			$( this ).dialog( "close" );
+		        }
+		    	}]
+		    
+		}).text( "This will delete all answers and start a new survey with the latest survey version.  Are you sure you want to continue?" );
 	});
 	getSurvey();
 });

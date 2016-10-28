@@ -755,4 +755,49 @@ public class SurveyResponseDao {
 			}
 		}
 	}
+
+	/**
+	 * Delete the survey response from the database
+	 * @param surveyResponse
+	 * @throws SQLException 
+	 */
+	public void deleteSurveyResponseAnswers(SurveyResponse surveyResponse) throws SurveyResponseException, SQLException {
+		Statement stmt = null;
+		Savepoint save = null;
+		try {
+			save = con.setSavepoint();
+			stmt = con.createStatement();
+			int count = stmt.executeUpdate("delete from answer where response_id="+surveyResponse.getId());
+			count = stmt.executeUpdate("delete from survey_response where id="+surveyResponse.getId());
+			if (count != 1) {
+				logger.warn("Unexpected update count for delete survey response.  Execpted 1, found "+String.valueOf(count));
+			}
+		} catch (SQLException e) {
+			logger.error("SQL Exception deleting answers",e);
+			if (save != null) {
+				try {
+					con.rollback(save);
+				} catch (SQLException e1) {
+					logger.warn("SQL Exception rolling back transaction.",e1);
+				}
+				throw(e);
+			}
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					logger.warn("Error closing statement",e);
+				}
+			}
+			if (save != null) {
+				try {
+					con.commit();
+				} catch (SQLException e) {
+					logger.error("SQL Exception committing transaction",e);
+					throw(e);
+				}
+			}
+		}
+	}
 }

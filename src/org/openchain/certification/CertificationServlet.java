@@ -94,6 +94,8 @@ public class CertificationServlet extends HttpServlet {
 	private static final String SET_REJECTED = "setRejected";
 	private static final String RESET_REJECTED = "resetRejected";  
 	private static final String GET_CERTIFIED_REQUEST = "getcertified";
+
+	private static final String RESET_ANSWERS_REQUEST = "resetanswers";
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -327,6 +329,8 @@ public class CertificationServlet extends HttpServlet {
             		user.updateAnswers(rj.getAnswers());
         		}
         		user.finalSubmission();
+        	} else if (rj.getRequest().equals(RESET_ANSWERS_REQUEST)) {
+        		user.resetAnswers();
         	} else if (rj.getRequest().equals(UPLOAD_SURVEY_REQUEST)) {
         		if (user.isAdmin()) {
         			try {
