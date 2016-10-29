@@ -25,6 +25,9 @@ fieldset {
 	border:0; 
 	margin-top:25px; 
 }
+.logo { 
+	content: url("https://www.openchainproject.org/wp-content/uploads/2016/09/logo_openchain.png");
+}
 .ui-dialog .ui-state-error { 
 	padding: .3em; 
 }

@@ -36,8 +36,18 @@ function getQuestionFormHtml(questions) {
 			inSubQuestions = true;
 		} else {
 			html += '<td class="answer_cell"><span>';
-			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"  class="choice-yes"  value="yes" />';		
-			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no" class="choice-no" value="no" />';
+			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"  class="choice-yes';
+			if (isSubQuestion && inSubQuestions) {
+				html += ' subquestion-of-';
+				html += questions[i].subQuestionNumber;
+			}
+			html += '"  value="yes" />';		
+			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no" class="choice-no';
+			if (isSubQuestion && inSubQuestions) {
+				html += ' subquestion-of-';
+				html += questions[i].subQuestionNumber;
+			}
+			html += '" value="no" />';
 			html += '<span class="yesno-switch">';
 			html += '<label for="answer-' + questions[i].number + '_yes">Yes</label>';		
 			html += '<span></span>';
@@ -66,8 +76,8 @@ function getSurvey() {
 	if (!certForm.length ) {
 		return;
 	}
-	if (certForm.is(':ui-tabs')) {
-		certForm.tabs("destroy");
+	if (certForm.is(':ui-accordion')) {
+		certForm.accordion("destroy");
 	}
 	certForm.html('Loading <img src="resources/loading.gif" alt="Loading" class="loading" id="survey-loading">');
 	$.ajax({
@@ -80,86 +90,94 @@ function getSurvey() {
 	    success: function( surveyResponse ) {
 	    	$( "#version" ).text( surveyResponse.specVersion );
 	    	certForm.empty();
-	    	var htmlList = '<ul>\n';
-	    	var htmlDivs = '';
 	    	var survey = surveyResponse.survey;
 	    	var responses = surveyResponse.responses;
 	    	var sections = survey.sections;
+	    	var html = '';
 	    	for ( var i = 0; i < sections.length; i++ ) {
-	    		var tabReference = 'section_' + sections[i].name;
-	    		htmlList += '<li><a href="#' + tabReference + '">Section '+sections[i].name + '</a></li>\n';
-	    		htmlDivs += '<div id="' + tabReference + '">\n';
-	    		htmlDivs += '<h3>' + sections[i].name + ': ' + sections[i].title + "</h3>\n";
-	    		htmlDivs += getQuestionFormHtml(sections[i].questions);
-	    		if (i < sections.length-1) {
-	    			htmlDivs += '<div style="text-align:center" class="formbutton"><button type="button" id="save_answers_'+sections[i].name+'" class="ui-corners-all ui-dialog-buttons">Save & Continue</button></div>\n';
-	    		}
-	    		htmlDivs += '</div>\n';
+	    		var divReference = 'section_' + sections[i].name;
+	    		html += '<h3>' + sections[i].name + ': ' + sections[i].title + 
+	    		'<div style="float:right" id="h_'+divReference+'">[NUM] answered out of [NUM]</div>'+'</h3>\n';
+	    		html += '<div id="' + divReference + '">\n';
+	    		html += getQuestionFormHtml(sections[i].questions);
+	    		html += '</div>\n';
 	    	}
-	    	htmlList += '</ul>\n';
-	    	certForm.html(htmlList + htmlDivs);
-	    	certForm.tabs();
-	    	// Set any already answered questions
-	    	certForm.find(":input").each(function(index){
-	    		var id = $(this).attr('id');
-	    		if (id.substring(0,7) == 'answer-') {
-	    			var questionNumber = id.substring(7,id.lastIndexOf('_'));
-	    			var myresponse = responses[questionNumber];
-	    			if (myresponse) {
-	    				// Fill in the existing value
-	    				if (myresponse.answer == 'Yes' && $(this).attr('value') == 'yes') {
-	    					$(this).prop('checked',true);
-	    				} else if (myresponse.answer == 'No' && $(this).attr('value') == 'no') {
-	    					$(this).prop('checked',true);
-	    				} else {
-	    					$(this).prop('checked',false);
-	    				}
-	    			}
-	    		}
-	    	});
-	    	// Add actions to the buttons
-	    	for ( var i = 0; i < sections.length-1; i++ ) {
-	    		$("#save_answers_"+sections[i].name).click(function() {
-	    			var answers = [];
-	    			$(this).parent().parent().find(":input").each(function(index) {
-	    				var id = $(this).attr('id');
-	    				if (id.substring(0,7) == 'answer-') {
-	    					var value = $(this).attr('value');
-	    					var checked = this.checked;
-	    					var questionNumber = id.substring(7,id.lastIndexOf('_'));
-		    				answers.push({'questionNumber':questionNumber, 'value':value, 'checked':checked});
-	    				}
-	    			});
-	    			var data = JSON.stringify({request: "updateAnswers", 'answers': answers});
-	    			$.ajax({
-	    			    url: "CertificationServlet",
-	    			    data: data,
-	    			    contentType: "json",
-	    			    type: "POST",
-	    			    dataType : "json",
-	    			    success: function( json ) {		    
-	    			    	if (json.status == "OK") {
-	    			    		var currentActive = certForm.tabs("option","active");
-	    			    		var numTabs = $('#CertForm >ul >li').size();
-	    			    		if (currentActive < numTabs-1) {
-	    			    			certForm.tabs("option","active",currentActive+1);
-	    			    		} 
-	    			    	} else {
-	    			    		displayError(json.error);
-	    			    	}
-	    			    	
-	    			    },
-	    		    error: function( xhr, status, errorThrown ) {
-	    		    	handleError( xhr, status, errorThrown);
-	    		    }
-	    		  });
+	    	certForm.html(html);
+	    	certForm.accordion({heightStyle:"content"});
+	    	// For each section, set any answers, tally the num answered, and 
+	    	// set set the button click to keep track of the numbers
+	    	for ( var i = 0; i < sections.length; i++ ) {
+	    		var divReference = 'section_' + sections[i].name;
+	    		$("#"+divReference).find(":input").each(function(index) {
+		    		var id = $(this).attr('id');
+		    		if (id.substring(0,7) == 'answer-') {
+		    			var questionNumber = id.substring(7,id.lastIndexOf('_'));
+		    			var myresponse = responses[questionNumber];
+		    			if (myresponse) {
+		    				// Fill in the existing value
+		    				if (myresponse.answer == 'Yes' && $(this).attr('value') == 'yes') {
+		    					$(this).prop('checked',true);
+		    				} else if (myresponse.answer == 'No' && $(this).attr('value') == 'no') {
+		    					$(this).prop('checked',true);
+		    				} else {
+		    					$(this).prop('checked',false);
+		    				}
+		    			}
+		    			$(this).change(function(e) {
+		    				updateSectionQuestionCounts($(this).parents('.ui-accordion-content'));
+		    			});
+		    		}
 	    		});
+	    		updateSectionQuestionCounts($("#"+divReference));
 	    	}
 	    },
 	    error: function( xhr, status, errorThrown ) {
 	    	handleError( xhr, status, errorThrown);
 	    }
 	});
+}
+
+function updateSectionHtml(section, numQuestions, numAnswers) {
+	var sectionId = section.attr('id');
+	var headerSectionDivId = 'h_' + sectionId;
+	var headerDiv = section.parent().find('#'+headerSectionDivId);
+	var html = String(numAnswers);
+	html += ' answered out of ';
+	html += String(numQuestions);
+	headerDiv.html(html);
+}
+
+function updateSectionQuestionCounts(section) {
+	var questionMap = new Map();	// Map of questions to number of answers
+	$(section).find(":input").each(function(index) {
+		// fill in the map
+		var id = $(this).attr('id');
+		if (id.substring(0,7) == 'answer-') {
+			var question;
+			var classes = $(this).attr('class');
+			var subQuestionMatch = classes.match(/subquestion-of-([A-Za-z0-9_\.]+)/);
+			if (subQuestionMatch != null && subQuestionMatch.length > 0) {
+				question = subQuestionMatch[1];
+			} else {
+				question = id.substring(7,id.lastIndexOf('_'));
+			}
+			if (!questionMap.has(question)) {
+				questionMap.set(question, 0);
+			}
+			if ($(this).prop('checked')) {
+				questionMap.set(question, questionMap.get(question)+1);
+			}
+		}
+	});
+	var numQuestions = 0;
+	var numAnswered = 0;
+	questionMap.forEach(function(count, question) {
+		numQuestions++;
+		if (count > 0) {
+			numAnswered++;
+		}
+	});
+	updateSectionHtml(section,numQuestions,numAnswered);
 }
 
 function saveAll() {
@@ -294,8 +312,8 @@ $(document).ready( function() {
 		    		text: "Yes",
 		    		click: function () {
 		    			var certForm = $("#CertForm");
-		    			if (certForm.is(':ui-tabs')) {
-		    				certForm.tabs("destroy");
+		    			if (certForm.is(':ui-accordion')) {
+		    				certForm.accordion("destroy");
 		    			}
 		    			certForm.html('Loading <img src="resources/loading.gif" alt="Loading" class="loading" id="survey-loading">');
 		    			// This will be cleared when the form is loaded
