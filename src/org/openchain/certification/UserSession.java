@@ -50,6 +50,8 @@ import org.openchain.certification.utility.EmailUtilException;
 import org.openchain.certification.utility.EmailUtility;
 import org.openchain.certification.utility.PasswordUtil;
 
+import com.sun.org.apache.xalan.internal.utils.Objects;
+
 
 /**
  * User information for the HTTP session
@@ -67,6 +69,14 @@ public class UserSession {
 	private transient SurveyResponse surveyResponse = null;
 
 	private boolean admin = false;
+
+	private String address = null;
+
+	private String email = null;
+
+	private String name = null;
+
+	private String organization = null;
 	
 	public UserSession(String username, String password, ServletConfig config) {
 		this.username = username;
@@ -79,12 +89,21 @@ public class UserSession {
 		this.loggedIn = false;
 		this.username = null;
 		this.password = null;
+		this.admin = false;
+		this.address = null;
+		this.email = null;
+		this.name = null;
+		this.organization = null;
 	}
 	public void logout() {
 		this.loggedIn = false;
 		this.username = null;
 		this.password = null;
 		this.admin = false;
+		this.address = null;
+		this.email = null;
+		this.name = null;
+		this.organization = null;
 	}
 	
 	/**
@@ -159,6 +178,10 @@ public class UserSession {
 		}
 		this.loggedIn = true;
 		this.admin  = user.isAdmin();
+		this.address = user.getAddress();
+		this.email = user.getEmail();
+		this.name = user.getName();
+		this.organization = user.getOrganization();
 		return true;
 	}
 	public String getLastError() {
@@ -468,5 +491,108 @@ public class UserSession {
 				logger.warn("Error closing connection",e);
 			}
 		}
+	}
+	/**
+	 * @return the address
+	 */
+	public String getAddress() {
+		return address;
+	}
+	/**
+	 * @return the email
+	 */
+	public String getEmail() {
+		return email;
+	}
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+	/**
+	 * @return the organization
+	 */
+	public String getOrganization() {
+		return organization;
+	}
+	
+	/**
+	 * Update the User information
+	 * @param newName
+	 * @param newEmail
+	 * @param newOrganization
+	 * @param newAddress
+	 * @param newPassword
+	 * @throws InvalidUserException 
+	 * @throws SQLException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws InvalidKeySpecException 
+	 * @throws EmailUtilException 
+	 */
+	public void updateUser(String newName, String newEmail, String newOrganization, 
+			String newAddress, String newPassword) throws InvalidUserException, SQLException, NoSuchAlgorithmException, InvalidKeySpecException, EmailUtilException {
+		
+		
+		if (!loggedIn) {
+			this.lastError = "Can not update a user which is not logged in.";
+			throw new InvalidUserException(this.lastError);
+		}
+
+			User user = null;
+			try {
+				user = UserDb.getUserDb(config).getUser(username);
+				if (user == null) {
+					this.lastError = "User "+username+" no longer exist.  Please report this error to the open chain team.";
+					throw new InvalidUserException(this.lastError);
+				}
+				boolean needUpdate = false;
+				if (!Objects.equals(newName, this.name)) {
+					user.setName(newName);
+					needUpdate = true;
+				}
+				if (!Objects.equals(newEmail, this.email)) {
+					user.setEmail(newEmail);
+					needUpdate = true;
+				}
+				if (!Objects.equals(newOrganization, this.organization)) {
+					user.setOrganization(newOrganization);
+					needUpdate = true;
+				}
+				if (newPassword != null && !Objects.equals(newPassword, this.password)) {
+					user.setPasswordToken(PasswordUtil.getToken(newPassword));
+					needUpdate = true;
+				}
+				if (!Objects.equals(newAddress, this.address)) {
+					user.setAddress(newAddress);
+					needUpdate = true;
+				}
+				if (needUpdate) {
+					UserDb.getUserDb(config).updateUser(user);
+					this.password = newPassword;
+					this.address = newAddress;
+					this.email = newEmail;
+					this.name = newName;
+					this.organization = newOrganization;
+					try {
+						EmailUtility.emailProfileUpdate(username, this.email, config);
+					}catch (EmailUtilException e) {
+						logger.warn("Error emailing profile update notice",e);
+						this.lastError = "Unable to email the for the profile update: "+e.getMessage();
+					}
+				}
+			} catch (SQLException e) {
+				this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
+				logger.error("SQL Exception signing up user",e);
+				throw e;
+			} catch (NoSuchAlgorithmException e) {
+				logger.error("Unexpected No Such Algorithm error signing up user",e);
+				this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+				throw e;
+			} catch (InvalidKeySpecException e) {
+				logger.error("Unexpected Invalid Key Spec error signing up user",e);
+				this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
+				throw e;
+			} 
 	}
 }

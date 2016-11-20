@@ -18,6 +18,7 @@
  * This is a common JavaScript file to be included on all pages for this app.
  * It depends on the div ID's error, status, login, and signup
  */
+var NOPASSWORD = "***********";
 // From http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#e-mail-state-%28type=email%29
 var emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 // the following was copied from the jqueryUI sample code
@@ -41,11 +42,26 @@ function checkLength( o, n, min, max ) {
     }
   }
 
+function checkChecked( o, lbl ) {
+	var isChecked = o.is(':checked');
+	if (!isChecked) {
+		o.addClass( "ui-state-error" );
+		lbl.addClass( "ui-state-error" );
+		updateTips( '"' + lbl.text() + '" must be checked.' );
+		return false;
+	} else {
+		return true;
+	}
+}
+
 function checkEquals(a, b, n) {
 	if (a.val() != b.val()) {
 		a.addClass( "ui-state-error" );
 		b.addClass( "ui-state-error" );
-		updateTips(n + " do not match.");
+		updateTips(n + " do not match."); 
+		return false;
+	} else {
+		return true;
 	}
 }
 function updateTips( t ) {
@@ -213,14 +229,14 @@ function signout() {
 	});
 }
 
-function signupUser() {
-	username = $("#signup-username");
-	var password = $("#signup-password");
-	var passwordVerify = $("#signup-passwordverify");
-	var name = $("#signup-name");
-	var organization = $("#signup-organization");
-	var email = $("#signup-email");
-	var address = $("#signup-address");
+function updateUserProfile() {
+	username = $("#update-username");
+	var password = $("#update-password");
+	var passwordVerify = $("#update-passwordverify");
+	var name = $("#update-name");
+	var organization = $("#update-organization");
+	var email = $("#update-email");
+	var address = $("#update-address");
 	tips = $(".validateTips");
 	tips.text('');
 	var valid = true;
@@ -232,15 +248,91 @@ function signupUser() {
 	email.removeClass("ui-state-error");
 	address.removeClass("ui-state-error");
 	valid = valid && checkLength( username, "username", 3, 40 );
+	var pw = null;
+	if (password.val() && password.val() != NOPASSWORD && password.val() != "") {
+		valid = valid && checkLength( password, "password", 8, 60 );
+		valid = valid && checkLength( passwordVerify, "password", 8, 60 );
+		valid = valid && checkEquals(password, passwordVerify, "passwords");
+		pw = password.val();
+	} 
+	valid = valid && checkLength( name, "Name", 3, 100 );
+	valid = valid && checkLength( organization, "Organization", 1, 100 );
+	valid = valid && checkLength( email, "email", 3, 100 );
+	valid = valid && checkLength( address, "address", 3, 500 );
+	valid = valid && checkRegexp( username, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter." );
+	valid = valid && checkRegexp( email, emailRegex, "e.g. user@linux-foundation.org");
+	if (valid) {
+		updateUser(username.val(), pw, name.val(), address.val(), organization.val(), email.val());
+	}
+}
+
+function updateUser(username, password, name, address, organization, email) {
+	$.ajax({
+	    url: "CertificationServlet",
+	    data:JSON.stringify({
+	        request:  "updateUser",
+	        username: username,
+	        password: password,
+	        name: name,
+	        address: address,
+	        organization: organization,
+	        email: email
+	    }),
+	    type: "POST",
+	    dataType : "json",
+	    contentType: "json",
+	    async: false, 
+	    success: function( json ) {
+	    	if ( json.status == "OK" ) {
+	    		$("#user-profile").dialog("close");
+	    	} else {
+	    		displayError( json.error );
+	    	} 	
+	    },
+	    error: function( xhr, status, errorThrown ) {
+	    	handleError(xhr, status, errorThrown);
+	    }
+	});
+}
+
+function signupUser() {
+	username = $("#signup-username");
+	var password = $("#signup-password");
+	var passwordVerify = $("#signup-passwordverify");
+	var name = $("#signup-name");
+	var organization = $("#signup-organization");
+	var email = $("#signup-email");
+	var address = $("#signup-address");
+	var checkApproveEmail = $("#approval-use-name-email");
+	var checkApproveEmailLbl = $("label[for='approval-use-name-email']");
+	var checkApproveTerms = $("#read-terms");
+	var checkApproveTermsLbl = $("label[for='read-terms']");
+	tips = $(".validateTips");
+	tips.text('');
+	var valid = true;
+	username.removeClass("ui-state-error");
+	password.removeClass("ui-state-error");
+	passwordVerify.removeClass("ui-state-error");
+	name.removeClass("ui-state-error");
+	organization.removeClass("ui-state-error");
+	email.removeClass("ui-state-error");
+	address.removeClass("ui-state-error");
+	checkApproveEmail.removeClass("ui-state-error");
+	checkApproveTerms.removeClass("ui-state-error");
+	checkApproveEmailLbl.removeClass("ui-state-error");
+	checkApproveTermsLbl.removeClass("ui-state-error");
+	valid = valid && checkLength( username, "username", 3, 40 );
 	valid = valid && checkLength( password, "password", 8, 60 );
 	valid = valid && checkLength( passwordVerify, "password", 8, 60 );
 	valid = valid && checkLength( name, "Name", 3, 100 );
 	valid = valid && checkLength( organization, "Organization", 1, 100 );
 	valid = valid && checkLength( email, "email", 3, 100 );
 	valid = valid && checkLength( address, "address", 3, 500 );
-	checkEquals(password, passwordVerify, "passwords");
+	valid = valid && checkEquals(password, passwordVerify, "passwords");
 	valid = valid && checkRegexp( username, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter." );
 	valid = valid && checkRegexp( email, emailRegex, "e.g. user@linux-foundation.org");
+	valid = valid && checkChecked( checkApproveEmail, checkApproveEmailLbl );
+	valid = valid && checkChecked( checkApproveTerms, checkApproveTermsLbl );
 	if (valid) {
 		signup(username.val(), password.val(), name.val(), address.val(), organization.val(), email.val());
 	}
@@ -285,6 +377,31 @@ function openSignInDialog() {
 	$("#login").dialog("open");
 }
 
+function openProfileDialog() {
+	$.ajax({
+	    url: "CertificationServlet",
+	    data: {
+	        request: "getuser"
+	    },
+	    type: "GET",
+	    dataType : "json",
+	    success: function( json ) {
+	    	$("#update-username").val(json.username).prop("readonly", true);
+	    	$("#update-password").attr("placeholder", NOPASSWORD);
+	    	$("#update-passwordverify").attr("placeholder", NOPASSWORD);
+	    	$("#update-name").val(json.name);
+	    	$("#update-organization").val(json.organization);
+	    	$("#update-email").val(json.email);
+	    	$("#update-address").val(json.address);
+	    	
+	    	$("#user-profile").dialog("open");
+	    },
+	    error: function( xhr, status, errorThrown ) {
+	    	handleError( xhr, status, errorThrown);
+	    }
+	});
+}
+
 /**
  * Create a navigation menu based on whether the user is logged in
  */
@@ -299,6 +416,7 @@ function createNavMenu() {
 	    success: function( json ) {
 	    	html = '';
 	    	if (json.loggedIn) {
+	    		html += '<li id="user-dropdown_updateprofile"><a href="javascript:void(0);"><span class="ui-icon-closethick">&nbsp;Update profile</span></a></li>\n';
 	    		html += '<li id="user-dropdown_signout"><a href="javascript:void(0);"><span class="ui-icon-closethick">&nbsp;Sign out</span></a></li>\n';
 	    	} else {
 	    		html += '<li id="user-dropdown_signin"><a href="javascript:void(0);"><span class="ui-icon-plusthick">&nbsp;Sign in</span></a></li>\n';
@@ -319,6 +437,8 @@ function createNavMenu() {
 	    	    		signout();
 	    	    	} else if (data.id == "user-dropdown_signin") {
 	    	    		openSignInDialog();
+	    	    	} else if (data.id == "user-dropdown_updateprofile") {
+	    	    		openProfileDialog();
 	    	    	}
 	    	    }
 	    	  });
@@ -334,7 +454,9 @@ function createNavMenu() {
 	    }
 	});
 }
+
 $(document).ready( function() {
+	$("#topnav").load("topnav.html");
 	$("#login").dialog({
 		title: "Login",
 		autoOpen: false,
@@ -357,7 +479,28 @@ $(document).ready( function() {
 		event.preventDefault();
 		loginUser();
 	});
-        
+	$("#user-profile").dialog({
+		title: "Update Profile",
+		autoOpen: false,
+		height: 600,
+		width: 450,
+		modal: true,
+		buttons: [{
+			text: "Update",
+			click: function() {
+				updateUserProfile();
+			}
+		}, {
+			text: "Cancel",
+			click: function() {
+				$(this).dialog("close");
+			}
+		}]
+	}).find("form").on("submit", function(event) {
+		event.preventDefault();
+		updateUserProfile();
+	});
+	
 	$("#signup").dialog({
 		title: "Sign Up",
 		autoOpen: false,
@@ -379,5 +522,6 @@ $(document).ready( function() {
 		event.preventDefault();
 		signupUser();
 	});
+	$("#footer-outer").load('footer.html');
 	createNavMenu();
 });

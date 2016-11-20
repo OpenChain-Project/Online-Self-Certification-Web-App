@@ -45,6 +45,22 @@ fieldset {
 .loading {
 	
 }
+
+#footer-outer {
+    color: #ccc;
+    position: relative; 
+    z-index: 10;
+    background-color: #252525;
+    margin: 20px 0px;
+}
+
+#footer-outer #copyright {
+    padding: 10px 5px;
+    font-size: 12px;
+    background-color: #1c1c1c;
+    color: #777;
+}
+
 /* table css */
 td, th {
 	padding 2px 0 0 2px;
@@ -260,4 +276,9 @@ table tr:nth-child(odd) {
 }
 .inline-label {
 	display: inline;
+}
+
+#signup table tr {
+	background: #ffffff;
+	padding: .4em;
 }

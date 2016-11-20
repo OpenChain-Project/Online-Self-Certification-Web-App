@@ -14,19 +14,7 @@
     <script src="resources/admin.js"></script>
 </head>
 <body>
-    <div class="navbar" id="topnav">
-        <div id="homelink" class="navlink" style="float:left"><a href="index.html"><span class="ui-icon ui-icon-home"></span>Home</a>&nbsp;&nbsp;&nbsp;</div>        
-        <div id="certifiedlink" class="navlink" style="float:left"><a href="certified.html"><span class="ui-icon ui-icon-check"></span>Certified Submissions</a>&nbsp;&nbsp;&nbsp;</div> 
-        <div id="surveylink" class="navlink" style="float:left"><a href="survey.html"><span class="ui-icon ui-icon-pencil"></span>Conformance Check</a>&nbsp;&nbsp;&nbsp;</div>
-        <div id="adminlink" class="navlink" style="float:left"></div>
-        <div id="usermenu" style="float:right;overflow:visible">
-            <div id="user-dropdown_container">
-                <button id="user-dropdown_launcher">User Menu</button>
-            </div>
-            <ul id="user-dropdown_menu">
-            </ul>
-        </div>
-    </div>
+    <div class="navbar" id="topnav"></div>
     <div id="TitleArea">
         <h1>OpenChain Self Certification Administration</h1>
     </div>
@@ -139,7 +127,7 @@
         </fieldset>
         </form>
     </div>
-    <div id="errors"></div>
+   <div id="errors"></div>
     <div id="status"></div>
     <div id="resendveify"></div>
     <div id="login">
@@ -156,7 +144,7 @@
         </form>
     </div>
     <div id="signup">
-        <form name="signup-form" id="signup-form">
+            <form name="signup-form" id="signup-form">
             <p class="validateTips"></p>
             <fieldset>
                 <label for="signup-username">Username</label>
@@ -171,13 +159,46 @@
                 <input type="text" name="signup-organization" id="signup-organization" class="text ui-widget-content ui-corner-all">
                 <label for="signup-email">Email</label>
                 <input type="text" name="signup-email" id="signup-email" class="text ui-widget-content ui-corner-all">
-                <label for="signup-address">Postal Address</label>
-                <textarea rows="8" cols="50" name="signup-address" id="signup-address" class="text ui-widget-content ui-corner-all" form="signup-form"></textarea>
-                
-                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <label for="signup-address">Organization Postal Address</label>
+                <textarea rows="6" cols="50" name="signup-address" id="signup-address" class="text ui-widget-content ui-corner-all" form="signup-form"></textarea>
+                <table>
+                    <tr>
+                        <td><input type="checkbox" name="approval-use-name-email" id="approval-use-name-email" class="ui-widget-content ui-corner-all"></td>
+                        <td><label for="approval-use-name-email">My name and email may be shared on conformance page of the OpenChain website</label></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="read-terms" id="read-terms" class="ui-widget-content ui-corner-all"></td>
+                        <td><label for="read-terms">I agree to the Linux Foundation <a href="https://www.linuxfoundation.org/terms">Terms of Use</a> and <a href="https://www.linuxfoundation.org/privacy">Privacy Policy</a></label></td>
+                    </tr>
+                </table>
+               <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </fieldset>
         </form>
     </div>
+    <div id="user-profile">
+            <form name="profile-form" id="profile-form">
+            <p class="validateTips"></p>
+            <fieldset>
+                <label for="update-username">Username</label>
+                <input type="text" name="update-username" id="update-username" class="text ui-widget-content ui-corner-all">
+                <label for="update-password">Password</label>
+                <input type="password" name="update-password" id="update-password" class="text ui-widget-content ui-corner-all">
+                <label for="update-passwordverify">Re-enter Password</label>
+                <input type="password" name="update-passwordverify" id="update-passwordverify" class="text ui-widget-content ui-corner-all">
+                <label for="update-name">Name</label>
+                <input type="text" name="update-name" id="update-name" class="text ui-widget-content ui-corner-all">
+                <label for="update-organization">Organization</label>
+                <input type="text" name="update-organization" id="update-organization" class="text ui-widget-content ui-corner-all">
+                <label for="update-email">Email</label>
+                <input type="text" name="update-email" id="update-email" class="text ui-widget-content ui-corner-all">
+                <label for="update-address">Organization Postal Address</label>
+                <textarea rows="6" cols="50" name="update-address" id="update-address" class="text ui-widget-content ui-corner-all" form="profile-form"></textarea>
+               <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div>
+    <div id="footer-outer"></div>
 </body>
 </html>

@@ -94,8 +94,9 @@ public class CertificationServlet extends HttpServlet {
 	private static final String SET_REJECTED = "setRejected";
 	private static final String RESET_REJECTED = "resetRejected";  
 	private static final String GET_CERTIFIED_REQUEST = "getcertified";
-
 	private static final String RESET_ANSWERS_REQUEST = "resetanswers";
+	private static final String UPDATE_PROFILE_REQUEST = "updateUser";
+	
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -320,6 +321,8 @@ public class CertificationServlet extends HttpServlet {
         		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         		postResponse.setStatus(Status.ERROR);
         		postResponse.setError("User is not logged in");
+        	} else if (rj.getRequest().equals(UPDATE_PROFILE_REQUEST)) {
+        		user.updateUser(rj.getName(), rj.getEmail(), rj.getOrganization(), rj.getAddress(), rj.getPassword());
         	} else if (rj.getRequest().equals(UPDATE_ANSWERS_REQUEST)) {
         		if (rj.getAnswers() != null && rj.getAnswers().size() > 0) {
             		user.updateAnswers(rj.getAnswers());
