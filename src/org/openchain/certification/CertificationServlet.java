@@ -19,6 +19,8 @@ package org.openchain.certification;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,7 +29,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +43,7 @@ import org.openchain.certification.PostResponse.Status;
 import org.openchain.certification.dbdao.SurveyDatabase;
 import org.openchain.certification.dbdao.SurveyDbDao;
 import org.openchain.certification.dbdao.SurveyResponseDao;
+import org.openchain.certification.dbdao.UserDb;
 import org.openchain.certification.model.Question;
 import org.openchain.certification.model.QuestionException;
 import org.openchain.certification.model.Section;
@@ -50,6 +55,7 @@ import org.openchain.certification.model.SurveyResponseException;
 import org.openchain.certification.model.User;
 import org.openchain.certification.utility.EmailUtilException;
 import org.openchain.certification.utility.EmailUtility;
+import org.openchain.certification.utility.PasswordUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -96,6 +102,12 @@ public class CertificationServlet extends HttpServlet {
 	private static final String GET_CERTIFIED_REQUEST = "getcertified";
 	private static final String RESET_ANSWERS_REQUEST = "resetanswers";
 	private static final String UPDATE_PROFILE_REQUEST = "updateUser";
+
+	private static final String COMPLETE_PASSWORD_RESET = "pwreset";
+
+	private static final String PASSWORD_CHANGE_REQUEST = "changePassword";
+
+	private static final String REQUEST_RESET_PASSWORD = "requestResetPassword";
 	
 	
     /**
@@ -137,11 +149,24 @@ public class CertificationServlet extends HttpServlet {
 	            	String username = request.getParameter(PARAMETER_USERNAME);
 	            	String uuid = request.getParameter(PARAMETER_UUID);
 	            	try {
-	            		EmailUtility.completeEmailVerification(username, uuid, getServletConfig());
+	            		UserSession.completeEmailVerification(username, uuid, getServletConfig());
 	            		response.sendRedirect("regcomplete.html");
 	            	} catch (Exception ex) {
 	            		response.sendRedirect("regfailed.html");
 	            	}	            	
+	            } else if (requestParam.equals(COMPLETE_PASSWORD_RESET)) {	// result from clicking email link on reset password
+	            	String username = request.getParameter(PARAMETER_USERNAME);
+	            	String uuid = request.getParameter(PARAMETER_UUID);
+	            	if (user != null && user.isLoggedIn()) {
+	            		user.logout();
+	            	}
+	            	user = new UserSession(username, "TEMP", getServletConfig());
+	            	session.setAttribute(SESSION_ATTRIBUTE_USER, user);
+	            	if (user.verifyPasswordReset(uuid)) {
+	            		response.sendRedirect("pwreset.html");
+	            	} else {
+	            		response.sendRedirect("pwresetinvalid.html");
+	            	}
 	            } else if (requestParam.equals(GET_USER)) {
 	            	if (user == null) {
 	            		user = new UserSession(getServletConfig());	// creates a new user that is not logged in and a null username
@@ -287,12 +312,24 @@ public class CertificationServlet extends HttpServlet {
         		if (newUser.login()) {
         			session.setAttribute(SESSION_ATTRIBUTE_USER, newUser);
         			postResponse.setAdmin(newUser.isAdmin());
-        		} else if (newUser.isValidPasswordAnNotVerified()) {
+        		} else if (newUser.isValidPasswordAndNotVerified()) {
         			postResponse.setStatus(Status.NOT_VERIFIED);
         			postResponse.setError("User has not been verified.");
         		} else {
         			postResponse.setStatus(Status.ERROR);
         			postResponse.setError("Login failed: "+newUser.getLastError());
+        		}
+        	} else if (rj.getRequest().equals(PASSWORD_CHANGE_REQUEST)) {	// request from the pwreset.html form
+        		if (user == null || !user.isPasswordReset()) {
+        			postResponse.setStatus(Status.ERROR);
+        			logger.error("Invalid state for password reset for user "+ rj.getUsername());
+        			postResponse.setError("Password can only be set by using the password reset menu");
+        		} else {
+        			if (!user.setPassword(rj.getUsername(), rj.getPassword())) {
+        				postResponse.setStatus(Status.ERROR);
+        				logger.error("Unable to set password for user "+rj.getUsername());
+        				postResponse.setError(user.getLastError());
+        			}
         		}
         	} else if (rj.getRequest().equals(RESEND_VERIFICATION)) {
         		if (user != null && user.isLoggedIn()) {
@@ -316,11 +353,18 @@ public class CertificationServlet extends HttpServlet {
         			postResponse.setStatus(Status.ERROR);
         			postResponse.setError("Error signing up: "+newUser.getLastError());
         		}
+        	} else if (rj.getRequest().equals(REQUEST_RESET_PASSWORD)) {
+        		if (!resetPassword(rj.getUsername(), rj.getEmail(), getServletConfig(), request.getRequestURL().toString())) {
+	        		postResponse.setStatus(Status.ERROR);
+	        		postResponse.setError("Can not reset password.  Check that the username and email match the registered user");
+        		}	
         	} else if (user == null || !user.isLoggedIn()) {
-        		// Not logged in - set the status to unauthorized
-        		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        		postResponse.setStatus(Status.ERROR);
-        		postResponse.setError("User is not logged in");
+        		if (!rj.getRequest().equals(LOGOUT_REQUEST)) {	// Ignore the logout request if not logged in
+            		// Not logged in - set the status to unauthorized
+            		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            		postResponse.setStatus(Status.ERROR);
+            		postResponse.setError("User is not logged in");
+        		}
         	} else if (rj.getRequest().equals(UPDATE_PROFILE_REQUEST)) {
         		user.updateUser(rj.getName(), rj.getEmail(), rj.getOrganization(), rj.getAddress(), rj.getPassword());
         	} else if (rj.getRequest().equals(UPDATE_ANSWERS_REQUEST)) {
@@ -475,6 +519,49 @@ public class CertificationServlet extends HttpServlet {
 		} finally {
         	out.close();
         }
+	}
+
+	/**
+	 * Send the reset password email only if the username and email match
+	 * @param username
+	 * @param email
+	 * @param config
+	 * @return
+	 */
+	private boolean resetPassword(String username, String email, ServletConfig config, String responseServletUrl) {
+		User user = null;
+		try {
+			user = UserDb.getUserDb(config).getUser(username);
+			if (user == null) {
+				return false;
+			}
+			if (!user.getEmail().equals(email.trim())) {
+				return false;
+			}	
+			user.setVerificationExpirationDate(UserSession.generateVerificationExpirationDate());
+			UUID uuid = UUID.randomUUID();
+			String hashedUuid = PasswordUtil.getToken(uuid.toString());
+			user.setUuid(hashedUuid);
+			user.setPasswordReset(true);
+			UserDb.getUserDb(config).updateUser(user);
+			EmailUtility.emailPasswordReset(user.getName(), email, uuid, username, responseServletUrl, config);
+	        return true;
+		} catch (SQLException e) {
+			logger.error("SQL Exception signing up user",e);
+			return false;
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Unexpected No Such Algorithm error signing up user",e);
+			return false;
+		} catch (InvalidKeySpecException e) {
+			logger.error("Unexpected Invalid Key Spec error signing up user",e);
+			return false;
+		} catch (EmailUtilException e) {
+			logger.error("Error emailing invitation",e);
+			return false;
+		} catch (InvalidUserException e) {
+			logger.error("Invalid user specified in add user request",e);
+			return false;
+		}
 	}
 
 	/**

@@ -24,7 +24,7 @@
     </div>
     <table id="certified-table" class="admin-table ui-corner-all">
     </table>
-   <div id="errors"></div>
+    <div id="errors"></div>
     <div id="status"></div>
     <div id="resendveify"></div>
     <div id="login">
@@ -39,6 +39,7 @@
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </fieldset>
         </form>
+        <a href="pwresetrequest.html" class="reset-password">Reset Password</a>
     </div>
     <div id="signup">
             <form name="signup-form" id="signup-form">
@@ -91,6 +92,19 @@
                 <input type="text" name="update-email" id="update-email" class="text ui-widget-content ui-corner-all">
                 <label for="update-address">Organization Postal Address</label>
                 <textarea rows="6" cols="50" name="update-address" id="update-address" class="text ui-widget-content ui-corner-all" form="profile-form"></textarea>
+               <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div>
+       <div id="reset-password">
+            <form name="reset-pw-form" id="reset-pw-form">
+            <p class="validateTips"></p>
+            <fieldset>
+                <label for="reset-username">Username</label>
+                <input type="text" name="reset-username" id="reset-username" class="text ui-widget-content ui-corner-all">
+                 <label for="reset-email">Email</label>
+                <input type="text" name="reset-email" id="reset-email" class="text ui-widget-content ui-corner-all">
                <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </fieldset>

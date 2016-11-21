@@ -2,36 +2,38 @@
 <html>
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>OpenChain Self Certification Questions</title>
+    <title>OpenChain Registration</title>
     <link rel="stylesheet" href="styles/openchain.css" type="text/css" media="screen">
     <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen">
     <link rel="stylesheet" href="resources/jquery-ui/jquery-ui.min.css">
     <link rel="stylesheet" href="resources/jquery.jui_dropdown.css">
     <script src="resources/jquery-ui/external/jquery/jquery.js"></script>
-    <script src="resources/jquery-ui/jquery-ui.min.js"></script> 
+    <script src="resources/jquery-ui/jquery-ui.min.js"></script>
     <script src="resources/jquery.jui_dropdown.min.js"></script>
     <script src="resources/navbar.js"></script>
-    <script src="resources/certsurvey.js"></script>
-    
+    <script src="resources/pwreset.js"></script>
   </head>
   <body>
     <div class="navbar" id="topnav"></div>
     <div id="TitleArea">
-        <h1>OpenChain Self Certification Survey</h1>
+        <h1>Password Reset</h1>
     </div>
-    <h3>
-        Version <span id="version"></span>
-    </h3>
-    <div id="CertForm">
-    <form id="myform"></form>
+    <div id="pwform">
+       <form action="CertificationServlet" method="post">
+            <p class="validateTips"></p>
+            <fieldset>
+                <label for="reset-username">Username</label>
+                <input type="text" name="reset-username" id="reset-username" class="text ui-widget-content ui-corner-all">
+                <label for="reset-pass">Password</label>
+                <input type="password" name="reset-pass" id="reset-pass" class="text ui-widget-content ui-corner-all">
+                <label for="reset-pass-verify">Re-Enter Password</label>
+                <input type="password" name="reset-pass-verify" id="reset-pass-verify" class="text ui-widget-content ui-corner-all">
+            </fieldset>
+            <div style="text-align: center">
+                <input type="submit" value="Reset Password" class="ui-button ui-widget ui-corner-all">
+            </div>
+        </form>
     </div>
-    <div id="CertFormButtons">
-        <button id="btSaveAnswers" class="ui-button ui-widget ui-corner-all">Save Answers</button>
-        <button id="btSaveAndSubmit" class="ui-button ui-widget ui-corner-all">Save and Submit</button>
-        <button id="btDownloadAnswers" class="ui-button ui-widget ui-corner-all">Download Answers</button>
-        <button id="btResetAnswers" class="ui-button ui-widget ui-corner-all">Reset</button>
-    </div>
-    <div id="oktoreset"></div>
     <div id="errors"></div>
     <div id="status"></div>
     <div id="resendveify"></div>

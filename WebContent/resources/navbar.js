@@ -455,6 +455,45 @@ function createNavMenu() {
 	});
 }
 
+function requestPasswordReset() {
+	username = $("#reset-username");
+	var email = $("#reset-email");
+	tips = $(".validateTips");
+	tips.text('');
+	var valid = true;
+	username.removeClass("ui-state-error");
+	email.removeClass("ui-state-error");
+	valid = valid && checkLength( username, "username", 3, 40 );
+	valid = valid && checkLength( email, "email", 3, 100 );
+	valid = valid && checkRegexp( email, emailRegex, "e.g. user@linux-foundation.org");
+	if (valid) {
+		$.ajax({
+		    url: "CertificationServlet",
+		    data:JSON.stringify({
+		        request:  "requestResetPassword",
+		        username: username.val(),
+		        email: email.val()
+		    }),
+		    type: "POST",
+		    dataType : "json",
+		    contentType: "json",
+		    async: false, 
+		    success: function( json ) {
+		    	if ( json.status == "OK" ) {
+		    		$("#reset-password").dialog("close");
+		    		// redirect to the pw reset request page
+		    		window.location = "pwresetrequest.html";
+		    	} else {
+		    		displayError( json.error );
+		    	} 	
+		    },
+		    error: function( xhr, status, errorThrown ) {
+		    	handleError(xhr, status, errorThrown);
+		    }
+		});
+	}
+}
+
 $(document).ready( function() {
 	$("#topnav").load("topnav.html");
 	$("#login").dialog({
@@ -478,6 +517,33 @@ $(document).ready( function() {
 	}).find("form").on("submit", function(event) {
 		event.preventDefault();
 		loginUser();
+	});
+	$("#reset-password").dialog({
+		title: "Password Reset",
+		autoOpen: false,
+		height: 350,
+		width: 350,
+		modal: true,
+		buttons: [{
+			text: "Reset Password",
+			click: function() {
+				requestPasswordReset();
+			}
+		}, {
+			text: "Cancel",
+			click: function() {
+				window.location = "index.html";
+				$(this).dialog("close");
+			}
+		}]
+	}).find("form").on("submit", function(event) {
+		event.preventDefault();
+		requestPasswordReset();
+	});
+	$("#login").find("a.reset-password").click(function(event) {
+		event.preventDefault();
+		$("#login").dialog("close");
+		$("#reset-password").dialog("open");
 	});
 	$("#user-profile").dialog({
 		title: "Update Profile",

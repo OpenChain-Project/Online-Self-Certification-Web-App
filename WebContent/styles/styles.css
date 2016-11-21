@@ -282,3 +282,11 @@ table tr:nth-child(odd) {
 	background: #ffffff;
 	padding: .4em;
 }
+
+.reset-password {
+	font-size: 11px;
+}
+
+#pwform {
+	width: 600px;
+}

@@ -1,6 +1,5 @@
 - Add Maven build to manage dependencies
 - Add SPDX file (after Maven - use the Maven SPDX plugin)
-- Add reset password
 - Add paging to certified table and to the not submitted table
-- Check verification date for new users (see EmailUtility.java)
 - Add "retract answers" functionality
+- Add HTTPS to the website

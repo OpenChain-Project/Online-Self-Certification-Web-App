@@ -16,18 +16,11 @@
 */
 package org.openchain.certification.utility;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.UUID;
 
 import javax.servlet.ServletConfig;
 
 import org.apache.log4j.Logger;
-import org.openchain.certification.dbdao.UserDb;
-import org.openchain.certification.model.User;
 
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
@@ -48,17 +41,6 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest;
  */
 public class EmailUtility {
 	static final Logger logger = Logger.getLogger(EmailUtility.class);
-
-	static final int HOURS_FOR_VERIFICATION_EMAIL_EXPIRATION = 24;
-	/**
-	 * @return a Date when the verification email is set to expire
-	 */
-	public static Date generateVerificationExpirationDate() {
-		Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date(cal.getTime().getTime()));
-        cal.add(Calendar.HOUR, HOURS_FOR_VERIFICATION_EMAIL_EXPIRATION);
-		return new Date(cal.getTime().getTime());
-	}
 	
 	public static void emailVerification(String name, String email, UUID uuid, 
 			String username, String responseServletUrl, ServletConfig config) throws EmailUtilException {
@@ -96,35 +78,6 @@ public class EmailUtility {
 		} catch (Exception ex) {
 			logger.error("Email send failed",ex);
 			throw(new EmailUtilException("Exception occured during the emailing of the invitation",ex));
-		}
-	}
-
-	public static void completeEmailVerification(String username, String uuid, ServletConfig config) throws EmailUtilException  {
-		try {
-			User user = UserDb.getUserDb(config).getUser(username);
-			if (user == null) {
-				logger.error("NO user found for completing email verification - username "+username);
-				throw new EmailUtilException("User "+username+" not found.  Could not complete registration.");
-			}
-			if (user.isVerified()) {
-				logger.warn("Attempting to verify an already verified user");
-				return;
-			}
-			//TODO: Verify the date - once we have the resend invitation functionality implemented
-			if (!PasswordUtil.validate(uuid.toString(), user.getUuid())) {
-				logger.error("Verification tokens do not match for user "+username+".  Supplied = "+uuid+", expected = "+user.getUuid());
-				throw(new EmailUtilException("Verification failed.  Invalid registration ID.  Please retry."));
-			}
-			UserDb.getUserDb(config).setVerified(username, true);
-		} catch (SQLException e) {
-			logger.error("Unexpected SQL exception completing the email verification",e);
-			throw(new EmailUtilException("Unexpected SQL exception completing verification.  Please report this error to the OpenChain group"));
-		} catch (NoSuchAlgorithmException e) {
-			logger.error("Unexpected No Such Algorithm Exception completing the email verification",e);
-			throw(new EmailUtilException("Unexpected No Such Algorithm exception completing verification.  Please report this error to the OpenChain group"));
-		} catch (InvalidKeySpecException e) {
-			logger.error("Unexpected Invalid Key Exception completing the email verification",e);
-			throw(new EmailUtilException("Unexpected Invalid Key exception completing verification.  Please report this error to the OpenChain group"));
 		}
 	}
 
@@ -194,7 +147,6 @@ public class EmailUtility {
 
 		msg.append(username);
 		msg.append(" has been updated.  If you this update has been made in error, please contact the OpenChain certification team.");
-		msg.append(" has just submitted a cerification request.");
 		Destination destination = new Destination().withToAddresses(new String[]{email});
 		Content subject = new Content().withData("OpenChain Certification profile updated [do not reply]");
 		Content bodyData = new Content().withData(msg.toString());
@@ -211,6 +163,43 @@ public class EmailUtility {
 		} catch (Exception ex) {
 			logger.error("Email send failed",ex);
 			throw(new EmailUtilException("Exception occured during the emailing of the submission notification",ex));
+		}
+	}
+
+	public static void emailPasswordReset(String name, String email, UUID uuid,
+			String username, String responseServletUrl, ServletConfig config) throws EmailUtilException {
+		String regionName = config.getServletContext().getInitParameter("email_ses_region");
+		if (regionName == null || regionName.isEmpty()) {
+			logger.error("Missing email_ses_region parameter in the web.xml file");
+			throw(new EmailUtilException("The region name for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+		}
+		String fromEmail = config.getServletContext().getInitParameter("return_email");
+		if (fromEmail == null || fromEmail.isEmpty()) {
+			logger.error("Missing return_email parameter in the web.xml file");
+			throw(new EmailUtilException("The from email for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+		}
+		String link = responseServletUrl + "?request=pwreset&username=" + username + "&uuid=" + uuid.toString();
+		StringBuilder msg = new StringBuilder("<div>To reset the your password, click on the following or copy/paste into your web browser <a href=\"");
+		msg.append(link);
+		msg.append("\">");
+		msg.append(link);
+		msg.append("</a><br/><br/><br/>The OpenChain team</div>");
+		Destination destination = new Destination().withToAddresses(new String[]{email});
+		Content subject = new Content().withData("OpenChain Password Reset [do not reply]");
+		Content bodyData = new Content().withData(msg.toString());
+		Body body = new Body();
+		body.setHtml(bodyData);
+		Message message = new Message().withSubject(subject).withBody(body);
+		SendEmailRequest request = new SendEmailRequest().withSource(fromEmail).withDestination(destination).withMessage(message);
+		try {
+			AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient();
+			Region region = Region.getRegion(Regions.fromName(regionName));
+			client.setRegion(region);
+			client.sendEmail(request);
+			logger.info("Reset password email sent to "+email);
+		} catch (Exception ex) {
+			logger.error("Email send failed",ex);
+			throw(new EmailUtilException("Exception occured during the emailing of the password reset",ex));
 		}
 	}
 	

@@ -20,6 +20,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +79,8 @@ public class UserSession {
 	private String name = null;
 
 	private String organization = null;
+
+	private boolean passwordReset = false;
 	
 	public UserSession(String username, String password, ServletConfig config) {
 		this.username = username;
@@ -95,6 +99,66 @@ public class UserSession {
 		this.name = null;
 		this.organization = null;
 	}
+	
+	static final int HOURS_FOR_VERIFICATION_EMAIL_EXPIRATION = 24;
+	/**
+	 * @return a Date when the verification email is set to expire
+	 */
+	public static Date generateVerificationExpirationDate() {
+		Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date(cal.getTime().getTime()));
+        cal.add(Calendar.HOUR, HOURS_FOR_VERIFICATION_EMAIL_EXPIRATION);
+		return new Date(cal.getTime().getTime());
+	}
+	
+	/**
+	 * @param expiration Date of the expiration
+	 * @return true if the expirate date has not passed
+	 */
+	public static boolean isValidExpirationDate(Date expiration) {
+		Date now = new Date();
+		return now.compareTo(expiration) < 0;
+	}
+	
+	/**
+	 * Complete the email verification process validating the verification information
+	 * @param username Username
+	 * @param uuid UUID generated for the verification email
+	 * @param config
+	 * @throws InvalidUserException
+	 */
+	public static void completeEmailVerification(String username, String uuid, ServletConfig config) throws InvalidUserException  {
+		try {
+			User user = UserDb.getUserDb(config).getUser(username);
+			if (user == null) {
+				logger.error("NO user found for completing email verification - username "+username);
+				throw new InvalidUserException("User "+username+" not found.  Could not complete registration.");
+			}
+			if (user.isVerified()) {
+				logger.warn("Attempting to verify an already verified user");
+				return;
+			}
+			if (!isValidExpirationDate(user.getVerificationExpirationDate())) {
+				logger.error("Expiration date for verification has passed for user "+username);
+				throw(new InvalidUserException("The verification has expired.  Please resend the verification email.  When logging in using your username and password, you will be prompted to resend the verification."));
+			}
+			if (!PasswordUtil.validate(uuid.toString(), user.getUuid())) {
+				logger.error("Verification tokens do not match for user "+username+".  Supplied = "+uuid+", expected = "+user.getUuid());
+				throw(new InvalidUserException("Verification failed.  Invalid registration ID.  Please retry."));
+			}
+			UserDb.getUserDb(config).setVerified(username, true);
+		} catch (SQLException e) {
+			logger.error("Unexpected SQL exception completing the email verification",e);
+			throw(new InvalidUserException("Unexpected SQL exception completing verification.  Please report this error to the OpenChain group"));
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Unexpected No Such Algorithm Exception completing the email verification",e);
+			throw(new InvalidUserException("Unexpected No Such Algorithm exception completing verification.  Please report this error to the OpenChain group"));
+		} catch (InvalidKeySpecException e) {
+			logger.error("Unexpected Invalid Key Exception completing the email verification",e);
+			throw(new InvalidUserException("Unexpected Invalid Key exception completing verification.  Please report this error to the OpenChain group"));
+		}
+	}
+	
 	public void logout() {
 		this.loggedIn = false;
 		this.username = null;
@@ -109,7 +173,7 @@ public class UserSession {
 	/**
 	 * @return true if the password is valid, but the user has not been registered
 	 */
-	public boolean isValidPasswordAnNotVerified() {
+	public boolean isValidPasswordAndNotVerified() {
 		if (this.loggedIn) {
 			return false;
 		}
@@ -160,6 +224,10 @@ public class UserSession {
 		}
 		if (!user.isVerified()) {
 			this.lastError = "This use has not been verified.  Please check your email and click on the provided link to verify this user and email address";
+			return false;
+		}
+		if (user.isPasswordReset()) {
+			this.lastError = "A password reset is in process.  Login is not allowed until the password has been reset.";
 			return false;
 		}
 		try {
@@ -215,7 +283,7 @@ public class UserSession {
 			user.setPasswordToken(PasswordUtil.getToken(this.password));
 			user.setUsername(this.username);
 			user.setVerified(false);			
-			user.setVerificationExpirationDate(EmailUtility.generateVerificationExpirationDate());
+			user.setVerificationExpirationDate(generateVerificationExpirationDate());
 			UUID uuid = UUID.randomUUID();
 			String hashedUuid = PasswordUtil.getToken(uuid.toString());
 			user.setUuid(hashedUuid);
@@ -594,5 +662,86 @@ public class UserSession {
 				this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
 				throw e;
 			} 
+	}
+	/**
+	 * Set the password reset to in progress.  Verifies the UUID, reset in progress and expiration date.
+	 * @param uuid
+	 * @return
+	 * @throws SQLException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws InvalidKeySpecException 
+	 */
+	public boolean verifyPasswordReset(String uuid) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException {
+		User user = null;
+		try {
+			user = UserDb.getUserDb(config).getUser(username);
+			if (!user.isPasswordReset()) {
+				this.lastError = "Attempting to reset a password when a reset password email was not sent.";
+				return false;
+			}
+			if (!PasswordUtil.validate(uuid.toString(), user.getUuid())) {
+				logger.error("Password reset tokens do not match for user "+username+".  Supplied = "+uuid+", expected = "+user.getUuid());
+				this.lastError = "Email password reset tokens does not match.  Please re-send the password reset.";
+				return false;
+			}
+			if (!isValidExpirationDate(user.getVerificationExpirationDate())) {
+				logger.error("Expiration date for verification has passed for user "+username);
+				this.lastError = "The verification has expired.  Please resend the verification email.  When logging in using your username and password, you will be prompted to resend the verification.";
+				return false;
+			}
+			this.passwordReset  = true;
+			return true;
+		} catch (SQLException e) {
+			logger.error("SQL Exception setting password reset",e);
+			this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
+			throw(e);
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Unexpected No Such Algorithm error signing up user",e);
+			this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+			throw e;
+		} catch (InvalidKeySpecException e) {
+			logger.error("Unexpected Invalid Key Spec error signing up user",e);
+			this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
+			throw e;
+		} 
+	}
+	public boolean isPasswordReset() {
+		return this.passwordReset;
+	}
+	public boolean setPassword(String username, String password) {
+		if (!Objects.equals(username, this.username)) {
+			this.lastError = "Username for password reset does not match the username in the email reset.";
+			return false;
+		}
+		User user = null;
+		try {
+			user = UserDb.getUserDb(config).getUser(username);
+			if (!user.isPasswordReset()) {
+				this.lastError = "Attempting to reset a password when a reset password email was not sent.";
+				return false;
+			}
+			user.setPasswordReset(false);
+			user.setPasswordToken(PasswordUtil.getToken(password));
+			UserDb.getUserDb(config).updateUser(user);
+			this.passwordReset = false;
+			this.password = password;
+			return true;
+		} catch (SQLException e) {
+			logger.error("SQL Exception setting password reset",e);
+			this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
+			return false;
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Unexpected No Such Algorithm error signing up user",e);
+			this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+			return false;
+		} catch (InvalidKeySpecException e) {
+			logger.error("Unexpected Invalid Key Spec error signing up user",e);
+			this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
+			return false;
+		} catch (InvalidUserException e) {
+			logger.error("Unexpected Invalid User error signing up user",e);
+			this.lastError = "Unexpected Invalid User error.  Please report this error to the OpenChain team";
+			return false;
+		} 
 	}
 }
