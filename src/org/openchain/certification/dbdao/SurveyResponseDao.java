@@ -587,6 +587,8 @@ public class SurveyResponseDao {
 							if (entry.getValue() instanceof YesNoAnswer) {
 								YesNoAnswer yn = (YesNoAnswer)entry.getValue();
 								this.updateAnswerQuery.setString(1, yn.getAnswer().toString());
+							} else {
+								this.updateAnswerQuery.setNull(1, java.sql.Types.VARCHAR);
 							}
 							if (entry.getValue() instanceof YesNoAnswerWithEvidence) {
 								this.updateAnswerQuery.setString(2, ((YesNoAnswerWithEvidence)entry.getValue()).getEvidence());

@@ -79,8 +79,8 @@ function openResendVerificationDialog(username, password) {
 	$( "#resendveify" ).dialog({
 		title: "Resend Verification",
 		resizable: false,
-	    height: 200,
-	    width: 200,
+	    height: 250,
+	    width: 250,
 	    modal: true,
 	    buttons: [{
 	    		text: "No",
@@ -102,6 +102,7 @@ function openResendVerificationDialog(username, password) {
 	    			    contentType: "json",
 	    			    async: false, 
 	    			    success: function( json ) {
+	    			    	password.val('');
 	    			    	if ( json.status == "OK" ) {
 	    			    		// redirect to the successful signup page
 	    			    		window.location = "signupsuccess.html";
@@ -110,6 +111,7 @@ function openResendVerificationDialog(username, password) {
 	    			    	} 	
 	    			    },
 	    			    error: function( xhr, status, errorThrown ) {
+	    			    	password.val('');
 	    			    	handleError(xhr, status, errorThrown);
 	    			    }
 	    			});
@@ -145,6 +147,7 @@ function loginUser() {
 		    contentType: "json",
 		    async: false, 
 		    success: function( json ) {
+		    	password.val('');
 		    	if ( json.status == "OK" ) {
 		    		if (json.admin) {
 		    			window.location = "admin.html";
@@ -154,6 +157,7 @@ function loginUser() {
 		    	} else if (json.status == "NOT_VERIFIED") {
 		    		openResendVerificationDialog(username, password);
 		    	} else {
+		    		password.val('');
 		    		displayError( json.error );
 		    	} 	
 		    },

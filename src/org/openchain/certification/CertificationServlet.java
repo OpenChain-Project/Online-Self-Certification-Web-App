@@ -69,7 +69,7 @@ public class CertificationServlet extends HttpServlet {
 	/**
 	 * Version of this software - should be updated before every release
 	 */
-	static final String version = "0.0.13";
+	static final String version = "0.0.14";
 	
 	static final Logger logger = Logger.getLogger(CertificationServlet.class);
 	
@@ -108,6 +108,8 @@ public class CertificationServlet extends HttpServlet {
 	private static final String PASSWORD_CHANGE_REQUEST = "changePassword";
 
 	private static final String REQUEST_RESET_PASSWORD = "requestResetPassword";
+	
+	private static final String REQUEST_UNSUBMIT = "unsubmit";
 	
 	
     /**
@@ -375,9 +377,14 @@ public class CertificationServlet extends HttpServlet {
         		if (rj.getAnswers() != null && rj.getAnswers().size() > 0) {
             		user.updateAnswers(rj.getAnswers());
         		}
-        		user.finalSubmission();
+        		if (!user.finalSubmission()) {
+        			postResponse.setStatus(Status.ERROR);
+        			postResponse.setError(user.getLastError());
+        		}
         	} else if (rj.getRequest().equals(RESET_ANSWERS_REQUEST)) {
         		user.resetAnswers();
+        	} else if (rj.getRequest().equals(REQUEST_UNSUBMIT)) {
+        		user.unsubmit();
         	} else if (rj.getRequest().equals(UPLOAD_SURVEY_REQUEST)) {
         		if (user.isAdmin()) {
         			try {

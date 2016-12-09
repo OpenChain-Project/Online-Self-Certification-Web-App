@@ -15,6 +15,8 @@
  *
 */
 
+var submitted;
+
 function getQuestionFormHtml(questions) {
 	var html = '<table class="questiontable ui-corner-all">\n<col class="number_col" /><col class="question_col" /><col class="answer_col" /><col class="answer_col" />\n<col class="number_col" />\n';
 	var inSubQuestions = false;
@@ -93,6 +95,7 @@ function getSurvey() {
 	    	var survey = surveyResponse.survey;
 	    	var responses = surveyResponse.responses;
 	    	var sections = survey.sections;
+	    	submitted = surveyResponse.submitted;
 	    	var html = '';
 	    	for ( var i = 0; i < sections.length; i++ ) {
 	    		var divReference = 'section_' + sections[i].name;
@@ -129,12 +132,30 @@ function getSurvey() {
 		    		}
 	    		});
 	    		updateSectionQuestionCounts($("#"+divReference));
+	    		updateButtons();
 	    	}
 	    },
 	    error: function( xhr, status, errorThrown ) {
 	    	handleError( xhr, status, errorThrown);
 	    }
 	});
+}
+
+/**
+ * Updates buttons based on the submission status
+ */
+function updateButtons() {
+	if (submitted) {
+		$("#btSaveAnswers").hide();
+		$("#btSaveAndSubmit").hide();
+		$("#btResetAnswers").hide();
+		$("#btUnSubmit").show();
+	} else {
+		$("#btSaveAnswers").show();
+		$("#btSaveAndSubmit").show();
+		$("#btResetAnswers").show();
+		$("#btUnSubmit").hide();
+	}
 }
 
 function updateSectionHtml(section, numQuestions, numAnswers) {
@@ -230,7 +251,46 @@ function saveAll() {
   });
 }
 
+function unsubmit() {
+	$("#btUnSubmit").button("disable");
+	var data = JSON.stringify({request: "unsubmit"});
+	$.ajax({
+	    url: "CertificationServlet",
+	    data: data,
+	    contentType: "json",
+	    type: "POST",
+	    dataType : "json",
+	    success: function( json ) {
+	    	$("#btUnSubmit").button("enable");
+	    	if (json.status == "OK") {
+		    	submitted = false;
+		    	updateButtons();
+	    		$( "#status" ).dialog({
+	    			title: "UnSubmitted",
+	    			resizable: false,
+	    		    height: 200,
+	    		    width: 200,
+	    		    modal: true,
+	    		    buttons: {
+	    		        "Ok" : function () {
+	    		            $( this ).dialog( "close" );
+	    		        }
+	    		    }
+	    		}).text( "Responses Unsubmitted" );
+	    	} else {
+	    		displayError(json.error);
+	    	}
+	    	
+	    },
+    error: function( xhr, status, errorThrown ) {
+    	$("#btUnSubmit").button("enable");
+    	handleError( xhr, status, errorThrown);
+    }
+  });
+}
+
 function finalSubmission() {
+	
 	$("#btSaveAndSubmit").button("disable");
 	$("#btSaveAnswers").button("disable");
 	var answers = [];
@@ -252,9 +312,11 @@ function finalSubmission() {
 	    type: "POST",
 	    dataType : "json",
 	    success: function( json ) {
+    		$("#btSaveAndSubmit").button("enable");
+    		$("#btSaveAnswers").button("enable");
 	    	if (json.status == "OK") {
-	    		$("#btSaveAndSubmit").button("enable");
-	    		$("#btSaveAnswers").button("enable");
+	    		submitted = true;
+	    		updateButtons();
 	    		$( "#status" ).dialog({
 	    			title: "Saved",
 	    			resizable: false,
@@ -268,6 +330,8 @@ function finalSubmission() {
 	    		    }
 	    		}).text( "Thank you - your information has been submitted" );
 	    	} else {
+	    		$("#btSaveAndSubmit").button("enable");
+	    		$("#btSaveAnswers").button("enable");
 	    		displayError(json.error);
 	    	}
 	    	
@@ -292,7 +356,33 @@ $(document).ready( function() {
 	$("#btSaveAndSubmit").button();
 	$("#btSaveAndSubmit").click(function(event) {
 	      event.preventDefault();
-	      finalSubmission();
+	      $( "#submitconfirm" ).dialog({
+				title: "Confirm Submit",
+				resizable: false,
+			    height: 200,
+			    width: 300,
+			    modal: true,
+			    buttons: [{
+			    		text: "Agree",
+			    		click: function () {
+			    			finalSubmission();
+			    			$( this ).dialog( "close" );
+			    		},
+			    		
+			    	},
+			    	{
+			    		text: "Cancel",
+			    		click: function () {
+			    			$( this ).dialog( "close" );
+			        }
+			    	}]
+			    
+			}).text( "Please confirm that you have verified all appropriate artifacts are maintained per the OpenChain specification." );
+	});
+	$("#btUnSubmit").button();
+	$("#btUnSubmit").click(function(event) {
+	      event.preventDefault();
+	      unsubmit();
 	});
 	$("#btDownloadAnswers").button();
 	$("#btDownloadAnswers").click(function(event) {

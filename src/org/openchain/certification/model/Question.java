@@ -321,7 +321,7 @@ public abstract class Question implements Comparable<Question> {
 	}
 
 	/**
-	 * @return the qusetion information formatted in a CSV row for a Survey CSV file
+	 * @return the question information formatted in a CSV row for a Survey CSV file
 	 */
 	public String[] toCsvRow() {
 		String[] retval = new String[Survey.CSV_COLUMNS.length];

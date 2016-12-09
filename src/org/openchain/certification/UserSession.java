@@ -425,19 +425,36 @@ public class UserSession {
 	}
 	/**
 	 * Final submission of questions
+	 * @return true if successful; on fail, lasterror will contain the error message
 	 * @throws SQLException 
 	 * @throws QuestionTypeException 
 	 * @throws SurveyResponseException 
 	 * @throws EmailUtilException 
 	 */
-	public void finalSubmission() throws SQLException, SurveyResponseException, QuestionException, EmailUtilException {
+	public boolean finalSubmission() throws SQLException, SurveyResponseException, QuestionException, EmailUtilException {
 		checkLoggedIn();
 		Connection con = SurveyDatabase.createConnection(config);
 		_getSurveyResponse();
+		List<Question> invalidQuestions = this.surveyResponse.invalidAnswers();
+		if (invalidQuestions.size() > 0) {
+			StringBuilder er = new StringBuilder("Can not submit - the following question(s) either has missing answers or invalid answers: ");
+			er.append(invalidQuestions.get(0).getNumber());
+			for (int i = 1; i < invalidQuestions.size(); i++) {
+				er.append(", ");
+				er.append(invalidQuestions.get(i).getNumber());
+			}
+			this.lastError = er.toString();
+			return false;
+		}
 		this.surveyResponse.setSubmitted(true);
+		this.surveyResponse.setApproved(true);
+		this.surveyResponse.setRejected(false);
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
 			dao.setSubmitted(username, this.surveyResponse.getSpecVersion(), true);
+			//NOTE: We automatically approve per openchain call on Monday Dec. 5
+			dao.setApproved(username, this.surveyResponse.getSpecVersion(), true);
+			dao.setRejected(username, this.surveyResponse.getSpecVersion(), false);
 		} finally {
 			con.close();
 		}
@@ -445,6 +462,7 @@ public class UserSession {
 				this.surveyResponse.getResponder().getName(),
 				this.surveyResponse.getResponder().getEmail(),
 				this.surveyResponse.getSpecVersion(), config);
+		return true;
 	}
 	public boolean isAdmin() {
 		return this.admin;
@@ -505,6 +523,7 @@ public class UserSession {
 			return false;
 		}
 		user.setUuid(hashedUuid);
+		user.setVerificationExpirationDate(generateVerificationExpirationDate());
 		try {
 			UserDb.getUserDb(config).updateUser(user);
 		} catch (SQLException e) {
@@ -743,5 +762,36 @@ public class UserSession {
 			this.lastError = "Unexpected Invalid User error.  Please report this error to the OpenChain team";
 			return false;
 		} 
+	}
+	/**
+	 * unsubmits responses
+	 * @throws SurveyResponseException 
+	 * @throws QuestionException 
+	 * @throws SQLException 
+	 * @throws EmailUtilException 
+	 */
+	public void unsubmit() throws SQLException, QuestionException, SurveyResponseException, EmailUtilException {
+		checkLoggedIn();
+		Connection con = SurveyDatabase.createConnection(config);
+		_getSurveyResponse();
+		if (!this.surveyResponse.isSubmitted()) {
+			logger.warn("Attempting to unsubmit an unsubmitted response for user "+this.username);
+			return;
+		}
+		this.surveyResponse.setApproved(false);
+		this.surveyResponse.setRejected(false);
+		this.surveyResponse.setSubmitted(false);
+		try {
+			SurveyResponseDao dao = new SurveyResponseDao(con);
+			dao.setSubmitted(username, this.surveyResponse.getSpecVersion(), false);
+			dao.setApproved(username, this.surveyResponse.getSpecVersion(), false);
+			dao.setRejected(username, this.surveyResponse.getSpecVersion(), false);
+		} finally {
+			con.close();
+		}
+		EmailUtility.emailUnsubmit(this.username,
+				this.surveyResponse.getResponder().getName(),
+				this.surveyResponse.getResponder().getEmail(),
+				this.surveyResponse.getSpecVersion(), config);
 	}
 }

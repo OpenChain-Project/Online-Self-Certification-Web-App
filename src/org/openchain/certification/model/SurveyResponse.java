@@ -18,9 +18,13 @@ package org.openchain.certification.model;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.TreeMap;
 
 import com.opencsv.CSVWriter;
@@ -111,6 +115,31 @@ public class SurveyResponse {
 	public void setSubmitted(boolean submitted) {
 		this.submitted = submitted;
 	}
+	
+	/**
+	 * @return a list of all questions which either have not been answered or where the answer is invalid
+	 */
+	public List<Question> invalidAnswers() {
+		List<Question> retval = new ArrayList<Question>();
+		Set<String> allQuestionNumbers = this.survey.getQuestionNumbers();
+		for (String questionNumber:allQuestionNumbers) {
+			Question question = this.survey.getQuestion(questionNumber);
+			if (question.getSubQuestionNumber() == null) {
+				// we ignore any subquestions since they will be covered by the parent
+				Answer answer = this.responses.get(questionNumber);
+				if (answer == null || !question.validate(answer)) {
+					retval.add(question);
+				}
+			}
+		}
+		Collections.sort(retval);
+		return retval;
+	}
+	/**
+	 * Output the responses in a CSV format
+	 * @param out
+	 * @throws IOException
+	 */
 	public void printCsv(PrintWriter out) throws IOException {
 		CSVWriter csv = new CSVWriter(out);
 		try {

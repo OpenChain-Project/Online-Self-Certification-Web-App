@@ -1,5 +1,4 @@
 - Add Maven build to manage dependencies
 - Add SPDX file (after Maven - use the Maven SPDX plugin)
 - Add paging to certified table and to the not submitted table
-- Add "retract answers" functionality
 - Add HTTPS to the website

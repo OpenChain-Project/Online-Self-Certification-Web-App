@@ -16,18 +16,22 @@
 */
 package org.openchain.certification.utility;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.ServletConfig;
 
 import org.apache.log4j.Logger;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
 import com.amazonaws.services.simpleemail.model.Body;
 import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.Destination;
+import com.amazonaws.services.simpleemail.model.GetSendQuotaResult;
 import com.amazonaws.services.simpleemail.model.Message;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 
@@ -41,14 +45,39 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest;
  */
 public class EmailUtility {
 	static final Logger logger = Logger.getLogger(EmailUtility.class);
+	private static final String ACCESS_KEY_VAR = "AWS_ACCESS_KEY_ID";
+	private static final String SECRET_KEY_VAR = "AWS_SECRET_ACCESS_KEY";
 	
-	public static void emailVerification(String name, String email, UUID uuid, 
-			String username, String responseServletUrl, ServletConfig config) throws EmailUtilException {
+	private static AmazonSimpleEmailServiceClient getEmailClient(ServletConfig config) throws EmailUtilException {
 		String regionName = config.getServletContext().getInitParameter("email_ses_region");
 		if (regionName == null || regionName.isEmpty()) {
 			logger.error("Missing email_ses_region parameter in the web.xml file");
 			throw(new EmailUtilException("The region name for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
 		}
+		String secretKey = null;
+		String accessKey = System.getenv(ACCESS_KEY_VAR);
+		if (accessKey == null) {
+			accessKey = System.getProperty(ACCESS_KEY_VAR);
+			if (accessKey != null) {
+				secretKey = System.getProperty(SECRET_KEY_VAR);
+			}
+		} else {
+			secretKey = System.getenv(SECRET_KEY_VAR);
+		}
+		AmazonSimpleEmailServiceClient retval = null;
+		if (accessKey != null) {
+			AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
+			retval = new AmazonSimpleEmailServiceClient(credentials);
+		} else {
+			retval = new AmazonSimpleEmailServiceClient();
+		}
+		Region region = Region.getRegion(Regions.fromName(regionName));
+		retval.setRegion(region);
+		return retval;
+	}
+	
+	public static void emailVerification(String name, String email, UUID uuid, 
+			String username, String responseServletUrl, ServletConfig config) throws EmailUtilException {
 		String fromEmail = config.getServletContext().getInitParameter("return_email");
 		if (fromEmail == null || fromEmail.isEmpty()) {
 			logger.error("Missing return_email parameter in the web.xml file");
@@ -70,9 +99,7 @@ public class EmailUtility {
 		Message message = new Message().withSubject(subject).withBody(body);
 		SendEmailRequest request = new SendEmailRequest().withSource(fromEmail).withDestination(destination).withMessage(message);
 		try {
-			AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient();
-			Region region = Region.getRegion(Regions.fromName(regionName));
-			client.setRegion(region);
+			AmazonSimpleEmailServiceClient client = getEmailClient(config);
 			client.sendEmail(request);
 			logger.info("Invitation email sent to "+email);
 		} catch (Exception ex) {
@@ -81,13 +108,36 @@ public class EmailUtility {
 		}
 	}
 
+	@SuppressWarnings("unused")
+	private static void logMailInfo(AmazonSimpleEmailServiceClient client, ServletConfig config) {
+		logger.info("Email Service Name: "+client.getServiceName());
+		List<String> identities = client.listIdentities().getIdentities();
+		for (String identity:identities) {
+			logger.info("Email identity: "+identity);
+		}
+		List<String> verifiedEmails = client.listVerifiedEmailAddresses().getVerifiedEmailAddresses();
+		for (String email:verifiedEmails) {
+			logger.info("Email verified email address: "+email);
+		}
+		GetSendQuotaResult sendQuota = client.getSendQuota();
+		logger.info("Max 24 hour send="+sendQuota.getMax24HourSend()+", Max Send Rate="+
+		sendQuota.getMaxSendRate() + ", Sent last 24 hours="+sendQuota.getSentLast24Hours());
+	}
+	
 	public static void emailCompleteSubmission(String username, String name, String email,
 			String specVersion, ServletConfig config) throws EmailUtilException {
-		String regionName = config.getServletContext().getInitParameter("email_ses_region");
-		if (regionName == null || regionName.isEmpty()) {
-			logger.error("Missing email_ses_region parameter in the web.xml file");
-			throw(new EmailUtilException("The region name for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
-		}
+		StringBuilder msg = new StringBuilder("<div>User ");
+		msg.append(name);
+		msg.append(" with username ");
+		msg.append(username);
+		msg.append(" and email ");
+		msg.append(email);
+		msg.append(" has just submitted a cerification request.");
+		emailAdmin("Notification - new OpenChain submission [do not reply]", msg.toString(), config);
+		logger.info("Notification email sent for "+email);
+	}
+
+	public static void emailAdmin(String subjectText, String msg, ServletConfig config) throws EmailUtilException {
 		String fromEmail = config.getServletContext().getInitParameter("return_email");
 		if (fromEmail == null || fromEmail.isEmpty()) {
 			logger.error("Missing return_email parameter in the web.xml file");
@@ -98,26 +148,17 @@ public class EmailUtility {
 			logger.error("Missing notification_email parameter in the web.xml file");
 			throw(new EmailUtilException("The to email for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
 		}
-		StringBuilder msg = new StringBuilder("<div>User ");
-		msg.append(name);
-		msg.append(" with username ");
-		msg.append(username);
-		msg.append(" and email ");
-		msg.append(email);
-		msg.append(" has just submitted a cerification request.");
+		
 		Destination destination = new Destination().withToAddresses(new String[]{toEmail});
-		Content subject = new Content().withData("Notification - new OpenChain submission [do not reply]");
+		Content subject = new Content().withData(subjectText);
 		Content bodyData = new Content().withData(msg.toString());
 		Body body = new Body();
 		body.setHtml(bodyData);
 		Message message = new Message().withSubject(subject).withBody(body);
 		SendEmailRequest request = new SendEmailRequest().withSource(fromEmail).withDestination(destination).withMessage(message);
 		try {
-			AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient();
-			Region region = Region.getRegion(Regions.fromName(regionName));
-			client.setRegion(region);
+			AmazonSimpleEmailServiceClient client = getEmailClient(config);
 			client.sendEmail(request);
-			logger.info("Notification email sent for "+email);
 		} catch (Exception ex) {
 			logger.error("Email send failed",ex);
 			throw(new EmailUtilException("Exception occured during the emailing of the submission notification",ex));
@@ -133,11 +174,6 @@ public class EmailUtility {
 	 */
 	public static void emailProfileUpdate(String username, String email,
 			ServletConfig config) throws EmailUtilException {
-		String regionName = config.getServletContext().getInitParameter("email_ses_region");
-		if (regionName == null || regionName.isEmpty()) {
-			logger.error("Missing email_ses_region parameter in the web.xml file");
-			throw(new EmailUtilException("The region name for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
-		}
 		String fromEmail = config.getServletContext().getInitParameter("return_email");
 		if (fromEmail == null || fromEmail.isEmpty()) {
 			logger.error("Missing return_email parameter in the web.xml file");
@@ -155,9 +191,7 @@ public class EmailUtility {
 		Message message = new Message().withSubject(subject).withBody(body);
 		SendEmailRequest request = new SendEmailRequest().withSource(fromEmail).withDestination(destination).withMessage(message);
 		try {
-			AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient();
-			Region region = Region.getRegion(Regions.fromName(regionName));
-			client.setRegion(region);
+			AmazonSimpleEmailServiceClient client = getEmailClient(config);
 			client.sendEmail(request);
 			logger.info("Notification email sent for "+email);
 		} catch (Exception ex) {
@@ -168,11 +202,6 @@ public class EmailUtility {
 
 	public static void emailPasswordReset(String name, String email, UUID uuid,
 			String username, String responseServletUrl, ServletConfig config) throws EmailUtilException {
-		String regionName = config.getServletContext().getInitParameter("email_ses_region");
-		if (regionName == null || regionName.isEmpty()) {
-			logger.error("Missing email_ses_region parameter in the web.xml file");
-			throw(new EmailUtilException("The region name for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
-		}
 		String fromEmail = config.getServletContext().getInitParameter("return_email");
 		if (fromEmail == null || fromEmail.isEmpty()) {
 			logger.error("Missing return_email parameter in the web.xml file");
@@ -192,15 +221,26 @@ public class EmailUtility {
 		Message message = new Message().withSubject(subject).withBody(body);
 		SendEmailRequest request = new SendEmailRequest().withSource(fromEmail).withDestination(destination).withMessage(message);
 		try {
-			AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient();
-			Region region = Region.getRegion(Regions.fromName(regionName));
-			client.setRegion(region);
+			AmazonSimpleEmailServiceClient client = getEmailClient(config);
 			client.sendEmail(request);
 			logger.info("Reset password email sent to "+email);
 		} catch (Exception ex) {
 			logger.error("Email send failed",ex);
 			throw(new EmailUtilException("Exception occured during the emailing of the password reset",ex));
 		}
+	}
+
+	public static void emailUnsubmit(String username, String name,
+			String email, String specVersion, ServletConfig config) throws EmailUtilException {
+		StringBuilder msg = new StringBuilder("<div>User ");
+		msg.append(name);
+		msg.append(" with username ");
+		msg.append(username);
+		msg.append(" and email ");
+		msg.append(email);
+		msg.append(" has just UN submitted a certification request.");
+		emailAdmin("Notification - pulled OpenChain submission [do not reply]", msg.toString(), config);
+		logger.info("Notification email sent for "+email);
 	}
 	
 }
