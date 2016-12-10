@@ -59,7 +59,7 @@
                 <input type="text" name="signup-email" id="signup-email" class="text ui-widget-content ui-corner-all">
                 <label for="signup-address">Organization Postal Address</label>
                 <textarea rows="6" cols="50" name="signup-address" id="signup-address" class="text ui-widget-content ui-corner-all" form="signup-form"></textarea>
-                <table>
+                <table class="checkbox-table">
                     <tr>
                         <td><input type="checkbox" name="approval-use-name-email" id="approval-use-name-email" class="ui-widget-content ui-corner-all"></td>
                         <td><label for="approval-use-name-email">My name and email may be shared on conformance page of the OpenChain website</label></td>
@@ -92,7 +92,11 @@
                 <input type="text" name="update-email" id="update-email" class="text ui-widget-content ui-corner-all">
                 <label for="update-address">Organization Postal Address</label>
                 <textarea rows="6" cols="50" name="update-address" id="update-address" class="text ui-widget-content ui-corner-all" form="profile-form"></textarea>
-               <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <table class="checkbox-table"><tr>
+                    <td><input type="checkbox" name="update-use-name-email" id="update-use-name-email" class="ui-widget-content ui-corner-all"></td>
+                    <td><label for="update-use-name-email">My name and email may be shared on conformance page of the OpenChain website</label></td>
+                </tr></table>
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </fieldset>
         </form>

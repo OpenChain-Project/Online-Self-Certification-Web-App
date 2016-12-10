@@ -69,7 +69,7 @@ public class CertificationServlet extends HttpServlet {
 	/**
 	 * Version of this software - should be updated before every release
 	 */
-	static final String version = "0.0.14";
+	static final String version = "0.0.15";
 	
 	static final Logger logger = Logger.getLogger(CertificationServlet.class);
 	
@@ -351,7 +351,8 @@ public class CertificationServlet extends HttpServlet {
         		}
         		UserSession newUser = new UserSession(rj.getUsername(), rj.getPassword(), getServletConfig());
         		String verificationUrl = request.getRequestURL().toString();
-        		if (!newUser.signUp(rj.getName(), rj.getAddress(), rj.getOrganization(), rj.getEmail(), verificationUrl)) {
+        		if (!newUser.signUp(rj.getName(), rj.getAddress(), rj.getOrganization(), 
+        				rj.getEmail(), verificationUrl, rj.getNamePermission(), rj.getEmailPermission())) {
         			postResponse.setStatus(Status.ERROR);
         			postResponse.setError("Error signing up: "+newUser.getLastError());
         		}
@@ -368,7 +369,8 @@ public class CertificationServlet extends HttpServlet {
             		postResponse.setError("User is not logged in");
         		}
         	} else if (rj.getRequest().equals(UPDATE_PROFILE_REQUEST)) {
-        		user.updateUser(rj.getName(), rj.getEmail(), rj.getOrganization(), rj.getAddress(), rj.getPassword());
+        		user.updateUser(rj.getName(), rj.getEmail(), rj.getOrganization(), 
+        				rj.getAddress(), rj.getPassword(), rj.getNamePermission(), rj.getEmailPermission());
         	} else if (rj.getRequest().equals(UPDATE_ANSWERS_REQUEST)) {
         		if (rj.getAnswers() != null && rj.getAnswers().size() > 0) {
             		user.updateAnswers(rj.getAnswers());

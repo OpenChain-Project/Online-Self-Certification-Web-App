@@ -54,6 +54,10 @@ public class TestUserDb {
 		user.setVerificationExpirationDate(expdate);
 		boolean verified = true;
 		user.setVerified(verified);
+		boolean namePermission = true;
+		boolean emailPermission = false;
+		user.setNamePermission(namePermission);
+		user.setEmailPermission(emailPermission);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);	
 		User result = UserDb.getUserDb(TestHelper.getTestServletConfig()).getUser(username);
 		assertEquals(address, result.getAddress());
@@ -67,6 +71,8 @@ public class TestUserDb {
 		assertEquals(admin, result.isAdmin());
 		assertEquals(passwordreset, result.isPasswordReset());
 		assertEquals(verified, result.isVerified());
+		assertEquals(namePermission, result.hasNamePermission());
+		assertEquals(emailPermission, result.hasEmailPermission());
 	}
 
 	@Test
@@ -94,6 +100,10 @@ public class TestUserDb {
 		user.setVerificationExpirationDate(expdate);
 		boolean verified = true;
 		user.setVerified(verified);
+		boolean namePermission = true;
+		boolean emailPermission = false;
+		user.setNamePermission(namePermission);
+		user.setEmailPermission(emailPermission);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);	
 		User result = UserDb.getUserDb(TestHelper.getTestServletConfig()).getUser(username);
 		assertTrue(result.isVerified());
@@ -127,6 +137,10 @@ public class TestUserDb {
 		user.setVerificationExpirationDate(expdate);
 		boolean verified = true;
 		user.setVerified(verified);
+		boolean namePermission = true;
+		boolean emailPermission = false;
+		user.setNamePermission(namePermission);
+		user.setEmailPermission(emailPermission);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);	
 		User result = UserDb.getUserDb(TestHelper.getTestServletConfig()).getUser(username);
 		assertEquals(address, result.getAddress());
@@ -140,6 +154,8 @@ public class TestUserDb {
 		assertEquals(admin, result.isAdmin());
 		assertEquals(passwordreset, result.isPasswordReset());
 		assertEquals(verified, result.isVerified());
+		assertEquals(namePermission, result.hasNamePermission());
+		assertEquals(emailPermission, result.hasEmailPermission());
 		
 		String address2 = "Address2";
 		user.setAddress(address2);
@@ -161,6 +177,10 @@ public class TestUserDb {
 		user.setVerificationExpirationDate(expdate2);
 		boolean verified2 = false;
 		user.setVerified(verified2);
+		boolean namePermission2 = false;
+		boolean emailPermission2 = true;
+		user.setNamePermission(namePermission2);
+		user.setEmailPermission(emailPermission2);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).updateUser(user);
 		
 		result = UserDb.getUserDb(TestHelper.getTestServletConfig()).getUser(username);
@@ -175,6 +195,8 @@ public class TestUserDb {
 		assertEquals(admin2, result.isAdmin());
 		assertEquals(passwordreset2, result.isPasswordReset());
 		assertEquals(verified2, result.isVerified());
+		assertEquals(namePermission2, result.hasNamePermission());
+		assertEquals(emailPermission2, result.hasEmailPermission());
 		
 	}
 	@Test
@@ -202,6 +224,10 @@ public class TestUserDb {
 		user.setVerificationExpirationDate(expdate);
 		boolean verified = true;
 		user.setVerified(verified);
+		boolean namePermission = true;
+		boolean emailPermission = false;
+		user.setNamePermission(namePermission);
+		user.setEmailPermission(emailPermission);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);	
 		assertTrue(UserDb.getUserDb(TestHelper.getTestServletConfig()).userExists(user.getUsername()));
 		assertFalse(UserDb.getUserDb(TestHelper.getTestServletConfig()).userExists("this ain't no user"));

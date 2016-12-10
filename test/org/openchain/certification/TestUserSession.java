@@ -2,6 +2,8 @@ package org.openchain.certification;
 
 import static org.junit.Assert.*;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ import org.openchain.certification.model.YesNoNotApplicableQuestion;
 import org.openchain.certification.model.YesNoQuestion;
 import org.openchain.certification.model.YesNoQuestionWithEvidence;
 import org.openchain.certification.model.YesNoQuestion.YesNo;
+import org.openchain.certification.utility.EmailUtilException;
 import org.openchain.certification.utility.PasswordUtil;
 
 public class TestUserSession {
@@ -45,14 +48,14 @@ public class TestUserSession {
 	String section1Name = "section1Name";
 	String section1Title = "section1Title";
 	String s1q1Question="s1q1question";
-	String s1q1Number = "1.0";
+	String s1q1Number = "1.a";
 	YesNo s1q1Answer = YesNo.Yes;
 	String s1q1SpecRef = "s1q1SpecRef";
 	YesNoQuestion s1q1;
 	Section section1;
 	Survey survey;
 	String s1q2Question="s1q2question";
-	String s1q2Number = "1.1";
+	String s1q2Number = "1.b";
 	YesNo s1q2Answer = YesNo.NotApplicable;
 	String s1q2Prompt = "s1q2prompt";
 	YesNoNotApplicableQuestion s1q2;
@@ -60,19 +63,19 @@ public class TestUserSession {
 	String section2Name = "section2Name";
 	String section2Title = "section2Title";
 	String s2q1Question="s2q1question";
-	String s2q1Number = "2.1";
+	String s2q1Number = "2.b";
 	int s2q1MinCorrect = 4;
 	SubQuestion s2q1;
 	String s2q1SpecRef = "s2q1SpecRef";
 	String s2q2Question="s2q2question";
-	String s2q2Number = "2.1.1";
+	String s2q2Number = "2.b.ii";
 	YesNo s2q2Answer = YesNo.No;
 	String s2q2Prompt = "s2q2prompt";
 	String s2q2validate = "dd";
 	YesNoQuestionWithEvidence s2q2;
 	String s2q2SpecRef = "s2q2SpecRef";
 	String s2q3Question="s2q3question";
-	String s2q3Number = "2.1.2";
+	String s2q3Number = "2.b.iii";
 	YesNo s2q3Answer = YesNo.NotAnswered;
 	YesNoQuestion s2q3;
 	String s2q3SpecRef = "s2q3SpecRef";
@@ -139,6 +142,8 @@ public class TestUserSession {
 		user.setUuid(UUID.randomUUID().toString());
 		user.setVerificationExpirationDate(new Date());
 		user.setVerified(true);
+		user.setNamePermission(false);
+		user.setEmailPermission(true);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);	
 	}
 
@@ -154,6 +159,8 @@ public class TestUserSession {
 		assertFalse(userSession.isLoggedIn());
 		assertTrue(userSession.login());
 		assertTrue(userSession.isLoggedIn());
+		assertEquals(user.hasEmailPermission(), userSession.hasEmailPermission());
+		assertEquals(user.hasNamePermission(), userSession.hasNamePermission());
 		userSession.logout();
 		assertFalse(userSession.isLoggedIn());
 		UserSession badUserSession = new UserSession(
@@ -250,6 +257,49 @@ public class TestUserSession {
 		assertEquals(YesNo.No, ((YesNoAnswerWithEvidence)resultAnswer4).getAnswer());
 		assertEquals("Evidence", ((YesNoAnswerWithEvidence)resultAnswer4).getEvidence());
 		assertTrue(resultResponses.get(s2q3Number) == null);
+	}
+	
+	@Test
+	public void testUpdateUser() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidUserException, SQLException, EmailUtilException {
+		UserSession userSession = new UserSession(
+				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
+		assertTrue(userSession.login());
+		assertTrue(userSession.isLoggedIn());
+		assertEquals(user.getAddress(), userSession.getAddress());
+		assertEquals(user.getEmail(), userSession.getEmail());
+		assertEquals(user.getName(), userSession.getName());
+		assertEquals(user.getOrganization(), userSession.getOrganization());
+		assertEquals(user.isAdmin(), userSession.isAdmin());
+		assertEquals(user.hasEmailPermission(), userSession.hasEmailPermission());
+		assertEquals(user.hasNamePermission(), userSession.hasNamePermission());
+		
+		String newName = "new Name";
+		String newEmail = "newemail@email.com";
+		String newOrganization = "new Organization";
+		String newAddress = "new Address";
+		String newPassword = "newPassword!";
+		boolean newNamePermission = !user.hasNamePermission();
+		boolean newEmailPermission = !user.hasEmailPermission();
+		userSession.updateUser(newName, newEmail, newOrganization, newAddress, 
+				newPassword, newNamePermission, newEmailPermission);
+		assertEquals(newAddress, userSession.getAddress());
+		assertEquals(newEmail, userSession.getEmail());
+		assertEquals(newName, userSession.getName());
+		assertEquals(newOrganization, userSession.getOrganization());
+		assertEquals(user.isAdmin(), userSession.isAdmin());
+		assertEquals(newEmailPermission, userSession.hasEmailPermission());
+		assertEquals(newNamePermission, userSession.hasNamePermission());
+		
+		UserSession newUserSession = new UserSession(
+				user.getUsername(), newPassword, TestHelper.getTestServletConfig());
+		newUserSession.login();
+		assertEquals(newAddress, newUserSession.getAddress());
+		assertEquals(newEmail, newUserSession.getEmail());
+		assertEquals(newName, newUserSession.getName());
+		assertEquals(newOrganization, newUserSession.getOrganization());
+		assertEquals(user.isAdmin(), newUserSession.isAdmin());
+		assertEquals(newEmailPermission, newUserSession.hasEmailPermission());
+		assertEquals(newNamePermission, newUserSession.hasNamePermission());
 	}
 
 }

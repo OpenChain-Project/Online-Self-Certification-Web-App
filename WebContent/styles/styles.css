@@ -297,3 +297,10 @@ table tr:nth-child(odd) {
     padding: 2px 0 0 6px;
     width: auto;
 }
+
+.cert-table-cell {
+	border: 1px solid black;
+    margin: 12px 6px 6px 6px;
+    padding: 2px 2px 2px 6px;
+    width: auto;
+}

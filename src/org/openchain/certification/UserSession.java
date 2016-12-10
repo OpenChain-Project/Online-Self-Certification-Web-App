@@ -82,10 +82,13 @@ public class UserSession {
 
 	private boolean passwordReset = false;
 	
+	private boolean namePermission = false;
+	private boolean emailPermission = false;
+	
 	public UserSession(String username, String password, ServletConfig config) {
+		this(config);
 		this.username = username;
 		this.password = password;
-		this.config = config;
 		this.loggedIn = false;
 	}
 	public UserSession(ServletConfig config) {
@@ -98,6 +101,8 @@ public class UserSession {
 		this.email = null;
 		this.name = null;
 		this.organization = null;
+		this.namePermission = false;
+		this.emailPermission = false;
 	}
 	
 	static final int HOURS_FOR_VERIFICATION_EMAIL_EXPIRATION = 24;
@@ -168,6 +173,8 @@ public class UserSession {
 		this.email = null;
 		this.name = null;
 		this.organization = null;
+		this.namePermission = false;
+		this.emailPermission = false;
 	}
 	
 	/**
@@ -208,6 +215,12 @@ public class UserSession {
 		}
 		return true;
 	}
+	
+	
+	/**
+	 * Log the user in and populate the user data
+	 * @return true if the login was successful
+	 */
 	public boolean login() {
 		this.loggedIn = false;
 		User user = null;
@@ -250,6 +263,8 @@ public class UserSession {
 		this.email = user.getEmail();
 		this.name = user.getName();
 		this.organization = user.getOrganization();
+		this.namePermission = user.hasNamePermission();
+		this.emailPermission = user.hasEmailPermission();
 		return true;
 	}
 	public String getLastError() {
@@ -262,10 +277,13 @@ public class UserSession {
 	 * @param organization User organization
 	 * @param email Email - must already be validated
 	 * @param responseServletUrl The URL of the servlet to handle the email validation link
+	 * @param namePermission If true, user has given permission to publish their name on the website
+	 * @param emailPermission If true, user has given permission to publish their email address on the website
 	 * @return
 	 */
 	public boolean signUp(String name, String address, String organization,
-			String email, String responseServletUrl) {
+			String email, String responseServletUrl, boolean namePermission,
+			boolean emailPermission) {
 		User user = null;
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
@@ -283,6 +301,8 @@ public class UserSession {
 			user.setPasswordToken(PasswordUtil.getToken(this.password));
 			user.setUsername(this.username);
 			user.setVerified(false);			
+			user.setNamePermission(namePermission);
+			user.setEmailPermission(emailPermission);
 			user.setVerificationExpirationDate(generateVerificationExpirationDate());
 			UUID uuid = UUID.randomUUID();
 			String hashedUuid = PasswordUtil.getToken(uuid.toString());
@@ -605,12 +625,32 @@ public class UserSession {
 	}
 	
 	/**
+	 * @return the namePermission
+	 */
+	public boolean hasNamePermission() {
+		return namePermission;
+	}
+	/**
+	 * @return the emailPermission
+	 */
+	public boolean hasEmailPermission() {
+		return emailPermission;
+	}
+	/**
+	 * @return the hoursForVerificationEmailExpiration
+	 */
+	public static int getHoursForVerificationEmailExpiration() {
+		return HOURS_FOR_VERIFICATION_EMAIL_EXPIRATION;
+	}
+	/**
 	 * Update the User information
 	 * @param newName
 	 * @param newEmail
 	 * @param newOrganization
 	 * @param newAddress
 	 * @param newPassword
+	 * @param newNamePermission
+	 * @param newEmailPermission
 	 * @throws InvalidUserException 
 	 * @throws SQLException 
 	 * @throws NoSuchAlgorithmException 
@@ -618,14 +658,12 @@ public class UserSession {
 	 * @throws EmailUtilException 
 	 */
 	public void updateUser(String newName, String newEmail, String newOrganization, 
-			String newAddress, String newPassword) throws InvalidUserException, SQLException, NoSuchAlgorithmException, InvalidKeySpecException, EmailUtilException {
-		
-		
+			String newAddress, String newPassword, boolean newNamePermission,
+			boolean newEmailPermission) throws InvalidUserException, SQLException, NoSuchAlgorithmException, InvalidKeySpecException, EmailUtilException {
 		if (!loggedIn) {
 			this.lastError = "Can not update a user which is not logged in.";
 			throw new InvalidUserException(this.lastError);
 		}
-
 			User user = null;
 			try {
 				user = UserDb.getUserDb(config).getUser(username);
@@ -636,22 +674,37 @@ public class UserSession {
 				boolean needUpdate = false;
 				if (!Objects.equals(newName, this.name)) {
 					user.setName(newName);
+					this.name = newName;
 					needUpdate = true;
 				}
 				if (!Objects.equals(newEmail, this.email)) {
+					this.email = newEmail;
 					user.setEmail(newEmail);
 					needUpdate = true;
 				}
 				if (!Objects.equals(newOrganization, this.organization)) {
+					this.organization = newOrganization;
 					user.setOrganization(newOrganization);
 					needUpdate = true;
 				}
 				if (newPassword != null && !Objects.equals(newPassword, this.password)) {
+					this.password = newPassword;
 					user.setPasswordToken(PasswordUtil.getToken(newPassword));
 					needUpdate = true;
 				}
 				if (!Objects.equals(newAddress, this.address)) {
+					this.address = newAddress;
 					user.setAddress(newAddress);
+					needUpdate = true;
+				}
+				if (user.hasEmailPermission() != newEmailPermission) {
+					this.emailPermission = newEmailPermission;
+					user.setEmailPermission(newEmailPermission);
+					needUpdate = true;
+				}
+				if (user.hasNamePermission() != newNamePermission) {
+					this.namePermission = newNamePermission;
+					user.setNamePermission(newNamePermission);
 					needUpdate = true;
 				}
 				if (needUpdate) {

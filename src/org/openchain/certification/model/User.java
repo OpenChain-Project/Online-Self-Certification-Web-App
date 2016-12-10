@@ -39,6 +39,8 @@ public class User {
 	 * This is a hashed version of the uuid used for the email verification
 	 */
 	private String uuid;
+	private boolean namePermission;
+	private boolean emailPermission;
 	
 	/**
 	 * Copies all of the non-private information from a user into a new instance of a user
@@ -47,9 +49,15 @@ public class User {
 	 */
 	public static User createNonPrivateInfo(User user) {
 		User retval = new User();
-		retval.setEmail(user.getEmail());
-		retval.setName(user.getName());
+		if (user.hasEmailPermission()) {
+			retval.setEmail(user.getEmail());
+		}
+		if (user.hasNamePermission()) {
+			retval.setName(user.getName());
+		}
 		retval.setOrganization(user.getOrganization());
+		retval.setNamePermission(user.hasNamePermission());
+		retval.setEmailPermission(user.hasEmailPermission());
 		return retval;
 	}
 	
@@ -182,5 +190,33 @@ public class User {
 	 */
 	public void setOrganization(String organization) {
 		this.organization = organization;
+	}
+
+	/**
+	 * @param namePermission true if the user has given permission to use their name on the public website
+	 */
+	public void setNamePermission(boolean namePermission) {
+		this.namePermission = namePermission;
+	}
+	
+	/**
+	 * @return true if the user has given permission to use their name on the public website
+	 */
+	public boolean hasNamePermission() {
+		return this.namePermission;
+	}
+
+	/**
+	 * @param emailPermission true if the user has given permission to use their email address on the public website
+	 */
+	public void setEmailPermission(boolean emailPermission) {
+		this.emailPermission = emailPermission;
+	}
+	
+	/**
+	 * @return true if the user has given permission to use their email address on the public website
+	 */
+	public boolean hasEmailPermission() {
+		return this.emailPermission;
 	}
 }

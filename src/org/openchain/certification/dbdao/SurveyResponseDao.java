@@ -80,7 +80,7 @@ public class SurveyResponseDao {
 		this.con.setAutoCommit(false);
 		getUserQuery = con.prepareStatement("select password_token, name, address, email," +
 				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization, id from openchain_user where username=?",
+				" uuid, organization, id, name_permission, email_permission from openchain_user where username=?",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		getLatestSpecVersionForUserQuery = con.prepareStatement("select max(version) from survey_response join " +
 				"spec on survey_response.spec_version=spec.id where user_id=?",
@@ -131,7 +131,7 @@ public class SurveyResponseDao {
 		getUsersWithResponsesQuery = con.prepareStatement("select username, password_token, name, address, email," +
 				"verified, passwordReset, admin, verificationExpirationDate," +
 				" uuid, organization, openchain_user.id as id, submitted, approved, rejected, version, " +
-				"survey_response.id as responseid from survey_response join openchain_user " +
+				"survey_response.id as responseid, name_permission, email_permission from survey_response join openchain_user " +
 				"on survey_response.user_id=openchain_user.id join spec on survey_response.spec_version=spec.id" +
 				" order by username asc",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -164,6 +164,8 @@ public class SurveyResponseDao {
 			user.setVerificationExpirationDate(result.getDate("verificationExpirationDate"));
 			user.setVerified(result.getBoolean("verified"));
 			user.setOrganization(result.getString("organization"));
+			user.setNamePermission(result.getBoolean("name_permission"));
+			user.setEmailPermission(result.getBoolean("email_permission"));
 			long userId = result.getLong("id");
 			if (specVersion == null) {
 				// get the latest spec version that is stored in the database
@@ -243,6 +245,8 @@ public class SurveyResponseDao {
 				user.setVerificationExpirationDate(result.getDate("verificationExpirationDate"));
 				user.setVerified(result.getBoolean("verified"));
 				user.setOrganization(result.getString("organization"));
+				user.setNamePermission(result.getBoolean("name_permission"));
+				user.setEmailPermission(result.getBoolean("email_permission"));
 				long userId = result.getLong("id");
 				response.setResponder(user);
 				response.setSubmitted(result.getBoolean("submitted"));

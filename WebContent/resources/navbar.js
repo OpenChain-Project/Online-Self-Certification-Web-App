@@ -241,6 +241,7 @@ function updateUserProfile() {
 	var organization = $("#update-organization");
 	var email = $("#update-email");
 	var address = $("#update-address");
+	var okUseNameEmail = $("#update-use-name-email");
 	tips = $(".validateTips");
 	tips.text('');
 	var valid = true;
@@ -266,11 +267,12 @@ function updateUserProfile() {
 	valid = valid && checkRegexp( username, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter." );
 	valid = valid && checkRegexp( email, emailRegex, "e.g. user@linux-foundation.org");
 	if (valid) {
-		updateUser(username.val(), pw, name.val(), address.val(), organization.val(), email.val());
+		updateUser(username.val(), pw, name.val(), address.val(), 
+				organization.val(), email.val(), okUseNameEmail.is(':checked'));
 	}
 }
 
-function updateUser(username, password, name, address, organization, email) {
+function updateUser(username, password, name, address, organization, email, okUseNameEmail) {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data:JSON.stringify({
@@ -280,7 +282,9 @@ function updateUser(username, password, name, address, organization, email) {
 	        name: name,
 	        address: address,
 	        organization: organization,
-	        email: email
+	        email: email,
+	        namePermission: okUseNameEmail,
+	        emailPermission: okUseNameEmail
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -335,14 +339,14 @@ function signupUser() {
 	valid = valid && checkEquals(password, passwordVerify, "passwords");
 	valid = valid && checkRegexp( username, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter." );
 	valid = valid && checkRegexp( email, emailRegex, "e.g. user@linux-foundation.org");
-	valid = valid && checkChecked( checkApproveEmail, checkApproveEmailLbl );
 	valid = valid && checkChecked( checkApproveTerms, checkApproveTermsLbl );
 	if (valid) {
-		signup(username.val(), password.val(), name.val(), address.val(), organization.val(), email.val());
+		signup(username.val(), password.val(), name.val(), address.val(), organization.val(), 
+				email.val(), checkApproveEmail.is(':checked'));
 	}
 }
 
-function signup(username, password, name, address, organization, email) {
+function signup(username, password, name, address, organization, email, approveUseNameEmail) {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data:JSON.stringify({
@@ -352,7 +356,9 @@ function signup(username, password, name, address, organization, email) {
 	        name: name,
 	        address: address,
 	        organization: organization,
-	        email: email
+	        email: email,
+	        emailPermission: approveUseNameEmail,
+	        namePermission: approveUseNameEmail
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -397,6 +403,7 @@ function openProfileDialog() {
 	    	$("#update-organization").val(json.organization);
 	    	$("#update-email").val(json.email);
 	    	$("#update-address").val(json.address);
+	    	$("#update-use-name-email").prop('checked', json.emailPermission);
 	    	
 	    	$("#user-profile").dialog("open");
 	    },

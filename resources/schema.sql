@@ -60,7 +60,9 @@
 	    admin boolean,
 	    verificationExpirationDate date,
 	    uuid text,
-	    organization text
+	    organization text,
+	    name_permission boolean,
+	    email_permission boolean
 	);
 	alter TABLE openchain_user OWNER TO openchain;
 	

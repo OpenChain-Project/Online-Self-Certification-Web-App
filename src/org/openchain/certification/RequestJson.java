@@ -37,6 +37,8 @@ public class RequestJson {
 	private String[] csvLines;
 	private SectionTextJson[] sectionTexts;
 	private String[] ids;
+	private boolean namePermission;
+	private boolean emailPermission;
 	
 	/**
 	 * @return the request
@@ -181,6 +183,26 @@ public class RequestJson {
 	 */
 	public void setIds(String[] ids) {
 		this.ids = ids;
+	}
+	
+	public boolean getNamePermission() {
+		return this.namePermission;
+	}
+	
+	public boolean getEmailPermission() {
+		return this.emailPermission;
+	}
+	/**
+	 * @param namePermission the namePermission to set
+	 */
+	public void setNamePermission(boolean namePermission) {
+		this.namePermission = namePermission;
+	}
+	/**
+	 * @param emailPermission the emailPermission to set
+	 */
+	public void setEmailPermission(boolean emailPermission) {
+		this.emailPermission = emailPermission;
 	}
 
 }

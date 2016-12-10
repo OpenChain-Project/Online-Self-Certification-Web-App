@@ -52,6 +52,12 @@ public class UserDb {
 	private PreparedStatement getUserIdQuery;
 	private ServletConfig servletConfig;
 	
+	/**
+	 * Get the singleton UserDB instance
+	 * @param servletConfig
+	 * @return
+	 * @throws SQLException
+	 */
 	public static synchronized UserDb getUserDb(ServletConfig servletConfig) throws SQLException {
 		if (_userDb == null) {
 			_userDb = new UserDb(servletConfig);
@@ -60,6 +66,10 @@ public class UserDb {
 		return _userDb;
 	}
 	
+	/**
+	 * Check if the connection is still active, creating the connection if needed
+	 * @throws SQLException
+	 */
 	protected synchronized void checkConnection() throws SQLException {
 		if (this.connection == null || this.connection.isClosed()) {
 			this.connection = SurveyDatabase.createConnection(servletConfig);
@@ -67,6 +77,12 @@ public class UserDb {
 			prepareStatements();
 		}
 	}
+	
+	/**
+	 * This should only be called by the statice getUserDb method
+	 * @param servletConfig
+	 * @throws SQLException
+	 */
 	private UserDb(ServletConfig servletConfig) throws SQLException {
 		this.servletConfig = servletConfig;
 		this.connection = SurveyDatabase.createConnection(servletConfig);
@@ -74,23 +90,33 @@ public class UserDb {
 		prepareStatements();
 	}
 	
+	/**
+	 * Prepare all statements
+	 * @throws SQLException
+	 */
 	private void prepareStatements() throws SQLException {
 		getUserQuery = connection.prepareStatement("select password_token, name, address, email," +
 				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization from openchain_user where username=?");
+				" uuid, organization, name_permission, email_permission from openchain_user where username=?");
 		getAllUserQuery = connection.prepareStatement("select username, password_token, name, address, email," +
 				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization from openchain_user order by username asc");
+				" uuid, organization, name_permission, email_permission from openchain_user order by username asc");
 		addUserQuery = connection.prepareStatement("insert into openchain_user (username, password_token, name, address, email," +
 				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization) values (?,?,?,?,?,?,?,?,?,?,?)");
+				" uuid, organization, name_permission, email_permission) values (?,?,?,?,?,?,?,?,?,?,?,?,?)");
 		updateVerifiedQuery = connection.prepareStatement("update openchain_user set verified=? where username=?");
 		updateUserQuery = connection.prepareStatement("update openchain_user set password_token=?, " +
 				"name=?, address=?, verified=?, passwordReset=?, admin=?, " +
-				"verificationExpirationDate=?, uuid=?, organization=?, email=? where username=?");
+				"verificationExpirationDate=?, uuid=?, organization=?, email=?, name_permission=?, email_permission=? where username=?");
 		getUserIdQuery = connection.prepareStatement("select id from openchain_user where username=?");
 	}
 
+	/**
+	 * Get the user from the database
+	 * @param username Username of the user
+	 * @return populated user from the DB
+	 * @throws SQLException
+	 */
 	public synchronized User getUser(String username) throws SQLException {
 		ResultSet result = null;
 		try {
@@ -111,6 +137,8 @@ public class UserDb {
 			retval.setVerificationExpirationDate(result.getDate("verificationExpirationDate"));
 			retval.setVerified(result.getBoolean("verified"));
 			retval.setOrganization(result.getString("organization"));
+			retval.setNamePermission(result.getBoolean("name_permission"));
+			retval.setEmailPermission(result.getBoolean("email_permission"));
 			return retval;
 		} finally {
 			if (result != null) {
@@ -120,6 +148,10 @@ public class UserDb {
 		}
 	}
 	
+	/**
+	 * @return all users from the database
+	 * @throws SQLException
+	 */
 	public synchronized List<User> getUsers() throws SQLException {
 		List<User> retval = new ArrayList<User>();
 		ResultSet result = null;
@@ -138,6 +170,8 @@ public class UserDb {
 				user.setVerificationExpirationDate(result.getDate("verificationExpirationDate"));
 				user.setVerified(result.getBoolean("verified"));
 				user.setOrganization(result.getString("organization"));
+				user.setNamePermission(result.getBoolean("name_permission"));
+				user.setEmailPermission(result.getBoolean("email_permission"));
 				retval.add(user);
 			}
 			return retval;
@@ -149,6 +183,13 @@ public class UserDb {
 		}
 	}
 	
+	/**
+	 * Add a user to the database.  The username must not already exist
+	 * @param user
+	 * @return a positive integer if successful
+	 * @throws SQLException
+	 * @throws InvalidUserException
+	 */
 	public synchronized int addUser(User user) throws SQLException, InvalidUserException {
 		Savepoint save = connection.setSavepoint();
 		long userId = getUserId(user.getUsername());
@@ -168,6 +209,8 @@ public class UserDb {
 			this.addUserQuery.setDate(9, sqlDate);
 			this.addUserQuery.setString(10, user.getUuid());
 			this.addUserQuery.setString(11, user.getOrganization());
+			this.addUserQuery.setBoolean(12, user.hasNamePermission());
+			this.addUserQuery.setBoolean(13, user.hasEmailPermission());
 			return this.addUserQuery.executeUpdate();
 		} catch(SQLException ex) {
 			if (save != null) {
@@ -185,6 +228,12 @@ public class UserDb {
 		}
 	}
 
+	/**
+	 * 
+	 * @param username
+	 * @return The unique user ID in the database
+	 * @throws SQLException
+	 */
 	private long getUserId(String username) throws SQLException {
 		ResultSet result = null;
 		try {
@@ -202,6 +251,11 @@ public class UserDb {
 		}
 	}
 
+	/**
+	 * @param username
+	 * @return true if the user exists
+	 * @throws SQLException
+	 */
 	public synchronized boolean userExists(String username) throws SQLException {
 		try {
 			return getUserId(username) > 0;
@@ -209,6 +263,13 @@ public class UserDb {
 			this.connection.commit();
 		}
 	}
+	/**
+	 * Set the verified flag based on the verified parameter
+	 * @param username
+	 * @param verified
+	 * @return
+	 * @throws SQLException
+	 */
 	public synchronized int setVerified(String username, boolean verified) throws SQLException {
 		Savepoint save = this.connection.setSavepoint();
 		try {
@@ -238,9 +299,6 @@ public class UserDb {
 	 * @throws InvalidUserException 
 	 */
 	public synchronized void updateUser(User user) throws SQLException, InvalidUserException {
-//		"update openchain_user set password_token=?, " +
-//				"name=?, address=?, verified=?, passwordReset=?, admin=?, " +
-//				"verificationExpirationDate=?, uuid=?, organization=? where username=?"
 		if (user == null || user.getUsername() == null || user.getUsername().trim().isEmpty()) {
 			throw(new InvalidUserException("Can not update user.  No username specified"));
 		}
@@ -255,7 +313,9 @@ public class UserDb {
 			updateUserQuery.setString(8, user.getUuid());
 			updateUserQuery.setString(9, user.getOrganization());
 			updateUserQuery.setString(10, user.getEmail());
-			updateUserQuery.setString(11, user.getUsername());
+			updateUserQuery.setBoolean(11, user.hasNamePermission());
+			updateUserQuery.setBoolean(12, user.hasEmailPermission());
+			updateUserQuery.setString(13, user.getUsername());
 			int count = updateUserQuery.executeUpdate();
 			if (count != 1) {
 				logger.warn("Unexpected count result from update user query.  Expected 1, found "+String.valueOf(count));
