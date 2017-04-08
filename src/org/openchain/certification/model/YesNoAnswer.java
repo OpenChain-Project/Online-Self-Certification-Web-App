@@ -52,6 +52,14 @@ public class YesNoAnswer extends Answer {
 		if (!(o instanceof YesNoAnswer)) {
 			return false;
 		}
+		if (this instanceof YesNoAnswerWithEvidence) {
+			if (!(o instanceof YesNoAnswerWithEvidence)) {
+				return false;
+			}
+			if (!Objects.equals(((YesNoAnswerWithEvidence)this).getEvidence(), ((YesNoAnswerWithEvidence)o).getEvidence())) {
+				return false;
+			}
+		}
 		return Objects.equals(this.answer, ((YesNoAnswer)o).getAnswer());
 	}
 

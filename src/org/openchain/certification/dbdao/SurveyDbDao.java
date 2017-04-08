@@ -386,30 +386,10 @@ public class SurveyDbDao {
 				addQuestionQuery.setString(1, question.getNumber());
 				addQuestionQuery.setString(2, question.getQuestion());
 				addQuestionQuery.setString(3, question.getType());
-				String correctAnswer = null;
-				if (question instanceof YesNoQuestion) {
-					correctAnswer = ((YesNoQuestion)question).getCorrectAnswer().toString();
-				} else if (question instanceof SubQuestion) {
-					correctAnswer = String.valueOf(((SubQuestion)question).getMinNumberValidatedAnswers());
-				} else {
-					throw(new QuestionTypeException("Unknown question type"));
-				}
+				String correctAnswer = String.valueOf(((SubQuestion)question).getMinNumberValidatedAnswers());
 				addQuestionQuery.setString(4, correctAnswer);
-				if (question instanceof YesNoQuestionWithEvidence) {
-					addQuestionQuery.setString(5, ((YesNoQuestionWithEvidence)question).getEvidencePrompt());
-					Pattern validate = ((YesNoQuestionWithEvidence)question).getEvidenceValidation();
-					if (validate != null) {
-						addQuestionQuery.setString(6, validate.toString());
-					} else {
-						addQuestionQuery.setString(6, null);
-					}	
-				} else if (question instanceof YesNoNotApplicableQuestion) {
-					addQuestionQuery.setString(5, ((YesNoNotApplicableQuestion)question).getNotApplicablePrompt());
-					addQuestionQuery.setString(6, null);
-				} else {
-					addQuestionQuery.setString(5, null);
-					addQuestionQuery.setString(6, null);
-				}
+				addQuestionQuery.setString(5, null);
+				addQuestionQuery.setString(6, null);
 				if (question.getSubQuestionNumber() != null && !question.getSubQuestionNumber().isEmpty()) {
 					long subQuestionId = getQuestionId(question.getSubQuestionNumber(), question.getSectionName(), question.getSpecVersion());
 					if (subQuestionId < 0) {

@@ -156,6 +156,48 @@ table tr:nth-child(odd) {
     color: #fff;
 }
 
+.yesnona-switch label {
+    cursor: pointer;
+    color: rgba(0,0,0,0.2);
+    width: 3em;
+    padding: .3em;
+    line-height: 1.5em;
+    transition: all 0.2s ease;
+}
+
+.choicena-yes:checked ~ .yesnona-switch {
+    background: #00bc9c;
+}
+
+.choicena-no:checked ~ .yesnona-switch {
+    background: #eb4f37;
+}
+
+.yesnona-switch span:after {
+    color: #fff;
+    content: "|";
+}
+
+.choicena-yes:checked ~ .yesnona-switch span:after {
+    color: #fff;
+    content: "\2714";
+    /* that's a check mark */
+}
+
+.choicena-no:checked ~ .yesnona-switch span:after {
+    color: #fff;
+    content: "\2718";
+    /* that's an x mark */
+}
+
+.choicena-yes:checked ~ .yesnona-switch label:first-child {
+    color: #fff;
+}
+
+.choicena-no:checked ~ .yesnona-switch label:last-child{
+    color: #fff;
+}
+
 #CertFormButtons {
 	text-align:center;
 	padding: 2px 0 0 6px;

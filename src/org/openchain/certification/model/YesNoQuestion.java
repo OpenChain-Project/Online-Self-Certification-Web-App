@@ -25,7 +25,7 @@ public class YesNoQuestion extends Question {
 	 * Yes means yes, no means no, Any means either yes or no can be considered correct
 	 * NotApplicable means that answer does not apply and NotAnswered indicates no response was given
 	 */
-	public enum YesNo {Yes, No, Any, NotApplicable, NotAnswered};
+	public enum YesNo {Yes, No, Any, NotApplicable, NotAnswered, YesNotApplicable, NoNotApplicable};
 	public static final String TYPE_NAME = "YES_NO";
 	protected YesNo correctAnswer;
 	
@@ -53,13 +53,21 @@ public class YesNoQuestion extends Question {
 		if (correctAnswer.equals(YesNo.Any)) {
 			return true;
 		}
-		if ((answer instanceof YesNo)) {
-			return answer.equals(correctAnswer);
+		YesNo ynAnswer = null;
+		if (answer instanceof YesNo) {
+			ynAnswer = (YesNo)answer;
 		} else if (answer instanceof YesNoAnswer) {
-			return correctAnswer.equals(((YesNoAnswer)answer).getAnswer());
+			ynAnswer = ((YesNoAnswer)answer).getAnswer();
 		} else {
 			return false;
 		}
+		if (correctAnswer.equals(YesNo.YesNotApplicable)) {
+			return ynAnswer.equals(YesNo.Yes) || ynAnswer.equals(YesNo.NotApplicable);
+		}
+		if (correctAnswer.equals(YesNo.NoNotApplicable)) {
+			return ynAnswer.equals(YesNo.No) || ynAnswer.equals(YesNo.NotApplicable);
+		}
+		return this.correctAnswer.equals(ynAnswer);
 	}
 	
 }

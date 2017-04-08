@@ -36,6 +36,36 @@ function getQuestionFormHtml(questions) {
 			html += '<td class="answer_cell"></td>';
 			html += '<td class="answer_cell"></td>';
 			inSubQuestions = true;
+		} else if (type=="YES_NO_NA") {
+			html += '<td class="answer_cell"><span>';
+			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"  class="choicena-yes';
+			if (isSubQuestion && inSubQuestions) {
+				html += ' subquestion-of-';
+				html += questions[i].subQuestionNumber;
+			}
+			html += '"  value="yes" />';		
+			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no" class="choicena-no';
+			if (isSubQuestion && inSubQuestions) {
+				html += ' subquestion-of-';
+				html += questions[i].subQuestionNumber;
+			}
+			html += '" value="no" />';
+			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_na" class="choicena-na';
+			if (isSubQuestion && inSubQuestions) {
+				html += ' subquestion-of-';
+				html += questions[i].subQuestionNumber;
+			}
+			html += '" value="na" />';
+			html += '<span class="yesnona-switch">';
+			html += '<label for="answer-' + questions[i].number + '_yes">Yes</label>';		
+			html += '<span></span>';
+			html += '<label for="answer-' + questions[i].number + '_no">No</label>';
+			html += '<label for="answer-' + questions[i].number + '_na">N/A</label>';
+			html += '</span></span></td>';
+			html += '<td class="answer_cell"></td>';
+			if (!isSubQuestion) {
+				inSubQuestions = false;
+			}
 		} else {
 			html += '<td class="answer_cell"><span>';
 			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"  class="choice-yes';
@@ -55,12 +85,7 @@ function getQuestionFormHtml(questions) {
 			html += '<span></span>';
 			html += '<label for="answer-' + questions[i].number + '_no">No</label>';
 			html += '</span></span></td>';
-			if (questions[i].hasOwnProperty('notApplicablePrompt')) {
-				html += '<td class="answer_cell"><input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_na" value="na" />';		
-				html += '<label for="answer-' + questions[i].number + '_na">'+questions[i].notApplicablePrompt+'</label></td>';
-			} else {
-				html += '<td class="answer_cell"></td>';
-			}
+			html += '<td class="answer_cell"></td>';
 			if (!isSubQuestion) {
 				inSubQuestions = false;
 			}
@@ -90,7 +115,14 @@ function getSurvey() {
 	    type: "GET",
 	    dataType : "json",
 	    success: function( surveyResponse ) {
-	    	$( "#version" ).text( surveyResponse.specVersion );
+	    	var specVersion = surveyResponse.specVersion;
+	    	var surveyVersion = surveyResponse.specVersion;
+	    	var versionParts = specVersion.split( "." );
+	    	if ( versionParts.length > 2 ) {
+	    		specVersion = versionParts[0] + "." + versionParts[1];
+	    	}
+	    	$( "#specVersion" ).text( specVersion );
+	    	$( "#surveyVersion" ).text( surveyVersion );
 	    	certForm.empty();
 	    	var survey = surveyResponse.survey;
 	    	var responses = surveyResponse.responses;
@@ -121,6 +153,8 @@ function getSurvey() {
 		    				if (myresponse.answer == 'Yes' && $(this).attr('value') == 'yes') {
 		    					$(this).prop('checked',true);
 		    				} else if (myresponse.answer == 'No' && $(this).attr('value') == 'no') {
+		    					$(this).prop('checked',true);
+		    				} else if (myresponse.answer == 'NotApplicable' && $(this).attr('value') == 'n/a') {
 		    					$(this).prop('checked',true);
 		    				} else {
 		    					$(this).prop('checked',false);

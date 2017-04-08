@@ -16,7 +16,6 @@
 */
 package org.openchain.certification.model;
 
-import java.util.Objects;
 
 import org.openchain.certification.model.YesNoQuestion.YesNo;
 
@@ -45,15 +44,6 @@ public class YesNoAnswerWithEvidence extends YesNoAnswer {
 	 */
 	public void setEvidence(String evidence) {
 		this.evidence = evidence;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof YesNoAnswerWithEvidence)) {
-			return false;
-		}
-		return Objects.equals(this.answer, ((YesNoAnswerWithEvidence)o).getAnswer()) &&
-				Objects.equals(this.evidence, ((YesNoAnswerWithEvidence)o).getEvidence());
 	}
 
 	@Override

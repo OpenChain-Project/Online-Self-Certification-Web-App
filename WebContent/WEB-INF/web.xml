@@ -49,6 +49,6 @@
   </context-param>
   <context-param>
       <param-name>notification_email</param-name>
-      <param-value>gary@sourceauditor.com</param-value>
+      <param-value>openchain-conformance@lists.linuxfoundation.org</param-value>
   </context-param>
 </web-app>

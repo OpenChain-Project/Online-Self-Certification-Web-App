@@ -78,5 +78,56 @@ public class TestYesNoQuestion {
 		assertTrue(ynqSubSubOne.compareTo(ynqSubSubTwo) < 0);
 		assertTrue(ynqSubSubTwo.compareTo(ynqSubSubOne) > 0);
 	}
+	
+	@Test
+	public void testValidate() throws QuestionException {
+		String question = "This is my question";
+		String sectionName = "G1";
+		String specVersion = "1.0";
+		String number = "12";
+		YesNo answer = YesNo.Yes;
+		YesNoQuestion ynq = new YesNoQuestion(question, sectionName, 
+				number, specVersion, answer);
+		assertTrue(!ynq.validate(YesNo.Any));
+		assertTrue(ynq.validate(YesNo.Yes));
+		assertTrue(!ynq.validate(YesNo.No));
+		assertTrue(!ynq.validate(YesNo.NoNotApplicable));
+		assertTrue(!ynq.validate(YesNo.NotAnswered));
+		assertTrue(!ynq.validate(YesNo.NotApplicable));
+		assertTrue(!ynq.validate(YesNo.YesNotApplicable));
+		
+		YesNo answer2 = YesNo.NoNotApplicable;
+		YesNoNotApplicableQuestion ynq2 = new YesNoNotApplicableQuestion(question, sectionName, 
+				number, specVersion, answer2, "Prompt");
+		assertTrue(!ynq2.validate(YesNo.Any));
+		assertTrue(!ynq2.validate(YesNo.Yes));
+		assertTrue(ynq2.validate(YesNo.No));
+		assertTrue(!ynq2.validate(YesNo.NoNotApplicable));
+		assertTrue(!ynq2.validate(YesNo.NotAnswered));
+		assertTrue(ynq2.validate(YesNo.NotApplicable));
+		assertTrue(!ynq2.validate(YesNo.YesNotApplicable));
+		
+		YesNo answer3 = YesNo.Any;
+		YesNoNotApplicableQuestion ynq3 = new YesNoNotApplicableQuestion(question, sectionName, 
+				number, specVersion, answer3, "Prompt");
+		assertTrue(ynq3.validate(YesNo.Any));
+		assertTrue(ynq3.validate(YesNo.Yes));
+		assertTrue(ynq3.validate(YesNo.No));
+		assertTrue(ynq3.validate(YesNo.NoNotApplicable));
+		assertTrue(ynq3.validate(YesNo.NotAnswered));
+		assertTrue(ynq3.validate(YesNo.NotApplicable));
+		assertTrue(ynq3.validate(YesNo.YesNotApplicable));
+		
+		YesNo answer4 = YesNo.YesNotApplicable;
+		YesNoNotApplicableQuestion ynq4 = new YesNoNotApplicableQuestion(question, sectionName, 
+				number, specVersion, answer4, "Prompt");
+		assertTrue(!ynq4.validate(YesNo.Any));
+		assertTrue(ynq4.validate(YesNo.Yes));
+		assertTrue(!ynq4.validate(YesNo.No));
+		assertTrue(!ynq4.validate(YesNo.NoNotApplicable));
+		assertTrue(!ynq4.validate(YesNo.NotAnswered));
+		assertTrue(ynq4.validate(YesNo.NotApplicable));
+		assertTrue(!ynq4.validate(YesNo.YesNotApplicable));
+	}
 
 }
