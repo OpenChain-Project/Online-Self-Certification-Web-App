@@ -454,7 +454,7 @@ function createNavMenu() {
 	    	    }
 	    	  });
 	    	if (json.loggedIn) {
-	    		$("#surveylink").html('<a href="survey.html"><span class="ui-icon ui-icon-pencil"></span>Conformance Check</a>&nbsp;&nbsp;&nbsp;');
+	    		$("#surveylink").html('<a href="survey.html"><span class="ui-icon ui-icon-pencil"></span>Online Self-Certification</a>&nbsp;&nbsp;&nbsp;');
 	    	} else {
 	    		$("#surveylink").html('');
 	    	}
