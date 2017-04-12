@@ -453,6 +453,11 @@ function createNavMenu() {
 	    	    	}
 	    	    }
 	    	  });
+	    	if (json.loggedIn) {
+	    		$("#surveylink").html('<a href="survey.html"><span class="ui-icon ui-icon-pencil"></span>Conformance Check</a>&nbsp;&nbsp;&nbsp;');
+	    	} else {
+	    		$("#surveylink").html('');
+	    	}
 	    	// Check for admin
 	    	if (json.admin && json.loggedIn) {
 	    		$("#adminlink").html('<a href="admin.html"><span class="ui-icon ui-icon-key"></span>Admin</a>&nbsp;&nbsp;&nbsp;</div>');
