@@ -159,6 +159,7 @@ public class EmailUtility {
 		try {
 			AmazonSimpleEmailServiceClient client = getEmailClient(config);
 			client.sendEmail(request);
+			logger.info("Admin email sent to "+toEmail+": "+msg);
 		} catch (Exception ex) {
 			logger.error("Email send failed",ex);
 			throw(new EmailUtilException("Exception occured during the emailing of the submission notification",ex));

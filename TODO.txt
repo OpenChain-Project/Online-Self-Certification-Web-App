@@ -1,3 +1,9 @@
 - Add Maven build to manage dependencies
 - Add SPDX file (after Maven - use the Maven SPDX plugin)
 - Add paging to certified table and to the not submitted table
+- Get the Yes/No/NA question working:
+  - Get the CSS/HTML for the widget
+  - Get the JavaScript in certsurvey.js to record and report the N/A answers
+  - Test the implementation
+  - Update the questions for N/A (external Foss contributions G5)
+- Add a confirmation email for submittals

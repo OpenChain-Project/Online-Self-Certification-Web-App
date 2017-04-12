@@ -393,8 +393,8 @@ $(document).ready( function() {
 	      $( "#submitconfirm" ).dialog({
 				title: "Confirm Submit",
 				resizable: false,
-			    height: 200,
-			    width: 300,
+			    height: 270,
+			    width: 350,
 			    modal: true,
 			    buttons: [{
 			    		text: "Agree",
@@ -411,7 +411,7 @@ $(document).ready( function() {
 			        }
 			    	}]
 			    
-			}).text( "Please confirm that you have verified all appropriate artifacts are maintained per the OpenChain specification." );
+			}).html( 'By clicking "submit" you confirm:<ol type="1"><li>Your answers to the Conformance Self-Certification Questionnaire are accurate and verifiable.</li><li>Your answers reflect your adherence to the OpenChain Specification.</li></ol>');
 	});
 	$("#btUnSubmit").button();
 	$("#btUnSubmit").click(function(event) {
