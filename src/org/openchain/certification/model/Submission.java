@@ -44,15 +44,17 @@ public class Submission {
 	private boolean approved;
 	private boolean rejected;
 	private String id;
+	private String specVersion;
 	
 	public Submission(User user, boolean submitted, int percentComplete, int score,
-			boolean approved, boolean rejected) {
+			boolean approved, boolean rejected, String surveyVersion) {
 		this.user = user;
 		this.submitted = submitted;
 		this.percentComplete = percentComplete;
 		this.score = score;
 		this.approved = approved;
 		this.rejected = rejected;
+		this.specVersion = surveyVersion;
 	}
 	
 	public Submission(SurveyResponse response) {
@@ -63,6 +65,7 @@ public class Submission {
 		this.percentComplete = calcPercentComplete(response.getSurvey(), response.getResponses());
 		this.score = calcScore(response.getSurvey(), response.getResponses());
 		this.id = response.getId();
+		this.specVersion = response.getSpecVersion();
 	}
 	@SuppressWarnings("unused")
 	private int calcScore(Survey survey, Map<String, Answer> answers) {
@@ -196,5 +199,19 @@ public class Submission {
 	 */
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	/**
+	 * @return the surveyVersion
+	 */
+	public String getSurveyVersion() {
+		return specVersion;
+	}
+
+	/**
+	 * @param surveyVersion the surveyVersion to set
+	 */
+	public void setSurveyVersion(String surveyVersion) {
+		this.specVersion = surveyVersion;
 	}
 }

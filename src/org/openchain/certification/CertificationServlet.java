@@ -142,7 +142,7 @@ public class CertificationServlet extends HttpServlet {
 	            			User certifiedUser = User.createNonPrivateInfo(submission.getUser());
 	            			Submission certifiedSubmission = new Submission(certifiedUser, true, 
 	            					submission.getPercentComplete(), submission.getScore(), 
-	            					submission.isApproved(), submission.isRejected());
+	            					submission.isApproved(), submission.isRejected(), submission.getSurveyVersion());
 	            			certifiedSubmissions.add(certifiedSubmission);
 	            		}
 	            	}
