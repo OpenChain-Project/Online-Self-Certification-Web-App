@@ -143,8 +143,8 @@ public class UserDb {
 		} finally {
 			if (result != null) {
 				result.close();
-				connection.commit();
 			}
+			connection.commit();
 		}
 	}
 	
