@@ -8,7 +8,7 @@ Issues
 
 Patches
 -------
-The source code for the `Online-Self-Certification-Web-App` is hosted on [git.spdx.org](https://github.com/OpenChain-Project/Online-Self-Certification-Web-App/). Please review [open pull requests](https://github.com/OpenChain-Project/Online-Self-Certification-Web-App/pulls) and [active branches](https://github.com/OpenChain-Project/Online-Self-Certification-Web-App/branches) before committing time to a substantial revision. Work along similar lines may already be in progress.
+The source code for the `Online-Self-Certification-Web-App` is hosted on [github](https://github.com/OpenChain-Project/Online-Self-Certification-Web-App/). Please review [open pull requests](https://github.com/OpenChain-Project/Online-Self-Certification-Web-App/pulls) and [active branches](https://github.com/OpenChain-Project/Online-Self-Certification-Web-App/branches) before committing time to a substantial revision. Work along similar lines may already be in progress.
 
 To submit a patch via GitHub, fork the repository, create a topic branch from `master` for your work, and send a pull request when ready. If you would prefer to send a patch or grant access to pull from your own Git repository, please contact the project's contributors by e-mail.
 
