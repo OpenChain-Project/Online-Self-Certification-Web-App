@@ -33,7 +33,7 @@
   </context-param>
   <context-param>
     <param-name>openchaindb_server</param-name>
-    <param-value>aa56xxru3cmnh3.cayqjuz29x2c.us-west-1.rds.amazonaws.com</param-value>
+    <param-value>localhost</param-value>
   </context-param>
   <context-param>
     <param-name>openchaindb_port</param-name>
