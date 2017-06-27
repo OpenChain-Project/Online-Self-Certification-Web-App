@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.servlet.ServletConfig;
@@ -52,7 +53,6 @@ import org.openchain.certification.utility.EmailUtilException;
 import org.openchain.certification.utility.EmailUtility;
 import org.openchain.certification.utility.PasswordUtil;
 
-import com.sun.org.apache.xalan.internal.utils.Objects;
 
 
 /**

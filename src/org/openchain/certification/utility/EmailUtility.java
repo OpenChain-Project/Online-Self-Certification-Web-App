@@ -126,15 +126,49 @@ public class EmailUtility {
 	
 	public static void emailCompleteSubmission(String username, String name, String email,
 			String specVersion, ServletConfig config) throws EmailUtilException {
-		StringBuilder msg = new StringBuilder("<div>User ");
-		msg.append(name);
-		msg.append(" with username ");
-		msg.append(username);
-		msg.append(" and email ");
-		msg.append(email);
-		msg.append(" has just submitted a cerification request.");
-		emailAdmin("Notification - new OpenChain submission [do not reply]", msg.toString(), config);
-		logger.info("Notification email sent for "+email);
+		StringBuilder adminMsg = new StringBuilder("<div>User ");
+		adminMsg.append(name);
+		adminMsg.append(" with username ");
+		adminMsg.append(username);
+		adminMsg.append(" and email ");
+		adminMsg.append(email);
+		adminMsg.append(" has just submitted a cerification request.</div>");
+		emailAdmin("Notification - new OpenChain submission [do not reply]", adminMsg.toString(), config);
+		
+		StringBuilder userMsg = new StringBuilder("<div>Congratulations ");
+		userMsg.append(name);
+		userMsg.append(".  Your certification request has been accepted.  If you did not submit a request for OpenChain certification, please notify the OpenChain group at openchain-conformance@lists.linuxfoundation.org.</div>");
+		emailUser(email, "OpenChain certification request has been accepted [do not reply]", userMsg.toString(), config);
+
+		logger.info("Submittal notification email sent for "+email);
+	}
+	
+	public static void emailUser(String toEmail, String subjectText, String msg, ServletConfig config) throws EmailUtilException {
+		String fromEmail = config.getServletContext().getInitParameter("return_email");
+		if (fromEmail == null || fromEmail.isEmpty()) {
+			logger.error("Missing return_email parameter in the web.xml file");
+			throw(new EmailUtilException("The from email for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+		}
+		if (toEmail == null || toEmail.isEmpty()) {
+			logger.error("Missing notification_email parameter in the web.xml file");
+			throw(new EmailUtilException("The to email for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+		}
+		
+		Destination destination = new Destination().withToAddresses(new String[]{toEmail});
+		Content subject = new Content().withData(subjectText);
+		Content bodyData = new Content().withData(msg.toString());
+		Body body = new Body();
+		body.setHtml(bodyData);
+		Message message = new Message().withSubject(subject).withBody(body);
+		SendEmailRequest request = new SendEmailRequest().withSource(fromEmail).withDestination(destination).withMessage(message);
+		try {
+			AmazonSimpleEmailServiceClient client = getEmailClient(config);
+			client.sendEmail(request);
+			logger.info("User email sent to "+toEmail+": "+msg);
+		} catch (Exception ex) {
+			logger.error("Email send failed",ex);
+			throw(new EmailUtilException("Exception occured during the emailing of a user email",ex));
+		}
 	}
 
 	public static void emailAdmin(String subjectText, String msg, ServletConfig config) throws EmailUtilException {

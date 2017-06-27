@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -60,7 +61,6 @@ import org.openchain.certification.utility.PasswordUtil;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.opencsv.CSVParser;
-import com.sun.org.apache.xalan.internal.utils.Objects;
 
 /**
  * Servlet implementation class CertificationServlet
@@ -69,7 +69,7 @@ public class CertificationServlet extends HttpServlet {
 	/**
 	 * Version of this software - should be updated before every release
 	 */
-	static final String version = "1.0.0";
+	static final String version = "1.1.6";
 	
 	static final Logger logger = Logger.getLogger(CertificationServlet.class);
 	
