@@ -44,7 +44,8 @@ public class TestUserSession {
 	
 	Connection con;
 	
-	String specVersion = "test-spec-version";
+	String primarySpecVersion = "1.0";
+	String specVersion = primarySpecVersion + ".2";
 	String section1Name = "section1Name";
 	String section1Title = "section1Title";
 	String s1q1Question="s1q1question";
@@ -79,6 +80,19 @@ public class TestUserSession {
 	YesNo s2q3Answer = YesNo.NotAnswered;
 	YesNoQuestion s2q3;
 	String s2q3SpecRef = "s2q3SpecRef";
+	
+	String primarySpecVersion2 = "2.2";
+	String specVersion2 = primarySpecVersion2+".2";
+	String section1Name2 = "section1Name2";
+	String section1Title2 = "section1Title2";
+	String s1q1Question2="s1q1question2";
+	String s1q1Number2 = "1.a";
+	YesNo s1q1Answer2 = YesNo.Yes;
+	String s1q1SpecRef2 = "s1q1SpecRef2";
+	YesNoQuestion s1q12;
+	Section section12;
+	Survey survey2;
+	
 	SurveyDbDao surveyDao;
 	User user;
 
@@ -129,6 +143,20 @@ public class TestUserSession {
 		survey.setSections(sections);
 		surveyDao = new SurveyDbDao(con);
 		surveyDao.addSurvey(survey);
+		
+		survey2 = new Survey(specVersion2);
+		List<Section> sections2 = new ArrayList<Section>();
+		section12 = new Section();
+		section12.setName(section1Name2);
+		section12.setTitle(section1Title2);
+		List<Question> section1Questions2 = new ArrayList<Question>();
+		s1q12 = new YesNoQuestion(s1q1Question2, 
+				section1Name2, s1q1Number2, specVersion2, s1q1Answer2);
+		s1q12.setSpecReference(s1q1SpecRef2);
+		section1Questions2.add(s1q12);
+		section12.setQuestions(section1Questions2);
+		survey2.setSections(sections2);
+		surveyDao.addSurvey(survey2);
 		
 		user = new User();
 		user.setAddress("Address");
@@ -302,4 +330,145 @@ public class TestUserSession {
 		assertEquals(newNamePermission, newUserSession.hasNamePermission());
 	}
 
+	@Test
+	public void testResetAnswer() throws SQLException, QuestionException, SurveyResponseException {
+		SurveyResponse response = new SurveyResponse();
+		response.setResponder(user);
+		Map<String, Answer> responses = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer = new YesNoAnswer(YesNo.No);
+		YesNoAnswer s1q2answer = new YesNoAnswer(YesNo.NotAnswered);
+
+		responses.put(s1q1Number, s1q1answer);
+		responses.put(s1q2Number, s1q2answer);
+		response.setResponses(responses);
+		response.setSpecVersion(specVersion);
+		response.setSubmitted(false);
+		response.setSurvey(survey);
+		SurveyResponseDao dao = new SurveyResponseDao(con);
+		dao.addSurveyResponse(response);
+		
+		UserSession userSession = new UserSession(
+				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
+		assertTrue(userSession.login());
+		
+		SurveyResponse result = userSession.getSurveyResponse();
+		assertEquals(user.getUsername(), result.getResponder().getUsername());
+		assertEquals(specVersion, result.getSurvey().getSpecVersion());
+		Map<String, Answer> resultResponses = result.getResponses();
+		assertEquals(2, resultResponses.size());
+		Answer resultAnswer1 = resultResponses.get(s1q1Number);
+		assertTrue(resultAnswer1 instanceof YesNoAnswer);
+		assertEquals(s1q1answer.getAnswer(), ((YesNoAnswer)resultAnswer1).getAnswer());
+		Answer resultAnswer2 = resultResponses.get(s1q2Number);
+		assertTrue(resultAnswer2 instanceof YesNoAnswer);
+		assertEquals(s1q2answer.getAnswer(), ((YesNoAnswer)resultAnswer2).getAnswer());
+		
+		userSession.resetAnswers(primarySpecVersion);
+		result = userSession.getSurveyResponse();
+		assertEquals(user.getUsername(), result.getResponder().getUsername());
+		assertEquals(specVersion, result.getSurvey().getSpecVersion());
+		resultResponses = result.getResponses();
+		assertEquals(0, resultResponses.size());
+		
+		userSession.resetAnswers(primarySpecVersion2);
+		result = userSession.getSurveyResponse();
+		assertEquals(user.getUsername(), result.getResponder().getUsername());
+		assertEquals(specVersion2, result.getSurvey().getSpecVersion());
+		resultResponses = result.getResponses();
+		assertEquals(0, resultResponses.size());
+		
+		userSession.logout();
+		
+		// Check to make sure it persists
+		UserSession newUserSession = new UserSession(
+				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
+		newUserSession.login();
+		assertTrue(newUserSession.isLoggedIn());
+		result = newUserSession.getSurveyResponse();
+		assertEquals(user.getUsername(), result.getResponder().getUsername());
+		newUserSession.resetAnswers(primarySpecVersion2);
+		result = newUserSession.getSurveyResponse();
+		assertEquals(user.getUsername(), result.getResponder().getUsername());
+		assertEquals(specVersion2, result.getSurvey().getSpecVersion());
+		resultResponses = result.getResponses();
+		assertEquals(0, resultResponses.size());
+	}
+	
+	@Test
+	public void testGetSupportedSpecVersions() throws SQLException {
+		// Note - this got moved to the Certification Servlet - but keeping the unit test
+		List<String> result = CertificationServlet.getSupportedSpecVersions(TestHelper.getTestServletConfig());
+		assertEquals(2, result.size());
+		assertEquals(primarySpecVersion, result.get(0));
+		assertEquals(primarySpecVersion2, result.get(1));
+	}
+	
+	@Test
+	public void testGetSurveyResponseSpecVersions() throws SQLException, QuestionException, SurveyResponseException {
+		SurveyResponse response = new SurveyResponse();
+		response.setResponder(user);
+		Map<String, Answer> responses = new HashMap<String, Answer>();
+
+		response.setResponses(responses);
+		response.setSpecVersion(specVersion);
+		response.setSubmitted(false);
+		response.setSurvey(survey);
+		SurveyResponseDao dao = new SurveyResponseDao(con);
+		dao.addSurveyResponse(response);
+
+		SurveyResponse response2 = new SurveyResponse();
+		response2.setResponder(user);
+
+		response2.setResponses(responses);
+		response2.setSpecVersion(specVersion2);
+		response2.setSubmitted(false);
+		response2.setSurvey(survey2);
+		dao.addSurveyResponse(response2);
+		
+		UserSession userSession = new UserSession(
+				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
+		assertTrue(userSession.login());
+		assertTrue(userSession.isLoggedIn());
+		List<String> result = userSession.getSurveyResponseSpecVersions();
+		assertEquals(2, result.size());
+		assertEquals(primarySpecVersion, result.get(0));
+		assertEquals(primarySpecVersion2, result.get(1));
+		// the current spec version should default to the largest value
+		assertEquals(specVersion2, userSession.getSurveyResponse().getSpecVersion());
+		userSession.logout();
+	}
+	
+	@Test
+	public void testSetCurrentSurveyResponse() throws SQLException, SurveyResponseException, QuestionException {
+		SurveyResponse response = new SurveyResponse();
+		response.setResponder(user);
+		Map<String, Answer> responses = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer = new YesNoAnswer(YesNo.No);
+		responses.put(s1q1Number, s1q1answer);
+		response.setResponses(responses);
+		response.setSpecVersion(specVersion);
+		response.setSubmitted(false);
+		response.setSurvey(survey);
+		SurveyResponseDao dao = new SurveyResponseDao(con);
+		dao.addSurveyResponse(response);
+		
+		UserSession userSession = new UserSession(
+				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
+		assertTrue(userSession.login());
+		assertTrue(userSession.isLoggedIn());
+		SurveyResponse result = userSession.getSurveyResponse();
+		assertEquals(specVersion, result.getSpecVersion());
+		
+		userSession.setCurrentSurveyResponse(primarySpecVersion2, true);
+		result = userSession.getSurveyResponse();
+		assertEquals(specVersion2, result.getSpecVersion());
+		
+		userSession.setCurrentSurveyResponse(primarySpecVersion, false);
+		result = userSession.getSurveyResponse();
+		assertEquals(specVersion, result.getSpecVersion());
+		assertEquals(1,result.getResponses().size());
+		assertEquals(s1q1answer, result.getResponses().get(s1q1Number));
+
+		userSession.logout();
+	}
 }

@@ -580,4 +580,58 @@ public class TestSurveyDbDao {
 			assertTrue(ex.getMessage().contains("umber"));
 		}
 	}
+	
+	@Test
+	public void testGetSurveyVersions() throws SQLException, SurveyResponseException, QuestionException {
+		SurveyDbDao dao = new SurveyDbDao(con);
+		
+		List<Section> sections = new ArrayList<Section>();
+		Section section1 = new Section();
+		String section1Name = "section1Name";
+		section1.setName(section1Name);
+		String section1Title = "section1Title";
+		section1.setTitle(section1Title);
+		List<Question> section1Questions = new ArrayList<Question>();
+		String s1q1Question="s1q1question";
+		String s1q1Number = "1.a";
+		YesNo s1q1Answer = YesNo.Yes;
+		Question s1q1 = new YesNoQuestion(s1q1Question, 
+				section1Name, s1q1Number, "v", s1q1Answer);
+		String s1q1SpecRef = "s1q1SpecRef";
+		s1q1.setSpecReference(s1q1SpecRef);
+		section1Questions.add(s1q1);
+		String s1q2Question="s1q2question";
+		String s1q2Number = "1.b";
+		YesNo s1q2Answer = YesNo.NotApplicable;
+		String s1q2Prompt = "s1q2prompt";
+		Question s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, "v", s1q2Answer, s1q2Prompt);
+		String s1q2SpecRef = "s1q2SpecRef";
+		s1q2.setSpecReference(s1q2SpecRef);
+		section1Questions.add(s1q2);
+		section1.setQuestions(section1Questions);
+		sections.add(section1);
+		String v1 = "1.0.0";
+		String v2 = "1.0.1";
+		String v3 = "2.1.1";
+		String v4 = "2.2.2";
+		Survey surveyV1 = new Survey(v1);
+		surveyV1.setSections(sections);
+		Survey surveyV2 = new Survey(v2);
+		surveyV2.setSections(sections);
+		Survey surveyV3 = new Survey(v3);
+		surveyV3.setSections(sections);
+		Survey surveyV4 = new Survey(v4);
+		surveyV4.setSections(sections);
+		dao.addSurvey(surveyV1);
+		dao.addSurvey(surveyV3);
+		dao.addSurvey(surveyV2);
+		dao.addSurvey(surveyV4);
+		List<String> result = dao.getSurveyVesions();
+		assertEquals(4, result.size());
+		assertEquals(v1, result.get(0));
+		assertEquals(v2, result.get(1));
+		assertEquals(v3, result.get(2));
+		assertEquals(v4, result.get(3));
+	}
 }

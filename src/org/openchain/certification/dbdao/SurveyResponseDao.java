@@ -71,6 +71,7 @@ public class SurveyResponseDao {
 	private PreparedStatement setRejectedQuery;
 	private PreparedStatement getQuestionNameQuery;
 	private PreparedStatement getUsersWithResponsesQuery;
+	private PreparedStatement getResponsesForUserQuery;
 	private PreparedStatement setApprovedIdsQuery;
 	private PreparedStatement setRejectedIdsQuery;
 	private PreparedStatement getStatusQuery;
@@ -134,6 +135,13 @@ public class SurveyResponseDao {
 				"survey_response.id as responseid, name_permission, email_permission from survey_response join openchain_user " +
 				"on survey_response.user_id=openchain_user.id join spec on survey_response.spec_version=spec.id" +
 				" order by username asc",
+				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+		getResponsesForUserQuery = con.prepareStatement("select username, password_token, name, address, email," +
+				"verified, passwordReset, admin, verificationExpirationDate," +
+				" uuid, organization, openchain_user.id as id, submitted, approved, rejected, version, " +
+				"survey_response.id as responseid, name_permission, email_permission from survey_response join openchain_user " +
+				"on survey_response.user_id=openchain_user.id join spec on survey_response.spec_version=spec.id" +
+				" where username = ?" +	" order by username asc",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 	}
 
@@ -803,6 +811,58 @@ public class SurveyResponseDao {
 					logger.error("SQL Exception committing transaction",e);
 					throw(e);
 				}
+			}
+		}
+	}
+
+	public List<SurveyResponse> getSurveyResponses(String username) throws SurveyResponseException, QuestionException, SQLException {
+		ResultSet result = null;
+		List<SurveyResponse> retval = new ArrayList<SurveyResponse>();
+		Map<String, Survey> surveys = new HashMap<String, Survey>();	// Cache of spec version to survey
+		try {
+			getResponsesForUserQuery.setString(1, username);
+			result = getResponsesForUserQuery.executeQuery();
+			while (result.next()) {
+				SurveyResponse response = new SurveyResponse();
+				User user = new User();
+				user.setAddress(result.getString("address"));
+				user.setAdmin(result.getBoolean("admin"));
+				user.setEmail(result.getString("email"));
+				user.setName(result.getString("name"));
+				user.setPasswordReset(result.getBoolean("passwordReset"));
+				user.setPasswordToken(result.getString("password_token"));
+				user.setUsername(result.getString("username"));
+				user.setUuid(result.getString("uuid"));
+				user.setVerificationExpirationDate(result.getDate("verificationExpirationDate"));
+				user.setVerified(result.getBoolean("verified"));
+				user.setOrganization(result.getString("organization"));
+				user.setNamePermission(result.getBoolean("name_permission"));
+				user.setEmailPermission(result.getBoolean("email_permission"));
+				long userId = result.getLong("id");
+				response.setResponder(user);
+				response.setSubmitted(result.getBoolean("submitted"));
+				response.setApproved(result.getBoolean("approved"));
+				response.setRejected(result.getBoolean("rejected"));
+				String specVersion = result.getString("version");
+				response.setId(String.valueOf(result.getLong("responseid")));
+				response.setSpecVersion(specVersion);
+				Survey survey = surveys.get(specVersion);
+				if (survey == null) {
+					survey = SurveyDbDao.getSurvey(con, specVersion);
+					surveys.put(specVersion, survey);
+				}
+				response.setSurvey(survey);
+				response.setResponses(getAnswers(userId, specVersion));
+				retval.add(response);
+			}
+			return retval;
+		} catch (SQLException e) {
+			logger.error("SQL error getting users with responses",e);
+			throw(e);
+		} finally {
+			if (result != null) {
+				result.close();
+				this.con.commit();
 			}
 		}
 	}

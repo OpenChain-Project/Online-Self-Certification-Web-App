@@ -39,7 +39,20 @@ public class RequestJson {
 	private String[] ids;
 	private boolean namePermission;
 	private boolean emailPermission;
+	private boolean create;
 	
+	/**
+	 * @return the create
+	 */
+	public boolean isCreate() {
+		return create;
+	}
+	/**
+	 * @param create the create to set
+	 */
+	public void setCreate(boolean create) {
+		this.create = create;
+	}
 	/**
 	 * @return the request
 	 */
@@ -204,5 +217,4 @@ public class RequestJson {
 	public void setEmailPermission(boolean emailPermission) {
 		this.emailPermission = emailPermission;
 	}
-
 }
