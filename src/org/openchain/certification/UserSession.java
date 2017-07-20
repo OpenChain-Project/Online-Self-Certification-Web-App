@@ -756,8 +756,8 @@ public class UserSession {
 			currentSurveyResponse.setResponses(new HashMap<String, Answer>());
 			currentSurveyResponse.setSpecVersion(getLatestMinorVersion(specVersion));
 			currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion()));
-			con.commit();
 			dao.addSurveyResponse(currentSurveyResponse);
+			con.commit();
 			surveyResponses.add(currentSurveyResponse);
 		} catch (SQLException e) {
 			logger.error("SQL Exception resetting answers",e);
