@@ -599,4 +599,39 @@ public class SurveyDbDao {
 			this.connection.commit();
 		}
 	}
+	
+	/**
+	 * @return All survey versions in the database
+	 * @throws SQLException
+	 */
+	public synchronized List<String> getSurveyVesions() throws SQLException {
+		return getSurveyVersions(this.connection);
+	}
+
+	/**
+	 * @param con
+	 * @return All survey versions in the database
+	 * @throws SQLException
+	 */
+	public static List<String> getSurveyVersions(Connection con) throws SQLException {
+		Statement stmt = null;
+		ResultSet result = null;
+		try {
+			stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			result = stmt.executeQuery("select distinct version from spec order by version");
+			ArrayList<String> retval = new ArrayList<String>();
+			while (result.next()) {
+				retval.add(result.getString(1));
+			}
+			return retval;
+		} catch (SQLException ex) {
+			logger.error("SQL Error getting survey versions", ex);
+			throw ex;
+		} finally {
+			if (result != null) {
+				result.close();
+			}
+			stmt.close();
+		}
+	}
 }

@@ -20,7 +20,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +70,18 @@ public class UserSession {
 	private transient String password;
 	private String lastError;
 	private transient ServletConfig config;
-	private transient SurveyResponse surveyResponse = null;
+	/**
+	 * List of all survey responses for this user
+	 */
+	private transient List<SurveyResponse> surveyResponses = null;
+	/**
+	 * Currently active survey response
+	 */
+	private transient SurveyResponse currentSurveyResponse = null;
+	/**
+	 * All specification versions available
+	 */
+	private transient List<String> allSpecVersions = null;
 
 	private boolean admin = false;
 
@@ -341,29 +354,183 @@ public class UserSession {
 	}
 	public SurveyResponse getSurveyResponse() throws SQLException, QuestionException, SurveyResponseException {
 		checkLoggedIn();
-		if (this.surveyResponse == null) {
-			_getSurveyResponse();
+		if (this.surveyResponses == null) {
+			_getSurveyResponses();
 		}
-		return this.surveyResponse;
+		return this.currentSurveyResponse;
 	}
-	private void _getSurveyResponse() throws SQLException, QuestionException, SurveyResponseException {
+	
+	/**
+	 * @return a list of survey response spec versions available to the user in sort order - does not include survey versions (e.g. will return 1.0 not 1.0.1)
+	 * @throws SurveyResponseException 
+	 * @throws QuestionException 
+	 * @throws SQLException 
+	 */
+	public List<String> getSurveyResponseSpecVersions() throws SQLException, QuestionException, SurveyResponseException {
+		checkLoggedIn();
+		List<String> retval = new ArrayList<String>();
+		if (surveyResponses == null) {
+			_getSurveyResponses();
+		}
+		for (SurveyResponse sr:surveyResponses) {
+			String ver = extractSpecVersion(sr.getSpecVersion());
+			if (!retval.contains(ver)) {
+				retval.add(ver);
+			}			
+		}
+		Collections.sort(retval);
+		return retval;
+	}
+	
+	/**
+	 * @param specVersion
+	 * @return Only the spec version portion of a full spec version (e.g. 1.1.1 -> 1.1)
+	 */
+	static String extractSpecVersion(String fullSpecVersion) {
+		String[] versionParts = fullSpecVersion.split("\\.");
+		StringBuilder sb = new StringBuilder();
+		sb.append(versionParts[0]);
+		if (versionParts.length > 1) {
+			sb.append('.');
+			sb.append(versionParts[1]);
+		}
+		return sb.toString();
+	}
+	
+	/**
+	 * @param majorVersion
+	 * @return the latest survey version based on the major spec vesion
+	 * @throws SurveyResponseException 
+	 * @throws SQLException 
+	 */
+	private String getLatestMinorVersion(String majorVersion) throws SurveyResponseException, SQLException {
+		if (allSpecVersions == null) {
+			_getAllSpecVersions();
+		}
+		String retval = "";
+		for (String fullSpecVer:allSpecVersions) {
+			String majorSpecVer = extractSpecVersion(fullSpecVer);
+			if (majorSpecVer.equals(majorVersion)) {
+				if (fullSpecVer.compareToIgnoreCase(retval) > 0) {
+					retval = fullSpecVer;
+				}
+			}
+		}
+		if (retval.isEmpty()) {
+			throw new SurveyResponseException("Could not find a full spec version for major version "+majorVersion);
+		}
+		return retval;
+	}
+	
+	/**
+	 * Populate the field allSpecVersions from the database
+	 * @throws SQLException 
+	 */
+	private void _getAllSpecVersions() throws SQLException {
+		Connection con = SurveyDatabase.createConnection(config);
+		try {
+			allSpecVersions = SurveyDbDao.getSurveyVersions(con);
+			Collections.sort(allSpecVersions);
+		} finally {
+			con.close();
+		}
+	}
+	/**
+	 * Retrieve the survey responses from the database
+	 * @throws SQLException
+	 * @throws QuestionException
+	 * @throws SurveyResponseException
+	 */
+	private void _getSurveyResponses() throws SQLException, QuestionException, SurveyResponseException {
 		Connection con = SurveyDatabase.createConnection(config);
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
-			this.surveyResponse = dao.getSurveyResponse(this.username, null);
-			if (this.surveyResponse == null) {
+			surveyResponses = dao.getSurveyResponses(this.username);
+			if (this.surveyResponses.size() == 0) {
 				// Create one
-				this.surveyResponse = new SurveyResponse();
+				currentSurveyResponse = new SurveyResponse();
 				User user = UserDb.getUserDb(config).getUser(username);
-				surveyResponse.setResponder(user);
-				surveyResponse.setResponses(new HashMap<String, Answer>());
-				surveyResponse.setSpecVersion(dao.getLatestSpecVersion());
-				surveyResponse.setSurvey(SurveyDbDao.getSurvey(con, surveyResponse.getSpecVersion()));
+				currentSurveyResponse.setResponder(user);
+				currentSurveyResponse.setResponses(new HashMap<String, Answer>());
+				currentSurveyResponse.setSpecVersion(dao.getLatestSpecVersion());
+				currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion()));
 				con.commit();
-				dao.addSurveyResponse(surveyResponse);
+				dao.addSurveyResponse(currentSurveyResponse);
+				surveyResponses.add(currentSurveyResponse);
+			} else {
+				// set the current version to the latest
+				currentSurveyResponse = surveyResponses.get(0);
+				for (int i = 1; i < surveyResponses.size(); i++) {
+					if (surveyResponses.get(i).getSpecVersion().compareToIgnoreCase(currentSurveyResponse.getSpecVersion()) > 0) {
+						currentSurveyResponse = surveyResponses.get(1);
+					}
+				}
+				
 			}
 		} finally {
 			con.close();
+		}
+	}
+	
+	/**
+	 * Set the current survey response to the matching version.
+	 * @param specVersion Version of the spec
+	 * @param create if no existing survey response was found by this version and create is true, a new survey response will be created
+	 * @throws SQLException
+	 * @throws QuestionException
+	 * @throws SurveyResponseException
+	 */
+	public void setCurrentSurveyResponse(String specVersion, boolean create) throws SQLException, QuestionException, SurveyResponseException {
+		checkLoggedIn();
+		if (surveyResponses == null) {
+			_getSurveyResponses();
+		}
+		boolean found = false;
+		for (SurveyResponse sr:surveyResponses) {
+			if (extractSpecVersion(sr.getSpecVersion()).equals(specVersion)) {
+				if (found) {
+					// check to see if this is a larger survey version and replace if needed
+					if (sr.getSpecVersion().compareTo(currentSurveyResponse.getSpecVersion()) > 0) {
+						currentSurveyResponse = sr;
+					}
+				} else {
+					found = true;
+					currentSurveyResponse = sr;
+				}
+			}
+		}
+		if (!found) {
+			if (!create) {
+				throw new SurveyResponseException("No survey response was found matching version "+specVersion);
+			}
+			Connection con;
+			try {
+				con = SurveyDatabase.createConnection(config);
+			} catch (SQLException e) {
+				logger.error("Unable to get connection for creating answers",e);
+				throw new SurveyResponseException("Unable to get connection for creating answers.  Please report this error to the OpenChain team",e);
+			}
+			try {
+				SurveyResponseDao dao = new SurveyResponseDao(con);
+				User saveUser = currentSurveyResponse.getResponder(); 
+				currentSurveyResponse = new SurveyResponse();
+				currentSurveyResponse.setResponder(saveUser);
+				currentSurveyResponse.setResponses(new HashMap<String, Answer>());
+				currentSurveyResponse.setSpecVersion(getLatestMinorVersion(specVersion));
+				currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion()));
+				con.commit();
+				dao.addSurveyResponse(currentSurveyResponse);
+				surveyResponses.add(currentSurveyResponse);
+			} catch (SQLException e) {
+				logger.error("SQL Exception adding answers",e);
+				throw new SurveyResponseException("Unexpectes SQL error adding answers.  Please report this error to the OpenChain team",e);
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					logger.warn("Error closing connection",e);
+				}
+			}
 		}
 	}
 	
@@ -382,16 +549,16 @@ public class UserSession {
 	 */
 	public void updateAnswers(List<ResponseAnswer> responses) throws SQLException, QuestionException, SurveyResponseException {
 		checkLoggedIn();
-		if (this.surveyResponse == null) {
-			_getSurveyResponse();
+		if (this.surveyResponses == null) {
+			_getSurveyResponses();
 		}
-		Map<String, Answer> currentResponses = this.surveyResponse.getResponses();
+		Map<String, Answer> currentResponses = currentSurveyResponse.getResponses();
 		// Keep track of the subquestions found so that we can update the answers
 		for (ResponseAnswer response:responses) {
 			if (!response.isChecked()) {
 				continue;
 			}
-			Question question = this.surveyResponse.getSurvey().getQuestion(response.getQuestionNumber());
+			Question question = currentSurveyResponse.getSurvey().getQuestion(response.getQuestionNumber());
 			if (question != null && response.getValue() != null && !response.getValue().trim().isEmpty()) {
 				YesNo ynAnswer = null;
 				if (question instanceof YesNoQuestion) {
@@ -438,7 +605,7 @@ public class UserSession {
 		Connection con = SurveyDatabase.createConnection(config);
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
-			dao.updateSurveyResponseAnswers(this.surveyResponse);
+			dao.updateSurveyResponseAnswers(currentSurveyResponse);
 		} finally {
 			con.close();
 		}
@@ -454,8 +621,8 @@ public class UserSession {
 	public boolean finalSubmission() throws SQLException, SurveyResponseException, QuestionException, EmailUtilException {
 		checkLoggedIn();
 		Connection con = SurveyDatabase.createConnection(config);
-		_getSurveyResponse();
-		List<Question> invalidQuestions = this.surveyResponse.invalidAnswers();
+		_getSurveyResponses();
+		List<Question> invalidQuestions = currentSurveyResponse.invalidAnswers();
 		if (invalidQuestions.size() > 0) {
 			StringBuilder er = new StringBuilder("Can not submit - the following question(s) either has missing answers or invalid answers: ");
 			er.append(invalidQuestions.get(0).getNumber());
@@ -466,22 +633,22 @@ public class UserSession {
 			this.lastError = er.toString();
 			return false;
 		}
-		this.surveyResponse.setSubmitted(true);
-		this.surveyResponse.setApproved(true);
-		this.surveyResponse.setRejected(false);
+		currentSurveyResponse.setSubmitted(true);
+		currentSurveyResponse.setApproved(true);
+		currentSurveyResponse.setRejected(false);
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
-			dao.setSubmitted(username, this.surveyResponse.getSpecVersion(), true);
+			dao.setSubmitted(username, currentSurveyResponse.getSpecVersion(), true);
 			//NOTE: We automatically approve per openchain call on Monday Dec. 5
-			dao.setApproved(username, this.surveyResponse.getSpecVersion(), true);
-			dao.setRejected(username, this.surveyResponse.getSpecVersion(), false);
+			dao.setApproved(username, currentSurveyResponse.getSpecVersion(), true);
+			dao.setRejected(username, currentSurveyResponse.getSpecVersion(), false);
 		} finally {
 			con.close();
 		}
 		EmailUtility.emailCompleteSubmission(this.username,
-				this.surveyResponse.getResponder().getName(),
-				this.surveyResponse.getResponder().getEmail(),
-				this.surveyResponse.getSpecVersion(), config);
+				currentSurveyResponse.getResponder().getName(),
+				currentSurveyResponse.getResponder().getEmail(),
+				currentSurveyResponse.getSpecVersion(), config);
 		return true;
 	}
 	public boolean isAdmin() {
@@ -566,10 +733,12 @@ public class UserSession {
 	}
 	/**
 	 * Delete all answers and start a new survey
+	 * @param specVersion Version for the new survey responses
 	 * @throws SurveyResponseException 
 	 * @throws QuestionException 
 	 */
-	public void resetAnswers() throws SurveyResponseException, QuestionException {
+	public void resetAnswers(String specVersion) throws SurveyResponseException, QuestionException {
+		checkLoggedIn();
 		Connection con;
 		try {
 			con = SurveyDatabase.createConnection(config);
@@ -579,15 +748,17 @@ public class UserSession {
 		}
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
-			User saveUser = surveyResponse.getResponder(); 
-			dao.deleteSurveyResponseAnswers(this.surveyResponse);
-			this.surveyResponse = new SurveyResponse();
-			surveyResponse.setResponder(saveUser);
-			surveyResponse.setResponses(new HashMap<String, Answer>());
-			surveyResponse.setSpecVersion(dao.getLatestSpecVersion());
-			surveyResponse.setSurvey(SurveyDbDao.getSurvey(con, surveyResponse.getSpecVersion()));
+			User saveUser = currentSurveyResponse.getResponder(); 
+			dao.deleteSurveyResponseAnswers(currentSurveyResponse);
+			surveyResponses.remove(currentSurveyResponse);
+			currentSurveyResponse = new SurveyResponse();
+			currentSurveyResponse.setResponder(saveUser);
+			currentSurveyResponse.setResponses(new HashMap<String, Answer>());
+			currentSurveyResponse.setSpecVersion(getLatestMinorVersion(specVersion));
+			currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion()));
+			dao.addSurveyResponse(currentSurveyResponse);
 			con.commit();
-			dao.addSurveyResponse(surveyResponse);
+			surveyResponses.add(currentSurveyResponse);
 		} catch (SQLException e) {
 			logger.error("SQL Exception resetting answers",e);
 			throw new SurveyResponseException("Unexpectes SQL error resetting answers.  Please report this error to the OpenChain team",e);
@@ -826,25 +997,25 @@ public class UserSession {
 	public void unsubmit() throws SQLException, QuestionException, SurveyResponseException, EmailUtilException {
 		checkLoggedIn();
 		Connection con = SurveyDatabase.createConnection(config);
-		_getSurveyResponse();
-		if (!this.surveyResponse.isSubmitted()) {
+		_getSurveyResponses();
+		if (!currentSurveyResponse.isSubmitted()) {
 			logger.warn("Attempting to unsubmit an unsubmitted response for user "+this.username);
 			return;
 		}
-		this.surveyResponse.setApproved(false);
-		this.surveyResponse.setRejected(false);
-		this.surveyResponse.setSubmitted(false);
+		currentSurveyResponse.setApproved(false);
+		currentSurveyResponse.setRejected(false);
+		currentSurveyResponse.setSubmitted(false);
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
-			dao.setSubmitted(username, this.surveyResponse.getSpecVersion(), false);
-			dao.setApproved(username, this.surveyResponse.getSpecVersion(), false);
-			dao.setRejected(username, this.surveyResponse.getSpecVersion(), false);
+			dao.setSubmitted(username, currentSurveyResponse.getSpecVersion(), false);
+			dao.setApproved(username, currentSurveyResponse.getSpecVersion(), false);
+			dao.setRejected(username, currentSurveyResponse.getSpecVersion(), false);
 		} finally {
 			con.close();
 		}
 		EmailUtility.emailUnsubmit(this.username,
-				this.surveyResponse.getResponder().getName(),
-				this.surveyResponse.getResponder().getEmail(),
-				this.surveyResponse.getSpecVersion(), config);
+				currentSurveyResponse.getResponder().getName(),
+				currentSurveyResponse.getResponder().getEmail(),
+				currentSurveyResponse.getSpecVersion(), config);
 	}
 }

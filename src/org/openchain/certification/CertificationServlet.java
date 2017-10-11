@@ -24,6 +24,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -81,6 +82,8 @@ public class CertificationServlet extends HttpServlet {
 	public static final String PARAMETER_SPEC_VERSION = "specVersion";
 	private static final String GET_VERSION_REQUEST = "version";
 	private static final String GET_SURVEY = "getsurvey";
+	private static final String GET_SUPPORTED_SPEC_VERSIONS = "getSupportedSpecVersions";
+	private static final String GET_SURVEY_VERSIONS = "getSurveyVersions";
 	private static final String GET_SURVEY_RESPONSE = "getsurveyResponse";
 	private static final String GET_SUBMISSIONS = "getsubmissions";
 	private static final String GET_USER = "getuser";
@@ -101,14 +104,11 @@ public class CertificationServlet extends HttpServlet {
 	private static final String RESET_REJECTED = "resetRejected";  
 	private static final String GET_CERTIFIED_REQUEST = "getcertified";
 	private static final String RESET_ANSWERS_REQUEST = "resetanswers";
+	private static final String SET_CURRENT_SURVEY_RESPONSE = "setCurrentSurveyResponse";
 	private static final String UPDATE_PROFILE_REQUEST = "updateUser";
-
 	private static final String COMPLETE_PASSWORD_RESET = "pwreset";
-
 	private static final String PASSWORD_CHANGE_REQUEST = "changePassword";
-
-	private static final String REQUEST_RESET_PASSWORD = "requestResetPassword";
-	
+	private static final String REQUEST_RESET_PASSWORD = "requestResetPassword";	
 	private static final String REQUEST_UNSUBMIT = "unsubmit";
 	
 	
@@ -174,6 +174,9 @@ public class CertificationServlet extends HttpServlet {
 	            		user = new UserSession(getServletConfig());	// creates a new user that is not logged in and a null username
 	            	}
             		gson.toJson(user, out);
+	            } else if (requestParam.equals(GET_SUPPORTED_SPEC_VERSIONS)) {
+	            	List<String> supportedSpecVersions = getSupportedSpecVersions(getServletConfig());
+	            	gson.toJson(supportedSpecVersions, out);
 	            } else if (user == null) {
         			// Not logged in - set the status to unauthorized
             		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -189,6 +192,8 @@ public class CertificationServlet extends HttpServlet {
 	            	gson.toJson(survey, out);
 	            } else if (requestParam.equals(GET_SURVEY_RESPONSE)) {
 	            	gson.toJson(user.getSurveyResponse(), out);
+	            } else if (requestParam.equals(GET_SURVEY_VERSIONS)) {
+	            	gson.toJson(user.getSurveyResponseSpecVersions(), out);
 	            } else if (requestParam.equals(GET_SUBMISSIONS)) {
 	            	if (!user.isAdmin()) {
 	            		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -241,6 +246,28 @@ public class CertificationServlet extends HttpServlet {
 		}
 	}
 
+
+	/**
+	 * @return all supported spec versions
+	 * @throws SQLException 
+	 */
+	protected static List<String> getSupportedSpecVersions(ServletConfig config) throws SQLException {
+		Connection con = SurveyDatabase.createConnection(config);
+		try {
+			List<String> allSpecVersions = SurveyDbDao.getSurveyVersions(con);
+			Collections.sort(allSpecVersions);
+			List<String> retval = new ArrayList<String>();
+			for (String fullVersion:allSpecVersions) {
+				String ver = UserSession.extractSpecVersion(fullVersion);
+				if (!retval.contains(ver)) {
+					retval.add(ver);
+				}
+			} 
+			return retval;
+		} finally {
+			con.close();
+		}
+	}
 
 	private List<Submission> getSubmissions() throws SQLException, SurveyResponseException, QuestionException {
 		Connection con = SurveyDatabase.createConnection(getServletConfig());
@@ -384,7 +411,9 @@ public class CertificationServlet extends HttpServlet {
         			postResponse.setError(user.getLastError());
         		}
         	} else if (rj.getRequest().equals(RESET_ANSWERS_REQUEST)) {
-        		user.resetAnswers();
+        		user.resetAnswers(rj.getSpecVersion());
+        	} else if (rj.getRequest().equals(SET_CURRENT_SURVEY_RESPONSE)) {
+        		user.setCurrentSurveyResponse(rj.getSpecVersion(), rj.isCreate());
         	} else if (rj.getRequest().equals(REQUEST_UNSUBMIT)) {
         		user.unsubmit();
         	} else if (rj.getRequest().equals(UPLOAD_SURVEY_REQUEST)) {

@@ -644,4 +644,176 @@ public class TestSurveyResponseDao {
 		assertEquals(s2q3answer.getAnswer(), ((YesNoAnswer)subAnswer).getAnswer());	
 		assertEquals(response2.getId(), result.getId());
 	}
+	
+	@Test
+	public void testGetSurveyResponsesUser() throws Exception {
+		SurveyResponse response = new SurveyResponse();
+		response.setResponder(user);
+		Map<String, Answer> responses = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer = new YesNoAnswer(YesNo.No);
+		YesNoAnswer s1q2answer = new YesNoAnswer(YesNo.NotAnswered);
+
+		responses.put(s1q1Number, s1q1answer);
+		responses.put(s1q2Number, s1q2answer);
+		response.setResponses(responses);
+		response.setSpecVersion(specVersion);
+		response.setSubmitted(false);
+		response.setSurvey(survey);
+		response.setApproved(true);
+		response.setRejected(false);
+		SurveyResponseDao dao = new SurveyResponseDao(con);
+		dao.addSurveyResponse(response);
+		
+		// Second survey for the same user
+		String laterSpecVersion = specVersion + ".1";
+		Survey laterSurvey = new Survey(laterSpecVersion);
+		List<Section> laterSections = new ArrayList<Section>();
+		Section newSection1 = new Section();
+		newSection1.setName(section1.getName());
+		newSection1.setTitle(section1.getTitle());
+		List<Question> newQuestions1 = new ArrayList<Question>();
+		s1q1 = new YesNoQuestion(s1q1Question, 
+				section1Name, s1q1Number, laterSpecVersion, s1q1Answer);
+		s1q1.setSpecReference(s1q1SpecRef);
+		newQuestions1.add(s1q1);
+
+		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, laterSpecVersion, s1q2Answer, s1q2Prompt);
+		String s1q2SpecRef = "s1q2SpecRef";
+		s1q2.setSpecReference(s1q2SpecRef);
+		newQuestions1.add(s1q2);
+		newSection1.setQuestions(newQuestions1);
+		laterSections.add(newSection1);
+		Section newSection2 = new Section();
+		newSection2.setName(section2.getName());
+		newSection2.setTitle(section2.getTitle());
+		List<Question> newQuestions2 = new ArrayList<Question>();
+		s2q1 = new SubQuestion(s2q1Question, 
+				section2Name, s2q1Number, laterSpecVersion, s2q1MinCorrect);
+		s2q1.setSpecReference(s2q1SpecRef);
+		newQuestions2.add(s2q1);
+
+		s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
+				section2Name, s2q2Number, laterSpecVersion, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
+		s2q2.setSpecReference(s2q2SpecRef);
+		s2q2.addSubQuestionOf(s2q1Number);
+		newQuestions2.add(s2q2);
+
+		s2q3 = new YesNoQuestion(s2q3Question, 
+				section2Name, s2q3Number, laterSpecVersion, s2q3Answer);
+		s2q3.setSpecReference(s2q3SpecRef);
+		s2q3.addSubQuestionOf(s2q1Number);
+		newQuestions2.add(s2q3);
+		newSection2.setQuestions(newQuestions2);
+		laterSections.add(newSection2);
+		laterSurvey.setSections(laterSections);
+		surveyDao.addSurvey(laterSurvey);
+		SurveyResponse response2 = new SurveyResponse();
+		response2.setResponder(user);
+		Map<String, Answer> responses2 = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer2 = new YesNoAnswer(YesNo.Yes);
+		
+		responses2.put(s1q1Number, s1q1answer2);
+
+		YesNoAnswerWithEvidence s2q2Answer = new YesNoAnswerWithEvidence(YesNo.No, "s2q2evidence");
+		responses2.put(s2q2Number, s2q2Answer);
+		YesNoAnswer s2q3answer = new YesNoAnswer(YesNo.Yes);
+		responses2.put(s2q3Number, s2q3answer);
+		
+		response2.setResponses(responses2);
+		response2.setSpecVersion(laterSpecVersion);
+		response2.setSubmitted(false);
+		response2.setSurvey(laterSurvey);
+		dao.addSurveyResponse(response2);
+		
+		// not the users survey response
+		String nonUserSpecVersion = "2.1";
+		Survey nonUserSurvey = new Survey(nonUserSpecVersion);
+		List<Section> nonUserSections = new ArrayList<Section>();
+		Section nonUserSection1 = new Section();
+		nonUserSection1.setName(section1.getName());
+		nonUserSection1.setTitle(section1.getTitle());
+		List<Question> nonUserQuestions1 = new ArrayList<Question>();
+		s1q1 = new YesNoQuestion(s1q1Question, 
+				section1Name, s1q1Number, nonUserSpecVersion, s1q1Answer);
+		s1q1.setSpecReference(s1q1SpecRef);
+		nonUserQuestions1.add(s1q1);
+
+		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, nonUserSpecVersion, s1q2Answer, s1q2Prompt);
+		String s1q2SpecRef3 = "s1q2SpecRef3";
+		s1q2.setSpecReference(s1q2SpecRef3);
+		nonUserQuestions1.add(s1q2);
+		nonUserSection1.setQuestions(nonUserQuestions1);
+		nonUserSections.add(nonUserSection1);
+		Section nonUserSection2 = new Section();
+		nonUserSection2.setName(section2.getName());
+		nonUserSection2.setTitle(section2.getTitle());
+		List<Question> nonUserQuestions2 = new ArrayList<Question>();
+		s2q1 = new SubQuestion(s2q1Question, 
+				section2Name, s2q1Number, nonUserSpecVersion, s2q1MinCorrect);
+		s2q1.setSpecReference(s2q1SpecRef);
+		nonUserQuestions2.add(s2q1);
+
+		nonUserSection2.setQuestions(nonUserQuestions2);
+		nonUserSections.add(nonUserSection2);
+		nonUserSurvey.setSections(nonUserSections);
+		surveyDao.addSurvey(nonUserSurvey);
+		SurveyResponse response3 = new SurveyResponse();
+		response3.setResponder(user2);
+		Map<String, Answer> responses3 = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer3 = new YesNoAnswer(YesNo.Yes);
+		
+		responses3.put(s1q1Number, s1q1answer3);
+		
+		response3.setResponses(responses3);
+		response3.setSpecVersion(nonUserSpecVersion);
+		response3.setSubmitted(false);
+		response3.setSurvey(laterSurvey);
+		dao.addSurveyResponse(response3);
+		
+		List<SurveyResponse> result = dao.getSurveyResponses(user.getUsername());
+		assertEquals(2, result.size());
+		
+		SurveyResponse firstVersion = null;
+		SurveyResponse secondVersion = null;
+		if (result.get(0).getSpecVersion().compareTo(result.get(1).getSpecVersion()) > 0) {
+			firstVersion = result.get(1);
+			secondVersion = result.get(0);
+		} else {
+			firstVersion = result.get(0);
+			secondVersion = result.get(1);
+		}
+		// test the first version
+		assertEquals(user.getUsername(), firstVersion.getResponder().getUsername());
+		assertEquals(specVersion, firstVersion.getSurvey().getSpecVersion());
+		Map<String, Answer> resultResponses = firstVersion.getResponses();
+		assertEquals(2, resultResponses.size());
+		Answer resultAnswer1 = resultResponses.get(s1q1Number);
+		assertTrue(resultAnswer1 instanceof YesNoAnswer);
+		assertEquals(s1q1answer.getAnswer(), ((YesNoAnswer)resultAnswer1).getAnswer());
+		Answer resultAnswer2 = resultResponses.get(s1q2Number);
+		assertTrue(resultAnswer2 instanceof YesNoAnswer);
+		assertEquals(s1q2answer.getAnswer(), ((YesNoAnswer)resultAnswer2).getAnswer());
+		assertEquals(response.getId(), firstVersion.getId());
+		// test latest version
+		assertEquals(user.getUsername(), secondVersion.getResponder().getUsername());
+		assertEquals(laterSpecVersion, secondVersion.getSurvey().getSpecVersion());
+		resultResponses = secondVersion.getResponses();
+		assertEquals(4, resultResponses.size());
+		resultAnswer1 = resultResponses.get(s1q1Number);
+		assertTrue(resultAnswer1 instanceof YesNoAnswer);
+		assertEquals(s1q1answer2.getAnswer(), ((YesNoAnswer)resultAnswer1).getAnswer());
+		resultAnswer2 = resultResponses.get(s2q2Number);
+		assertTrue(resultAnswer2 instanceof YesNoAnswerWithEvidence);
+		assertEquals(s2q2Answer.getAnswer(), ((YesNoAnswerWithEvidence)resultAnswer2).getAnswer());
+		assertEquals(s2q2Answer.getEvidence(), ((YesNoAnswerWithEvidence)resultAnswer2).getEvidence());
+		Answer resultAnswer3 = resultResponses.get(s2q3Number);
+		assertTrue(resultAnswer3 instanceof YesNoAnswer);
+		assertEquals(s2q3answer.getAnswer(), ((YesNoAnswer)resultAnswer1).getAnswer());
+		Answer resultSubAnswer = resultResponses.get(s2q1Number);
+		Answer subAnswer = ((SubQuestionAnswers)resultSubAnswer).getSubAnswers().get(s2q3Number);
+		assertEquals(s2q3answer.getAnswer(), ((YesNoAnswer)subAnswer).getAnswer());	
+		assertEquals(response2.getId(), secondVersion.getId());
+	}
 }
