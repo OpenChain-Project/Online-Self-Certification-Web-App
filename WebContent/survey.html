@@ -33,7 +33,21 @@
         <button id="btDownloadAnswers" class="ui-button ui-widget ui-corner-all">Download Answers</button>
         <button id="btResetAnswers" class="ui-button ui-widget ui-corner-all">Reset</button>
     </div>
-    <div id="oktoreset"></div>
+    <div id="resetsurvey" title="Reset Survey">
+      <form>
+    This will delete all answers and start a new survey with the latest survey version.  Are you sure you want to continue? 
+        <fieldset>
+            <table style="width: 100%">
+                <tr>
+                    <td style="text-align: right; padding: 5px"><label for="resetVersion">Version</label></td>
+                    <td style="text-align: left; padding: 5px"><select id="resetVersionSelect"></select></td>
+                </tr>
+            </table>
+            <!-- Allow form submission with keyboard without duplicating the dialog button -->
+            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+        </fieldset>
+      </form>
+    </div>
     <div id="submitconfirm"></div>
     <div id="errors"></div>
     <div id="status"></div>

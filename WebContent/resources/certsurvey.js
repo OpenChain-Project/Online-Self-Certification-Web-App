@@ -15,7 +15,7 @@
  *
 */
 
-var submitted;
+var submitted, resetDialog;
 
 function getQuestionFormHtml(questions) {
 	var html = '<table class="questiontable ui-corner-all">\n<col class="number_col" /><col class="question_col" /><col class="answer_col" /><col class="answer_col" />\n<col class="number_col" />\n';
@@ -423,56 +423,85 @@ $(document).ready( function() {
 	      event.preventDefault();
 	      downloadAnswers();
 	});
+	
 	$("#btResetAnswers").button();
 	$("#btResetAnswers").click(function(event) {
-	      event.preventDefault();
-	  	$( "#oktoreset" ).dialog({
-			title: "Reset Answers",
-			resizable: false,
-		    height: 200,
-		    width: 300,
-		    modal: true,
-		    buttons: [{
-		    		text: "Yes",
-		    		click: function () {
-		    			var certForm = $("#CertForm");
-		    			if (certForm.is(':ui-accordion')) {
-		    				certForm.accordion("destroy");
-		    			}
-		    			certForm.html('Loading <img src="resources/loading.gif" alt="Loading" class="loading" id="survey-loading">');
-		    			// This will be cleared when the form is loaded
-		    			$.ajax({
-		    			    url: "CertificationServlet",
-		    			    data:JSON.stringify({
-		    			        request:  "resetanswers"
-		    			    }),
-		    			    type: "POST",
-		    			    dataType : "json",
-		    			    contentType: "json",
-		    			    async: true, 
-		    			    success: function( json ) {
-		    			    	if ( json.status == "OK" ) {
-		    			    		getSurvey();
-		    			    	} else {
-		    			    		displayError( json.error );
-		    			    	} 	
-		    			    },
-		    			    error: function( xhr, status, errorThrown ) {
-		    			    	handleError(xhr, status, errorThrown);
-		    			    }
-		    			});
-		    			$( this ).dialog( "close" );
-		    		},
-		    		
-		    	},
-		    	{
-		    		text: "Cancel",
-		    		click: function () {
-		    			$( this ).dialog( "close" );
-		        }
-		    	}]
-		    
-		}).text( "This will delete all answers and start a new survey with the latest survey version.  Are you sure you want to continue?" );
+	    event.preventDefault();
+	    $.ajax({
+		    url: "CertificationServlet",
+		    data: {
+		        request: "getSurveyVersions"
+		    },
+		    type: "GET",
+		    dataType : "json",
+		    success: function( majorVersions ) {
+		    	var items = "";
+		    	var maxVersion = "";
+		    	for ( var i = 0; i < majorVersions.length; i++) {
+		    		items += '<option value="' + majorVersions[i] + '">' + majorVersions[i] + '</option>\n';
+		    		if ( majorVersions[i] > maxVersion ) {
+		    			maxVersion = majorVersions[i];
+		    		}
+		    	}
+		    	$( "#resetVersionSelect" ).html(items);
+		    	$( "#resetVersionSelect" ).val(maxVersion);
+		    	resetDialog.dialog( "open" );
+		    	
+		    },
+		    error: function( xhr, status, errorThrown ) {
+		    	handleError( xhr, status, errorThrown);
+		    }
+		});
+	  	
+	});
+	resetDialog = $( "#resetsurvey" ).dialog({
+		title: "Reset Answers",
+		autoOpen: false,
+		resizable: false,
+	    height: 230,
+	    width: 330,
+	    modal: true,
+	    buttons: [{
+	    		text: "Yes",
+	    		click: function () {
+	    			var certForm = $("#CertForm");
+	    			if (certForm.is(':ui-accordion')) {
+	    				certForm.accordion("destroy");
+	    			}
+	    			certForm.html('Loading <img src="resources/loading.gif" alt="Loading" class="loading" id="survey-loading">');
+	    			// This will be cleared when the form is loaded
+	    			$.ajax({
+	    			    url: "CertificationServlet",
+	    			    data:JSON.stringify({
+	    			        request:  "resetanswers",
+	    			        specVersion: $( "#resetVersionSelect" ).val()
+	    			    }),
+	    			    type: "POST",
+	    			    dataType : "json",
+	    			    contentType: "json",
+	    			    async: true, 
+	    			    success: function( json ) {
+	    			    	if ( json.status == "OK" ) {
+	    			    		getSurvey();
+	    			    	} else {
+	    			    		displayError( json.error );
+	    			    	} 	
+	    			    },
+	    			    error: function( xhr, status, errorThrown ) {
+	    			    	handleError(xhr, status, errorThrown);
+	    			    }
+	    			});
+	    			$( this ).dialog( "close" );
+	    		},
+	    		
+	    	},
+	    	{
+	    		text: "Cancel",
+	    		click: function () {
+	    			$( this ).dialog( "close" );
+	        }
+	    	}]
+	    
 	});
 	getSurvey();
 });
