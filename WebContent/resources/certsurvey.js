@@ -458,7 +458,7 @@ $(document).ready( function() {
 		title: "Reset Answers",
 		autoOpen: false,
 		resizable: false,
-	    height: 230,
+	    height: 250,
 	    width: 330,
 	    modal: true,
 	    buttons: [{
