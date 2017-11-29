@@ -70,7 +70,7 @@ public class CertificationServlet extends HttpServlet {
 	/**
 	 * Version of this software - should be updated before every release
 	 */
-	static final String version = "1.1.6";
+	static final String version = "1.1.7";
 	
 	static final Logger logger = Logger.getLogger(CertificationServlet.class);
 	
@@ -80,7 +80,7 @@ public class CertificationServlet extends HttpServlet {
 	public static final String PARAMETER_USERNAME = "username";
 	public static final String PARAMETER_UUID = "uuid";
 	public static final String PARAMETER_SPEC_VERSION = "specVersion";
-	private static final String GET_VERSION_REQUEST = "version";
+	private static final String GET_SOFTWARE_VERSION_REQUEST = "version";
 	private static final String GET_SURVEY = "getsurvey";
 	private static final String GET_SUPPORTED_SPEC_VERSIONS = "getSupportedSpecVersions";
 	private static final String GET_SURVEY_VERSIONS = "getSurveyVersions";
@@ -132,7 +132,7 @@ public class CertificationServlet extends HttpServlet {
 				UserSession user = (UserSession)session.getAttribute(SESSION_ATTRIBUTE_USER);
 				Gson gson = new Gson();
 	            response.setContentType("application/json"); 
-	            if (requestParam.equals(GET_VERSION_REQUEST)) {
+	            if (requestParam.equals(GET_SOFTWARE_VERSION_REQUEST)) {
 	            	gson.toJson(version, out);
 	            } else if (requestParam.equals(GET_CERTIFIED_REQUEST)) {
 	            	List<Submission> submissions = getSubmissions();
