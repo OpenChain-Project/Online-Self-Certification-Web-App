@@ -73,11 +73,11 @@ public class UserSession {
 	/**
 	 * List of all survey responses for this user
 	 */
-	private transient List<SurveyResponse> surveyResponses = null;
+	private List<SurveyResponse> surveyResponses = null;
 	/**
 	 * Currently active survey response
 	 */
-	private transient SurveyResponse currentSurveyResponse = null;
+	private SurveyResponse currentSurveyResponse = null;
 	/**
 	 * All specification versions available
 	 */
@@ -621,7 +621,9 @@ public class UserSession {
 	public boolean finalSubmission() throws SQLException, SurveyResponseException, QuestionException, EmailUtilException {
 		checkLoggedIn();
 		Connection con = SurveyDatabase.createConnection(config);
-		_getSurveyResponses();
+		if (this.surveyResponses == null) {
+			_getSurveyResponses();
+		}
 		List<Question> invalidQuestions = currentSurveyResponse.invalidAnswers();
 		if (invalidQuestions.size() > 0) {
 			StringBuilder er = new StringBuilder("Can not submit - the following question(s) either has missing answers or invalid answers: ");
@@ -997,7 +999,9 @@ public class UserSession {
 	public void unsubmit() throws SQLException, QuestionException, SurveyResponseException, EmailUtilException {
 		checkLoggedIn();
 		Connection con = SurveyDatabase.createConnection(config);
-		_getSurveyResponses();
+		if (this.surveyResponses == null) {
+			_getSurveyResponses();
+		}
 		if (!currentSurveyResponse.isSubmitted()) {
 			logger.warn("Attempting to unsubmit an unsubmitted response for user "+this.username);
 			return;

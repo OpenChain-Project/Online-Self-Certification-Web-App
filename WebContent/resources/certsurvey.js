@@ -543,7 +543,7 @@ $(document).ready( function() {
 	    width: 330,
 	    modal: true,
 	    buttons: [{
-	    		text: "Yes",
+	    		text: "OK",
 	    		click: function () {
 	    			saveAll( false );
 	    			var certForm = $("#CertForm");
