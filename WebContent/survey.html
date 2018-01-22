@@ -32,6 +32,22 @@
         <button id="btUnSubmit" class="ui-button ui-widget ui-corner-all">Unsubmit</button>
         <button id="btDownloadAnswers" class="ui-button ui-widget ui-corner-all">Download Answers</button>
         <button id="btResetAnswers" class="ui-button ui-widget ui-corner-all">Reset</button>
+        <button id="btSelectVersion" class="ui-button ui-widget ui-corner-all">Select Version</button>
+    </div>
+    <div id="selectversion" title="Select Version">
+    <form>    
+        Select the specification version.
+        <fieldset>
+            <table>
+                <tr>
+                    <td style="text-align: right; padding: 5px"><label for="versionSelect">Version</label></td>
+                    <td style="text-align: left; padding: 5px"><select id="versionSelect"></select></td>
+                </tr>
+            </table>
+            <!-- Allow form submission with keyboard without duplicating the dialog button -->
+            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+        </fieldset>
+    </form>
     </div>
     <div id="resetsurvey" title="Reset Survey">
       <form>
@@ -39,7 +55,7 @@
         <fieldset>
             <table style="width: 100%">
                 <tr>
-                    <td style="text-align: right; padding: 5px"><label for="resetVersion">Version</label></td>
+                    <td style="text-align: right; padding: 5px"><label for="resetVersionSelect">Version</label></td>
                     <td style="text-align: left; padding: 5px"><select id="resetVersionSelect"></select></td>
                 </tr>
             </table>

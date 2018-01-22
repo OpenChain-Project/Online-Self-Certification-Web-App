@@ -346,3 +346,7 @@ table tr:nth-child(odd) {
     padding: 2px 2px 2px 6px;
     width: auto;
 }
+
+#selectversion table {
+	width: 100%;
+}

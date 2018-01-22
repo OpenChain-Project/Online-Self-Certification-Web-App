@@ -15,7 +15,7 @@
  *
 */
 
-var submitted, resetDialog;
+var submitted, resetDialog, selectVersionDialog;
 
 function getQuestionFormHtml(questions) {
 	var html = '<table class="questiontable ui-corner-all">\n<col class="number_col" /><col class="question_col" /><col class="answer_col" /><col class="answer_col" />\n<col class="number_col" />\n';
@@ -235,7 +235,7 @@ function updateSectionQuestionCounts(section) {
 	updateSectionHtml(section,numQuestions,numAnswered);
 }
 
-function saveAll() {
+function saveAll( showDialog ) {
 	$("#btSaveAnswers").button("disable");
 	$("#btSaveAndSubmit").button("disable");
 	var answers = [];
@@ -260,18 +260,20 @@ function saveAll() {
 	    	$("#btSaveAnswers").button("enable");
 	    	$("#btSaveAndSubmit").button("enable");
 	    	if (json.status == "OK") {
-	    		$( "#status" ).dialog({
-	    			title: "Saved",
-	    			resizable: false,
-	    		    height: 200,
-	    		    width: 200,
-	    		    modal: true,
-	    		    buttons: {
-	    		        "Ok" : function () {
-	    		            $( this ).dialog( "close" );
-	    		        }
-	    		    }
-	    		}).text( "Save Successful" );
+	    		if ( showDialog ) {
+	    			$( "#status" ).dialog({
+		    			title: "Saved",
+		    			resizable: false,
+		    		    height: 200,
+		    		    width: 200,
+		    		    modal: true,
+		    		    buttons: {
+		    		        "Ok" : function () {
+		    		            $( this ).dialog( "close" );
+		    		        }
+		    		    }
+		    		}).text( "Save Successful" );
+	    		}
 	    	} else {
 	    		displayError(json.error);
 	    	}
@@ -385,7 +387,7 @@ $(document).ready( function() {
 	$("#btSaveAnswers").button();
 	$("#btSaveAnswers").click(function(event) {
       event.preventDefault();
-      saveAll();
+      saveAll( true );
     });
 	$("#btSaveAndSubmit").button();
 	$("#btSaveAndSubmit").click(function(event) {
@@ -475,6 +477,87 @@ $(document).ready( function() {
 	    			    data:JSON.stringify({
 	    			        request:  "resetanswers",
 	    			        specVersion: $( "#resetVersionSelect" ).val()
+	    			    }),
+	    			    type: "POST",
+	    			    dataType : "json",
+	    			    contentType: "json",
+	    			    async: true, 
+	    			    success: function( json ) {
+	    			    	if ( json.status == "OK" ) {
+	    			    		getSurvey();
+	    			    	} else {
+	    			    		displayError( json.error );
+	    			    	} 	
+	    			    },
+	    			    error: function( xhr, status, errorThrown ) {
+	    			    	handleError(xhr, status, errorThrown);
+	    			    }
+	    			});
+	    			$( this ).dialog( "close" );
+	    		},
+	    		
+	    	},
+	    	{
+	    		text: "Cancel",
+	    		click: function () {
+	    			$( this ).dialog( "close" );
+	        }
+	    	}]
+	    
+	});
+	$("#btSelectVersion").button();
+	$("#btSelectVersion").click(function(event) {
+	    event.preventDefault();
+	    $.ajax({
+		    url: "CertificationServlet",
+		    data: {
+		        request: "getSupportedSpecVersions"
+		    },
+		    type: "GET",
+		    dataType : "json",
+		    success: function( majorVersions ) {
+		    	var items = "";
+		    	var maxVersion = "";
+		    	for ( var i = 0; i < majorVersions.length; i++) {
+		    		items += '<option value="' + majorVersions[i] + '">' + majorVersions[i] + '</option>\n';
+		    		if ( majorVersions[i] > maxVersion ) {
+		    			maxVersion = majorVersions[i];
+		    		}
+		    	}
+		    	$( "#versionSelect" ).html(items);
+		    	$( "#versionSelect" ).val(maxVersion);
+		    	selectVersionDialog.dialog( "open" );
+		    	
+		    },
+		    error: function( xhr, status, errorThrown ) {
+		    	handleError( xhr, status, errorThrown);
+		    }
+		});
+	  	
+	});
+	selectVersionDialog = $( "#selectversion" ).dialog({
+		title: "Select Version",
+		autoOpen: false,
+		resizable: false,
+	    height: 250,
+	    width: 330,
+	    modal: true,
+	    buttons: [{
+	    		text: "OK",
+	    		click: function () {
+	    			saveAll( false );
+	    			var certForm = $("#CertForm");
+	    			if (certForm.is(':ui-accordion')) {
+	    				certForm.accordion("destroy");
+	    			}
+	    			certForm.html('Loading <img src="resources/loading.gif" alt="Loading" class="loading" id="survey-loading">');
+	    			// This will be cleared when the form is loaded
+	    			$.ajax({
+	    			    url: "CertificationServlet",
+	    			    data:JSON.stringify({
+	    			        request:  "setCurrentSurveyResponse",
+	    			        specVersion: $( "#versionSelect" ).val(),
+	    			        create: true
 	    			    }),
 	    			    type: "POST",
 	    			    dataType : "json",
