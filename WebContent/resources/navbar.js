@@ -150,9 +150,9 @@ function loginUser() {
 		    	password.val('');
 		    	if ( json.status == "OK" ) {
 		    		if (json.admin) {
-		    			window.location = "admin.html";
+		    			window.location = "admin.html?v=1.1.7";
 		    		} else {
-		    			window.location = "survey.html";
+		    			window.location = "survey.html?v=1.1.7";
 		    		}
 		    	} else if (json.status == "NOT_VERIFIED") {
 		    		openResendVerificationDialog(username, password);
@@ -454,13 +454,13 @@ function createNavMenu() {
 	    	    }
 	    	  });
 	    	if (json.loggedIn) {
-	    		$("#surveylink").html('<a href="survey.html"><span class="ui-icon ui-icon-pencil"></span>Online Self-Certification</a>&nbsp;&nbsp;&nbsp;');
+	    		$("#surveylink").html('<a href="survey.html?v=1.1.7"><span class="ui-icon ui-icon-pencil"></span>Online Self-Certification</a>&nbsp;&nbsp;&nbsp;');
 	    	} else {
 	    		$("#surveylink").html('');
 	    	}
 	    	// Check for admin
 	    	if (json.admin && json.loggedIn) {
-	    		$("#adminlink").html('<a href="admin.html"><span class="ui-icon ui-icon-key"></span>Admin</a>&nbsp;&nbsp;&nbsp;</div>');
+	    		$("#adminlink").html('<a href="admin.html?v=1.1.7"><span class="ui-icon ui-icon-key"></span>Admin</a>&nbsp;&nbsp;&nbsp;</div>');
 	    	} else {
 	    		$("#adminlink").html('');
 	    	}
