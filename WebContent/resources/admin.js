@@ -15,6 +15,8 @@
  *
 */
 
+var myVersion = "1.1.7";
+	
 function openDownloadSurveyDialog() {
 	$("#downloadsurvey").dialog("open");
 }
@@ -422,6 +424,8 @@ $(document).ready( function() {
 	      requestStatusChange("resetApproved", getCheckedIds($("#submitted-approved")));
 	});
 	
+	var reloaded = false;	// Prevent accidental infinite reloades when doing the cache management
+	
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
@@ -429,8 +433,12 @@ $(document).ready( function() {
 	    },
 	    type: "GET",
 	    dataType : "json",
+	    async: false,
 	    success: function( json ) {
 	    	$("#software-version").text(json);
+	    	if (json != myVersion && !reloaded) {
+	    		location.reload(true);
+	    	}
 	    },
 	    error: function( xhr, status, errorThrown ) {
 	    	handleError( xhr, status, errorThrown);
