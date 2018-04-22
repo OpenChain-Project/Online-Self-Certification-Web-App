@@ -15,6 +15,8 @@
  *
 */
 package org.openchain.certification.model;
+
+
 /**
  * @author Gary O'Neall
  *
@@ -29,9 +31,18 @@ public class YesNoQuestion extends Question {
 	public static final String TYPE_NAME = "YES_NO";
 	protected YesNo correctAnswer;
 	
+	/**
+	 * @param question Text for the question
+	 * @param sectionName Name of the section containing the question
+	 * @param number Number of the question
+	 * @param specVersion Version of the specification
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param correctAnswer Correct answer
+	 * @throws QuestionException
+	 */
 	public YesNoQuestion(String question, String sectionName, String number, 
-			String specVersion, YesNo correctAnswer) throws QuestionException {
-		super(question, sectionName, number, specVersion);
+			String specVersion, String language, YesNo correctAnswer) throws QuestionException {
+		super(question, sectionName, number, specVersion, language);
 		this.correctAnswer = correctAnswer;
 		this.type = TYPE_NAME;
 	}
@@ -69,5 +80,4 @@ public class YesNoQuestion extends Question {
 		}
 		return this.correctAnswer.equals(ynAnswer);
 	}
-	
 }

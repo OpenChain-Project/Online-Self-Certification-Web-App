@@ -40,9 +40,23 @@ public class Survey {
 	};
 	private List<Section> sections;
 	private String specVersion;
+	private String language;
 	
-	public Survey(String specVersion) {
+	public Survey(String specVersion, String language) {
 		this.specVersion = specVersion;
+		this.language = language;
+	}
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 	/**
 	 * @return the sections

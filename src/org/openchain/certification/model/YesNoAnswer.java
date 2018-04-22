@@ -18,6 +18,7 @@ package org.openchain.certification.model;
 
 import java.util.Objects;
 
+import org.openchain.certification.I18N;
 import org.openchain.certification.model.YesNoQuestion.YesNo;
 
 /**
@@ -27,9 +28,15 @@ import org.openchain.certification.model.YesNoQuestion.YesNo;
  */
 public class YesNoAnswer extends Answer {
 
+	private static final String ANSWER_MESSAGE_KEY_PREFIX = "YesNo";
 	protected YesNo answer;
 	
-	public YesNoAnswer(YesNo answer) {
+	/**
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param answer answer
+	 */
+	public YesNoAnswer(String language, YesNo answer) {
+		super(language);
 		this.answer = answer;
 	}
 
@@ -78,9 +85,12 @@ public class YesNoAnswer extends Answer {
 		if (answer == null) {
 			return "";
 		} else {
-			return answer.toString();
+			String key = ANSWER_MESSAGE_KEY_PREFIX + "." + answer.toString();
+			String retval = I18N.getMessage(key, language);
+			if (retval == null) {
+				retval = answer.toString();
+			}
+			return retval;
 		}
 	}
-	
-	
 }

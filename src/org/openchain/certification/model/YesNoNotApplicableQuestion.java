@@ -28,9 +28,20 @@ public class YesNoNotApplicableQuestion extends YesNoQuestion {
 	
 	String notApplicablePrompt;
 
+	/**
+	 * @param question Text for the question
+	 * @param sectionName Name of the section containing the question
+	 * @param number Number for the question
+	 * @param specVersion Version of the specification
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param correctAnswer Correct answer
+	 * @param notApplicablePrompt Prompt to display for not applicable
+	 * @throws QuestionException
+	 */
 	public YesNoNotApplicableQuestion(String question, String sectionName,
-			String number, String specVersion, YesNo correctAnswer, String notApplicablePrompt) throws QuestionException {
-		super(question, sectionName, number, specVersion, correctAnswer);
+			String number, String specVersion, String language, 
+			YesNo correctAnswer, String notApplicablePrompt) throws QuestionException {
+		super(question, sectionName, number, specVersion, language, correctAnswer);
 		this.notApplicablePrompt = notApplicablePrompt;
 		this.type = TYPE_NAME;
 	}

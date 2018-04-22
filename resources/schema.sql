@@ -3,7 +3,8 @@
 	CREATE TABLE spec
 	(
 	    id bigint primary key default nextval ('seq_spec_id'),
-	    version text
+	    version text,
+	    language text
 	);
 	alter TABLE spec OWNER TO openchain;
 	
@@ -62,7 +63,8 @@
 	    uuid text,
 	    organization text,
 	    name_permission boolean,
-	    email_permission boolean
+	    email_permission boolean,
+	    language text
 	);
 	alter TABLE openchain_user OWNER TO openchain;
 	

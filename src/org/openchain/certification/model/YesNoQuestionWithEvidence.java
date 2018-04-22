@@ -29,10 +29,21 @@ public class YesNoQuestionWithEvidence extends YesNoQuestion {
 	private String evidencePrompt;
 	private Pattern evidenceValidation;
 	
+	/**
+	 * @param question Text for the question
+	 * @param sectionName Name of the section containing the question
+	 * @param number Number for the question
+	 * @param specVersion Specification version
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param correctAnswer Correct answer
+	 * @param evidencePrompt Prompt to display when asking for the evidence
+	 * @param evidenceValidation
+	 * @throws QuestionException
+	 */
 	public YesNoQuestionWithEvidence(String question, String sectionName, 
-			String number, String specVersion, YesNo correctAnswer,
+			String number, String specVersion, String language, YesNo correctAnswer,
 			String evidencePrompt, Pattern evidenceValidation) throws QuestionException {
-		super(question, sectionName, number, specVersion, correctAnswer);
+		super(question, sectionName, number, specVersion, language, correctAnswer);
 		this.evidencePrompt = evidencePrompt;
 		this.evidenceValidation = evidenceValidation;
 		this.type = TYPE_NAME;

@@ -70,6 +70,8 @@ public class UserSession {
 	private transient String password;
 	private String lastError;
 	private transient ServletConfig config;
+	private String language = User.DEFAULT_LANGUAGE;
+	
 	/**
 	 * List of all survey responses for this user
 	 */
@@ -445,17 +447,16 @@ public class UserSession {
 		Connection con = SurveyDatabase.createConnection(config);
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
-			surveyResponses = dao.getSurveyResponses(this.username);
+			surveyResponses = dao.getSurveyResponses(this.username, language);
 			if (this.surveyResponses.size() == 0) {
 				// Create one
-				currentSurveyResponse = new SurveyResponse();
+				currentSurveyResponse = new SurveyResponse(dao.getLatestSpecVersion(), language);
 				User user = UserDb.getUserDb(config).getUser(username);
 				currentSurveyResponse.setResponder(user);
 				currentSurveyResponse.setResponses(new HashMap<String, Answer>());
-				currentSurveyResponse.setSpecVersion(dao.getLatestSpecVersion());
-				currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion()));
+				currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion(), language));
 				con.commit();
-				dao.addSurveyResponse(currentSurveyResponse);
+				dao.addSurveyResponse(currentSurveyResponse, language);
 				surveyResponses.add(currentSurveyResponse);
 			} else {
 				// set the current version to the latest
@@ -513,13 +514,12 @@ public class UserSession {
 			try {
 				SurveyResponseDao dao = new SurveyResponseDao(con);
 				User saveUser = currentSurveyResponse.getResponder(); 
-				currentSurveyResponse = new SurveyResponse();
+				currentSurveyResponse = new SurveyResponse(getLatestMinorVersion(specVersion), language);
 				currentSurveyResponse.setResponder(saveUser);
 				currentSurveyResponse.setResponses(new HashMap<String, Answer>());
-				currentSurveyResponse.setSpecVersion(getLatestMinorVersion(specVersion));
-				currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion()));
+				currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion(), language));
 				con.commit();
-				dao.addSurveyResponse(currentSurveyResponse);
+				dao.addSurveyResponse(currentSurveyResponse, language);
 				surveyResponses.add(currentSurveyResponse);
 			} catch (SQLException e) {
 				logger.error("SQL Exception adding answers",e);
@@ -580,11 +580,11 @@ public class UserSession {
 
 				Answer answer;
 				if (question instanceof YesNoQuestionWithEvidence) {
-					answer = new YesNoAnswerWithEvidence(ynAnswer, response.getEvidence());
+					answer = new YesNoAnswerWithEvidence(language, ynAnswer, response.getEvidence());
 				} else if (question instanceof YesNoQuestion) {
-					answer = new YesNoAnswer(ynAnswer);
+					answer = new YesNoAnswer(language, ynAnswer);
 				} else if (question instanceof SubQuestion) {
-					answer = new SubQuestionAnswers();
+					answer = new SubQuestionAnswers(language);
 				} else {
 					logger.error("Invalid answer type for question "+response.getQuestionNumber());
 					throw(new QuestionTypeException("Invalid answer type for question "+response.getQuestionNumber()));
@@ -593,7 +593,7 @@ public class UserSession {
 				if (question.getSubQuestionNumber() != null) {
 					SubQuestionAnswers subQuestionAnswer = (SubQuestionAnswers)currentResponses.get(question.getSubQuestionNumber());
 					if (subQuestionAnswer == null) {
-						subQuestionAnswer = new SubQuestionAnswers();
+						subQuestionAnswer = new SubQuestionAnswers(language);
 						currentResponses.put(question.getSubQuestionNumber(), subQuestionAnswer);
 					}
 					subQuestionAnswer.addSubAnswer(question.getNumber(), answer);
@@ -605,7 +605,7 @@ public class UserSession {
 		Connection con = SurveyDatabase.createConnection(config);
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
-			dao.updateSurveyResponseAnswers(currentSurveyResponse);
+			dao.updateSurveyResponseAnswers(currentSurveyResponse, language);
 		} finally {
 			con.close();
 		}
@@ -753,12 +753,11 @@ public class UserSession {
 			User saveUser = currentSurveyResponse.getResponder(); 
 			dao.deleteSurveyResponseAnswers(currentSurveyResponse);
 			surveyResponses.remove(currentSurveyResponse);
-			currentSurveyResponse = new SurveyResponse();
+			currentSurveyResponse = new SurveyResponse(getLatestMinorVersion(specVersion), language);
 			currentSurveyResponse.setResponder(saveUser);
 			currentSurveyResponse.setResponses(new HashMap<String, Answer>());
-			currentSurveyResponse.setSpecVersion(getLatestMinorVersion(specVersion));
-			currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion()));
-			dao.addSurveyResponse(currentSurveyResponse);
+			currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion(), language));
+			dao.addSurveyResponse(currentSurveyResponse, language);
 			con.commit();
 			surveyResponses.add(currentSurveyResponse);
 		} catch (SQLException e) {
@@ -1021,5 +1020,18 @@ public class UserSession {
 				currentSurveyResponse.getResponder().getName(),
 				currentSurveyResponse.getResponder().getEmail(),
 				currentSurveyResponse.getSpecVersion(), config);
+	}
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(String language) {
+		// TODO referesh everything that depends on the language
+		this.language = language;
 	}
 }

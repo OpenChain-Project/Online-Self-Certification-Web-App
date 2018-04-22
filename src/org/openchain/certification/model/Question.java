@@ -37,8 +37,17 @@ public abstract class Question implements Comparable<Question> {
 	transient static final Pattern NUM_ALPH_AROMAN_PATTERN = Pattern.compile("(\\d+)(\\.[a-z]+)?(\\.[ivxlmcd]+)?");
 	transient private Matcher numberMatch;
 	private String specReference = "";
+	private String language;
 
-	public Question(String question, String sectionName, String number, String specVersion) throws QuestionException {
+	/**
+	 * @param question Text for the question
+	 * @param sectionName Name of the section
+	 * @param number Number of the question
+	 * @param specVersion Version for the spec
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @throws QuestionException
+	 */
+	public Question(String question, String sectionName, String number, String specVersion, String language) throws QuestionException {
 		if (specVersion == null) {
 			throw(new QuestionException("Spec version for question was not specified"));
 		}
@@ -57,7 +66,26 @@ public abstract class Question implements Comparable<Question> {
 		this.sectionName = sectionName;
 		this.number = number;
 		this.specVersion = specVersion;
+		this.language = language;
 	}
+
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
+
+
+
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+
 
 	/**
 	 * @return the question
@@ -349,7 +377,14 @@ public abstract class Question implements Comparable<Question> {
 		return retval;
 	}
 
-	public static Question fromCsv(String[] row, String specVersion) throws QuestionException {
+	/**
+	 * @param row CSV row of columns containing the question
+	 * @param specVersion Version of the specification
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @return
+	 * @throws QuestionException
+	 */
+	public static Question fromCsv(String[] row, String specVersion, String language) throws QuestionException {
 		if (row.length < 8) {
 			throw(new QuestionTypeException("Not enough columns.  Expected 8, found "+String.valueOf(row.length)));
 		}
@@ -380,19 +415,19 @@ public abstract class Question implements Comparable<Question> {
 				throw(new QuestionException("Invalid minimum number of answers for subquestion number "+
 							number+":"+correctAnswer+".  Must be a number."));
 			}
-			retval = new SubQuestion(question, sectionName, number, specVersion, minAnswers);
+			retval = new SubQuestion(question, sectionName, number, specVersion, language, minAnswers);
 		} else if (type.equals(YesNoQuestion.TYPE_NAME)) {
-			retval = new YesNoQuestion(question, sectionName, number, specVersion, 
+			retval = new YesNoQuestion(question, sectionName, number, specVersion, language,
 					YesNo.valueOf(correctAnswer));
 		} else if (type.equals(YesNoQuestionWithEvidence.TYPE_NAME)) {
 			Pattern valPattern = null;
 			if (evidenceValidation != null && !evidenceValidation.isEmpty()) {
 				valPattern = Pattern.compile(evidenceValidation);
 			}
-			retval = new YesNoQuestionWithEvidence(question, sectionName, number, specVersion, 
+			retval = new YesNoQuestionWithEvidence(question, sectionName, number, specVersion, language, 
 					YesNo.valueOf(correctAnswer), evidencePrompt, valPattern);
 		} else if (type.equals(YesNoNotApplicableQuestion.TYPE_NAME)) {
-			retval = new YesNoNotApplicableQuestion(question, sectionName, number, specVersion, 
+			retval = new YesNoNotApplicableQuestion(question, sectionName, number, specVersion, language,
 					YesNo.valueOf(correctAnswer), evidencePrompt);
 		} else {
 			throw(new QuestionTypeException("Unknown question type: "+type));

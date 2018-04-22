@@ -44,6 +44,7 @@ public class TestUserSession {
 	
 	Connection con;
 	
+	String language = "eng";
 	String primarySpecVersion = "1.0";
 	String specVersion = primarySpecVersion + ".2";
 	String section1Name = "section1Name";
@@ -100,41 +101,41 @@ public class TestUserSession {
 	public void setUp() throws Exception {
 		con = TestHelper.getConnection();
 		TestHelper.truncateDatabase(con);
-		survey = new Survey(specVersion);
+		survey = new Survey(specVersion, language);
 		List<Section> sections = new ArrayList<Section>();
-		section1 = new Section();
+		section1 = new Section(language);
 		section1.setName(section1Name);
 		section1.setTitle(section1Title);
 		List<Question> section1Questions = new ArrayList<Question>();
 		s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, specVersion, s1q1Answer);
+				section1Name, s1q1Number, specVersion, language, s1q1Answer);
 		s1q1.setSpecReference(s1q1SpecRef);
 		section1Questions.add(s1q1);
 
 		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
-				section1Name, s1q2Number, specVersion, s1q2Answer, s1q2Prompt);
+				section1Name, s1q2Number, specVersion, language, s1q2Answer, s1q2Prompt);
 		String s1q2SpecRef = "s1q2SpecRef";
 		s1q2.setSpecReference(s1q2SpecRef);
 		section1Questions.add(s1q2);
 		section1.setQuestions(section1Questions);
 		sections.add(section1);
-		section2 = new Section();
+		section2 = new Section(language);
 		section2.setName(section2Name);
 		section2.setTitle(section2Title);
 		List<Question> section2Questions = new ArrayList<Question>();
 		s2q1 = new SubQuestion(s2q1Question, 
-				section2Name, s2q1Number, specVersion, s2q1MinCorrect);
+				section2Name, s2q1Number, specVersion, language, s2q1MinCorrect);
 		s2q1.setSpecReference(s2q1SpecRef);
 		section2Questions.add(s2q1);
 
 		s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
-				section2Name, s2q2Number, specVersion, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
+				section2Name, s2q2Number, specVersion, language, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSpecReference(s2q2SpecRef);
 		s2q2.addSubQuestionOf(s2q1Number);
 		section2Questions.add(s2q2);
 
 		s2q3 = new YesNoQuestion(s2q3Question, 
-				section2Name, s2q3Number, specVersion, s2q3Answer);
+				section2Name, s2q3Number, specVersion, language, s2q3Answer);
 		s2q3.setSpecReference(s2q3SpecRef);
 		s2q3.addSubQuestionOf(s2q1Number);
 		section2Questions.add(s2q3);
@@ -144,14 +145,14 @@ public class TestUserSession {
 		surveyDao = new SurveyDbDao(con);
 		surveyDao.addSurvey(survey);
 		
-		survey2 = new Survey(specVersion2);
+		survey2 = new Survey(specVersion2, language);
 		List<Section> sections2 = new ArrayList<Section>();
-		section12 = new Section();
+		section12 = new Section(language);
 		section12.setName(section1Name2);
 		section12.setTitle(section1Title2);
 		List<Question> section1Questions2 = new ArrayList<Question>();
 		s1q12 = new YesNoQuestion(s1q1Question2, 
-				section1Name2, s1q1Number2, specVersion2, s1q1Answer2);
+				section1Name2, s1q1Number2, specVersion2, language, s1q1Answer2);
 		s1q12.setSpecReference(s1q1SpecRef2);
 		section1Questions2.add(s1q12);
 		section12.setQuestions(section1Questions2);
@@ -200,20 +201,19 @@ public class TestUserSession {
 
 	@Test
 	public void testUpdateAnswers() throws SQLException, SurveyResponseException, QuestionException {
-		SurveyResponse response = new SurveyResponse();
+		SurveyResponse response = new SurveyResponse(specVersion, language);
 		response.setResponder(user);
 		Map<String, Answer> responses = new HashMap<String, Answer>();
-		YesNoAnswer s1q1answer = new YesNoAnswer(YesNo.No);
-		YesNoAnswer s1q2answer = new YesNoAnswer(YesNo.NotAnswered);
+		YesNoAnswer s1q1answer = new YesNoAnswer(language, YesNo.No);
+		YesNoAnswer s1q2answer = new YesNoAnswer(language, YesNo.NotAnswered);
 
 		responses.put(s1q1Number, s1q1answer);
 		responses.put(s1q2Number, s1q2answer);
 		response.setResponses(responses);
-		response.setSpecVersion(specVersion);
 		response.setSubmitted(false);
 		response.setSurvey(survey);
 		SurveyResponseDao dao = new SurveyResponseDao(con);
-		dao.addSurveyResponse(response);
+		dao.addSurveyResponse(response, language);
 		
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
@@ -332,20 +332,19 @@ public class TestUserSession {
 
 	@Test
 	public void testResetAnswer() throws SQLException, QuestionException, SurveyResponseException {
-		SurveyResponse response = new SurveyResponse();
+		SurveyResponse response = new SurveyResponse(specVersion, language);
 		response.setResponder(user);
 		Map<String, Answer> responses = new HashMap<String, Answer>();
-		YesNoAnswer s1q1answer = new YesNoAnswer(YesNo.No);
-		YesNoAnswer s1q2answer = new YesNoAnswer(YesNo.NotAnswered);
+		YesNoAnswer s1q1answer = new YesNoAnswer(language, YesNo.No);
+		YesNoAnswer s1q2answer = new YesNoAnswer(language, YesNo.NotAnswered);
 
 		responses.put(s1q1Number, s1q1answer);
 		responses.put(s1q2Number, s1q2answer);
 		response.setResponses(responses);
-		response.setSpecVersion(specVersion);
 		response.setSubmitted(false);
 		response.setSurvey(survey);
 		SurveyResponseDao dao = new SurveyResponseDao(con);
-		dao.addSurveyResponse(response);
+		dao.addSurveyResponse(response, language);
 		
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
@@ -405,25 +404,23 @@ public class TestUserSession {
 	
 	@Test
 	public void testGetSurveyResponseSpecVersions() throws SQLException, QuestionException, SurveyResponseException {
-		SurveyResponse response = new SurveyResponse();
+		SurveyResponse response = new SurveyResponse(specVersion, language);
 		response.setResponder(user);
 		Map<String, Answer> responses = new HashMap<String, Answer>();
 
 		response.setResponses(responses);
-		response.setSpecVersion(specVersion);
 		response.setSubmitted(false);
 		response.setSurvey(survey);
 		SurveyResponseDao dao = new SurveyResponseDao(con);
-		dao.addSurveyResponse(response);
+		dao.addSurveyResponse(response, language);
 
-		SurveyResponse response2 = new SurveyResponse();
+		SurveyResponse response2 = new SurveyResponse(specVersion2, language);
 		response2.setResponder(user);
 
 		response2.setResponses(responses);
-		response2.setSpecVersion(specVersion2);
 		response2.setSubmitted(false);
 		response2.setSurvey(survey2);
-		dao.addSurveyResponse(response2);
+		dao.addSurveyResponse(response2, language);
 		
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
@@ -440,17 +437,16 @@ public class TestUserSession {
 	
 	@Test
 	public void testSetCurrentSurveyResponse() throws SQLException, SurveyResponseException, QuestionException {
-		SurveyResponse response = new SurveyResponse();
+		SurveyResponse response = new SurveyResponse(specVersion, language);
 		response.setResponder(user);
 		Map<String, Answer> responses = new HashMap<String, Answer>();
-		YesNoAnswer s1q1answer = new YesNoAnswer(YesNo.No);
+		YesNoAnswer s1q1answer = new YesNoAnswer(language, YesNo.No);
 		responses.put(s1q1Number, s1q1answer);
 		response.setResponses(responses);
-		response.setSpecVersion(specVersion);
 		response.setSubmitted(false);
 		response.setSurvey(survey);
 		SurveyResponseDao dao = new SurveyResponseDao(con);
-		dao.addSurveyResponse(response);
+		dao.addSurveyResponse(response, language);
 		
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());

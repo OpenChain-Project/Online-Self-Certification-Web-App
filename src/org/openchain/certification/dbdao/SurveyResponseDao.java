@@ -61,7 +61,6 @@ public class SurveyResponseDao {
 	private PreparedStatement getLatestSpecVersionForUserQuery;
 	private PreparedStatement getAnswersQuery;
 	private PreparedStatement getUserIdQuery;
-	private PreparedStatement getSpecVersionIdQuery;
 	private PreparedStatement addSurveyResponseQuery;
 	private PreparedStatement addAnswerQuery;
 	private PreparedStatement updateAnswerQuery;
@@ -93,8 +92,6 @@ public class SurveyResponseDao {
 				"where user_id=? and version=? order by number",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		getUserIdQuery = con.prepareStatement("select id from openchain_user where username=?",
-				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		getSpecVersionIdQuery = con.prepareStatement("select id from spec where version=?",
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		addSurveyResponseQuery = con.prepareStatement("insert into survey_response (user_id, spec_version, submitted, approved, rejected) values (?,?,?,?,?)",
 				Statement.RETURN_GENERATED_KEYS);
@@ -146,13 +143,14 @@ public class SurveyResponseDao {
 	}
 
 	/**
-	 * Get a survery response for a specific user
+	 * Get a survey response for a specific user
 	 * @param username username for the survey response
 	 * @param specVersion version of the spec for the survey response.  If null, will use the latest spec version available
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
 	 * @return
 	 * @throws QuestionTypeException 
 	 */
-	public synchronized SurveyResponse getSurveyResponse(String username, String specVersion) throws SQLException, QuestionException, SurveyResponseException {
+	public synchronized SurveyResponse getSurveyResponse(String username, String specVersion, String language) throws SQLException, QuestionException, SurveyResponseException {
 		ResultSet result = null;
 		try {
 			getUserQuery.setString(1, username);
@@ -190,13 +188,12 @@ public class SurveyResponseDao {
 					return null;	// no survey responses for this user
 				}
 			}
-			Survey survey = SurveyDbDao.getSurvey(con, specVersion);
-			Map<String, Answer>answers = getAnswers(userId, specVersion);			
-			SurveyResponse retval = new SurveyResponse();
+			Survey survey = SurveyDbDao.getSurvey(con, specVersion, language);
+			Map<String, Answer>answers = getAnswers(userId, specVersion, language);			
+			SurveyResponse retval = new SurveyResponse(specVersion, language);
 			retval.setResponder(user);
 			retval.setResponses(answers);
 			retval.setSurvey(survey);
-			retval.setSpecVersion(specVersion);
 			getStatusQuery.setLong(1, userId);
 			getStatusQuery.setString(2, specVersion);
 			result.close();
@@ -228,19 +225,21 @@ public class SurveyResponseDao {
 	}
 	
 	/**
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
 	 * @return All survey responses
 	 * @throws SQLException 
 	 * @throws QuestionException 
 	 * @throws SurveyResponseException 
 	 */
-	public synchronized List<SurveyResponse> getSurveyResponses() throws SQLException, SurveyResponseException, QuestionException {
+	public synchronized List<SurveyResponse> getSurveyResponses(String language) throws SQLException, SurveyResponseException, QuestionException {
 		ResultSet result = null;
 		List<SurveyResponse> retval = new ArrayList<SurveyResponse>();
 		Map<String, Survey> surveys = new HashMap<String, Survey>();	// Cache of spec version to survey
 		try {
 			result = getUsersWithResponsesQuery.executeQuery();
 			while (result.next()) {
-				SurveyResponse response = new SurveyResponse();
+				String specVersion = result.getString("version");
+				SurveyResponse response = new SurveyResponse(specVersion, language);
 				User user = new User();
 				user.setAddress(result.getString("address"));
 				user.setAdmin(result.getBoolean("admin"));
@@ -260,16 +259,14 @@ public class SurveyResponseDao {
 				response.setSubmitted(result.getBoolean("submitted"));
 				response.setApproved(result.getBoolean("approved"));
 				response.setRejected(result.getBoolean("rejected"));
-				String specVersion = result.getString("version");
 				response.setId(String.valueOf(result.getLong("responseid")));
-				response.setSpecVersion(specVersion);
 				Survey survey = surveys.get(specVersion);
 				if (survey == null) {
-					survey = SurveyDbDao.getSurvey(con, specVersion);
+					survey = SurveyDbDao.getSurvey(con, specVersion, language);
 					surveys.put(specVersion, survey);
 				}
 				response.setSurvey(survey);
-				response.setResponses(getAnswers(userId, specVersion));
+				response.setResponses(getAnswers(userId, specVersion, language));
 				retval.add(response);
 			}
 			return retval;
@@ -286,14 +283,15 @@ public class SurveyResponseDao {
 	
 	/**
 	 * Get all answers for a given user ID and specVersion
-	 * @param userId
-	 * @param specVersion
+	 * @param userId ID for the user
+	 * @param specVersion Specification version
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
 	 * @return
 	 * @throws SQLException
 	 * @throws QuestionTypeException
 	 * @throws SurveyResponseException
 	 */
-	private Map<String, Answer> getAnswers(long userId, String specVersion) throws SQLException, QuestionTypeException, SurveyResponseException {
+	private Map<String, Answer> getAnswers(long userId, String specVersion, String language) throws SQLException, QuestionTypeException, SurveyResponseException {
 		ResultSet result = null;
 		Map<String, Answer> responses = new HashMap<String, Answer>();
 		try {
@@ -311,16 +309,16 @@ public class SurveyResponseDao {
 					throw(new QuestionTypeException("No question type stored in the database"));
 				}
 				if (type.equals(YesNoQuestion.TYPE_NAME)) {
-					answer = new YesNoAnswer(YesNo.valueOf(result.getString("answer")));
+					answer = new YesNoAnswer(language, YesNo.valueOf(result.getString("answer")));
 				} else if (type.equals(YesNoQuestionWithEvidence.TYPE_NAME)) {
-					answer = new YesNoAnswerWithEvidence(YesNo.valueOf(result.getString("answer")),
+					answer = new YesNoAnswerWithEvidence(language, YesNo.valueOf(result.getString("answer")),
 							result.getString("evidence"));
 				} else if (type.equals(YesNoNotApplicableQuestion.TYPE_NAME)) {
-					answer = new YesNoAnswer(YesNo.valueOf(result.getString("answer")));
+					answer = new YesNoAnswer(language, YesNo.valueOf(result.getString("answer")));
 				} else if (type.equals(SubQuestion.TYPE_NAME)) {
 					answer = questionNumSubQuestionAnswer.get(questionId);
 					if (answer == null) {
-						answer = new SubQuestionAnswers();
+						answer = new SubQuestionAnswers(language);
 						questionNumSubQuestionAnswer.put(questionId, (SubQuestionAnswers)answer);
 					}
 				} else {
@@ -329,7 +327,7 @@ public class SurveyResponseDao {
 				if (subQuestionOfId > 0) {
 					SubQuestionAnswers parentAnswer = questionNumSubQuestionAnswer.get(subQuestionOfId);
 					if (parentAnswer == null) {
-						parentAnswer = new SubQuestionAnswers();
+						parentAnswer = new SubQuestionAnswers(language);
 						questionNumSubQuestionAnswer.put(subQuestionOfId, parentAnswer);
 						String parentQuestionNumber = getQuestionNumber(subQuestionOfId);
 						responses.put(parentQuestionNumber, parentAnswer);
@@ -399,12 +397,12 @@ public class SurveyResponseDao {
 	 * @throws SurveyResponseException 
 	 * @throws QuestionTypeException 
 	 */
-	public synchronized void addSurveyResponse(SurveyResponse response) throws SQLException, SurveyResponseException, QuestionTypeException {
+	public synchronized void addSurveyResponse(SurveyResponse response, String language) throws SQLException, SurveyResponseException, QuestionTypeException {
 		Savepoint save = con.setSavepoint();
 		ResultSet result = null;
 		try {
 			long userId = getUserId(response.getResponder().getUsername());
-			long versionId = getVersionId(response.getSpecVersion());
+			long versionId = SurveyDbDao.getSpecId(con, response.getSpecVersion(), language, true);
 			addSurveyResponseQuery.setLong(1, userId);
 			addSurveyResponseQuery.setLong(2, versionId);
 			addSurveyResponseQuery.setBoolean(3, response.isSubmitted());
@@ -419,7 +417,7 @@ public class SurveyResponseDao {
 				throw new SQLException("No key generated for add survey response");
 			}
 			response.setId(String.valueOf(result.getLong(1)));
-			_updateSurveyResponseAnswers(response, userId, versionId);
+			_updateSurveyResponseAnswers(response, userId, versionId, language);
 			
 			// Fill in the ID for the survey response
 			
@@ -491,22 +489,6 @@ public class SurveyResponseDao {
 			}
 		}
 	}
-	private long getVersionId(String specVersion) throws SQLException, SurveyResponseException {
-		ResultSet result = null;
-		try {
-			getSpecVersionIdQuery.setString(1, specVersion);
-			result = getSpecVersionIdQuery.executeQuery();
-			if (!result.next()) {
-				logger.error("Invalid spec version "+specVersion);
-				throw(new SurveyResponseException("Can not add response - invalid specification version"));
-			}
-			return result.getLong(1);
-		} finally {
-			if (result != null) {
-				result.close();
-			}
-		}
-	}
 
 	private long getUserId(String username) throws SQLException, SurveyResponseException {
 		ResultSet result = null;
@@ -528,16 +510,17 @@ public class SurveyResponseDao {
 	/**
 	 * Update the answers for a survey for an existing survey response
 	 * @param response
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
 	 * @throws SQLException 
 	 * @throws SurveyResponseException 
 	 * @throws QuestionTypeException 
 	 */
-	public synchronized void updateSurveyResponseAnswers(SurveyResponse response) throws SQLException, SurveyResponseException, QuestionTypeException {
+	public synchronized void updateSurveyResponseAnswers(SurveyResponse response, String language) throws SQLException, SurveyResponseException, QuestionTypeException {
 		Savepoint save = con.setSavepoint();
 		try {
 			long userId = getUserId(response.getResponder().getUsername());
-			long versionId = getVersionId(response.getSpecVersion());
-			_updateSurveyResponseAnswers(response, userId, versionId);
+			long versionId = SurveyDbDao.getSpecId(con, response.getSpecVersion(), language, true);
+			_updateSurveyResponseAnswers(response, userId, versionId, language);
 		} catch(SQLException ex) {
 			logger.error("SQL exception updating survey response answers for "+response.getResponder().getUsername(),ex);
 			try {
@@ -553,11 +536,11 @@ public class SurveyResponseDao {
 		}
 	}
 	
-	private void _updateSurveyResponseAnswers(SurveyResponse response, long userId, long versionId) throws SQLException, QuestionTypeException, SurveyResponseException {
+	private void _updateSurveyResponseAnswers(SurveyResponse response, long userId, long versionId, String language) throws SQLException, QuestionTypeException, SurveyResponseException {
 		// First, verify the question numbers
 		Set<String> numbers = response.getSurvey().getQuestionNumbers();
 		try {
-			Map<String, Answer> storedAnswers = getAnswers(userId, response.getSpecVersion());
+			Map<String, Answer> storedAnswers = getAnswers(userId, response.getSpecVersion(), language);
 			this.addAnswerQuery.clearBatch();
 			this.updateAnswerQuery.clearBatch();
 			this.deleteAnswerQuery.clearBatch();
@@ -570,6 +553,7 @@ public class SurveyResponseDao {
 				if (!numbers.contains(entry.getKey())) {
 					logger.error("Attempting to update an answer for a question that does not exist.  Username="+
 									response.getResponder().getUsername()+", specVersion="+response.getSpecVersion() +
+									"language: " + language + ", " + 
 									"question number: "+entry.getKey());
 					
 					throw(new SurveyResponseException("Can not update answers.  Question "+entry.getKey()+" does not exist."));
@@ -815,7 +799,15 @@ public class SurveyResponseDao {
 		}
 	}
 
-	public List<SurveyResponse> getSurveyResponses(String username) throws SurveyResponseException, QuestionException, SQLException {
+	/**
+	 * @param username
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @return
+	 * @throws SurveyResponseException
+	 * @throws QuestionException
+	 * @throws SQLException
+	 */
+	public List<SurveyResponse> getSurveyResponses(String username, String language) throws SurveyResponseException, QuestionException, SQLException {
 		ResultSet result = null;
 		List<SurveyResponse> retval = new ArrayList<SurveyResponse>();
 		Map<String, Survey> surveys = new HashMap<String, Survey>();	// Cache of spec version to survey
@@ -823,7 +815,8 @@ public class SurveyResponseDao {
 			getResponsesForUserQuery.setString(1, username);
 			result = getResponsesForUserQuery.executeQuery();
 			while (result.next()) {
-				SurveyResponse response = new SurveyResponse();
+				String specVersion = result.getString("version");
+				SurveyResponse response = new SurveyResponse(specVersion, language);
 				User user = new User();
 				user.setAddress(result.getString("address"));
 				user.setAdmin(result.getBoolean("admin"));
@@ -843,16 +836,14 @@ public class SurveyResponseDao {
 				response.setSubmitted(result.getBoolean("submitted"));
 				response.setApproved(result.getBoolean("approved"));
 				response.setRejected(result.getBoolean("rejected"));
-				String specVersion = result.getString("version");
 				response.setId(String.valueOf(result.getLong("responseid")));
-				response.setSpecVersion(specVersion);
 				Survey survey = surveys.get(specVersion);
 				if (survey == null) {
-					survey = SurveyDbDao.getSurvey(con, specVersion);
+					survey = SurveyDbDao.getSurvey(con, specVersion, language);
 					surveys.put(specVersion, survey);
 				}
 				response.setSurvey(survey);
-				response.setResponses(getAnswers(userId, specVersion));
+				response.setResponses(getAnswers(userId, specVersion, language));
 				retval.add(response);
 			}
 			return retval;

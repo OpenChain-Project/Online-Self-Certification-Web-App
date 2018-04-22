@@ -27,8 +27,8 @@ import org.openchain.certification.model.YesNoQuestion.YesNo;
 public class YesNoAnswerWithEvidence extends YesNoAnswer {
 	private String evidence;
 
-	public YesNoAnswerWithEvidence(YesNo answer, String evidence) {
-		super(answer);
+	public YesNoAnswerWithEvidence(String language, YesNo answer, String evidence) {
+		super(language, answer);
 		this.evidence = evidence;
 	}
 

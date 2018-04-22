@@ -22,6 +22,26 @@ package org.openchain.certification.model;
  *
  */
 public abstract class Answer {
+	
+	protected String language;
+	
+	public Answer(String language) {
+		this.language = language;
+	}
+
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
+
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(String language) {
+		this.language = language;
+	}
 
 	@Override
 	public abstract boolean equals(Object o);

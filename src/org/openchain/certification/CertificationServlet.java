@@ -135,7 +135,7 @@ public class CertificationServlet extends HttpServlet {
 	            if (requestParam.equals(GET_SOFTWARE_VERSION_REQUEST)) {
 	            	gson.toJson(version, out);
 	            } else if (requestParam.equals(GET_CERTIFIED_REQUEST)) {
-	            	List<Submission> submissions = getSubmissions();
+	            	List<Submission> submissions = getSubmissions(user.getLanguage());
 	            	List<Submission> certifiedSubmissions = new ArrayList<Submission>();
 	            	for (Submission submission:submissions) {
 	            		if (submission.isApproved()) {
@@ -185,7 +185,7 @@ public class CertificationServlet extends HttpServlet {
 	            	Survey survey;
 	            	try {
 	            		SurveyDbDao dao = new SurveyDbDao(con);
-	            		survey = dao.getSurvey();
+	            		survey = dao.getSurvey(null, user.getLanguage());
 	            	} finally {
 	            		con.close();
 	            	}
@@ -198,7 +198,7 @@ public class CertificationServlet extends HttpServlet {
 	            	if (!user.isAdmin()) {
 	            		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 	            	} else {
-		            	List<Submission> submissions = getSubmissions();
+		            	List<Submission> submissions = getSubmissions(user.getLanguage());
 		            	gson.toJson(submissions, out);
 	            	}
 	            } else if (requestParam.equals(DOWNLOAD_ANSWERS)) {
@@ -212,7 +212,7 @@ public class CertificationServlet extends HttpServlet {
 		            	String specVersion = request.getParameter(PARAMETER_SPEC_VERSION);
 		                response.setContentType("text/csv");
 		                response.setHeader("Content-Disposition", "attachment;filename=\"openchain-survey-version-"+specVersion+".csv\"");
-		            	printSurvey(specVersion, out);
+		            	printSurvey(specVersion, user.getLanguage(), out);
 	            	}
 	            } else {
 	            	logger.error("Unknown get request: "+requestParam);
@@ -269,11 +269,11 @@ public class CertificationServlet extends HttpServlet {
 		}
 	}
 
-	private List<Submission> getSubmissions() throws SQLException, SurveyResponseException, QuestionException {
+	private List<Submission> getSubmissions(String language) throws SQLException, SurveyResponseException, QuestionException {
 		Connection con = SurveyDatabase.createConnection(getServletConfig());
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
-			List<SurveyResponse> allResponses = dao.getSurveyResponses();
+			List<SurveyResponse> allResponses = dao.getSurveyResponses(language);
 			List<Submission> retval = new ArrayList<Submission>();
 			for (SurveyResponse response:allResponses) {
 				retval.add(new Submission(response));
@@ -293,10 +293,10 @@ public class CertificationServlet extends HttpServlet {
 	 * @throws SurveyResponseException 
 	 * @throws IOException 
 	 */
-	private void printSurvey(String specVersion, PrintWriter out) throws SQLException, SurveyResponseException, QuestionException, IOException {
+	private void printSurvey(String specVersion, String language, PrintWriter out) throws SQLException, SurveyResponseException, QuestionException, IOException {
 		Connection con = SurveyDatabase.createConnection(getServletConfig());
 		try {
-			Survey survey = SurveyDbDao.getSurvey(con, specVersion);
+			Survey survey = SurveyDbDao.getSurvey(con, specVersion, language);
 			survey.printCsv(out);
 		} finally {
 			if (con != null) {
@@ -419,7 +419,7 @@ public class CertificationServlet extends HttpServlet {
         	} else if (rj.getRequest().equals(UPLOAD_SURVEY_REQUEST)) {
         		if (user.isAdmin()) {
         			try {
-    					uploadSurvey(rj.getSpecVersion(), rj.getSectionTexts(),
+    					uploadSurvey(rj.getSpecVersion(), user.getLanguage(), rj.getSectionTexts(),
     							rj.getCsvLines());
     				} catch (UpdateSurveyException e) {
     					logger.warn("Invalid survey question update",e);
@@ -446,7 +446,7 @@ public class CertificationServlet extends HttpServlet {
         	} else if (rj.getRequest().equals(UPDATE_SURVEY_REQUEST)) {
         		if (user.isAdmin()) {
         			try {
-    					updateSurveyQuestions(rj.getSpecVersion(), rj.getCsvLines());
+    					updateSurveyQuestions(rj.getSpecVersion(), user.getLanguage(), rj.getCsvLines());
     				} catch (UpdateSurveyException e) {
     					logger.warn("Invalid survey question update",e);
     					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -605,6 +605,7 @@ public class CertificationServlet extends HttpServlet {
 	/**
 	 * Upload a new version of a survey
 	 * @param specVersion
+	 * @param language
 	 * @param sectionText
 	 * @param csvLines
 	 * @throws UpdateSurveyException
@@ -613,15 +614,15 @@ public class CertificationServlet extends HttpServlet {
 	 * @throws SurveyResponseException 
 	 * @throws IOException 
 	 */
-	private void uploadSurvey(String specVersion,
+	private void uploadSurvey(String specVersion, String language,
 			SectionTextJson[] sectionTexts, String[] csvLines) throws UpdateSurveyException, SQLException, SurveyResponseException, QuestionException, IOException {
 		// Check if the version is aready in the database
 		cleanUpLines(csvLines);
-		Survey survey = new Survey(specVersion);
+		Survey survey = new Survey(specVersion, language);
 		Map<String, List<Question>> sectionQuestions = new HashMap<String, List<Question>>();
 		List<Section> sections = new ArrayList<Section>();
 		for (SectionTextJson sectionText:sectionTexts) {
-			Section section = new Section();
+			Section section = new Section(language);
 			if (sectionText.getName() == null || sectionText.getName().isEmpty()) {
 				throw(new UpdateSurveyException("No name specified for a section"));
 			}
@@ -645,7 +646,7 @@ public class CertificationServlet extends HttpServlet {
 				logger.warn("Skipping blank CSV line");
 				continue;
 			}
-			Question question = Question.fromCsv(csvParser.parseLine(csvLines[i]), specVersion);
+			Question question = Question.fromCsv(csvParser.parseLine(csvLines[i]), specVersion, language);
 			if (foundQuestionNumbers.contains(question.getNumber())) {
 				throw(new UpdateSurveyException("Duplicate questions in survey upload: "+question.getNumber()));
 			}
@@ -654,7 +655,7 @@ public class CertificationServlet extends HttpServlet {
 				SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionNumber());
 				if (parentQuestion == null) {
 					try {
-						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionNumber(), specVersion, 0);
+						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionNumber(), specVersion, language, 0);
 					} catch(QuestionException ex) {
 						throw new UpdateSurveyException("Invalid parent question number for question number "+question.getNumber());
 					}
@@ -682,7 +683,7 @@ public class CertificationServlet extends HttpServlet {
 		try {
 			con = SurveyDatabase.createConnection(getServletConfig());
 			SurveyDbDao dao = new SurveyDbDao(con);
-			if (dao.surveyExists(specVersion)) {
+			if (dao.surveyExists(specVersion, language, true)) {
 				throw(new UpdateSurveyException("Survey version "+specVersion+" already exists.  Can not add.  Use update to update the questions."));
 			}
 			dao.addSurvey(survey);
@@ -712,6 +713,7 @@ public class CertificationServlet extends HttpServlet {
 	 * Update questions for an existing survey.  Note that questions can not be deleted, 
 	 * only added and updated.  
 	 * @param specVersion
+	 * @param language
 	 * @param csvLines
 	 * @throws SQLException
 	 * @throws QuestionException
@@ -719,7 +721,7 @@ public class CertificationServlet extends HttpServlet {
 	 * @throws UpdateSurveyException
 	 * @throws IOException
 	 */
-	private void updateSurveyQuestions(String specVersion, String[] csvLines) throws SQLException, QuestionException, SurveyResponseException, UpdateSurveyException, IOException {
+	private void updateSurveyQuestions(String specVersion, String language, String[] csvLines) throws SQLException, QuestionException, SurveyResponseException, UpdateSurveyException, IOException {
 		cleanUpLines(csvLines);
 		logger.info("Updating survey questions for spec version "+specVersion);
 		Connection con = null;
@@ -728,7 +730,7 @@ public class CertificationServlet extends HttpServlet {
 		try {
 			con = SurveyDatabase.createConnection(getServletConfig());
 			SurveyDbDao dao = new SurveyDbDao(con);
-			Survey existing = dao.getSurvey(specVersion);
+			Survey existing = dao.getSurvey(specVersion, language);
 			if (existing == null) {
 				throw(new UpdateSurveyException("Survey version "+specVersion+" does not exist.  Can only update questions for an existing survey."));
 			}
@@ -743,7 +745,7 @@ public class CertificationServlet extends HttpServlet {
 					logger.warn("Skipping blank CSV line");
 					continue;
 				}
-				Question question = Question.fromCsv(csvParser.parseLine(csvLines[i]), specVersion);
+				Question question = Question.fromCsv(csvParser.parseLine(csvLines[i]), specVersion, language);
 				if (foundQuestionNumbers.contains(question.getNumber())) {
 					throw(new UpdateSurveyException("Duplicate questions in question update: "+question.getNumber()));
 				}
@@ -751,7 +753,7 @@ public class CertificationServlet extends HttpServlet {
 				if (question.getSubQuestionNumber() != null) {
 					SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionNumber());
 					if (parentQuestion == null) {
-						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionNumber(), specVersion, 0);
+						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionNumber(), specVersion, language, 0);
 						questionsWithSubs.put(question.getSubQuestionNumber(), parentQuestion);
 					}
 					parentQuestion.addSubQuestion(question);

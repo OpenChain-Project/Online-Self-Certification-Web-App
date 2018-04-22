@@ -46,6 +46,7 @@ public class SurveyResponse {
 	 */
 	Map<String, Answer> responses;
 	String specVersion;
+	String language;
 	Survey survey;
 	boolean submitted;
 
@@ -55,6 +56,14 @@ public class SurveyResponse {
 
 	private String id;
 	
+	/**
+	 * @param specVersion Version for the spec
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 */
+	public SurveyResponse(String specVersion, String language) {
+		this.specVersion = specVersion;
+		this.language = language;
+	}
 	/**
 	 * @return the responder
 	 */
@@ -201,4 +210,18 @@ public class SurveyResponse {
 	public String getId() {
 		return this.id;
 	}
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	
+	
 }

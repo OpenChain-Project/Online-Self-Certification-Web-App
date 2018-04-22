@@ -38,6 +38,7 @@ import org.openchain.certification.model.Section;
 import org.openchain.certification.model.SubQuestion;
 import org.openchain.certification.model.Survey;
 import org.openchain.certification.model.SurveyResponseException;
+import org.openchain.certification.model.User;
 import org.openchain.certification.model.YesNoNotApplicableQuestion;
 import org.openchain.certification.model.YesNoQuestion;
 import org.openchain.certification.model.YesNoQuestion.YesNo;
@@ -56,11 +57,7 @@ public class SurveyDbDao {
 	private PreparedStatement updateQuestionQuery;
 	private PreparedStatement addQuestionQuery;
 	private PreparedStatement getQuestionIdQuery;
-
 	private PreparedStatement insertSpecQuery;
-
-	private PreparedStatement getSpecIdQuery;
-
 	private PreparedStatement insertSectionQuery;
 	
 	public SurveyDbDao(Connection connection) throws SQLException {
@@ -68,22 +65,85 @@ public class SurveyDbDao {
 		this.connection.setAutoCommit(false);
 	}
 	
-	public Survey getSurvey() throws SQLException, QuestionException, SurveyResponseException {
-		return getSurvey(this.connection, null);
+	/**
+	 * @param specVersion
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @return
+	 * @throws SQLException
+	 * @throws QuestionException
+	 * @throws SurveyResponseException
+	 */
+	public synchronized Survey getSurvey(String specVersion, String language)  throws SQLException, QuestionException, SurveyResponseException {
+		return getSurvey(this.connection, specVersion, language);
 	}
 	
-	public synchronized Survey getSurvey(String specVersion)  throws SQLException, QuestionException, SurveyResponseException {
-		return getSurvey(this.connection, specVersion);
+	/**
+	 * @param con SQL Connection
+	 * @param specVersion Specification version for the survey
+	 * @param language Language.  If null, the default language will be used.
+	 * @param allowDefaultLanguage If true, use the default language if the specificed languages is not found.  If false, return a -1 if the language is not found
+	 * @return The ID for the specification based on the version and the language.  If the language is not available, the default language will be used.
+	 * @throws SQLException
+	 */
+	public static long getSpecId(Connection con, String specVersion, String language, boolean allowDefaultLanguage) throws SQLException {
+		ResultSet result = null;
+		try {
+			if (language == null) {
+				PreparedStatement getSpecIdQuery = con.prepareStatement("select id from spec where version=? and language is null");
+				getSpecIdQuery.setString(1, specVersion);
+				result = getSpecIdQuery.executeQuery();
+				if (result.next()) {
+					return result.getLong(1);
+				} else {
+					return -1;
+				}
+			} else {
+				PreparedStatement getSpecIdQuery = con.prepareStatement("select id from spec where version=? and language=?");
+				getSpecIdQuery.setString(1, specVersion);
+				getSpecIdQuery.setString(2, language);
+				result = getSpecIdQuery.executeQuery();
+				if (result.next()) {
+					return result.getLong(1);
+				} else {
+					if (!allowDefaultLanguage) {
+						return -1;
+					}
+					logger.warn("No spec exists for version "+specVersion+", language "+language+".  Using default language.");
+					getSpecIdQuery.setString(2, User.DEFAULT_LANGUAGE);
+					result = getSpecIdQuery.executeQuery();
+					if (result.next()) {
+						return result.getLong(1);
+					} else {
+						logger.warn("No spec exists for version "+specVersion+" default language.  Using null language.");
+						PreparedStatement getSpecIdQueryNull = con.prepareStatement("select id from spec where version=? and language is null");
+						getSpecIdQueryNull.setString(1, specVersion);
+						result = getSpecIdQueryNull.executeQuery();
+						if (result.next()) {
+							return result.getLong(1);
+						} else {
+							logger.warn("No spec exists for version "+specVersion);
+							return -1;
+						}
+					}
+				}
+			}
+		} finally {
+			if (result != null) {
+				result.close();
+			}
+		}
 	}
 
 	/**
+	 * @param con SQL connect
 	 * @param specVersion Version of the specification.  If null, will get the latest spec version available
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
 	 * @return Survey with questions (static information) for the latest version
 	 * @throws SQLException
 	 * @throws SurveyResponseException 
 	 * @throws QuestionException 
 	 */
-	public static Survey getSurvey(Connection con, String specVersion) throws SQLException, SurveyResponseException, QuestionException {
+	public static Survey getSurvey(Connection con, String specVersion, String language) throws SQLException, SurveyResponseException, QuestionException {
 		Survey retval = null;
 		Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet result = null;
@@ -97,13 +157,38 @@ public class SurveyDbDao {
 				specVersion = result.getString(1);
 				result.close();
 			}
-			retval = new Survey(specVersion);
-			result = stmt.executeQuery("select name, title, id from section where spec_version=(select id from spec where version='"+specVersion+"') order by name asc");
+			int specId = 0;
+			if (language == null) {
+				language = User.DEFAULT_LANGUAGE;
+			} else {
+				result = stmt.executeQuery("select id from spec where version='"+specVersion+"' and language='"+language+"'");
+				if (!result.next()) {
+					result.close();
+					logger.warn("Language "+language+" does not exist for spec version "+specVersion+".  Using default language.");
+					language = User.DEFAULT_LANGUAGE;
+					result = stmt.executeQuery("select id from spec where version='"+specVersion+"' and language='"+language+"'");
+					if (!result.next()) {
+						logger.warn("No default language for survey with spec version "+specVersion);
+						result = stmt.executeQuery("select id from spec where version='"+specVersion+"' and language is null");
+						if (!result.next()) {
+							logger.warn("Empty survey for version "+specVersion);
+						} else {
+							specId = result.getInt(1);
+						}
+					} else {
+						specId = result.getInt(1);
+					}
+				} else {
+					specId = result.getInt(1);
+				}
+			}
+			retval = new Survey(specVersion, language);
+			result = stmt.executeQuery("select name, title, id from section where spec_version="+specId+" order by name asc");
 			List<Section> sections = new ArrayList<Section>();
 			List<Long> sectionIds = new ArrayList<Long>();
 			while (result.next()) {
 				sectionIds.add(result.getLong("id"));
-				Section section = new Section();
+				Section section = new Section(language);
 				section.setName(result.getString("name"));
 				section.setTitle(result.getString("title"));
 				section.setQuestions(new ArrayList<Question>());
@@ -126,7 +211,7 @@ public class SurveyDbDao {
 					Question question;
 					if (type.equals(YesNoQuestion.TYPE_NAME)) {
 						question = new YesNoQuestion(result.getString("question"), section.getName(), 
-								result.getString("number"), specVersion, 
+								result.getString("number"), specVersion, language,
 								YesNo.valueOf(result.getString("correct_answer")));
 					} else if (type.equals(YesNoQuestionWithEvidence.TYPE_NAME)) {
 						Pattern evidenceValidation = null;
@@ -135,13 +220,13 @@ public class SurveyDbDao {
 							evidenceValidation = Pattern.compile(evidenceValString);
 						}
 						question = new YesNoQuestionWithEvidence(result.getString("question"), section.getName(), 
-								result.getString("number"), specVersion,
+								result.getString("number"), specVersion, language,
 								YesNo.valueOf(result.getString("correct_answer")), 
 								result.getString("evidence_prompt"), 
 								evidenceValidation);
 					} else if (type.equals(YesNoNotApplicableQuestion.TYPE_NAME)) {
 						question = new YesNoNotApplicableQuestion(result.getString("question"), section.getName(), 
-								result.getString("number"),  specVersion,
+								result.getString("number"),  specVersion, language,
 								YesNo.valueOf(result.getString("correct_answer")),
 										"Not required by IL");
 					} else if (type.equals(SubQuestion.TYPE_NAME)) {
@@ -155,7 +240,7 @@ public class SurveyDbDao {
 						question = foundSubQuestions.get(result.getString("number"));
 						if (question == null) {
 							question = new SubQuestion(result.getString("question"), section.getName(), 
-									result.getString("number"),  specVersion, minValidAnswers);
+									result.getString("number"),  specVersion, language, minValidAnswers);
 							foundSubQuestions.put(question.getNumber(), (SubQuestion)question);
 						} else {
 							question.setQuestion(result.getString("question"));
@@ -171,7 +256,7 @@ public class SurveyDbDao {
 						question.addSubQuestionOf(subQuestionNumber);
 						SubQuestion parent = foundSubQuestions.get(subQuestionNumber);
 						if (parent == null) {
-							parent = new SubQuestion("", section.getName(), subQuestionNumber, specVersion, 0);
+							parent = new SubQuestion("", section.getName(), subQuestionNumber, specVersion, language, 0);
 							foundSubQuestions.put(subQuestionNumber, parent);
 						}
 						parent.addSubQuestion(question);
@@ -234,7 +319,7 @@ public class SurveyDbDao {
 						"subquestion_of, spec_reference) = " +
 						"(?, ?, ?, ?, ?, ?, ?)" +
 						"where number=? and section_id=(select id from section where name=? and " +
-						"spec_version=(select id from spec where version=?))");
+						"spec_version=(select id from spec where version=? and language=?))");
 			}
 			updateQuestionQuery.clearBatch();
 			for (Question question:updatedQuestions) {
@@ -265,7 +350,8 @@ public class SurveyDbDao {
 					updateQuestionQuery.setString(5, null);
 				}
 				if (question.getSubQuestionNumber() != null && !question.getSubQuestionNumber().isEmpty()) {
-					long subQuestionId = getQuestionId(question.getSubQuestionNumber(), question.getSectionName(), question.getSpecVersion());
+					long subQuestionId = getQuestionId(question.getSubQuestionNumber(), question.getSectionName(), 
+							question.getSpecVersion(), question.getLanguage());
 					if (subQuestionId < 0) {
 						throw(new QuestionException("Invalid subquestion number "+question.getSubQuestionNumber()));
 					}
@@ -277,6 +363,7 @@ public class SurveyDbDao {
 				updateQuestionQuery.setString(8, question.getNumber());
 				updateQuestionQuery.setString(9, question.getSectionName());
 				updateQuestionQuery.setString(10, question.getSpecVersion());
+				updateQuestionQuery.setString(11, question.getLanguage());
 				updateQuestionQuery.addBatch();
 			}
 			int[] counts = updateQuestionQuery.executeBatch();
@@ -307,18 +394,19 @@ public class SurveyDbDao {
 	}
 
 	private synchronized long getQuestionId(String questionNumber, String sectionName,
-			String specVersion) throws SQLException {
+			String specVersion, String language) throws SQLException {
 		if (this.getQuestionIdQuery == null) {
 			this.getQuestionIdQuery = connection.prepareStatement("select question.id from "+
 					"question join section on question.section_id=section.id " +
 					"join spec on section.spec_version=spec.id where " +
-					"number=? and section.name=? and version=?");
+					"number=? and section.name=? and version=? and language=?");
 		}
 		ResultSet result = null;
 		try {
 			this.getQuestionIdQuery.setString(1, questionNumber);
 			this.getQuestionIdQuery.setString(2, sectionName);
 			this.getQuestionIdQuery.setString(3, specVersion);
+			this.getQuestionIdQuery.setString(4, language);
 			result = this.getQuestionIdQuery.executeQuery();
 			if (result.next()) {
 				return result.getLong(1);
@@ -369,18 +457,26 @@ public class SurveyDbDao {
 	}
 	
 	private void _addQuestions(List<Question> addedQuestions) throws SQLException, QuestionException {
+		if (addedQuestions == null) {
+			logger.error("Null questions passed to addQuestion");
+			throw(new QuestionException("Null exception passed to addQuestions"));
+		}
 		if (addQuestionQuery == null) {
 			addQuestionQuery = this.connection.prepareStatement(
 					"insert into question (number, question, type, correct_answer," +
 					"evidence_prompt, evidence_validation, " +
 					"subquestion_of, spec_reference, section_id) values " +
 					"(?, ?, ?, ?, ?, ?, ?, ?, (select id from section where name=? and " +
-					"spec_version=(select id from spec where version=?)))");
+					"spec_version=(select id from spec where version=? and language=?)))");
 		}
 		// Need to add the subquestions first
 		addQuestionQuery.clearBatch();
 		int numAdded = 0;
 		for (Question question:addedQuestions) {
+			if (question == null) {
+				logger.error("Null question passed to addQuestion");
+				throw(new QuestionException("Null question passed to addQuestions"));
+			}
 			if (question instanceof SubQuestion) {
 				numAdded++;
 				addQuestionQuery.setString(1, question.getNumber());
@@ -391,7 +487,8 @@ public class SurveyDbDao {
 				addQuestionQuery.setString(5, null);
 				addQuestionQuery.setString(6, null);
 				if (question.getSubQuestionNumber() != null && !question.getSubQuestionNumber().isEmpty()) {
-					long subQuestionId = getQuestionId(question.getSubQuestionNumber(), question.getSectionName(), question.getSpecVersion());
+					long subQuestionId = getQuestionId(question.getSubQuestionNumber(), question.getSectionName(), 
+							question.getSpecVersion(), question.getLanguage());
 					if (subQuestionId < 0) {
 						throw(new QuestionException("Invalud subquestion number "+question.getSubQuestionNumber()));
 					}
@@ -402,6 +499,7 @@ public class SurveyDbDao {
 				addQuestionQuery.setString(8, question.getSpecReference());
 				addQuestionQuery.setString(9, question.getSectionName());
 				addQuestionQuery.setString(10, question.getSpecVersion());
+				addQuestionQuery.setString(11, question.getLanguage());
 				addQuestionQuery.addBatch();
 			}
 		}
@@ -449,7 +547,8 @@ public class SurveyDbDao {
 					addQuestionQuery.setString(6, null);
 				}
 				if (question.getSubQuestionNumber() != null && !question.getSubQuestionNumber().isEmpty()) {
-					long subQuestionId = getQuestionId(question.getSubQuestionNumber(), question.getSectionName(), question.getSpecVersion());
+					long subQuestionId = getQuestionId(question.getSubQuestionNumber(), 
+							question.getSectionName(), question.getSpecVersion(), question.getLanguage());
 					if (subQuestionId < 0) {
 						throw(new QuestionException("Invalid subquestion number "+question.getSubQuestionNumber()));
 					}
@@ -460,6 +559,7 @@ public class SurveyDbDao {
 				addQuestionQuery.setString(8, question.getSpecReference());
 				addQuestionQuery.setString(9, question.getSectionName());
 				addQuestionQuery.setString(10, question.getSpecVersion());
+				addQuestionQuery.setString(11, question.getLanguage());
 				addQuestionQuery.addBatch();
 			}
 		}
@@ -482,13 +582,13 @@ public class SurveyDbDao {
 		if (survey.getSections() == null) {
 			throw(new SurveyResponseException("Sections missing for survey"));
 		}
-		if (this.getSpecId(survey.getSpecVersion())> 0) {
+		if (this.getSpecId(survey.getSpecVersion(), survey.getLanguage(), false)> 0) {
 			throw(new SurveyResponseException("Can not add survey.  Survey version "+survey.getSpecVersion()+" already exists."));
 		}
 		Savepoint save = this.connection.setSavepoint();
 		Statement stmt = null;
 		if (insertSpecQuery == null) {
-			insertSpecQuery = connection.prepareStatement("insert into spec (version) values (?)");
+			insertSpecQuery = connection.prepareStatement("insert into spec (version,language) values (?,?)");
 		}
 		if (insertSectionQuery == null) {
 			insertSectionQuery = connection.prepareStatement("insert into section (name, title, spec_version) "+
@@ -496,11 +596,20 @@ public class SurveyDbDao {
 		}
 		try {
 			stmt = this.connection.createStatement();
-			long specId = getSpecId(survey.getSpecVersion());
+			long specId = getSpecId(survey.getSpecVersion(), survey.getLanguage(), false);
 			if (specId < 0) {
 				insertSpecQuery.setString(1, survey.getSpecVersion());
-				insertSpecQuery.executeUpdate();
-				specId = getSpecId(survey.getSpecVersion());
+				if (survey.getLanguage() == null) {
+					insertSpecQuery.setNull(2, java.sql.Types.VARCHAR);
+				} else {
+					insertSpecQuery.setString(2, survey.getLanguage());
+				}
+				int t = insertSpecQuery.executeUpdate();
+				if (t != 1) {
+					logger.error("Unable to create new spec version for version "+survey.getSpecVersion());
+					throw(new SurveyResponseException("Unable to create new spec version for version "+survey.getSpecVersion()));
+				}
+				specId = getSpecId(survey.getSpecVersion(), survey.getLanguage(), false);
 				if (specId < 0) {
 					logger.error("Unable to create new spec version for version "+survey.getSpecVersion());
 					throw(new SurveyResponseException("Unable to create new spec version for version "+survey.getSpecVersion()));
@@ -569,32 +678,25 @@ public class SurveyDbDao {
 
 	/**
 	 * @param specVersion Version for the spec
-	 * @return ID from the spec table associated with the version
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param allowDefaultLanguage If true, use the default language if the specificed languages is not found.  If false, return a -1 if the language is not found
+	 * @return ID from the spec table associated with the version and language. If the language is not available, the ID for the default language will be returned.
 	 * @throws SQLException
 	 */
-	private long getSpecId(String specVersion) throws SQLException {
-		if (getSpecIdQuery == null) {
-			getSpecIdQuery = connection.prepareStatement("select id from spec where version=?");
-		}
-		getSpecIdQuery.setString(1, specVersion);
-		ResultSet result = null;
-		try {
-			result = getSpecIdQuery.executeQuery();
-			if (result.next()) {
-				return result.getLong(1);
-			} else {
-				return -1;
-			}
-		} finally {
-			if (result != null) {
-				result.close();
-			}
-		}
+	private long getSpecId(String specVersion, String language, boolean allowDefaultLanguage) throws SQLException {
+		return getSpecId(this.connection, specVersion, language, allowDefaultLanguage);
 	}
 
-	public boolean surveyExists(String specVersion) throws SQLException {
+	/**
+	 * @param specVersion Version for the spec
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param allowDefaultLanguage If true, use the default language if the specificed languages is not found.  If false, return a -1 if the language is not found
+	 * @return true if a survey exists for the version and language
+	 * @throws SQLException
+	 */
+	public boolean surveyExists(String specVersion, String language, boolean allowDefaultLanguage) throws SQLException {
 		try {
-			return getSpecId(specVersion) > 0;
+			return getSpecId(specVersion, language, allowDefaultLanguage) > 0;
 		} finally {
 			this.connection.commit();
 		}

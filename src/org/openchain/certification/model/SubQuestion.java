@@ -34,9 +34,18 @@ public class SubQuestion extends Question {
 	private int minNumberValidatedAnswers;
 	private Map<String, Question> subQuestions;
 	
+	/**
+	 * @param question Text for the question
+	 * @param sectionName Name of the section
+	 * @param number Question number
+	 * @param specVersion Version for the spec
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param minNumberValidatedAnswers Minimum number of valid answers
+	 * @throws QuestionException
+	 */
 	public SubQuestion(String question, String sectionName, String number,
-			String specVersion, int minNumberValidatedAnswers) throws QuestionException {
-		super(question, sectionName, number, specVersion);
+			String specVersion, String language, int minNumberValidatedAnswers) throws QuestionException {
+		super(question, sectionName, number, specVersion, language);
 		this.minNumberValidatedAnswers = minNumberValidatedAnswers;
 		this.subQuestions = new HashMap<String,Question>();
 		this.type = TYPE_NAME;

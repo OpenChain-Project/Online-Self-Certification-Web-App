@@ -30,6 +30,13 @@ import java.util.TreeSet;
 public class SubQuestionAnswers extends Answer {
 	
 	/**
+	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 */
+	public SubQuestionAnswers(String language) {
+		super(language);
+	}
+	
+	/**
 	 * Map of the question number to an answer
 	 */
 	private Map<String, Answer> subAnswers = new HashMap<String, Answer>();
