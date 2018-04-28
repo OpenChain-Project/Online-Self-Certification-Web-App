@@ -537,6 +537,14 @@ public class SurveyResponseDao {
 	}
 	
 	private void _updateSurveyResponseAnswers(SurveyResponse response, long userId, long versionId, String language) throws SQLException, QuestionTypeException, SurveyResponseException {
+		if (response == null) {
+			logger.warn("Null survey response passed to update server response answers");
+			return;
+		}
+		if (response.getSurvey() == null) {
+			logger.warn("No survey in survey response");
+			return;
+		}
 		// First, verify the question numbers
 		Set<String> numbers = response.getSurvey().getQuestionNumbers();
 		try {

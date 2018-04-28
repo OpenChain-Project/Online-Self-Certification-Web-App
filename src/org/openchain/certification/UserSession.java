@@ -179,7 +179,7 @@ public class UserSession {
 		}
 	}
 	
-	public void logout() {
+	public synchronized void logout() {
 		this.loggedIn = false;
 		this.username = null;
 		this.password = null;
@@ -195,7 +195,7 @@ public class UserSession {
 	/**
 	 * @return true if the password is valid, but the user has not been registered
 	 */
-	public boolean isValidPasswordAndNotVerified() {
+	public synchronized boolean isValidPasswordAndNotVerified() {
 		if (this.loggedIn) {
 			return false;
 		}
@@ -236,7 +236,7 @@ public class UserSession {
 	 * Log the user in and populate the user data
 	 * @return true if the login was successful
 	 */
-	public boolean login() {
+	public synchronized boolean login() {
 		this.loggedIn = false;
 		User user = null;
 		try {
@@ -282,7 +282,7 @@ public class UserSession {
 		this.emailPermission = user.hasEmailPermission();
 		return true;
 	}
-	public String getLastError() {
+	public synchronized String getLastError() {
 		return this.lastError;
 	}
 	/**
@@ -347,14 +347,14 @@ public class UserSession {
 			return false;
 		}
 	}
-	public String getUsername() {
+	public synchronized String getUsername() {
 		return this.username;
 	}
 	
-	public boolean isLoggedIn() {
+	public synchronized boolean isLoggedIn() {
 		return this.loggedIn;
 	}
-	public SurveyResponse getSurveyResponse() throws SQLException, QuestionException, SurveyResponseException {
+	public synchronized SurveyResponse getSurveyResponse() throws SQLException, QuestionException, SurveyResponseException {
 		checkLoggedIn();
 		if (this.surveyResponses == null) {
 			_getSurveyResponses();
@@ -368,7 +368,7 @@ public class UserSession {
 	 * @throws QuestionException 
 	 * @throws SQLException 
 	 */
-	public List<String> getSurveyResponseSpecVersions() throws SQLException, QuestionException, SurveyResponseException {
+	public synchronized List<String> getSurveyResponseSpecVersions() throws SQLException, QuestionException, SurveyResponseException {
 		checkLoggedIn();
 		List<String> retval = new ArrayList<String>();
 		if (surveyResponses == null) {
@@ -481,7 +481,7 @@ public class UserSession {
 	 * @throws QuestionException
 	 * @throws SurveyResponseException
 	 */
-	public void setCurrentSurveyResponse(String specVersion, boolean create) throws SQLException, QuestionException, SurveyResponseException {
+	public synchronized void setCurrentSurveyResponse(String specVersion, boolean create) throws SQLException, QuestionException, SurveyResponseException {
 		checkLoggedIn();
 		if (surveyResponses == null) {
 			_getSurveyResponses();
@@ -547,7 +547,7 @@ public class UserSession {
 	 * @throws QuestionException
 	 * @throws SurveyResponseException
 	 */
-	public void updateAnswers(List<ResponseAnswer> responses) throws SQLException, QuestionException, SurveyResponseException {
+	public synchronized void updateAnswers(List<ResponseAnswer> responses) throws SQLException, QuestionException, SurveyResponseException {
 		checkLoggedIn();
 		if (this.surveyResponses == null) {
 			_getSurveyResponses();
@@ -618,7 +618,7 @@ public class UserSession {
 	 * @throws SurveyResponseException 
 	 * @throws EmailUtilException 
 	 */
-	public boolean finalSubmission() throws SQLException, SurveyResponseException, QuestionException, EmailUtilException {
+	public synchronized boolean finalSubmission() throws SQLException, SurveyResponseException, QuestionException, EmailUtilException {
 		checkLoggedIn();
 		Connection con = SurveyDatabase.createConnection(config);
 		if (this.surveyResponses == null) {
@@ -664,7 +664,7 @@ public class UserSession {
 	 * @param responseServletUrl
 	 * @return
 	 */
-	public boolean resendVerification(String username, String password, String responseServletUrl) {
+	public synchronized boolean resendVerification(String username, String password, String responseServletUrl) {
 		this.username = username;
 		if (this.loggedIn) {
 			return false;
@@ -739,7 +739,7 @@ public class UserSession {
 	 * @throws SurveyResponseException 
 	 * @throws QuestionException 
 	 */
-	public void resetAnswers(String specVersion) throws SurveyResponseException, QuestionException {
+	public synchronized void resetAnswers(String specVersion) throws SurveyResponseException, QuestionException {
 		checkLoggedIn();
 		Connection con;
 		try {
@@ -774,38 +774,38 @@ public class UserSession {
 	/**
 	 * @return the address
 	 */
-	public String getAddress() {
+	public synchronized String getAddress() {
 		return address;
 	}
 	/**
 	 * @return the email
 	 */
-	public String getEmail() {
+	public synchronized String getEmail() {
 		return email;
 	}
 	/**
 	 * @return the name
 	 */
-	public String getName() {
+	public synchronized String getName() {
 		return name;
 	}
 	/**
 	 * @return the organization
 	 */
-	public String getOrganization() {
+	public synchronized String getOrganization() {
 		return organization;
 	}
 	
 	/**
 	 * @return the namePermission
 	 */
-	public boolean hasNamePermission() {
+	public synchronized boolean hasNamePermission() {
 		return namePermission;
 	}
 	/**
 	 * @return the emailPermission
 	 */
-	public boolean hasEmailPermission() {
+	public synchronized boolean hasEmailPermission() {
 		return emailPermission;
 	}
 	/**
@@ -829,7 +829,7 @@ public class UserSession {
 	 * @throws InvalidKeySpecException 
 	 * @throws EmailUtilException 
 	 */
-	public void updateUser(String newName, String newEmail, String newOrganization, 
+	public synchronized void updateUser(String newName, String newEmail, String newOrganization, 
 			String newAddress, String newPassword, boolean newNamePermission,
 			boolean newEmailPermission) throws InvalidUserException, SQLException, NoSuchAlgorithmException, InvalidKeySpecException, EmailUtilException {
 		if (!loggedIn) {
@@ -915,7 +915,7 @@ public class UserSession {
 	 * @throws NoSuchAlgorithmException 
 	 * @throws InvalidKeySpecException 
 	 */
-	public boolean verifyPasswordReset(String uuid) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException {
+	public synchronized boolean verifyPasswordReset(String uuid) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException {
 		User user = null;
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
@@ -949,10 +949,10 @@ public class UserSession {
 			throw e;
 		} 
 	}
-	public boolean isPasswordReset() {
+	public synchronized boolean isPasswordReset() {
 		return this.passwordReset;
 	}
-	public boolean setPassword(String username, String password) {
+	public synchronized boolean setPassword(String username, String password) {
 		if (!Objects.equals(username, this.username)) {
 			this.lastError = "Username for password reset does not match the username in the email reset.";
 			return false;
@@ -995,7 +995,7 @@ public class UserSession {
 	 * @throws SQLException 
 	 * @throws EmailUtilException 
 	 */
-	public void unsubmit() throws SQLException, QuestionException, SurveyResponseException, EmailUtilException {
+	public synchronized void unsubmit() throws SQLException, QuestionException, SurveyResponseException, EmailUtilException {
 		checkLoggedIn();
 		Connection con = SurveyDatabase.createConnection(config);
 		if (this.surveyResponses == null) {

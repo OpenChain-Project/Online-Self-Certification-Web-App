@@ -70,7 +70,7 @@ public class CertificationServlet extends HttpServlet {
 	/**
 	 * Version of this software - should be updated before every release
 	 */
-	static final String version = "1.1.7";
+	static final String version = "1.1.8";
 	
 	static final Logger logger = Logger.getLogger(CertificationServlet.class);
 	
