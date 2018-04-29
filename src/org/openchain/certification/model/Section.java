@@ -60,6 +60,9 @@ public class Section implements Comparable<Section> {
 	 */
 	public void setLanguage(String language) {
 		this.language = language;
+		for (Question question:questions) {
+			question.setLanguage(language);
+		}
 	}
 
 	/**
@@ -111,5 +114,17 @@ public class Section implements Comparable<Section> {
 			return 1;
 		}
 		return this.getName().compareToIgnoreCase(o.getName());
+	}
+	
+	public Section clone() {
+		Section retval = new Section(name, title, language);
+		if (questions != null) {
+			List<Question> clonedQuestions = new ArrayList<Question>();
+			for (Question question:questions) {
+				clonedQuestions.add(question.clone());
+			}
+			retval.setQuestions(clonedQuestions);
+		}
+		return retval;
 	}
 }

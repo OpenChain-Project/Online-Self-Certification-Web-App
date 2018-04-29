@@ -234,6 +234,7 @@ function signout() {
 }
 
 function updateUserProfile() {
+	//TODO add preferred language
 	username = $("#update-username");
 	var password = $("#update-password");
 	var passwordVerify = $("#update-passwordverify");
@@ -273,6 +274,7 @@ function updateUserProfile() {
 }
 
 function updateUser(username, password, name, address, organization, email, okUseNameEmail) {
+	//TODO Add preferred language
 	$.ajax({
 	    url: "CertificationServlet",
 	    data:JSON.stringify({
@@ -315,6 +317,7 @@ function signupUser() {
 	var checkApproveEmailLbl = $("label[for='approval-use-name-email']");
 	var checkApproveTerms = $("#read-terms");
 	var checkApproveTermsLbl = $("label[for='read-terms']");
+	//TODO Add preferred language
 	tips = $(".validateTips");
 	tips.text('');
 	var valid = true;
@@ -347,6 +350,7 @@ function signupUser() {
 }
 
 function signup(username, password, name, address, organization, email, approveUseNameEmail) {
+	//TODO Add preferred language
 	$.ajax({
 	    url: "CertificationServlet",
 	    data:JSON.stringify({

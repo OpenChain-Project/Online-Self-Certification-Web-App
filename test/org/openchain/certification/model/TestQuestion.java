@@ -43,6 +43,15 @@ public class TestQuestion {
 		protected Object getCorrectAnswer() {
 			return null;
 		}
+
+		@Override
+		public Question clone() {
+			try {
+				return new QuestionForTest(getQuestion(), getSectionName(), getNumber(), getSpecVersion(), getLanguage());
+			} catch (QuestionException e) {
+				throw new RuntimeException(e);
+			}
+		}
 		
 	}
 

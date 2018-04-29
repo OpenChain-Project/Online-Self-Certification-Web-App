@@ -19,6 +19,7 @@ package org.openchain.certification.model;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
 import java.util.HashSet;
@@ -57,6 +58,11 @@ public class Survey {
 	 */
 	public void setLanguage(String language) {
 		this.language = language;
+		if (sections != null) {
+			for (Section section:sections) {
+				section.setLanguage(language);
+			}
+		}
 	}
 	/**
 	 * @return the sections
@@ -89,10 +95,12 @@ public class Survey {
 	 */
 	public Set<String> getQuestionNumbers() {
 		HashSet<String> retval = new HashSet<String>();
-		for (Section section:sections) {
-			List<Question> questions = section.getQuestions();
-			for (Question question:questions) {
-				retval.add(question.getNumber());
+		if (sections != null) {
+			for (Section section:sections) {
+				List<Question> questions = section.getQuestions();
+				for (Question question:questions) {
+					retval.add(question.getNumber());
+				}
 			}
 		}
 		return retval;
@@ -100,6 +108,9 @@ public class Survey {
 
 	public Question getQuestion(String questionNumber) {
 		// TODO this is not the fastest, but it is accurate
+		if (sections == null) {
+			return null;
+		}
 		for (Section section:sections) {
 			List<Question> questions = section.getQuestions();
 			for (Question question:questions) {
@@ -131,4 +142,18 @@ public class Survey {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	public Survey clone() {
+		Survey retval = new Survey(this.specVersion, this.language);
+		if (sections != null) {
+			List<Section> clonedSections = new ArrayList<Section>();
+			for (Section section:sections) {
+				clonedSections.add(section.clone());
+			}
+			retval.setSections(clonedSections);
+		}
+		return retval;
+	}	
 }

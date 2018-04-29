@@ -379,7 +379,7 @@ public class CertificationServlet extends HttpServlet {
         		UserSession newUser = new UserSession(rj.getUsername(), rj.getPassword(), getServletConfig());
         		String verificationUrl = request.getRequestURL().toString();
         		if (!newUser.signUp(rj.getName(), rj.getAddress(), rj.getOrganization(), 
-        				rj.getEmail(), verificationUrl, rj.getNamePermission(), rj.getEmailPermission())) {
+        				rj.getEmail(), verificationUrl, rj.getNamePermission(), rj.getEmailPermission(), rj.getLanguage())) {
         			postResponse.setStatus(Status.ERROR);
         			postResponse.setError("Error signing up: "+newUser.getLastError());
         		}
@@ -397,7 +397,7 @@ public class CertificationServlet extends HttpServlet {
         		}
         	} else if (rj.getRequest().equals(UPDATE_PROFILE_REQUEST)) {
         		user.updateUser(rj.getName(), rj.getEmail(), rj.getOrganization(), 
-        				rj.getAddress(), rj.getPassword(), rj.getNamePermission(), rj.getEmailPermission());
+        				rj.getAddress(), rj.getPassword(), rj.getNamePermission(), rj.getEmailPermission(), rj.getLanguage());
         	} else if (rj.getRequest().equals(UPDATE_ANSWERS_REQUEST)) {
         		if (rj.getAnswers() != null && rj.getAnswers().size() > 0) {
             		user.updateAnswers(rj.getAnswers());

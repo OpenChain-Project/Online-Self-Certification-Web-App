@@ -40,6 +40,7 @@ public class RequestJson {
 	private boolean namePermission;
 	private boolean emailPermission;
 	private boolean create;
+	private String language;
 	
 	/**
 	 * @return the create
@@ -217,4 +218,17 @@ public class RequestJson {
 	public void setEmailPermission(boolean emailPermission) {
 		this.emailPermission = emailPermission;
 	}
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	
 }

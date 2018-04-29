@@ -89,4 +89,15 @@ public class YesNoQuestionWithEvidence extends YesNoQuestion {
 			return this.evidenceValidation.matcher(evidence).matches();
 		}
 	}
+	
+	@Override
+	public YesNoQuestionWithEvidence clone() {
+		try {
+			return new YesNoQuestionWithEvidence(getQuestion(), getSectionName(), getNumber(), 
+					getSpecVersion(), getLanguage(), getCorrectAnswer(), getEvidencePrompt(),
+					getEvidenceValidation());
+		} catch (QuestionException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

@@ -103,4 +103,13 @@ public class SubQuestion extends Question {
 	public Collection<Question> getAllSubquestions() {
 		return this.subQuestions.values();
 	}
+	
+	public SubQuestion clone() {
+		try {
+			return new SubQuestion(question, sectionName, getNumber(),
+					specVersion, getLanguage(), minNumberValidatedAnswers);
+		} catch (QuestionException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

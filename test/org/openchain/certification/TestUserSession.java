@@ -94,6 +94,10 @@ public class TestUserSession {
 	Section section12;
 	Survey survey2;
 	
+	String language2 = "fra";
+	Survey survey1lang2;
+	Survey survey2lang2;
+	
 	SurveyDbDao surveyDao;
 	User user;
 
@@ -159,6 +163,14 @@ public class TestUserSession {
 		survey2.setSections(sections2);
 		surveyDao.addSurvey(survey2);
 		
+		survey1lang2 = survey.clone();
+		survey1lang2.setLanguage(language2);
+		surveyDao.addSurvey(survey1lang2);
+		
+		survey2lang2 = survey2.clone();
+		survey2lang2.setLanguage(language2);
+		surveyDao.addSurvey(survey2lang2);
+		
 		user = new User();
 		user.setAddress("Address");
 		user.setAdmin(false);
@@ -173,6 +185,7 @@ public class TestUserSession {
 		user.setVerified(true);
 		user.setNamePermission(false);
 		user.setEmailPermission(true);
+		user.setLanguage(language);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);	
 	}
 
@@ -288,7 +301,7 @@ public class TestUserSession {
 	}
 	
 	@Test
-	public void testUpdateUser() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidUserException, SQLException, EmailUtilException {
+	public void testUpdateUser() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidUserException, QuestionException, SurveyResponseException, SQLException, EmailUtilException {
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
 		assertTrue(userSession.login());
@@ -300,16 +313,18 @@ public class TestUserSession {
 		assertEquals(user.isAdmin(), userSession.isAdmin());
 		assertEquals(user.hasEmailPermission(), userSession.hasEmailPermission());
 		assertEquals(user.hasNamePermission(), userSession.hasNamePermission());
+		assertEquals(user.getLanguage(), userSession.getLanguage());
 		
 		String newName = "new Name";
 		String newEmail = "newemail@email.com";
 		String newOrganization = "new Organization";
 		String newAddress = "new Address";
 		String newPassword = "newPassword!";
+		String newLanguage = "abc";
 		boolean newNamePermission = !user.hasNamePermission();
 		boolean newEmailPermission = !user.hasEmailPermission();
 		userSession.updateUser(newName, newEmail, newOrganization, newAddress, 
-				newPassword, newNamePermission, newEmailPermission);
+				newPassword, newNamePermission, newEmailPermission, newLanguage);
 		assertEquals(newAddress, userSession.getAddress());
 		assertEquals(newEmail, userSession.getEmail());
 		assertEquals(newName, userSession.getName());
@@ -317,7 +332,7 @@ public class TestUserSession {
 		assertEquals(user.isAdmin(), userSession.isAdmin());
 		assertEquals(newEmailPermission, userSession.hasEmailPermission());
 		assertEquals(newNamePermission, userSession.hasNamePermission());
-		
+		assertEquals(newLanguage, userSession.getLanguage());
 		UserSession newUserSession = new UserSession(
 				user.getUsername(), newPassword, TestHelper.getTestServletConfig());
 		newUserSession.login();
@@ -328,6 +343,7 @@ public class TestUserSession {
 		assertEquals(user.isAdmin(), newUserSession.isAdmin());
 		assertEquals(newEmailPermission, newUserSession.hasEmailPermission());
 		assertEquals(newNamePermission, newUserSession.hasNamePermission());
+		assertEquals(newLanguage, newUserSession.getLanguage());
 	}
 
 	@Test
@@ -464,6 +480,41 @@ public class TestUserSession {
 		assertEquals(specVersion, result.getSpecVersion());
 		assertEquals(1,result.getResponses().size());
 		assertEquals(s1q1answer, result.getResponses().get(s1q1Number));
+
+		userSession.logout();
+	}
+	
+	@Test
+	public void testSetLanguage() throws SQLException, SurveyResponseException, QuestionException {
+		SurveyResponse response = new SurveyResponse(specVersion, language);
+		response.setResponder(user);
+		Map<String, Answer> responses = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer = new YesNoAnswer(language, YesNo.No);
+		responses.put(s1q1Number, s1q1answer);
+		response.setResponses(responses);
+		response.setSubmitted(false);
+		response.setSurvey(survey);
+		SurveyResponseDao dao = new SurveyResponseDao(con);
+		dao.addSurveyResponse(response, language);
+		
+		UserSession userSession = new UserSession(
+				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
+		assertTrue(userSession.login());
+		assertTrue(userSession.isLoggedIn());
+		userSession.setCurrentSurveyResponse(primarySpecVersion2, true);
+		List<SurveyResponse> result = userSession.getAllResponses();
+		assertEquals(2, result.size());
+		for (SurveyResponse res:result) {
+			assertEquals(language, res.getLanguage());
+		}
+		assertEquals(language, userSession.getLanguage());
+		
+		userSession.setLanguage(language2);
+		result = userSession.getAllResponses();
+		assertEquals(2, result.size());
+		for (SurveyResponse res:result) {
+			assertEquals(language2, res.getLanguage());
+		}
 
 		userSession.logout();
 	}

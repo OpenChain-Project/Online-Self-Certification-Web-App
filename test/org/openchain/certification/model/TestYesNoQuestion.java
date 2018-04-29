@@ -148,5 +148,24 @@ public class TestYesNoQuestion {
 		ynq.setLanguage(language2);
 		assertEquals(language2, ynq.getLanguage());
 	}
+	
+	@Test
+	public void testClone() throws QuestionException {
+		String question = "This is my question";
+		String sectionName = "G1";
+		String specVersion = "1.0";
+		String number = "12";
+		YesNo answer = YesNo.Yes;
+		String language = "ang";
+		YesNoQuestion ynq = new YesNoQuestion(question, sectionName, 
+				number, specVersion, language, answer);
+		YesNoQuestion clone = ynq.clone();
+		assertEquals(question, clone.getQuestion());
+		assertEquals(sectionName, clone.getSectionName());
+		assertEquals(specVersion, clone.getSpecVersion());
+		assertEquals(number, clone.getNumber());
+		assertEquals(answer, clone.getCorrectAnswer());
+		assertEquals(language, clone.getLanguage());
+	}
 
 }

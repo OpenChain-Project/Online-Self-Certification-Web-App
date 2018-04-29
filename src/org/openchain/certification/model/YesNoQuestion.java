@@ -80,4 +80,13 @@ public class YesNoQuestion extends Question {
 		}
 		return this.correctAnswer.equals(ynAnswer);
 	}
+	
+	public YesNoQuestion clone() {
+		try {
+			return new YesNoQuestion(this.getQuestion(), this.getSectionName(), this.getNumber(), 
+					this.getSpecVersion(), this.getLanguage(), this.getCorrectAnswer());
+		} catch (QuestionException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

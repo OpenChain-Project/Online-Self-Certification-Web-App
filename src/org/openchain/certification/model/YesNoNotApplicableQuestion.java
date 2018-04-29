@@ -59,5 +59,15 @@ public class YesNoNotApplicableQuestion extends YesNoQuestion {
 	public void setNotApplicablePrompt(String notApplicablePrompt) {
 		this.notApplicablePrompt = notApplicablePrompt;
 	}
+	
+	@Override
+	public YesNoNotApplicableQuestion clone() {
+		try {
+			return new YesNoNotApplicableQuestion(getQuestion(), getSectionName(), getNumber(), 
+						getSpecVersion(), getLanguage(), getCorrectAnswer(), getNotApplicablePrompt());
+		} catch (QuestionException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 }

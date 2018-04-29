@@ -118,6 +118,7 @@ public class UserSession {
 		this.organization = null;
 		this.namePermission = false;
 		this.emailPermission = false;
+		this.language = User.DEFAULT_LANGUAGE;
 	}
 	
 	static final int HOURS_FOR_VERIFICATION_EMAIL_EXPIRATION = 24;
@@ -280,6 +281,10 @@ public class UserSession {
 		this.organization = user.getOrganization();
 		this.namePermission = user.hasNamePermission();
 		this.emailPermission = user.hasEmailPermission();
+		this.language = user.getLanguage();
+		if (this.language == null) {
+			this.language = User.DEFAULT_LANGUAGE;
+		}
 		return true;
 	}
 	public synchronized String getLastError() {
@@ -294,11 +299,12 @@ public class UserSession {
 	 * @param responseServletUrl The URL of the servlet to handle the email validation link
 	 * @param namePermission If true, user has given permission to publish their name on the website
 	 * @param emailPermission If true, user has given permission to publish their email address on the website
+	 * @param preferredLanguage Default language to user for the user
 	 * @return
 	 */
 	public boolean signUp(String name, String address, String organization,
 			String email, String responseServletUrl, boolean namePermission,
-			boolean emailPermission) {
+			boolean emailPermission, String preferredLanguage) {
 		User user = null;
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
@@ -319,6 +325,7 @@ public class UserSession {
 			user.setNamePermission(namePermission);
 			user.setEmailPermission(emailPermission);
 			user.setVerificationExpirationDate(generateVerificationExpirationDate());
+			user.setLanguage(preferredLanguage);
 			UUID uuid = UUID.randomUUID();
 			String hashedUuid = PasswordUtil.getToken(uuid.toString());
 			user.setUuid(hashedUuid);
@@ -823,15 +830,18 @@ public class UserSession {
 	 * @param newPassword
 	 * @param newNamePermission
 	 * @param newEmailPermission
+	 * @param preferredLanguage
 	 * @throws InvalidUserException 
 	 * @throws SQLException 
 	 * @throws NoSuchAlgorithmException 
 	 * @throws InvalidKeySpecException 
 	 * @throws EmailUtilException 
+	 * @throws SurveyResponseException 
+	 * @throws QuestionException 
 	 */
 	public synchronized void updateUser(String newName, String newEmail, String newOrganization, 
 			String newAddress, String newPassword, boolean newNamePermission,
-			boolean newEmailPermission) throws InvalidUserException, SQLException, NoSuchAlgorithmException, InvalidKeySpecException, EmailUtilException {
+			boolean newEmailPermission, String preferredLanguage) throws InvalidUserException, SQLException, NoSuchAlgorithmException, InvalidKeySpecException, EmailUtilException, QuestionException, SurveyResponseException {
 		if (!loggedIn) {
 			this.lastError = "Can not update a user which is not logged in.";
 			throw new InvalidUserException(this.lastError);
@@ -877,6 +887,11 @@ public class UserSession {
 				if (user.hasNamePermission() != newNamePermission) {
 					this.namePermission = newNamePermission;
 					user.setNamePermission(newNamePermission);
+					needUpdate = true;
+				}
+				if (user.getLanguage() != preferredLanguage) {
+					this.setLanguage(preferredLanguage);	// Can not set directly since we need to refresh the survey responses
+					user.setLanguage(preferredLanguage);
 					needUpdate = true;
 				}
 				if (needUpdate) {
@@ -1024,14 +1039,40 @@ public class UserSession {
 	/**
 	 * @return the language
 	 */
-	public String getLanguage() {
+	public synchronized String getLanguage() {
 		return language;
 	}
 	/**
 	 * @param language the language to set
+	 * @throws SurveyResponseException 
+	 * @throws QuestionException 
+	 * @throws SQLException 
 	 */
-	public void setLanguage(String language) {
-		// TODO referesh everything that depends on the language
+	public synchronized void setLanguage(String language) throws SurveyResponseException, SQLException, QuestionException {
+		if (this.language == language) {
+			return;
+		}
+		checkLoggedIn();
 		this.language = language;
+		if (this.surveyResponses != null) {
+			// Change the language for all the surveys in the survey response
+			Connection con = SurveyDatabase.createConnection(config);
+			try {
+				SurveyDbDao dao = new SurveyDbDao(con);
+				for (SurveyResponse response:this.surveyResponses) {
+					response.setSurvey(dao.getSurvey(response.getSurvey().getSpecVersion(), language));
+					response.setLanguage(response.getSurvey().getLanguage());
+				}
+			} finally {
+				con.close();
+			}
+		}
+	}
+	
+	/**
+	 * @return all survey responses available to the user
+	 */
+	public synchronized List<SurveyResponse> getAllResponses() {
+		return this.surveyResponses;
 	}
 }

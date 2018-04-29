@@ -440,4 +440,6 @@ public abstract class Question implements Comparable<Question> {
 		}
 		return retval;
 	}
+	
+	public abstract Question clone();
 }

@@ -97,17 +97,18 @@ public class UserDb {
 	private void prepareStatements() throws SQLException {
 		getUserQuery = connection.prepareStatement("select password_token, name, address, email," +
 				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization, name_permission, email_permission from openchain_user where username=?");
+				" uuid, organization, name_permission, email_permission, language from openchain_user where username=?");
 		getAllUserQuery = connection.prepareStatement("select username, password_token, name, address, email," +
 				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization, name_permission, email_permission from openchain_user order by username asc");
+				" uuid, organization, name_permission, email_permission, language from openchain_user order by username asc");
 		addUserQuery = connection.prepareStatement("insert into openchain_user (username, password_token, name, address, email," +
 				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization, name_permission, email_permission) values (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+				" uuid, organization, name_permission, email_permission, language) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 		updateVerifiedQuery = connection.prepareStatement("update openchain_user set verified=? where username=?");
 		updateUserQuery = connection.prepareStatement("update openchain_user set password_token=?, " +
 				"name=?, address=?, verified=?, passwordReset=?, admin=?, " +
-				"verificationExpirationDate=?, uuid=?, organization=?, email=?, name_permission=?, email_permission=? where username=?");
+				"verificationExpirationDate=?, uuid=?, organization=?, email=?, name_permission=?, email_permission=?," +
+				"language=? where username=?");
 		getUserIdQuery = connection.prepareStatement("select id from openchain_user where username=?");
 	}
 
@@ -139,6 +140,7 @@ public class UserDb {
 			retval.setOrganization(result.getString("organization"));
 			retval.setNamePermission(result.getBoolean("name_permission"));
 			retval.setEmailPermission(result.getBoolean("email_permission"));
+			retval.setLanguage(result.getString("language"));
 			return retval;
 		} finally {
 			if (result != null) {
@@ -172,6 +174,7 @@ public class UserDb {
 				user.setOrganization(result.getString("organization"));
 				user.setNamePermission(result.getBoolean("name_permission"));
 				user.setEmailPermission(result.getBoolean("email_permission"));
+				user.setLanguage(result.getString("language"));
 				retval.add(user);
 			}
 			return retval;
@@ -211,6 +214,11 @@ public class UserDb {
 			this.addUserQuery.setString(11, user.getOrganization());
 			this.addUserQuery.setBoolean(12, user.hasNamePermission());
 			this.addUserQuery.setBoolean(13, user.hasEmailPermission());
+			if (user.getLanguage() != null) {
+				this.addUserQuery.setString(14, user.getLanguage());
+			} else {
+				this.addUserQuery.setNull(14, java.sql.Types.VARCHAR);
+			}
 			return this.addUserQuery.executeUpdate();
 		} catch(SQLException ex) {
 			if (save != null) {
@@ -315,7 +323,12 @@ public class UserDb {
 			updateUserQuery.setString(10, user.getEmail());
 			updateUserQuery.setBoolean(11, user.hasNamePermission());
 			updateUserQuery.setBoolean(12, user.hasEmailPermission());
-			updateUserQuery.setString(13, user.getUsername());
+			if (user.getLanguage() != null) {
+				updateUserQuery.setString(13, user.getLanguage());
+			} else {
+				updateUserQuery.setNull(13, java.sql.Types.VARCHAR);
+			}
+			updateUserQuery.setString(14, user.getUsername());
 			int count = updateUserQuery.executeUpdate();
 			if (count != 1) {
 				logger.warn("Unexpected count result from update user query.  Expected 1, found "+String.valueOf(count));
