@@ -1052,9 +1052,8 @@ public class UserSession {
 		if (this.language == language) {
 			return;
 		}
-		checkLoggedIn();
 		this.language = language;
-		if (this.surveyResponses != null) {
+		if (this.surveyResponses != null && this.loggedIn) {
 			// Change the language for all the surveys in the survey response
 			Connection con = SurveyDatabase.createConnection(config);
 			try {

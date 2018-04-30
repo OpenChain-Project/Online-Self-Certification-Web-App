@@ -18,6 +18,18 @@
  * This is a common JavaScript file to be included on all pages for this app.
  * It depends on the div ID's error, status, login, and signup
  */
+/**
+ * List of all supported language keyed by 2 or 3 character ISO language
+ */
+var LANGUAGES = {"eng":"English", 
+                 "deu":"German",
+                 "fra":"French"};
+
+var DEFAULT_LANGUAGE = "eng";
+
+var currentLanguage = DEFAULT_LANGUAGE;
+
+//TODO: Update the languages with the officially supported list
 var NOPASSWORD = "***********";
 // From http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#e-mail-state-%28type=email%29
 var emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -418,6 +430,53 @@ function openProfileDialog() {
 }
 
 /**
+ * Set the language for the JavaScript display
+ * @param language
+ * @param display
+ */
+function setLanguage(language, display) {
+	$( '#language-dropdown_launcher' ).text( display );
+	currentLanguage = language;
+	//TODO Invoke whatever HTML/JavaScript framework is used
+}
+
+/**
+ * @param language ISO 639 alpha-2 or alpha-3 language code
+ */
+function changeLanguage(language, display) {
+	//TODO Implement
+	if (currentLanguage == language) {
+		return;	// Already using this language
+	}
+	// update the back-end
+	$.ajax({
+		url: "CertificationServlet",
+		data: JSON.stringify({
+	        request:  "setlanguage",
+	        language: language
+	    }),
+	    type: "POST",
+	    dataType : "json",
+	    contentType: "json",
+	    async: false, 
+	    success: function( json ) {
+	    	if ( json.status == "OK" ) {
+	    		// Change the text on the language dropdown
+	    		setLanguage(language, display);
+	    		//TODO  Refresh the page or reload the data
+	    	} else {
+	    		displayError( json.error );
+	    	} 	
+	    },
+	    error: function( xhr, status, errorThrown ) {
+	    	handleError( xhr, status, errorThrown );
+	    }
+	});
+	// Refresh the page or reload the data
+	// Invoke whatever HTML/JavaScript framework is used
+}
+
+/**
  * Create a navigation menu based on whether the user is logged in
  */
 function createNavMenu() {
@@ -429,15 +488,15 @@ function createNavMenu() {
 	    type: "GET",
 	    dataType : "json",
 	    success: function( json ) {
-	    	html = '';
+	    	userHtml = '';
 	    	if (json.loggedIn) {
-	    		html += '<li id="user-dropdown_updateprofile"><a href="javascript:void(0);"><span class="ui-icon-closethick">&nbsp;Update profile</span></a></li>\n';
-	    		html += '<li id="user-dropdown_signout"><a href="javascript:void(0);"><span class="ui-icon-closethick">&nbsp;Sign out</span></a></li>\n';
+	    		userHtml += '<li id="user-dropdown_updateprofile"><a href="javascript:void(0);"><span class="ui-icon-closethick">&nbsp;Update profile</span></a></li>\n';
+	    		userHtml += '<li id="user-dropdown_signout"><a href="javascript:void(0);"><span class="ui-icon-closethick">&nbsp;Sign out</span></a></li>\n';
 	    	} else {
-	    		html += '<li id="user-dropdown_signin"><a href="javascript:void(0);"><span class="ui-icon-plusthick">&nbsp;Sign in</span></a></li>\n';
-	    		html += '<li id="user-dropdown_signup"><a href="javascript:void(0);"><span class="ui-icon-pencil">&nbsp;Sign up</span></a></li>\n';
+	    		userHtml += '<li id="user-dropdown_signin"><a href="javascript:void(0);"><span class="ui-icon-plusthick">&nbsp;Sign in</span></a></li>\n';
+	    		userHtml += '<li id="user-dropdown_signup"><a href="javascript:void(0);"><span class="ui-icon-pencil">&nbsp;Sign up</span></a></li>\n';
 	    	}
-	    	$("#user-dropdown_menu").html(html);
+	    	$("#user-dropdown_menu").html(userHtml);
 	    	$("#usermenu").jui_dropdown( {
 	    	    launcher_id: 'user-dropdown_launcher',
 	    	    launcher_container_id: 'user-dropdown_container',
@@ -457,6 +516,40 @@ function createNavMenu() {
 	    	    	}
 	    	    }
 	    	  });
+	    	languageHtml = '';
+	    	for (var language in LANGUAGES) {
+	    		languageHtml += '<li id="language-dropdown_';
+	    		languageHtml += language;
+	    		languageHtml += '"><a href="javascript:void(0);"><span class="ui-icon-closethick">&nbsp;';
+	    		languageHtml += LANGUAGES[language];
+	    		languageHtml += '</span></a></li>\n';
+	    	}
+	    	$("#language-dropdown_menu").html(languageHtml);
+	    	$("#languagemenu").jui_dropdown( {
+	    	    launcher_id: 'language-dropdown_launcher',
+	    	    launcher_container_id: 'language-dropdown_container',
+	    	    menu_id: 'language-dropdown_menu',
+	    	    containerClass: 'language-dropdown_container',
+	    	    menuClass: 'language-dropdown_menu',
+	    	    launchOnMouseEnter: true,
+	    	    onSelect: function( event, data ) {
+	    	    	lang = data.id.substring("language-dropdown_".length, data.id.length);
+	    	    	display = LANGUAGES[lang];
+	    	    	if (display == null) {
+	    	    		displayError("Language not supported");
+	    	    	} else {
+	    	    		changeLanguage(lang, display);
+	    	    	}
+	    	    }
+	    	  });
+	    	if (json.language != null) {
+	    		display = LANGUAGES[json.language];
+	    		if (language != null) {
+	    			setLanguage(json.language, display);
+	    		}
+	    	} else {
+	    		$( '#language-dropdown_launcher' ).text( LANGUAGES[DEFAULT_LANGUAGE] );
+	    	}
 	    	if (json.loggedIn) {
 	    		$("#surveylink").html('<a href="survey.html"><span class="ui-icon ui-icon-pencil"></span>Online Self-Certification</a>&nbsp;&nbsp;&nbsp;');
 	    	} else {

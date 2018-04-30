@@ -271,6 +271,19 @@ table tr:nth-child(odd) {
 	position: absolute;
 	margin-top: 3px !important;
 }
+#languagemenu {
+    width: 120px;
+}
+#language-dropdown_container {
+    width: 120px;
+}
+#language-dropdown_launcher {
+    display: inline-block;
+}
+#language-dropdown_menu {
+    position: absolute;
+    margin-top: 3px !important;
+}
 .navlink {
 	font-size: 14px;
 	padding: 3px;

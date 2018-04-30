@@ -76,6 +76,7 @@ public class CertificationServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;	
 	static final String SESSION_ATTRIBUTE_USER = "user";
+	static final String LANGUAGE_ATTRIBUTE = "lang";
 	public static final String PARAMETER_REQUEST = "request";
 	public static final String PARAMETER_USERNAME = "username";
 	public static final String PARAMETER_UUID = "uuid";
@@ -110,7 +111,7 @@ public class CertificationServlet extends HttpServlet {
 	private static final String PASSWORD_CHANGE_REQUEST = "changePassword";
 	private static final String REQUEST_RESET_PASSWORD = "requestResetPassword";	
 	private static final String REQUEST_UNSUBMIT = "unsubmit";
-	
+	private static final String SET_LANGUAGE_REQUEST = "setlanguage";
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -130,12 +131,16 @@ public class CertificationServlet extends HttpServlet {
 			try {
 				HttpSession session = request.getSession(true);
 				UserSession user = (UserSession)session.getAttribute(SESSION_ATTRIBUTE_USER);
+				String language = (String)session.getAttribute(LANGUAGE_ATTRIBUTE);
+				if (language == null) {
+					language = User.DEFAULT_LANGUAGE;
+				}
 				Gson gson = new Gson();
 	            response.setContentType("application/json"); 
 	            if (requestParam.equals(GET_SOFTWARE_VERSION_REQUEST)) {
 	            	gson.toJson(version, out);
 	            } else if (requestParam.equals(GET_CERTIFIED_REQUEST)) {
-	            	List<Submission> submissions = getSubmissions(user.getLanguage());
+	            	List<Submission> submissions = getSubmissions(language);
 	            	List<Submission> certifiedSubmissions = new ArrayList<Submission>();
 	            	for (Submission submission:submissions) {
 	            		if (submission.isApproved()) {
@@ -172,6 +177,7 @@ public class CertificationServlet extends HttpServlet {
 	            } else if (requestParam.equals(GET_USER)) {
 	            	if (user == null) {
 	            		user = new UserSession(getServletConfig());	// creates a new user that is not logged in and a null username
+	            		user.setLanguage(language);	// Set the language to the session language
 	            	}
             		gson.toJson(user, out);
 	            } else if (requestParam.equals(GET_SUPPORTED_SPEC_VERSIONS)) {
@@ -185,7 +191,7 @@ public class CertificationServlet extends HttpServlet {
 	            	Survey survey;
 	            	try {
 	            		SurveyDbDao dao = new SurveyDbDao(con);
-	            		survey = dao.getSurvey(null, user.getLanguage());
+	            		survey = dao.getSurvey(null, language);
 	            	} finally {
 	            		con.close();
 	            	}
@@ -198,7 +204,7 @@ public class CertificationServlet extends HttpServlet {
 	            	if (!user.isAdmin()) {
 	            		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 	            	} else {
-		            	List<Submission> submissions = getSubmissions(user.getLanguage());
+		            	List<Submission> submissions = getSubmissions(language);
 		            	gson.toJson(submissions, out);
 	            	}
 	            } else if (requestParam.equals(DOWNLOAD_ANSWERS)) {
@@ -212,7 +218,7 @@ public class CertificationServlet extends HttpServlet {
 		            	String specVersion = request.getParameter(PARAMETER_SPEC_VERSION);
 		                response.setContentType("text/csv");
 		                response.setHeader("Content-Disposition", "attachment;filename=\"openchain-survey-version-"+specVersion+".csv\"");
-		            	printSurvey(specVersion, user.getLanguage(), out);
+		            	printSurvey(specVersion, language, out);
 	            	}
 	            } else {
 	            	logger.error("Unknown get request: "+requestParam);
@@ -387,7 +393,12 @@ public class CertificationServlet extends HttpServlet {
         		if (!resetPassword(rj.getUsername(), rj.getEmail(), getServletConfig(), request.getRequestURL().toString())) {
 	        		postResponse.setStatus(Status.ERROR);
 	        		postResponse.setError("Can not reset password.  Check that the username and email match the registered user");
-        		}	
+        		}
+        	}else if (rj.getRequest().equals(SET_LANGUAGE_REQUEST)) {
+        		if (user != null) {
+        			user.setLanguage(rj.getLanguage());
+        		}
+        		session.setAttribute(LANGUAGE_ATTRIBUTE, rj.getLanguage());
         	} else if (user == null || !user.isLoggedIn()) {
         		if (!rj.getRequest().equals(LOGOUT_REQUEST)) {	// Ignore the logout request if not logged in
             		// Not logged in - set the status to unauthorized

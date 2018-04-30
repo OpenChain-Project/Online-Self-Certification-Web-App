@@ -124,7 +124,9 @@ function uploadSurvey() {
 		        request: "uploadsurvey",
 		        specVersion: specVersion,
 		        csvLines: csvLines,
-		        sectionTexts: sectionTexts
+		        sectionTexts: sectionTexts,
+		        language: currentLanguage
+		        //TODO verify the current language works
 		    }),
 		    type: "POST",
 		    dataType : "json",
