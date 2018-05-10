@@ -24,6 +24,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,6 +61,7 @@ import org.openchain.certification.utility.EmailUtility;
 import org.openchain.certification.utility.PasswordUtil;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.opencsv.CSVParser;
 
@@ -216,8 +218,8 @@ public class CertificationServlet extends HttpServlet {
 	            		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 	            	} else {
 		            	String specVersion = request.getParameter(PARAMETER_SPEC_VERSION);
-		                response.setContentType("text/csv");
-		                response.setHeader("Content-Disposition", "attachment;filename=\"openchain-survey-version-"+specVersion+".csv\"");
+		                response.setContentType("text/json");
+		                response.setHeader("Content-Disposition", "attachment;filename=\"openchain-survey-version-"+specVersion+".json\"");
 		            	printSurvey(specVersion, language, out);
 	            	}
 	            } else {
@@ -291,7 +293,7 @@ public class CertificationServlet extends HttpServlet {
 	}
 
 	/**
-	 * Print a CSV version of a survey to an output stream
+	 * Print a JSON version of a survey to an output stream
 	 * @param specVersion
 	 * @param out
 	 * @throws SQLException 
@@ -303,7 +305,26 @@ public class CertificationServlet extends HttpServlet {
 		Connection con = SurveyDatabase.createConnection(getServletConfig());
 		try {
 			Survey survey = SurveyDbDao.getSurvey(con, specVersion, language);
-			survey.printCsv(out);
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			// Remove redundant unnecessary fields
+			for (Section section:survey.getSections()) {
+				section.setLanguage(null);
+				List<Question> questionsToRemove = new ArrayList<Question>();
+				for (Question question:section.getQuestions()) {
+					question.setSpecVersion(null);
+					question.setLanguage(null);
+					question.setSection(null);
+					if (question.getSubQuestionNumber() != null && !question.getSubQuestionNumber().isEmpty()) {
+						questionsToRemove.add(question);
+					}
+					question.setSubQuestionNumber(null);
+				}
+				// Remove subquestions since they are already present in the subquestions themselves
+				for (Question remove:questionsToRemove) {
+					section.getQuestions().remove(remove);
+				}
+			}
+			out.print(gson.toJson(survey));
 		} finally {
 			if (con != null) {
 				con.close();

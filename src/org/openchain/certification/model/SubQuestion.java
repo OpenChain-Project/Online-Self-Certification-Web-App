@@ -17,9 +17,9 @@
 package org.openchain.certification.model;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
 /**
@@ -47,7 +47,7 @@ public class SubQuestion extends Question {
 			String specVersion, String language, int minNumberValidatedAnswers) throws QuestionException {
 		super(question, sectionName, number, specVersion, language);
 		this.minNumberValidatedAnswers = minNumberValidatedAnswers;
-		this.subQuestions = new HashMap<String,Question>();
+		this.subQuestions = new TreeMap<String,Question>();
 		this.type = TYPE_NAME;
 	}
 

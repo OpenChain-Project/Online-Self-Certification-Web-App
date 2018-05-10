@@ -32,13 +32,13 @@ public abstract class Question implements Comparable<Question> {
 	private String number;
 	private String subQuestionNumber = null;
 	protected String type;
-	protected String specVersion;
+	protected String specVersion; 
 	transient static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)(\\.\\d+)?(\\.\\d+)?");
 	transient static final Pattern NUM_ALPH_AROMAN_PATTERN = Pattern.compile("(\\d+)(\\.[a-z]+)?(\\.[ivxlmcd]+)?");
 	transient private Matcher numberMatch;
 	private String specReference = "";
 	private String language;
-
+	
 	/**
 	 * @param question Text for the question
 	 * @param sectionName Name of the section

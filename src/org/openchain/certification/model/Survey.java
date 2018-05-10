@@ -39,9 +39,9 @@ public class Survey {
 		"Answer Type", "Correct Answer", "Evidence Prompt", "Evidence Validation",
 		"Sub-Question Of Number"
 	};
-	private List<Section> sections;
 	private String specVersion;
 	private String language;
+	private List<Section> sections;
 	
 	public Survey(String specVersion, String language) {
 		this.specVersion = specVersion;

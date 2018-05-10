@@ -31,7 +31,7 @@ public class Section implements Comparable<Section> {
 	private String title;
 	private List<Question> questions;
 	private String language;
-	
+
 	public Section(String language) {
 		this.language = language;
 	}

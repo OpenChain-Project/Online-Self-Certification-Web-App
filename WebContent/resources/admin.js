@@ -341,6 +341,7 @@ $(document).ready( function() {
 		}]
 	}).find("form").on("submit", function(event) {
 		event.preventDefault();
+		$(this).dialog("close");
 		downloadSurvey();
 	});
 	
