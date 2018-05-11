@@ -24,7 +24,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -314,10 +313,10 @@ public class CertificationServlet extends HttpServlet {
 					question.setSpecVersion(null);
 					question.setLanguage(null);
 					question.setSection(null);
-					if (question.getSubQuestionNumber() != null && !question.getSubQuestionNumber().isEmpty()) {
+					if (question.getSubQuestionOfNumber() != null && !question.getSubQuestionOfNumber().isEmpty()) {
 						questionsToRemove.add(question);
 					}
-					question.setSubQuestionNumber(null);
+					question.setSubQuestionOfNumber(null);
 				}
 				// Remove subquestions since they are already present in the subquestions themselves
 				for (Question remove:questionsToRemove) {
@@ -683,15 +682,15 @@ public class CertificationServlet extends HttpServlet {
 				throw(new UpdateSurveyException("Duplicate questions in survey upload: "+question.getNumber()));
 			}
 			foundQuestionNumbers.add(question.getNumber());
-			if (question.getSubQuestionNumber() != null) {
-				SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionNumber());
+			if (question.getSubQuestionOfNumber() != null) {
+				SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionOfNumber());
 				if (parentQuestion == null) {
 					try {
-						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionNumber(), specVersion, language, 0);
+						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionOfNumber(), specVersion, language, 0);
 					} catch(QuestionException ex) {
 						throw new UpdateSurveyException("Invalid parent question number for question number "+question.getNumber());
 					}
-					questionsWithSubs.put(question.getSubQuestionNumber(), parentQuestion);
+					questionsWithSubs.put(question.getSubQuestionOfNumber(), parentQuestion);
 				}
 				parentQuestion.addSubQuestion(question);
 			}
@@ -782,11 +781,11 @@ public class CertificationServlet extends HttpServlet {
 					throw(new UpdateSurveyException("Duplicate questions in question update: "+question.getNumber()));
 				}
 				foundQuestionNumbers.add(question.getNumber());
-				if (question.getSubQuestionNumber() != null) {
-					SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionNumber());
+				if (question.getSubQuestionOfNumber() != null) {
+					SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionOfNumber());
 					if (parentQuestion == null) {
-						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionNumber(), specVersion, language, 0);
-						questionsWithSubs.put(question.getSubQuestionNumber(), parentQuestion);
+						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionOfNumber(), specVersion, language, 0);
+						questionsWithSubs.put(question.getSubQuestionOfNumber(), parentQuestion);
 					}
 					parentQuestion.addSubQuestion(question);
 				}

@@ -93,7 +93,7 @@ public class TestSurveyDbDao {
 				section2Name, s2q2Number, specVersion, language, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		String s2q2SpecRef = "s2q2SpecRef";
 		s2q2.setSpecReference(s2q2SpecRef);
-		s2q2.addSubQuestionOf(s2q1Number);
+		s2q2.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q2);
 		String s2q3Question="s2q3question";
 		String s2q3Number = "1.b.iii";
@@ -102,7 +102,7 @@ public class TestSurveyDbDao {
 				section2Name, s2q3Number, specVersion, language, s2q3Answer);
 		String s2q3SpecRef = "s2q3SpecRef";
 		s2q3.setSpecReference(s2q3SpecRef);
-		s2q3.addSubQuestionOf(s2q1Number);
+		s2q3.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q3);
 		section2.setQuestions(section2Questions);
 		sections.add(section2);
@@ -123,7 +123,7 @@ public class TestSurveyDbDao {
 						assertEquals(section1Name, yn.getSectionName());
 						assertEquals(specVersion, yn.getSpecVersion());
 						assertEquals(s1q1SpecRef, yn.getSpecReference());
-						assertTrue(yn.getSubQuestionNumber() == null);
+						assertTrue(yn.getSubQuestionOfNumber() == null);
 						assertEquals(language, yn.getLanguage());
 					} else if (rq.getNumber().equals(s1q2Number)) {
 						YesNoNotApplicableQuestion yn = (YesNoNotApplicableQuestion)rq;
@@ -132,7 +132,7 @@ public class TestSurveyDbDao {
 						assertEquals(section1Name, yn.getSectionName());
 						assertEquals(specVersion, yn.getSpecVersion());
 						assertEquals(s1q2SpecRef, yn.getSpecReference());
-						assertTrue(yn.getSubQuestionNumber() == null);
+						assertTrue(yn.getSubQuestionOfNumber() == null);
 						assertEquals(language, yn.getLanguage());
 					} else {
 						fail("no matching question numbers");
@@ -150,7 +150,7 @@ public class TestSurveyDbDao {
 						assertEquals(section2Name, yn.getSectionName());
 						assertEquals(specVersion, yn.getSpecVersion());
 						assertEquals(s2q1SpecRef, yn.getSpecReference());
-						assertTrue(yn.getSubQuestionNumber() == null);
+						assertTrue(yn.getSubQuestionOfNumber() == null);
 					} else if (rq.getNumber().equals(s2q2Number)) {
 						YesNoQuestionWithEvidence yn = (YesNoQuestionWithEvidence)rq;
 						assertEquals(s2q2Question, yn.getQuestion());
@@ -160,7 +160,7 @@ public class TestSurveyDbDao {
 						assertEquals(s2q2SpecRef, yn.getSpecReference());
 						assertEquals(s2q2Prompt, yn.getEvidencePrompt());
 						assertEquals(s2q2validate, yn.getEvidenceValidation().toString());
-						assertEquals(s2q1Number, yn.getSubQuestionNumber());
+						assertEquals(s2q1Number, yn.getSubQuestionOfNumber());
 					} else if (rq.getNumber().equals(s2q3Number)) {
 						YesNoQuestion yn = (YesNoQuestion)rq;
 						assertEquals(s2q3Question, yn.getQuestion());
@@ -168,7 +168,7 @@ public class TestSurveyDbDao {
 						assertEquals(section2Name, yn.getSectionName());
 						assertEquals(specVersion, yn.getSpecVersion());
 						assertEquals(s2q3SpecRef, yn.getSpecReference());
-						assertEquals(s2q1Number, yn.getSubQuestionNumber());
+						assertEquals(s2q1Number, yn.getSubQuestionOfNumber());
 					} else {
 						fail("no matching question numbers");
 					}
@@ -234,7 +234,7 @@ public class TestSurveyDbDao {
 				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		String s2q2SpecRef = "s2q2SpecRef";
 		s2q2.setSpecReference(s2q2SpecRef);
-		s2q2.addSubQuestionOf(s2q1Number);
+		s2q2.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q2);
 		String s2q3Question="s2q3question";
 		String s2q3Number = "1.b.iii";
@@ -243,7 +243,7 @@ public class TestSurveyDbDao {
 				section2Name, s2q3Number, specVersion, language, s2q3Answer);
 		String s2q3SpecRef = "s2q3SpecRef";
 		s2q3.setSpecReference(s2q3SpecRef);
-		s2q3.addSubQuestionOf(s2q1Number);
+		s2q3.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q3);
 		section2.setQuestions(section2Questions);
 		sections.add(section2);
@@ -267,7 +267,7 @@ public class TestSurveyDbDao {
 				section2Name, s2q3Number, specVersion, language, s2q3Answer);
 		String us2q3SpecRef = "us2q3SpecRef";
 		updateds2q3.setSpecReference(us2q3SpecRef);
-		updateds2q3.addSubQuestionOf(s2q1Number);
+		updateds2q3.setSubQuestionOfNumber(s2q1Number);
 		List<Question> questionsToUpdate = new ArrayList<Question>();
 		questionsToUpdate.add(Updateds1q2);
 		questionsToUpdate.add(updateds2q3);
@@ -287,7 +287,7 @@ public class TestSurveyDbDao {
 						assertEquals(section1Name, yn.getSectionName());
 						assertEquals(specVersion, yn.getSpecVersion());
 						assertEquals(s1q1SpecRef, yn.getSpecReference());
-						assertTrue(yn.getSubQuestionNumber() == null);
+						assertTrue(yn.getSubQuestionOfNumber() == null);
 					} else if (rq.getNumber().equals(s1q2Number)) {
 						YesNoQuestionWithEvidence yn = (YesNoQuestionWithEvidence)rq;
 						assertEquals(us1q2Question, yn.getQuestion());
@@ -297,7 +297,7 @@ public class TestSurveyDbDao {
 						assertEquals(us1q2specRef, yn.getSpecReference());
 						assertEquals(us1q2Prompt, yn.getEvidencePrompt());
 						assertEquals(us1q2valid, yn.getEvidenceValidation().toString());
-						assertTrue(yn.getSubQuestionNumber() == null);
+						assertTrue(yn.getSubQuestionOfNumber() == null);
 					} else {
 						fail("no matching question numbers");
 					}
@@ -313,7 +313,7 @@ public class TestSurveyDbDao {
 						assertEquals(section2Name, yn.getSectionName());
 						assertEquals(specVersion, yn.getSpecVersion());
 						assertEquals(s2q1SpecRef, yn.getSpecReference());
-						assertTrue(yn.getSubQuestionNumber() == null);
+						assertTrue(yn.getSubQuestionOfNumber() == null);
 					} else if (rq.getNumber().equals(s2q2Number)) {
 						YesNoQuestionWithEvidence yn = (YesNoQuestionWithEvidence)rq;
 						assertEquals(s2q2Question, yn.getQuestion());
@@ -323,7 +323,7 @@ public class TestSurveyDbDao {
 						assertEquals(s2q2SpecRef, yn.getSpecReference());
 						assertEquals(s2q2Prompt, yn.getEvidencePrompt());
 						assertEquals(s2q2validate, yn.getEvidenceValidation().toString());
-						assertEquals(s2q1Number, yn.getSubQuestionNumber());
+						assertEquals(s2q1Number, yn.getSubQuestionOfNumber());
 					} else if (rq.getNumber().equals(s2q3Number)) {
 						YesNoQuestion yn = (YesNoQuestion)rq;
 						assertEquals(us2q3Question, yn.getQuestion());
@@ -331,7 +331,7 @@ public class TestSurveyDbDao {
 						assertEquals(section2Name, yn.getSectionName());
 						assertEquals(specVersion, yn.getSpecVersion());
 						assertEquals(us2q3SpecRef, yn.getSpecReference());
-						assertEquals(s2q1Number, yn.getSubQuestionNumber());
+						assertEquals(s2q1Number, yn.getSubQuestionOfNumber());
 					} else {
 						fail("no matching question numbers");
 					}
@@ -397,7 +397,7 @@ public class TestSurveyDbDao {
 				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		String s2q2SpecRef = "s2q2SpecRef";
 		s2q2.setSpecReference(s2q2SpecRef);
-		s2q2.addSubQuestionOf(s2q1Number);
+		s2q2.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q2);
 		String s2q3Question="s2q3question";
 		String s2q3Number = "1.b.iii";
@@ -406,7 +406,7 @@ public class TestSurveyDbDao {
 				section2Name, s2q3Number, specVersion, language, s2q3Answer);
 		String s2q3SpecRef = "s2q3SpecRef";
 		s2q3.setSpecReference(s2q3SpecRef);
-		s2q3.addSubQuestionOf(s2q1Number);
+		s2q3.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q3);
 		section2.setQuestions(section2Questions);
 		sections.add(section2);
@@ -423,7 +423,7 @@ public class TestSurveyDbDao {
 				section2Name, s2q4Number, specVersion, language, s2q4Answer);
 		String s2q4SpecRef = "s2q4SpecRef";
 		s2q4.setSpecReference(s2q4SpecRef);
-		s2q4.addSubQuestionOf(s2q1Number);
+		s2q4.setSubQuestionOfNumber(s2q1Number);
 		
 		String s2q5Question="s2q5question";
 		String s2q5Number = "1.c";
@@ -453,7 +453,7 @@ public class TestSurveyDbDao {
 						assertEquals(section1Name, yn.getSectionName());
 						assertEquals(specVersion, yn.getSpecVersion());
 						assertEquals(s1q1SpecRef, yn.getSpecReference());
-						assertTrue(yn.getSubQuestionNumber() == null);
+						assertTrue(yn.getSubQuestionOfNumber() == null);
 					} else if (rq.getNumber().equals(s1q2Number)) {
 						YesNoNotApplicableQuestion yn = (YesNoNotApplicableQuestion)rq;
 						assertEquals(s1q2Question, yn.getQuestion());
@@ -461,7 +461,7 @@ public class TestSurveyDbDao {
 						assertEquals(section1Name, yn.getSectionName());
 						assertEquals(specVersion, yn.getSpecVersion());
 						assertEquals(s1q2SpecRef, yn.getSpecReference());
-						assertTrue(yn.getSubQuestionNumber() == null);
+						assertTrue(yn.getSubQuestionOfNumber() == null);
 					} else {
 						fail("no matching question numbers");
 					}
@@ -477,7 +477,7 @@ public class TestSurveyDbDao {
 						assertEquals(section2Name, yn.getSectionName());
 						assertEquals(specVersion, yn.getSpecVersion());
 						assertEquals(s2q1SpecRef, yn.getSpecReference());
-						assertTrue(yn.getSubQuestionNumber() == null);
+						assertTrue(yn.getSubQuestionOfNumber() == null);
 					} else if (rq.getNumber().equals(s2q2Number)) {
 						YesNoQuestionWithEvidence yn = (YesNoQuestionWithEvidence)rq;
 						assertEquals(s2q2Question, yn.getQuestion());
@@ -487,7 +487,7 @@ public class TestSurveyDbDao {
 						assertEquals(s2q2SpecRef, yn.getSpecReference());
 						assertEquals(s2q2Prompt, yn.getEvidencePrompt());
 						assertEquals(s2q2validate, yn.getEvidenceValidation().toString());
-						assertEquals(s2q1Number, yn.getSubQuestionNumber());
+						assertEquals(s2q1Number, yn.getSubQuestionOfNumber());
 					} else if (rq.getNumber().equals(s2q3Number)) {
 						YesNoQuestion yn = (YesNoQuestion)rq;
 						assertEquals(s2q3Question, yn.getQuestion());
@@ -495,7 +495,7 @@ public class TestSurveyDbDao {
 						assertEquals(section2Name, yn.getSectionName());
 						assertEquals(specVersion, yn.getSpecVersion());
 						assertEquals(s2q3SpecRef, yn.getSpecReference());
-						assertEquals(s2q1Number, yn.getSubQuestionNumber());
+						assertEquals(s2q1Number, yn.getSubQuestionOfNumber());
 					} else if (rq.getNumber().equals(s2q4Number)) {
 						YesNoQuestion yn = (YesNoQuestion)rq;
 						assertEquals(s2q4Question, yn.getQuestion());
@@ -503,7 +503,7 @@ public class TestSurveyDbDao {
 						assertEquals(section2Name, yn.getSectionName());
 						assertEquals(specVersion, yn.getSpecVersion());
 						assertEquals(s2q4SpecRef, yn.getSpecReference());
-						assertEquals(s2q1Number, yn.getSubQuestionNumber());
+						assertEquals(s2q1Number, yn.getSubQuestionOfNumber());
 					} else if (rq.getNumber().equals(s2q5Number)) {
 						YesNoQuestion yn = (YesNoQuestion)rq;
 						assertEquals(s2q5Question, yn.getQuestion());
@@ -511,7 +511,7 @@ public class TestSurveyDbDao {
 						assertEquals(section2Name, yn.getSectionName());
 						assertEquals(specVersion, yn.getSpecVersion());
 						assertEquals(s2q5SpecRef, yn.getSpecReference());
-						assertTrue(yn.getSubQuestionNumber() == null);
+						assertTrue(yn.getSubQuestionOfNumber() == null);
 					} else {
 						fail("no matching question numbers");
 					}
@@ -577,7 +577,7 @@ public class TestSurveyDbDao {
 				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		String s2q2SpecRef = "s2q2SpecRef";
 		s2q2.setSpecReference(s2q2SpecRef);
-		s2q2.addSubQuestionOf("3.a");	// this should cause an exception
+		s2q2.setSubQuestionOfNumber("3.a");	// this should cause an exception
 		section2Questions.add(s2q2);
 		String s2q3Question="s2q3question";
 		String s2q3Number = "1.b.iii";
@@ -586,7 +586,7 @@ public class TestSurveyDbDao {
 				section2Name, s2q3Number, specVersion, language, s2q3Answer);
 		String s2q3SpecRef = "s2q3SpecRef";
 		s2q3.setSpecReference(s2q3SpecRef);
-		s2q3.addSubQuestionOf(s2q1Number);
+		s2q3.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q3);
 		section2.setQuestions(section2Questions);
 		sections.add(section2);

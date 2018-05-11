@@ -253,7 +253,7 @@ public class SurveyDbDao {
 					long subQuestionId = result.getLong("subquestion_of");
 					if (subQuestionId > 0) {
 						String subQuestionNumber = getQuestionNumber(subQuestionId, con);
-						question.addSubQuestionOf(subQuestionNumber);
+						question.setSubQuestionOfNumber(subQuestionNumber);
 						SubQuestion parent = foundSubQuestions.get(subQuestionNumber);
 						if (parent == null) {
 							parent = new SubQuestion("", section.getName(), subQuestionNumber, specVersion, language, 0);
@@ -349,11 +349,11 @@ public class SurveyDbDao {
 					updateQuestionQuery.setString(4, null);
 					updateQuestionQuery.setString(5, null);
 				}
-				if (question.getSubQuestionNumber() != null && !question.getSubQuestionNumber().isEmpty()) {
-					long subQuestionId = getQuestionId(question.getSubQuestionNumber(), question.getSectionName(), 
+				if (question.getSubQuestionOfNumber() != null && !question.getSubQuestionOfNumber().isEmpty()) {
+					long subQuestionId = getQuestionId(question.getSubQuestionOfNumber(), question.getSectionName(), 
 							question.getSpecVersion(), question.getLanguage());
 					if (subQuestionId < 0) {
-						throw(new QuestionException("Invalid subquestion number "+question.getSubQuestionNumber()));
+						throw(new QuestionException("Invalid subquestion number "+question.getSubQuestionOfNumber()));
 					}
 					updateQuestionQuery.setLong(6,subQuestionId);
 				} else {
@@ -486,11 +486,11 @@ public class SurveyDbDao {
 				addQuestionQuery.setString(4, correctAnswer);
 				addQuestionQuery.setString(5, null);
 				addQuestionQuery.setString(6, null);
-				if (question.getSubQuestionNumber() != null && !question.getSubQuestionNumber().isEmpty()) {
-					long subQuestionId = getQuestionId(question.getSubQuestionNumber(), question.getSectionName(), 
+				if (question.getSubQuestionOfNumber() != null && !question.getSubQuestionOfNumber().isEmpty()) {
+					long subQuestionId = getQuestionId(question.getSubQuestionOfNumber(), question.getSectionName(), 
 							question.getSpecVersion(), question.getLanguage());
 					if (subQuestionId < 0) {
-						throw(new QuestionException("Invalud subquestion number "+question.getSubQuestionNumber()));
+						throw(new QuestionException("Invalud subquestion number "+question.getSubQuestionOfNumber()));
 					}
 					addQuestionQuery.setLong(7,subQuestionId);
 				} else {
@@ -546,11 +546,11 @@ public class SurveyDbDao {
 					addQuestionQuery.setString(5, null);
 					addQuestionQuery.setString(6, null);
 				}
-				if (question.getSubQuestionNumber() != null && !question.getSubQuestionNumber().isEmpty()) {
-					long subQuestionId = getQuestionId(question.getSubQuestionNumber(), 
+				if (question.getSubQuestionOfNumber() != null && !question.getSubQuestionOfNumber().isEmpty()) {
+					long subQuestionId = getQuestionId(question.getSubQuestionOfNumber(), 
 							question.getSectionName(), question.getSpecVersion(), question.getLanguage());
 					if (subQuestionId < 0) {
-						throw(new QuestionException("Invalid subquestion number "+question.getSubQuestionNumber()));
+						throw(new QuestionException("Invalid subquestion number "+question.getSubQuestionOfNumber()));
 					}
 					addQuestionQuery.setLong(7,subQuestionId);
 				} else {

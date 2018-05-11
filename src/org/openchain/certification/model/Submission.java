@@ -75,7 +75,7 @@ public class Submission {
 		int numNotAnswered = 0;
 		for (Section section:survey.getSections()) {
 			for (Question question:section.getQuestions()) {
-				if (question.getSubQuestionNumber() == null) {
+				if (question.getSubQuestionOfNumber() == null) {
 					numQuestions++ ;	// we don't want to count subquestions
 					Answer answer = answers.get(question.getNumber());
 					if (answer != null) {
@@ -98,7 +98,7 @@ public class Submission {
 		int numAnswers = 0;
 		for (Section section:survey.getSections()) {
 			for (Question question:section.getQuestions()) {
-				if (question.getSubQuestionNumber() == null) {
+				if (question.getSubQuestionOfNumber() == null) {
 					numQuestions++ ;	// we don't want to count subquestions
 					Answer answer = answers.get(question.getNumber());
 					if (answer != null) {

@@ -133,7 +133,7 @@ public class SurveyResponse {
 		Set<String> allQuestionNumbers = this.survey.getQuestionNumbers();
 		for (String questionNumber:allQuestionNumbers) {
 			Question question = this.survey.getQuestion(questionNumber);
-			if (question.getSubQuestionNumber() == null) {
+			if (question.getSubQuestionOfNumber() == null) {
 				// we ignore any subquestions since they will be covered by the parent
 				Answer answer = this.responses.get(questionNumber);
 				if (answer == null || !question.validate(answer)) {

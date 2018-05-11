@@ -30,7 +30,7 @@ public abstract class Question implements Comparable<Question> {
 	protected String question;
 	protected String sectionName;
 	private String number;
-	private String subQuestionNumber = null;
+	private String subQuestionOfNumber = null;
 	protected String type;
 	protected String specVersion; 
 	transient static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)(\\.\\d+)?(\\.\\d+)?");
@@ -142,13 +142,9 @@ public abstract class Question implements Comparable<Question> {
 		}
 		this.number = number;
 	}
-
-	public void addSubQuestionOf(String subQuestionNumber) {
-		this.subQuestionNumber = subQuestionNumber;
-	}
 	
-	public String getSubQuestionNumber() {
-		return this.subQuestionNumber;
+	public String getSubQuestionOfNumber() {
+		return this.subQuestionOfNumber;
 	}
 	
 	
@@ -344,8 +340,8 @@ public abstract class Question implements Comparable<Question> {
 	/**
 	 * @param subQuestionNumber the subQuestionNumber to set
 	 */
-	public void setSubQuestionNumber(String subQuestionNumber) {
-		this.subQuestionNumber = subQuestionNumber;
+	public void setSubQuestionOfNumber(String subQuestionNumber) {
+		this.subQuestionOfNumber = subQuestionNumber;
 	}
 
 	/**
@@ -373,7 +369,7 @@ public abstract class Question implements Comparable<Question> {
 			retval[6] = "";
 			retval[7] = "";
 		}
-		retval[8] = this.subQuestionNumber;
+		retval[8] = this.subQuestionOfNumber;
 		return retval;
 	}
 
@@ -436,7 +432,7 @@ public abstract class Question implements Comparable<Question> {
 			retval.setSpecReference(specReference);
 		}
 		if (subQuestionNumber != null && !subQuestionNumber.isEmpty()) {
-			retval.addSubQuestionOf(subQuestionNumber);
+			retval.setSubQuestionOfNumber(subQuestionNumber);
 		}
 		return retval;
 	}

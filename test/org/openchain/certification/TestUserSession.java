@@ -135,13 +135,13 @@ public class TestUserSession {
 		s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
 				section2Name, s2q2Number, specVersion, language, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSpecReference(s2q2SpecRef);
-		s2q2.addSubQuestionOf(s2q1Number);
+		s2q2.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q2);
 
 		s2q3 = new YesNoQuestion(s2q3Question, 
 				section2Name, s2q3Number, specVersion, language, s2q3Answer);
 		s2q3.setSpecReference(s2q3SpecRef);
-		s2q3.addSubQuestionOf(s2q1Number);
+		s2q3.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q3);
 		section2.setQuestions(section2Questions);
 		sections.add(section2);

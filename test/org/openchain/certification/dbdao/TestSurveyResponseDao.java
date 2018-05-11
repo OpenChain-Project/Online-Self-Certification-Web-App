@@ -111,13 +111,13 @@ public class TestSurveyResponseDao {
 		s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
 				section2Name, s2q2Number, specVersion, language1, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSpecReference(s2q2SpecRef);
-		s2q2.addSubQuestionOf(s2q1Number);
+		s2q2.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q2);
 
 		s2q3 = new YesNoQuestion(s2q3Question, 
 				section2Name, s2q3Number, specVersion, language1, s2q3Answer);
 		s2q3.setSpecReference(s2q3SpecRef);
-		s2q3.addSubQuestionOf(s2q1Number);
+		s2q3.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q3);
 		section2.setQuestions(section2Questions);
 		sections.add(section2);
@@ -217,13 +217,13 @@ public class TestSurveyResponseDao {
 				section2Name, s2q2Number, laterSpecVersion, language1, 
 				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSpecReference(s2q2SpecRef);
-		s2q2.addSubQuestionOf(s2q1Number);
+		s2q2.setSubQuestionOfNumber(s2q1Number);
 		newQuestions2.add(s2q2);
 
 		s2q3 = new YesNoQuestion(s2q3Question, 
 				section2Name, s2q3Number, laterSpecVersion, language1, s2q3Answer);
 		s2q3.setSpecReference(s2q3SpecRef);
-		s2q3.addSubQuestionOf(s2q1Number);
+		s2q3.setSubQuestionOfNumber(s2q1Number);
 		newQuestions2.add(s2q3);
 		newSection2.setQuestions(newQuestions2);
 		laterSections.add(newSection2);
@@ -543,13 +543,13 @@ public class TestSurveyResponseDao {
 				section2Name, s2q2Number, laterSpecVersion, language1, 
 				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSpecReference(s2q2SpecRef);
-		s2q2.addSubQuestionOf(s2q1Number);
+		s2q2.setSubQuestionOfNumber(s2q1Number);
 		newQuestions2.add(s2q2);
 
 		s2q3 = new YesNoQuestion(s2q3Question, 
 				section2Name, s2q3Number, laterSpecVersion, language1, s2q3Answer);
 		s2q3.setSpecReference(s2q3SpecRef);
-		s2q3.addSubQuestionOf(s2q1Number);
+		s2q3.setSubQuestionOfNumber(s2q1Number);
 		newQuestions2.add(s2q3);
 		newSection2.setQuestions(newQuestions2);
 		laterSections.add(newSection2);
@@ -686,13 +686,13 @@ public class TestSurveyResponseDao {
 		s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
 				section2Name, s2q2Number, laterSpecVersion, language1, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSpecReference(s2q2SpecRef);
-		s2q2.addSubQuestionOf(s2q1Number);
+		s2q2.setSubQuestionOfNumber(s2q1Number);
 		newQuestions2.add(s2q2);
 
 		s2q3 = new YesNoQuestion(s2q3Question, 
 				section2Name, s2q3Number, laterSpecVersion, language1, s2q3Answer);
 		s2q3.setSpecReference(s2q3SpecRef);
-		s2q3.addSubQuestionOf(s2q1Number);
+		s2q3.setSubQuestionOfNumber(s2q1Number);
 		newQuestions2.add(s2q3);
 		newSection2.setQuestions(newQuestions2);
 		laterSections.add(newSection2);

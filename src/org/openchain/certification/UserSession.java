@@ -597,11 +597,11 @@ public class UserSession {
 					throw(new QuestionTypeException("Invalid answer type for question "+response.getQuestionNumber()));
 				}
 				currentResponses.put(response.getQuestionNumber(), answer);
-				if (question.getSubQuestionNumber() != null) {
-					SubQuestionAnswers subQuestionAnswer = (SubQuestionAnswers)currentResponses.get(question.getSubQuestionNumber());
+				if (question.getSubQuestionOfNumber() != null) {
+					SubQuestionAnswers subQuestionAnswer = (SubQuestionAnswers)currentResponses.get(question.getSubQuestionOfNumber());
 					if (subQuestionAnswer == null) {
 						subQuestionAnswer = new SubQuestionAnswers(language);
-						currentResponses.put(question.getSubQuestionNumber(), subQuestionAnswer);
+						currentResponses.put(question.getSubQuestionOfNumber(), subQuestionAnswer);
 					}
 					subQuestionAnswer.addSubAnswer(question.getNumber(), answer);
 				}
