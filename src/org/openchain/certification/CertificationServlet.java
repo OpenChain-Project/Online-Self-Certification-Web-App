@@ -598,7 +598,7 @@ public class CertificationServlet extends HttpServlet {
 			user.setUuid(hashedUuid);
 			user.setPasswordReset(true);
 			UserDb.getUserDb(config).updateUser(user);
-			EmailUtility.emailPasswordReset(user.getName(), email, uuid, username, responseServletUrl, config);
+			EmailUtility.emailPasswordReset(user.getName(), email, uuid, username, responseServletUrl, config, user.getLanguage());
 	        return true;
 		} catch (SQLException e) {
 			logger.error("SQL Exception signing up user",e);

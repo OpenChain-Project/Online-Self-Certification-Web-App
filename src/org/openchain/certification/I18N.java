@@ -19,8 +19,6 @@ package org.openchain.certification;
 import org.apache.log4j.Logger;
 import org.openchain.certification.model.User;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -43,7 +41,6 @@ public final class I18N {
 	 * @return
 	 */
 	public static String getMessage(String key, String language) {
-		//TODO: Support localization.  Use the tags https://tools.ietf.org/html/rfc5646
 		if (language == null) {
 			language = User.DEFAULT_LANGUAGE;
 		}

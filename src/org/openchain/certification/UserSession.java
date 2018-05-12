@@ -330,7 +330,7 @@ public class UserSession {
 			String hashedUuid = PasswordUtil.getToken(uuid.toString());
 			user.setUuid(hashedUuid);
 			UserDb.getUserDb(config).addUser(user);
-			EmailUtility.emailVerification(name, email, uuid, username, responseServletUrl, config);
+			EmailUtility.emailVerification(name, email, uuid, username, responseServletUrl, config, language);
 	        return true;
 		} catch (SQLException e) {
 			this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
@@ -657,7 +657,7 @@ public class UserSession {
 		EmailUtility.emailCompleteSubmission(this.username,
 				currentSurveyResponse.getResponder().getName(),
 				currentSurveyResponse.getResponder().getEmail(),
-				currentSurveyResponse.getSpecVersion(), config);
+				currentSurveyResponse.getSpecVersion(), config, language);
 		return true;
 	}
 	public boolean isAdmin() {
@@ -732,7 +732,7 @@ public class UserSession {
 		}
 		try {
 			EmailUtility.emailVerification(user.getName(), user.getEmail(), 
-					uuid, username, responseServletUrl, config);
+					uuid, username, responseServletUrl, config, language);
 		} catch (EmailUtilException e) {
 			logger.error("Error emailing invitation",e);
 			this.lastError = "Unable to re-email the invitiation: "+e.getMessage();
@@ -902,7 +902,7 @@ public class UserSession {
 					this.name = newName;
 					this.organization = newOrganization;
 					try {
-						EmailUtility.emailProfileUpdate(username, this.email, config);
+						EmailUtility.emailProfileUpdate(username, this.email, config, language);
 					}catch (EmailUtilException e) {
 						logger.warn("Error emailing profile update notice",e);
 						this.lastError = "Unable to email the for the profile update: "+e.getMessage();

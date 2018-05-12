@@ -22,6 +22,8 @@ import java.util.UUID;
 import javax.servlet.ServletConfig;
 
 import org.apache.log4j.Logger;
+import org.openchain.certification.I18N;
+import org.openchain.certification.model.User;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -45,14 +47,14 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest;
  */
 public class EmailUtility {
 	static final Logger logger = Logger.getLogger(EmailUtility.class);
-	private static final String ACCESS_KEY_VAR = "AWS_ACCESS_KEY_ID";
-	private static final String SECRET_KEY_VAR = "AWS_SECRET_ACCESS_KEY";
+	private static final String ACCESS_KEY_VAR = "AWS_ACCESS_KEY_ID"; //$NON-NLS-1$
+	private static final String SECRET_KEY_VAR = "AWS_SECRET_ACCESS_KEY"; //$NON-NLS-1$
 	
-	private static AmazonSimpleEmailServiceClient getEmailClient(ServletConfig config) throws EmailUtilException {
-		String regionName = config.getServletContext().getInitParameter("email_ses_region");
+	private static AmazonSimpleEmailServiceClient getEmailClient(ServletConfig config, String language) throws EmailUtilException {
+		String regionName = config.getServletContext().getInitParameter("email_ses_region"); //$NON-NLS-1$
 		if (regionName == null || regionName.isEmpty()) {
-			logger.error("Missing email_ses_region parameter in the web.xml file");
-			throw(new EmailUtilException("The region name for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+			logger.error("Missing email_ses_region parameter in the web.xml file"); //$NON-NLS-1$
+			throw(new EmailUtilException(I18N.getMessage("EmailUtility.4",language))); //$NON-NLS-1$
 		}
 		String secretKey = null;
 		String accessKey = System.getenv(ACCESS_KEY_VAR);
@@ -77,81 +79,103 @@ public class EmailUtility {
 	}
 	
 	public static void emailVerification(String name, String email, UUID uuid, 
-			String username, String responseServletUrl, ServletConfig config) throws EmailUtilException {
-		String fromEmail = config.getServletContext().getInitParameter("return_email");
+			String username, String responseServletUrl, ServletConfig config, String language) throws EmailUtilException {
+		String fromEmail = config.getServletContext().getInitParameter("return_email"); //$NON-NLS-1$
 		if (fromEmail == null || fromEmail.isEmpty()) {
-			logger.error("Missing return_email parameter in the web.xml file");
-			throw(new EmailUtilException("The from email for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+			logger.error("Missing return_email parameter in the web.xml file"); //$NON-NLS-1$
+			throw(new EmailUtilException(I18N.getMessage("EmailUtility.7",language))); //$NON-NLS-1$
 		}
-		String link = responseServletUrl + "?request=register&username=" + username + "&uuid=" + uuid.toString();
-		StringBuilder msg = new StringBuilder("<div>Welcome ");
+		String link = responseServletUrl + "?request=register&username=" + username + "&uuid=" + uuid.toString(); //$NON-NLS-1$ //$NON-NLS-2$
+		StringBuilder msg = new StringBuilder("<div>"); //$NON-NLS-1$
+		msg.append(I18N.getMessage("EmailUtility.11",language)); //$NON-NLS-1$
+		msg.append(" "); //$NON-NLS-1$
 		msg.append(name);
-		msg.append(" to the OpenChain Certification website.<br /> <br />To complete your registration, click on the following or copy/paste into your web browser <a href=\"");
+		msg.append(" "); //$NON-NLS-1$
+		msg.append(I18N.getMessage("EmailUtility.14",language)); //$NON-NLS-1$
+		msg.append("<br /> <br />"); //$NON-NLS-1$
+		msg.append(I18N.getMessage("EmailUtility.16",language)); //$NON-NLS-1$
+		msg.append("<a href=\""); //$NON-NLS-1$
 		msg.append(link);
-		msg.append("\">");
+		msg.append("\">"); //$NON-NLS-1$
 		msg.append(link);
-		msg.append("</a><br/><br/>Thanks,<br/>The OpenChain team</div>");
+		msg.append("</a><br/><br/>"); //$NON-NLS-1$
+		msg.append(I18N.getMessage("EmailUtility.20",language)); //$NON-NLS-1$
+		msg.append("<br/>"); //$NON-NLS-1$
+		msg.append(I18N.getMessage("EmailUtility.22",language)); //$NON-NLS-1$
+		msg.append("</div>"); //$NON-NLS-1$
 		Destination destination = new Destination().withToAddresses(new String[]{email});
-		Content subject = new Content().withData("OpenChain Registration [do not reply]");
+		Content subject = new Content().withData(I18N.getMessage("EmailUtility.24",language)); //$NON-NLS-1$
 		Content bodyData = new Content().withData(msg.toString());
 		Body body = new Body();
 		body.setHtml(bodyData);
 		Message message = new Message().withSubject(subject).withBody(body);
 		SendEmailRequest request = new SendEmailRequest().withSource(fromEmail).withDestination(destination).withMessage(message);
 		try {
-			AmazonSimpleEmailServiceClient client = getEmailClient(config);
+			AmazonSimpleEmailServiceClient client = getEmailClient(config, language);
 			client.sendEmail(request);
-			logger.info("Invitation email sent to "+email);
+			logger.info("Invitation email sent to "+email); //$NON-NLS-1$
 		} catch (Exception ex) {
-			logger.error("Email send failed",ex);
-			throw(new EmailUtilException("Exception occured during the emailing of the invitation",ex));
+			logger.error("Email send failed",ex); //$NON-NLS-1$
+			throw(new EmailUtilException(I18N.getMessage("EmailUtility.27",language),ex)); //$NON-NLS-1$
 		}
 	}
 
 	@SuppressWarnings("unused")
 	private static void logMailInfo(AmazonSimpleEmailServiceClient client, ServletConfig config) {
-		logger.info("Email Service Name: "+client.getServiceName());
+		logger.info("Email Service Name: "+client.getServiceName()); //$NON-NLS-1$
 		List<String> identities = client.listIdentities().getIdentities();
 		for (String identity:identities) {
-			logger.info("Email identity: "+identity);
+			logger.info("Email identity: "+identity); //$NON-NLS-1$
 		}
 		List<String> verifiedEmails = client.listVerifiedEmailAddresses().getVerifiedEmailAddresses();
 		for (String email:verifiedEmails) {
-			logger.info("Email verified email address: "+email);
+			logger.info("Email verified email address: "+email); //$NON-NLS-1$
 		}
 		GetSendQuotaResult sendQuota = client.getSendQuota();
-		logger.info("Max 24 hour send="+sendQuota.getMax24HourSend()+", Max Send Rate="+
-		sendQuota.getMaxSendRate() + ", Sent last 24 hours="+sendQuota.getSentLast24Hours());
+		logger.info("Max 24 hour send="+sendQuota.getMax24HourSend()+", Max Send Rate="+ //$NON-NLS-1$ //$NON-NLS-2$
+		sendQuota.getMaxSendRate() + ", Sent last 24 hours="+sendQuota.getSentLast24Hours()); //$NON-NLS-1$
 	}
 	
 	public static void emailCompleteSubmission(String username, String name, String email,
-			String specVersion, ServletConfig config) throws EmailUtilException {
-		StringBuilder adminMsg = new StringBuilder("<div>User ");
+			String specVersion, ServletConfig config, String language) throws EmailUtilException {
+		StringBuilder adminMsg = new StringBuilder("<div>"); //$NON-NLS-1$
+		adminMsg.append("User"); //$NON-NLS-1$
+		adminMsg.append(" "); //$NON-NLS-1$
 		adminMsg.append(name);
-		adminMsg.append(" with username ");
+		adminMsg.append(" "); //$NON-NLS-1$
+		adminMsg.append("with username"); //$NON-NLS-1$
+		adminMsg.append(" "); //$NON-NLS-1$
 		adminMsg.append(username);
-		adminMsg.append(" and email ");
+		adminMsg.append(" "); //$NON-NLS-1$
+		adminMsg.append("and email"); //$NON-NLS-1$
+		adminMsg.append(" "); //$NON-NLS-1$
 		adminMsg.append(email);
-		adminMsg.append(" has just submitted a cerification request.</div>");
-		emailAdmin("Notification - new OpenChain submission [do not reply]", adminMsg.toString(), config);
+		adminMsg.append(" "); //$NON-NLS-1$
+		adminMsg.append("has just submitted a cerification request."); //$NON-NLS-1$
+		adminMsg.append("</div>"); //$NON-NLS-1$
+		emailAdmin("Notification - new OpenChain submission [do not reply]", adminMsg.toString(), config); //$NON-NLS-1$
 		
-		StringBuilder userMsg = new StringBuilder("<div>Congratulations ");
+		StringBuilder userMsg = new StringBuilder("<div>"); //$NON-NLS-1$
+		userMsg.append(I18N.getMessage("EmailUtility.48",language)); //$NON-NLS-1$
+		userMsg.append(" "); //$NON-NLS-1$
 		userMsg.append(name);
-		userMsg.append(".  Your certification request has been accepted.  If you did not submit a request for OpenChain certification, please notify the OpenChain group at openchain-conformance@lists.linuxfoundation.org.</div>");
-		emailUser(email, "OpenChain certification request has been accepted [do not reply]", userMsg.toString(), config);
+		userMsg.append(I18N.getMessage("EmailUtility.50",language)); //$NON-NLS-1$
+		userMsg.append("</div>"); //$NON-NLS-1$
+		emailUser(email, I18N.getMessage("EmailUtility.52",language), userMsg.toString(), config, language); //$NON-NLS-1$
 
-		logger.info("Submittal notification email sent for "+email);
+		logger.info("Submittal notification email sent for "+email); //$NON-NLS-1$
 	}
 	
-	public static void emailUser(String toEmail, String subjectText, String msg, ServletConfig config) throws EmailUtilException {
-		String fromEmail = config.getServletContext().getInitParameter("return_email");
+	public static void emailUser(String toEmail, String subjectText, String msg, 
+			ServletConfig config, String language) throws EmailUtilException {
+		String fromEmail = config.getServletContext().getInitParameter("return_email"); //$NON-NLS-1$
 		if (fromEmail == null || fromEmail.isEmpty()) {
-			logger.error("Missing return_email parameter in the web.xml file");
-			throw(new EmailUtilException("The from email for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+			logger.error("Missing return_email parameter in the web.xml file"); //$NON-NLS-1$
+			throw(new EmailUtilException(I18N.getMessage("EmailUtility.56",language))); //$NON-NLS-1$
 		}
 		if (toEmail == null || toEmail.isEmpty()) {
-			logger.error("Missing notification_email parameter in the web.xml file");
-			throw(new EmailUtilException("The to email for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+			logger.error("Missing notification_email parameter in the web.xml file"); //$NON-NLS-1$
+			throw(new EmailUtilException(I18N.getMessage("EmailUtility.58",language))); //$NON-NLS-1$
 		}
 		
 		Destination destination = new Destination().withToAddresses(new String[]{toEmail});
@@ -162,25 +186,25 @@ public class EmailUtility {
 		Message message = new Message().withSubject(subject).withBody(body);
 		SendEmailRequest request = new SendEmailRequest().withSource(fromEmail).withDestination(destination).withMessage(message);
 		try {
-			AmazonSimpleEmailServiceClient client = getEmailClient(config);
+			AmazonSimpleEmailServiceClient client = getEmailClient(config, language);
 			client.sendEmail(request);
-			logger.info("User email sent to "+toEmail+": "+msg);
+			logger.info("User email sent to "+toEmail+": "+msg); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (Exception ex) {
-			logger.error("Email send failed",ex);
-			throw(new EmailUtilException("Exception occured during the emailing of a user email",ex));
+			logger.error("Email send failed",ex); //$NON-NLS-1$
+			throw(new EmailUtilException(I18N.getMessage("EmailUtility.62",language),ex)); //$NON-NLS-1$
 		}
 	}
 
 	public static void emailAdmin(String subjectText, String msg, ServletConfig config) throws EmailUtilException {
-		String fromEmail = config.getServletContext().getInitParameter("return_email");
+		String fromEmail = config.getServletContext().getInitParameter("return_email"); //$NON-NLS-1$
 		if (fromEmail == null || fromEmail.isEmpty()) {
-			logger.error("Missing return_email parameter in the web.xml file");
-			throw(new EmailUtilException("The from email for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+			logger.error("Missing return_email parameter in the web.xml file"); //$NON-NLS-1$
+			throw(new EmailUtilException("The from email for the email facility has not been set.  Pleaese contact the OpenChain team with this error.")); //$NON-NLS-1$
 		}
-		String toEmail = config.getServletContext().getInitParameter("notification_email");
+		String toEmail = config.getServletContext().getInitParameter("notification_email"); //$NON-NLS-1$
 		if (toEmail == null || toEmail.isEmpty()) {
-			logger.error("Missing notification_email parameter in the web.xml file");
-			throw(new EmailUtilException("The to email for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+			logger.error("Missing notification_email parameter in the web.xml file"); //$NON-NLS-1$
+			throw(new EmailUtilException("The to email for the email facility has not been set.  Pleaese contact the OpenChain team with this error.")); //$NON-NLS-1$
 		}
 		
 		Destination destination = new Destination().withToAddresses(new String[]{toEmail});
@@ -191,12 +215,12 @@ public class EmailUtility {
 		Message message = new Message().withSubject(subject).withBody(body);
 		SendEmailRequest request = new SendEmailRequest().withSource(fromEmail).withDestination(destination).withMessage(message);
 		try {
-			AmazonSimpleEmailServiceClient client = getEmailClient(config);
+			AmazonSimpleEmailServiceClient client = getEmailClient(config, User.DEFAULT_LANGUAGE);
 			client.sendEmail(request);
-			logger.info("Admin email sent to "+toEmail+": "+msg);
+			logger.info("Admin email sent to "+toEmail+": "+msg); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (Exception ex) {
-			logger.error("Email send failed",ex);
-			throw(new EmailUtilException("Exception occured during the emailing of the submission notification",ex));
+			logger.error("Email send failed",ex); //$NON-NLS-1$
+			throw(new EmailUtilException("Exception occured during the emailing of the submission notification",ex)); //$NON-NLS-1$
 		}
 	}
 
@@ -205,77 +229,84 @@ public class EmailUtility {
 	 * @param username
 	 * @param email
 	 * @param config
+	 * @param language
 	 * @throws EmailUtilException
 	 */
 	public static void emailProfileUpdate(String username, String email,
-			ServletConfig config) throws EmailUtilException {
-		String fromEmail = config.getServletContext().getInitParameter("return_email");
+			ServletConfig config, String language) throws EmailUtilException {
+		String fromEmail = config.getServletContext().getInitParameter("return_email"); //$NON-NLS-1$
 		if (fromEmail == null || fromEmail.isEmpty()) {
-			logger.error("Missing return_email parameter in the web.xml file");
-			throw(new EmailUtilException("The from email for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+			logger.error("Missing return_email parameter in the web.xml file"); //$NON-NLS-1$
+			throw(new EmailUtilException(I18N.getMessage("EmailUtility.75",language))); //$NON-NLS-1$
 		}
-		StringBuilder msg = new StringBuilder("<div>The profile for username ");
-
+		StringBuilder msg = new StringBuilder("<div>"); //$NON-NLS-1$
+		msg.append(I18N.getMessage("EmailUtility.77",language)); //$NON-NLS-1$
+		msg.append(" "); //$NON-NLS-1$
 		msg.append(username);
-		msg.append(" has been updated.  If you this update has been made in error, please contact the OpenChain certification team.");
+		msg.append(" "); //$NON-NLS-1$
+		msg.append(I18N.getMessage("EmailUtility.80",language)); //$NON-NLS-1$
 		Destination destination = new Destination().withToAddresses(new String[]{email});
-		Content subject = new Content().withData("OpenChain Certification profile updated [do not reply]");
+		Content subject = new Content().withData(I18N.getMessage("EmailUtility.81",language)); //$NON-NLS-1$
 		Content bodyData = new Content().withData(msg.toString());
 		Body body = new Body();
 		body.setHtml(bodyData);
 		Message message = new Message().withSubject(subject).withBody(body);
 		SendEmailRequest request = new SendEmailRequest().withSource(fromEmail).withDestination(destination).withMessage(message);
 		try {
-			AmazonSimpleEmailServiceClient client = getEmailClient(config);
+			AmazonSimpleEmailServiceClient client = getEmailClient(config, language);
 			client.sendEmail(request);
-			logger.info("Notification email sent for "+email);
+			logger.info("Notification email sent for "+email); //$NON-NLS-1$
 		} catch (Exception ex) {
-			logger.error("Email send failed",ex);
-			throw(new EmailUtilException("Exception occured during the emailing of the submission notification",ex));
+			logger.error("Email send failed",ex); //$NON-NLS-1$
+			throw(new EmailUtilException(I18N.getMessage("EmailUtility.84",language),ex)); //$NON-NLS-1$
 		}
 	}
 
 	public static void emailPasswordReset(String name, String email, UUID uuid,
-			String username, String responseServletUrl, ServletConfig config) throws EmailUtilException {
-		String fromEmail = config.getServletContext().getInitParameter("return_email");
+			String username, String responseServletUrl, ServletConfig config, String language) throws EmailUtilException {
+		String fromEmail = config.getServletContext().getInitParameter("return_email"); //$NON-NLS-1$
 		if (fromEmail == null || fromEmail.isEmpty()) {
-			logger.error("Missing return_email parameter in the web.xml file");
-			throw(new EmailUtilException("The from email for the email facility has not been set.  Pleaese contact the OpenChain team with this error."));
+			logger.error("Missing return_email parameter in the web.xml file"); //$NON-NLS-1$
+			throw(new EmailUtilException(I18N.getMessage("EmailUtility.87",language))); //$NON-NLS-1$
 		}
-		String link = responseServletUrl + "?request=pwreset&username=" + username + "&uuid=" + uuid.toString();
-		StringBuilder msg = new StringBuilder("<div>To reset the your password, click on the following or copy/paste into your web browser <a href=\"");
+		String link = responseServletUrl + "?request=pwreset&username=" + username + "&uuid=" + uuid.toString(); //$NON-NLS-1$ //$NON-NLS-2$
+		StringBuilder msg = new StringBuilder("<div>"); //$NON-NLS-1$
+		msg.append(I18N.getMessage("EmailUtility.91",language)); //$NON-NLS-1$
+		msg.append("<a href=\""); //$NON-NLS-1$
 		msg.append(link);
-		msg.append("\">");
+		msg.append("\">"); //$NON-NLS-1$
 		msg.append(link);
-		msg.append("</a><br/><br/><br/>The OpenChain team</div>");
+		msg.append("</a><br/><br/><br/>"); //$NON-NLS-1$
+		msg.append(I18N.getMessage("EmailUtility.95",language)); //$NON-NLS-1$
+		msg.append("</div>"); //$NON-NLS-1$
 		Destination destination = new Destination().withToAddresses(new String[]{email});
-		Content subject = new Content().withData("OpenChain Password Reset [do not reply]");
+		Content subject = new Content().withData(I18N.getMessage("EmailUtility.96",language)); //$NON-NLS-1$
 		Content bodyData = new Content().withData(msg.toString());
 		Body body = new Body();
 		body.setHtml(bodyData);
 		Message message = new Message().withSubject(subject).withBody(body);
 		SendEmailRequest request = new SendEmailRequest().withSource(fromEmail).withDestination(destination).withMessage(message);
 		try {
-			AmazonSimpleEmailServiceClient client = getEmailClient(config);
+			AmazonSimpleEmailServiceClient client = getEmailClient(config, language);
 			client.sendEmail(request);
-			logger.info("Reset password email sent to "+email);
+			logger.info("Reset password email sent to "+email); //$NON-NLS-1$
 		} catch (Exception ex) {
-			logger.error("Email send failed",ex);
-			throw(new EmailUtilException("Exception occured during the emailing of the password reset",ex));
+			logger.error("Email send failed",ex); //$NON-NLS-1$
+			throw(new EmailUtilException(I18N.getMessage("EmailUtility.99",language),ex)); //$NON-NLS-1$
 		}
 	}
 
 	public static void emailUnsubmit(String username, String name,
 			String email, String specVersion, ServletConfig config) throws EmailUtilException {
-		StringBuilder msg = new StringBuilder("<div>User ");
+		StringBuilder msg = new StringBuilder("<div>User "); //$NON-NLS-1$
 		msg.append(name);
-		msg.append(" with username ");
+		msg.append(" with username "); //$NON-NLS-1$
 		msg.append(username);
-		msg.append(" and email ");
+		msg.append(" and email "); //$NON-NLS-1$
 		msg.append(email);
-		msg.append(" has just UN submitted a certification request.");
-		emailAdmin("Notification - pulled OpenChain submission [do not reply]", msg.toString(), config);
-		logger.info("Notification email sent for "+email);
+		msg.append(" has just UN submitted a certification request."); //$NON-NLS-1$
+		emailAdmin("Notification - pulled OpenChain submission [do not reply]", msg.toString(), config); //$NON-NLS-1$
+		logger.info("Notification email sent for "+email); //$NON-NLS-1$
 	}
 	
 }
