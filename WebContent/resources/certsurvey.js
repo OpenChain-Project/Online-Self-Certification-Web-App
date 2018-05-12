@@ -91,7 +91,14 @@ function getQuestionFormHtml(questions) {
 			}
 		}
 		html += '<td class="number_cell">';
-		html += questions[i].specReference;
+		if (questions[i].specReference != null && questions[i].specReference.length > 0) {
+			html += questions[i].specReference[0];
+			for (var j = 1; j < questions[i].specReference.length; j++) {
+				html += ',';
+				html += questions[i].specReference[j];
+			}
+		}
+		
 		html += '</td>';
 		html += '</tr>\n';
 	}

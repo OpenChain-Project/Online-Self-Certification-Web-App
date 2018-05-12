@@ -52,7 +52,7 @@ public class TestUserSession {
 	String s1q1Question="s1q1question";
 	String s1q1Number = "1.a";
 	YesNo s1q1Answer = YesNo.Yes;
-	String s1q1SpecRef = "s1q1SpecRef";
+	String[] s1q1SpecRef = new String[] {"s1q1SpecRef"};
 	YesNoQuestion s1q1;
 	Section section1;
 	Survey survey;
@@ -68,19 +68,19 @@ public class TestUserSession {
 	String s2q1Number = "2.b";
 	int s2q1MinCorrect = 4;
 	SubQuestion s2q1;
-	String s2q1SpecRef = "s2q1SpecRef";
+	String[] s2q1SpecRef = new String[] {"s2q1SpecRef"};
 	String s2q2Question="s2q2question";
 	String s2q2Number = "2.b.ii";
 	YesNo s2q2Answer = YesNo.No;
 	String s2q2Prompt = "s2q2prompt";
 	String s2q2validate = "dd";
 	YesNoQuestionWithEvidence s2q2;
-	String s2q2SpecRef = "s2q2SpecRef";
+	String[] s2q2SpecRef = new String[] {"s2q2SpecRef"};
 	String s2q3Question="s2q3question";
 	String s2q3Number = "2.b.iii";
 	YesNo s2q3Answer = YesNo.NotAnswered;
 	YesNoQuestion s2q3;
-	String s2q3SpecRef = "s2q3SpecRef";
+	String[] s2q3SpecRef = new String[] {"s2q3SpecRef"};
 	
 	String primarySpecVersion2 = "2.2";
 	String specVersion2 = primarySpecVersion2+".2";
@@ -89,7 +89,7 @@ public class TestUserSession {
 	String s1q1Question2="s1q1question2";
 	String s1q1Number2 = "1.a";
 	YesNo s1q1Answer2 = YesNo.Yes;
-	String s1q1SpecRef2 = "s1q1SpecRef2";
+	String[] s1q1SpecRef2 = new String[] {"s1q1SpecRef2"};
 	YesNoQuestion s1q12;
 	Section section12;
 	Survey survey2;
@@ -118,7 +118,7 @@ public class TestUserSession {
 
 		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
 				section1Name, s1q2Number, specVersion, language, s1q2Answer, s1q2Prompt);
-		String s1q2SpecRef = "s1q2SpecRef";
+		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
 		s1q2.setSpecReference(s1q2SpecRef);
 		section1Questions.add(s1q2);
 		section1.setQuestions(section1Questions);

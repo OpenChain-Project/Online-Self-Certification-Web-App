@@ -42,7 +42,7 @@ public class TestSurveyResponseDao {
 	String s1q1Question="s1q1question";
 	String s1q1Number = "1.a";
 	YesNo s1q1Answer = YesNo.Yes;
-	String s1q1SpecRef = "s1q1SpecRef";
+	String[] s1q1SpecRef = new String[] {"s1q1SpecRef"};
 	YesNoQuestion s1q1;
 	Section section1;
 	Survey survey;
@@ -58,19 +58,19 @@ public class TestSurveyResponseDao {
 	String s2q1Number = "2.b";
 	int s2q1MinCorrect = 4;
 	SubQuestion s2q1;
-	String s2q1SpecRef = "s2q1SpecRef";
+	String[] s2q1SpecRef = new String[] {"s2q1SpecRef"};
 	String s2q2Question="s2q2question";
 	String s2q2Number = "2.b.i";
 	YesNo s2q2Answer = YesNo.No;
 	String s2q2Prompt = "s2q2prompt";
 	String s2q2validate = "dd";
 	YesNoQuestionWithEvidence s2q2;
-	String s2q2SpecRef = "s2q2SpecRef";
+	String[] s2q2SpecRef = new String[] {"s2q2SpecRef"};
 	String s2q3Question="s2q3question";
 	String s2q3Number = "2.b.ii";
 	YesNo s2q3Answer = YesNo.NotAnswered;
 	YesNoQuestion s2q3;
-	String s2q3SpecRef = "s2q3SpecRef";
+	String[] s2q3SpecRef = new String[] {"s2q3SpecRef"};
 	SurveyDbDao surveyDao;
 	User user;
 	User user2;
@@ -94,7 +94,7 @@ public class TestSurveyResponseDao {
 
 		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
 				section1Name, s1q2Number, specVersion, language1, s1q2Answer, s1q2Prompt);
-		String s1q2SpecRef = "s1q2SpecRef";
+		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
 		s1q2.setSpecReference(s1q2SpecRef);
 		section1Questions.add(s1q2);
 		section1.setQuestions(section1Questions);
@@ -199,7 +199,7 @@ public class TestSurveyResponseDao {
 
 		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
 				section1Name, s1q2Number, laterSpecVersion, language1, s1q2Answer, s1q2Prompt);
-		String s1q2SpecRef = "s1q2SpecRef";
+		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
 		s1q2.setSpecReference(s1q2SpecRef);
 		newQuestions1.add(s1q2);
 		newSection1.setQuestions(newQuestions1);
@@ -525,7 +525,7 @@ public class TestSurveyResponseDao {
 
 		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
 				section1Name, s1q2Number, laterSpecVersion, language1, s1q2Answer, s1q2Prompt);
-		String s1q2SpecRef = "s1q2SpecRef";
+		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
 		s1q2.setSpecReference(s1q2SpecRef);
 		newQuestions1.add(s1q2);
 		newSection1.setQuestions(newQuestions1);
@@ -669,7 +669,7 @@ public class TestSurveyResponseDao {
 
 		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
 				section1Name, s1q2Number, laterSpecVersion, language1, s1q2Answer, s1q2Prompt);
-		String s1q2SpecRef = "s1q2SpecRef";
+		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
 		s1q2.setSpecReference(s1q2SpecRef);
 		newQuestions1.add(s1q2);
 		newSection1.setQuestions(newQuestions1);
@@ -730,7 +730,7 @@ public class TestSurveyResponseDao {
 
 		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
 				section1Name, s1q2Number, nonUserSpecVersion, language1, s1q2Answer, s1q2Prompt);
-		String s1q2SpecRef3 = "s1q2SpecRef3";
+		String[] s1q2SpecRef3 = new String[] {"s1q2SpecRef3"};
 		s1q2.setSpecReference(s1q2SpecRef3);
 		nonUserQuestions1.add(s1q2);
 		nonUserSection1.setQuestions(nonUserQuestions1);

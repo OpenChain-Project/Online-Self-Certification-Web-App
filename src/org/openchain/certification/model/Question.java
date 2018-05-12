@@ -36,7 +36,7 @@ public abstract class Question implements Comparable<Question> {
 	transient static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)(\\.\\d+)?(\\.\\d+)?");
 	transient static final Pattern NUM_ALPH_AROMAN_PATTERN = Pattern.compile("(\\d+)(\\.[a-z]+)?(\\.[ivxlmcd]+)?");
 	transient private Matcher numberMatch;
-	private String specReference = "";
+	private String[] specReference = new String[0];
 	private String language;
 	
 	/**
@@ -312,14 +312,14 @@ public abstract class Question implements Comparable<Question> {
 	/**
 	 * @return the specReference
 	 */
-	public String getSpecReference() {
+	public String[] getSpecReference() {
 		return specReference;
 	}
 
 	/**
 	 * @param specReference the specReference to set
 	 */
-	public void setSpecReference(String specReference) {
+	public void setSpecReference(String[] specReference) {
 		this.specReference = specReference;
 	}
 
@@ -351,7 +351,7 @@ public abstract class Question implements Comparable<Question> {
 		String[] retval = new String[Survey.CSV_COLUMNS.length];
 		retval[0] = this.sectionName;
 		retval[1] = this.number;
-		retval[2] = this.specReference ;
+		retval[2] = specReferenceArrayToStr(this.specReference);
 		retval[3] = this.question;
 		retval[4] = this.type;
 		retval[5] = this.getCorrectAnswer().toString();
@@ -428,9 +428,7 @@ public abstract class Question implements Comparable<Question> {
 		} else {
 			throw(new QuestionTypeException("Unknown question type: "+type));
 		}
-		if (specReference != null) {
-			retval.setSpecReference(specReference);
-		}
+		retval.setSpecReference(specReferenceStrToArray(specReference));
 		if (subQuestionNumber != null && !subQuestionNumber.isEmpty()) {
 			retval.setSubQuestionOfNumber(subQuestionNumber);
 		}
@@ -438,4 +436,38 @@ public abstract class Question implements Comparable<Question> {
 	}
 	
 	public abstract Question clone();
+	
+	/**
+	 * Convert a specification reference to a string using comma's to separate the spec references
+	 * @param specReference
+	 * @return
+	 */
+	public static String specReferenceArrayToStr(String[] specReference) {
+		StringBuilder specRefStr = new StringBuilder();
+		if (specReference != null && specReference.length > 0) {
+			specRefStr.append(specReference[0]);
+			for (int i = 1; i < specReference.length; i++) {
+				specRefStr.append(",");
+				specRefStr.append(specReference[i]);
+			}
+		}
+		return specRefStr.toString();
+	}
+
+	/**
+	 * Convert a string to a specification reference array
+	 * @param specReferenceStr
+	 * @return
+	 */
+	public static String[] specReferenceStrToArray(String specReferenceStr) {
+		if (specReferenceStr == null) {
+			return new String[0];
+		} else {
+			String[] specReferenceAr = specReferenceStr.split(",");
+			for (int i = 0; i < specReferenceAr.length; i++) {
+				specReferenceAr[i] = specReferenceAr[i].trim();
+			}
+			return specReferenceAr;
+		}
+	}
 }

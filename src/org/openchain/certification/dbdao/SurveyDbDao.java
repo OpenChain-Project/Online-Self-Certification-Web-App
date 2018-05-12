@@ -261,7 +261,7 @@ public class SurveyDbDao {
 						}
 						parent.addSubQuestion(question);
 					}
-					question.setSpecReference(result.getString("spec_reference"));
+					question.setSpecReference(Question.specReferenceStrToArray(result.getString("spec_reference")));
 					questions.add(question);
 				}
 				Collections.sort(questions);
@@ -359,7 +359,7 @@ public class SurveyDbDao {
 				} else {
 					updateQuestionQuery.setNull(6, Types.BIGINT);
 				}
-				updateQuestionQuery.setString(7, question.getSpecReference());
+				updateQuestionQuery.setString(7, Question.specReferenceArrayToStr(question.getSpecReference()));
 				updateQuestionQuery.setString(8, question.getNumber());
 				updateQuestionQuery.setString(9, question.getSectionName());
 				updateQuestionQuery.setString(10, question.getSpecVersion());
@@ -496,7 +496,7 @@ public class SurveyDbDao {
 				} else {
 					addQuestionQuery.setNull(7, Types.BIGINT);
 				}
-				addQuestionQuery.setString(8, question.getSpecReference());
+				addQuestionQuery.setString(8, Question.specReferenceArrayToStr(question.getSpecReference()));
 				addQuestionQuery.setString(9, question.getSectionName());
 				addQuestionQuery.setString(10, question.getSpecVersion());
 				addQuestionQuery.setString(11, question.getLanguage());
@@ -556,7 +556,7 @@ public class SurveyDbDao {
 				} else {
 					addQuestionQuery.setNull(7, Types.BIGINT);
 				}
-				addQuestionQuery.setString(8, question.getSpecReference());
+				addQuestionQuery.setString(8, Question.specReferenceArrayToStr(question.getSpecReference()));
 				addQuestionQuery.setString(9, question.getSectionName());
 				addQuestionQuery.setString(10, question.getSpecVersion());
 				addQuestionQuery.setString(11, question.getLanguage());
