@@ -279,7 +279,6 @@ public class SurveyDbDao {
 			}
 			stmt.close();
 		}
-		
 	}
 
 	private static String getQuestionNumber(long subQuestionId, Connection con) throws SQLException {

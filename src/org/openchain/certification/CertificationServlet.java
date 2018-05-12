@@ -306,23 +306,7 @@ public class CertificationServlet extends HttpServlet {
 			Survey survey = SurveyDbDao.getSurvey(con, specVersion, language);
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			// Remove redundant unnecessary fields
-			for (Section section:survey.getSections()) {
-				section.setLanguage(null);
-				List<Question> questionsToRemove = new ArrayList<Question>();
-				for (Question question:section.getQuestions()) {
-					question.setSpecVersion(null);
-					question.setLanguage(null);
-					question.setSection(null);
-					if (question.getSubQuestionOfNumber() != null && !question.getSubQuestionOfNumber().isEmpty()) {
-						questionsToRemove.add(question);
-					}
-					question.setSubQuestionOfNumber(null);
-				}
-				// Remove subquestions since they are already present in the subquestions themselves
-				for (Question remove:questionsToRemove) {
-					section.getQuestions().remove(remove);
-				}
-			}
+			survey.prettify();
 			out.print(gson.toJson(survey));
 		} finally {
 			if (con != null) {
@@ -450,6 +434,7 @@ public class CertificationServlet extends HttpServlet {
         	} else if (rj.getRequest().equals(UPLOAD_SURVEY_REQUEST)) {
         		if (user.isAdmin()) {
         			try {
+        				uploadSurvey(rj.getSurvey());
     					uploadSurvey(rj.getSpecVersion(), user.getLanguage(), rj.getSectionTexts(),
     							rj.getCsvLines());
     				} catch (UpdateSurveyException e) {
@@ -632,6 +617,24 @@ public class CertificationServlet extends HttpServlet {
 			return false;
 		}
 	}
+	
+	private void uploadSurvey(Survey survey) throws SQLException, UpdateSurveyException, SurveyResponseException, QuestionException {
+		survey.addInfoToSectionQuestions();
+		logger.info("Uploading new survey for spec version "+survey.getSpecVersion() + " language "+survey.getLanguage());
+		Connection con = null;
+		try {
+			con = SurveyDatabase.createConnection(getServletConfig());
+			SurveyDbDao dao = new SurveyDbDao(con);
+			if (dao.surveyExists(survey.getSpecVersion(), survey.getLanguage(), true)) {
+				throw(new UpdateSurveyException("Survey version "+survey.getSpecVersion()+" language "+survey.getLanguage()+" already exists.  Can not add.  Use update to update the questions."));
+			}
+			dao.addSurvey(survey);
+		} finally {
+			if (con != null) {
+				con.close();
+			}
+		}
+	}
 
 	/**
 	 * Upload a new version of a survey
@@ -709,20 +712,7 @@ public class CertificationServlet extends HttpServlet {
 			}
 			questionList.add(question);
 		}
-		logger.info("Uploading new survey for spec version "+specVersion);
-		Connection con = null;
-		try {
-			con = SurveyDatabase.createConnection(getServletConfig());
-			SurveyDbDao dao = new SurveyDbDao(con);
-			if (dao.surveyExists(specVersion, language, true)) {
-				throw(new UpdateSurveyException("Survey version "+specVersion+" already exists.  Can not add.  Use update to update the questions."));
-			}
-			dao.addSurvey(survey);
-		} finally {
-			if (con != null) {
-				con.close();
-			}
-		}
+		uploadSurvey(survey);
 	}
 
 	/**

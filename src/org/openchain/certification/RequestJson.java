@@ -18,6 +18,8 @@ package org.openchain.certification;
 
 import java.util.List;
 
+import org.openchain.certification.model.Survey;
+
 /**
  * Request JSON for posts 
  * @author Gary O'Neall
@@ -41,6 +43,7 @@ public class RequestJson {
 	private boolean emailPermission;
 	private boolean create;
 	private String language;
+	private Survey survey;
 	
 	/**
 	 * @return the create
@@ -230,5 +233,16 @@ public class RequestJson {
 	public void setLanguage(String language) {
 		this.language = language;
 	}
-	
+	/**
+	 * @return the survey
+	 */
+	public Survey getSurvey() {
+		return survey;
+	}
+	/**
+	 * @param survey the survey to set
+	 */
+	public void setSurvey(Survey survey) {
+		this.survey = survey;
+	}
 }

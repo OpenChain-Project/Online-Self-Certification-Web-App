@@ -27,7 +27,7 @@ public class TestQuestionJsonDeserializer {
 	static final String LANGUAGE = "fr";
 	static final YesNo ANSWER = YesNo.Yes;
 	private static final String SUBQUESTIONOF = "1";
-	private static final String SPECREF = "1.1, 2.2";
+	private static final String SPECREF = "1.1,2.2";
 	private static final String NAPROMPT = "Not applicable";
 	private static final String EVIDENCE_PROMPT = "Evidence prompt";
 	private static final Pattern VALIDATION = Pattern.compile("Test String");
@@ -50,7 +50,7 @@ public class TestQuestionJsonDeserializer {
 		YesNoQuestion q = new YesNoQuestion(QUESTION, SECTION, NUMBER, SPECVERSION,
 				LANGUAGE, ANSWER);
 		q.setSubQuestionOfNumber(SUBQUESTIONOF);
-		q.setSpecReference(SPECREF);
+		q.setSpecReference(Question.specReferenceStrToArray(SPECREF));
 		String jsonStr = gson.toJson(q);
 		Question result = gson.fromJson(jsonStr, Question.class);
 		assertTrue(result instanceof YesNoQuestion);
@@ -59,7 +59,7 @@ public class TestQuestionJsonDeserializer {
 		assertEquals(SECTION, result.getSectionName());
 		assertEquals(SPECVERSION, result.getSpecVersion());
 		assertEquals(SUBQUESTIONOF, q.getSubQuestionOfNumber());
-		assertEquals(SPECREF, q.getSpecReference());
+		assertEquals(SPECREF, Question.specReferenceArrayToStr(q.getSpecReference()));
 		assertEquals(ANSWER, ((YesNoQuestion)q).getCorrectAnswer());
 	}
 	
@@ -68,11 +68,11 @@ public class TestQuestionJsonDeserializer {
 		SubQuestion q = new SubQuestion(QUESTION, SECTION, NUMBER, SPECVERSION,
 				LANGUAGE,  NUMVALID);
 		q.setSubQuestionOfNumber(SUBQUESTIONOF);
-		q.setSpecReference(SPECREF);
+		q.setSpecReference(Question.specReferenceStrToArray(SPECREF));
 		YesNoQuestion subq1 = new YesNoQuestion("sq1-q", "sec1", "2.a", "1.1",
 				"du", YesNo.No);
 		subq1.setSubQuestionOfNumber(NUMBER);
-		subq1.setSpecReference("3.2");
+		subq1.setSpecReference(Question.specReferenceStrToArray("3.2"));
 		q.addSubQuestion(subq1);
 		String jsonStr = gson.toJson(q);
 		Question result = gson.fromJson(jsonStr, Question.class);
@@ -82,7 +82,7 @@ public class TestQuestionJsonDeserializer {
 		assertEquals(SECTION, result.getSectionName());
 		assertEquals(SPECVERSION, result.getSpecVersion());
 		assertEquals(SUBQUESTIONOF, q.getSubQuestionOfNumber());
-		assertEquals(SPECREF, q.getSpecReference());
+		assertEquals(SPECREF, Question.specReferenceArrayToStr(q.getSpecReference()));
 		assertEquals(NUMVALID, ((SubQuestion)q).getMinNumberValidatedAnswers());
 		Collection<Question> subquestions = ((SubQuestion)q).getAllSubquestions();
 		assertEquals(1, subquestions.size());
@@ -93,7 +93,7 @@ public class TestQuestionJsonDeserializer {
 		assertEquals(subq1.getSectionName(), subresult.getSectionName());
 		assertEquals(subq1.getSpecVersion(), subresult.getSpecVersion());
 		assertEquals(subq1.getSubQuestionOfNumber(), subresult.getSubQuestionOfNumber());
-		assertEquals(subq1.getSpecReference(), subresult.getSpecReference());
+		assertEquals(Question.specReferenceArrayToStr(subq1.getSpecReference()), Question.specReferenceArrayToStr(subresult.getSpecReference()));
 		assertEquals(((YesNoQuestion)subq1).getCorrectAnswer(), ((YesNoQuestion)subresult).getCorrectAnswer());
 	}
 	
@@ -102,7 +102,7 @@ public class TestQuestionJsonDeserializer {
 		YesNoNotApplicableQuestion q = new YesNoNotApplicableQuestion(QUESTION, SECTION, NUMBER, SPECVERSION,
 				LANGUAGE, ANSWER, NAPROMPT);
 		q.setSubQuestionOfNumber(SUBQUESTIONOF);
-		q.setSpecReference(SPECREF);
+		q.setSpecReference(Question.specReferenceStrToArray(SPECREF));
 		String jsonStr = gson.toJson(q);
 		Question result = gson.fromJson(jsonStr, Question.class);
 		assertTrue(result instanceof YesNoNotApplicableQuestion);
@@ -111,7 +111,7 @@ public class TestQuestionJsonDeserializer {
 		assertEquals(SECTION, result.getSectionName());
 		assertEquals(SPECVERSION, result.getSpecVersion());
 		assertEquals(SUBQUESTIONOF, q.getSubQuestionOfNumber());
-		assertEquals(SPECREF, q.getSpecReference());
+		assertEquals(SPECREF, Question.specReferenceArrayToStr(q.getSpecReference()));
 		assertEquals(ANSWER, ((YesNoQuestion)q).getCorrectAnswer());
 		assertEquals(NAPROMPT, ((YesNoNotApplicableQuestion)q).getNotApplicablePrompt());
 	}
@@ -121,7 +121,7 @@ public class TestQuestionJsonDeserializer {
 		YesNoQuestionWithEvidence q = new YesNoQuestionWithEvidence(QUESTION, SECTION, NUMBER, SPECVERSION,
 				LANGUAGE, ANSWER, EVIDENCE_PROMPT, VALIDATION);
 		q.setSubQuestionOfNumber(SUBQUESTIONOF);
-		q.setSpecReference(SPECREF);
+		q.setSpecReference(Question.specReferenceStrToArray(SPECREF));
 		String jsonStr = gson.toJson(q);
 		Question result = gson.fromJson(jsonStr, Question.class);
 		assertTrue(result instanceof YesNoQuestionWithEvidence);
@@ -130,7 +130,7 @@ public class TestQuestionJsonDeserializer {
 		assertEquals(SECTION, result.getSectionName());
 		assertEquals(SPECVERSION, result.getSpecVersion());
 		assertEquals(SUBQUESTIONOF, q.getSubQuestionOfNumber());
-		assertEquals(SPECREF, q.getSpecReference());
+		assertEquals(SPECREF, Question.specReferenceArrayToStr(q.getSpecReference()));
 		assertEquals(ANSWER, ((YesNoQuestion)q).getCorrectAnswer());
 		assertEquals(EVIDENCE_PROMPT, ((YesNoQuestionWithEvidence)q).getEvidencePrompt());
 		assertEquals(VALIDATION.pattern(), ((YesNoQuestionWithEvidence)q).getEvidenceValidation().pattern());

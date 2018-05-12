@@ -18,8 +18,10 @@ package org.openchain.certification.model;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.HashSet;
@@ -42,6 +44,7 @@ public class Survey {
 	private String specVersion;
 	private String language;
 	private List<Section> sections;
+	transient private Boolean compactAndPretty = null;	// Null indicates it has not been explicitly set
 	
 	public Survey(String specVersion, String language) {
 		this.specVersion = specVersion;
@@ -155,5 +158,77 @@ public class Survey {
 			retval.setSections(clonedSections);
 		}
 		return retval;
-	}	
+	}
+	
+	/**
+	 * @return true if all redundant information in the sections and questions have been set to null for 
+	 * pretty printing the survey.  Null return values are likely if the Survey has not been specifically
+	 * prettified or expanded
+	 */
+	public Boolean isCompactAndPretty() {
+		return this.compactAndPretty;
+	}
+	
+	/**
+	 * Remove all redundant information such as language and specversion in the included sections and questions
+	 */
+	public void prettify() {
+		if (this.compactAndPretty != null && this.compactAndPretty) {
+			return;	// already pretty
+		}
+		for (Section section:getSections()) {
+			section.setLanguage(null);
+			Map<String, SubQuestion> questionsWithSubquestions = new HashMap<String, SubQuestion>();
+			for (Question question:section.getQuestions()) {
+				question.setSpecVersion(null);
+				question.setLanguage(null);
+				question.setSection(null);
+				if (question instanceof SubQuestion) {
+					questionsWithSubquestions.put(question.getNumber(), (SubQuestion)question);
+				}
+			}
+			for (SubQuestion questionsWithSubquestion:questionsWithSubquestions.values()) {
+				for (Question subQuestion:questionsWithSubquestion.getAllSubquestions()) {
+					// remove any redundant copys of the subquestion
+					section.getQuestions().remove(subQuestion);
+					// Clear the redundant subquestion of number
+					subQuestion.setSubQuestionOfNumber(null);
+				}
+			}
+		}
+		this.compactAndPretty = true;
+	}
+	
+	/**
+	 * Add information back to questions essentially reversing <code>prettify()</code>
+	 */
+	public void addInfoToSectionQuestions() {
+		if (this.compactAndPretty != null && !this.compactAndPretty) {
+			return;	// already done
+		}
+		String lang = getLanguage();
+		String specV = getSpecVersion();
+		for (Section section:getSections()) {
+			String sectionName = section.getName();
+			section.setLanguage(lang);
+			Map<String, SubQuestion> questionsWithSubquestions = new HashMap<String, SubQuestion>();
+			for (Question question:section.getQuestions()) {
+				question.setSpecVersion(specV);
+				question.setLanguage(lang);
+				question.setSection(sectionName);
+				if (question instanceof SubQuestion) {
+					questionsWithSubquestions.put(question.getNumber(), (SubQuestion)question);
+				}
+			}
+			for (SubQuestion questionsWithSubquestion:questionsWithSubquestions.values()) {
+				for (Question subQuestion:questionsWithSubquestion.getAllSubquestions()) {
+					// Add the redundant subquestion of number
+					subQuestion.setSubQuestionOfNumber(questionsWithSubquestion.getNumber());
+					// Add the redundant copy of the subquestion to the section
+					section.getQuestions().add(subQuestion);
+				}
+			}
+		}
+		this.compactAndPretty = false;
+	}
 }

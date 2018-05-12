@@ -27,6 +27,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import org.openchain.certification.model.Question;
+import org.openchain.certification.model.SubQuestion;
 
 /**
  * Custom deserializer for Question objects that selects the correct subclass based 
@@ -39,6 +40,7 @@ public class QuestionJsonDeserializer implements JsonDeserializer<Question> {
 	
 	static final String TYPE_PROPERTY = "type";
 	static final Map<String, String> TYPE_TO_CLASS = new HashMap<String, String>();
+	private static final String SUBQUESTION_INDENT = "     ";
 	static {
 		TYPE_TO_CLASS.put("SUBQUESTIONS", "org.openchain.certification.model.SubQuestion");
 		TYPE_TO_CLASS.put("YES_NO", "org.openchain.certification.model.YesNoQuestion");
@@ -64,7 +66,17 @@ public class QuestionJsonDeserializer implements JsonDeserializer<Question> {
 		} catch (ClassNotFoundException e) {
 			throw new JsonParseException(e.getMessage());
 		}
-		return context.deserialize(element, clazz);
+		Question retval = context.deserialize(element, clazz);
+		if (retval instanceof SubQuestion) {
+			SubQuestion sq = (SubQuestion)retval;
+			// Add indentation if necessary to the sub questions
+			for (Question q:sq.getAllSubquestions()) {
+				if (q.getQuestion() != null && !q.getQuestion().startsWith(" ")) {
+					q.setQuestion(SUBQUESTION_INDENT + q.getQuestion());
+				}
+			}
+		}
+		return retval;
 	}
 
 }
