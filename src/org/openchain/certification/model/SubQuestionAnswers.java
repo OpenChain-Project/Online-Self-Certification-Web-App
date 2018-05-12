@@ -30,7 +30,7 @@ import java.util.TreeSet;
 public class SubQuestionAnswers extends Answer {
 	
 	/**
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 */
 	public SubQuestionAnswers(String language) {
 		super(language);

@@ -13,6 +13,7 @@ public class TestI18N {
 	static final String TEST_KEY1 = "test.key1";
 	static final String TEST_KEY1_DEFAULT_VALUE = "default key1";
 	static final String TEST_KEY1_GERMAN_VALUE = "german key1";
+	static final String TEST_SWISS_GERMAN = "de-CH";
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
@@ -28,12 +29,12 @@ public class TestI18N {
 
 	@Test
 	public void testGetMessage2char() {
-		assertEquals(TEST_KEY1_GERMAN_VALUE, I18N.getMessage(TEST_KEY1, "de"));
+		assertEquals(TEST_KEY1_GERMAN_VALUE, I18N.getMessage(TEST_KEY1, TEST_LANGUAGE));
 	}
 	
 	@Test
-	public void testGetMessage3char() {
-		assertEquals(TEST_KEY1_GERMAN_VALUE, I18N.getMessage(TEST_KEY1, "deu"));
+	public void testGetMessageLocaleDefault() {
+		assertEquals(TEST_KEY1_GERMAN_VALUE, I18N.getMessage(TEST_KEY1, TEST_SWISS_GERMAN));
 	}
 	
 	@Test

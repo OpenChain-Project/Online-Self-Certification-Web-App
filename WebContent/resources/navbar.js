@@ -441,7 +441,7 @@ function setLanguage(language, display) {
 }
 
 /**
- * @param language ISO 639 alpha-2 or alpha-3 language code
+ * @param language tag in IETF RFC 5646 format
  */
 function changeLanguage(language, display) {
 	//TODO Implement

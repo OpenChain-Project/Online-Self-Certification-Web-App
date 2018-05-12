@@ -67,7 +67,7 @@ public class SurveyDbDao {
 	
 	/**
 	 * @param specVersion
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @return
 	 * @throws SQLException
 	 * @throws QuestionException
@@ -137,7 +137,7 @@ public class SurveyDbDao {
 	/**
 	 * @param con SQL connect
 	 * @param specVersion Version of the specification.  If null, will get the latest spec version available
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @return Survey with questions (static information) for the latest version
 	 * @throws SQLException
 	 * @throws SurveyResponseException 
@@ -678,7 +678,7 @@ public class SurveyDbDao {
 
 	/**
 	 * @param specVersion Version for the spec
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @param allowDefaultLanguage If true, use the default language if the specificed languages is not found.  If false, return a -1 if the language is not found
 	 * @return ID from the spec table associated with the version and language. If the language is not available, the ID for the default language will be returned.
 	 * @throws SQLException
@@ -689,7 +689,7 @@ public class SurveyDbDao {
 
 	/**
 	 * @param specVersion Version for the spec
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @param allowDefaultLanguage If true, use the default language if the specificed languages is not found.  If false, return a -1 if the language is not found
 	 * @return true if a survey exists for the version and language
 	 * @throws SQLException

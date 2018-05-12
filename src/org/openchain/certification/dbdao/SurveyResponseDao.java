@@ -146,7 +146,7 @@ public class SurveyResponseDao {
 	 * Get a survey response for a specific user
 	 * @param username username for the survey response
 	 * @param specVersion version of the spec for the survey response.  If null, will use the latest spec version available
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @return
 	 * @throws QuestionTypeException 
 	 */
@@ -225,7 +225,7 @@ public class SurveyResponseDao {
 	}
 	
 	/**
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @return All survey responses
 	 * @throws SQLException 
 	 * @throws QuestionException 
@@ -285,7 +285,7 @@ public class SurveyResponseDao {
 	 * Get all answers for a given user ID and specVersion
 	 * @param userId ID for the user
 	 * @param specVersion Specification version
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @return
 	 * @throws SQLException
 	 * @throws QuestionTypeException
@@ -510,7 +510,7 @@ public class SurveyResponseDao {
 	/**
 	 * Update the answers for a survey for an existing survey response
 	 * @param response
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @throws SQLException 
 	 * @throws SurveyResponseException 
 	 * @throws QuestionTypeException 
@@ -809,7 +809,7 @@ public class SurveyResponseDao {
 
 	/**
 	 * @param username
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @return
 	 * @throws SurveyResponseException
 	 * @throws QuestionException

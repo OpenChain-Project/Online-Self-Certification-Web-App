@@ -32,7 +32,7 @@ public class YesNoAnswer extends Answer {
 	protected YesNo answer;
 	
 	/**
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @param answer answer
 	 */
 	public YesNoAnswer(String language, YesNo answer) {

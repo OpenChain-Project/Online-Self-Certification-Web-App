@@ -39,7 +39,7 @@ public class SubQuestion extends Question {
 	 * @param sectionName Name of the section
 	 * @param number Question number
 	 * @param specVersion Version for the spec
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @param minNumberValidatedAnswers Minimum number of valid answers
 	 * @throws QuestionException
 	 */

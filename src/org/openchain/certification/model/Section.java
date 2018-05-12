@@ -39,7 +39,7 @@ public class Section implements Comparable<Section> {
 	/**
 	 * @param name
 	 * @param title
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 */
 	public Section(String name, String title, String language) {
 		this(language);

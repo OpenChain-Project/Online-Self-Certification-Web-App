@@ -36,30 +36,21 @@ public final class I18N {
 	static final Logger logger = Logger.getLogger(I18N.class);
 
 	private static final String BASE_RESOURCE_NAME = "messages";
-	
-	static Map<String, Locale> languageLocal = new HashMap<String, Locale>();
-	static {
-		String[] languages2Chars = Locale.getISOLanguages();
-		for (String languages2Char : languages2Chars) {
-		    Locale locale = new Locale(languages2Char);
-		    languageLocal.put(locale.getISO3Language(), locale);
-		    languageLocal.put(languages2Char, locale);
-		}
-	}
 
 	/**
 	 * @param key Key for the resource file
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @return
 	 */
 	public static String getMessage(String key, String language) {
+		//TODO: Support localization.  Use the tags https://tools.ietf.org/html/rfc5646
 		if (language == null) {
 			language = User.DEFAULT_LANGUAGE;
 		}
-		Locale locale = languageLocal.get(language);
+		Locale locale = Locale.forLanguageTag(language);
 		if (locale == null) {
 			logger.warn("Language "+language+" not supported by Java.  Using default language");
-			locale = languageLocal.get(User.DEFAULT_LANGUAGE);
+			locale = Locale.forLanguageTag(User.DEFAULT_LANGUAGE);
 			if (locale == null) {
 				logger.error("No locale for the default language");
 				throw(new RuntimeException("No local for the default language"));

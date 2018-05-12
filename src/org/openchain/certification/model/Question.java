@@ -44,7 +44,7 @@ public abstract class Question implements Comparable<Question> {
 	 * @param sectionName Name of the section
 	 * @param number Number of the question
 	 * @param specVersion Version for the spec
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @throws QuestionException
 	 */
 	public Question(String question, String sectionName, String number, String specVersion, String language) throws QuestionException {
@@ -376,7 +376,7 @@ public abstract class Question implements Comparable<Question> {
 	/**
 	 * @param row CSV row of columns containing the question
 	 * @param specVersion Version of the specification
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @return
 	 * @throws QuestionException
 	 */

@@ -34,7 +34,7 @@ public class YesNoQuestionWithEvidence extends YesNoQuestion {
 	 * @param sectionName Name of the section containing the question
 	 * @param number Number for the question
 	 * @param specVersion Specification version
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @param correctAnswer Correct answer
 	 * @param evidencePrompt Prompt to display when asking for the evidence
 	 * @param evidenceValidation

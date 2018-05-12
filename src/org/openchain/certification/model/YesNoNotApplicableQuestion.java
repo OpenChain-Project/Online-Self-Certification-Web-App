@@ -33,7 +33,7 @@ public class YesNoNotApplicableQuestion extends YesNoQuestion {
 	 * @param sectionName Name of the section containing the question
 	 * @param number Number for the question
 	 * @param specVersion Version of the specification
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 * @param correctAnswer Correct answer
 	 * @param notApplicablePrompt Prompt to display for not applicable
 	 * @throws QuestionException

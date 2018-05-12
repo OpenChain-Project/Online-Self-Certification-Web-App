@@ -58,7 +58,7 @@ public class SurveyResponse {
 	
 	/**
 	 * @param specVersion Version for the spec
-	 * @param language ISO 639 alpha-2 or alpha-3 language code
+	 * @param language tag in IETF RFC 5646 format
 	 */
 	public SurveyResponse(String specVersion, String language) {
 		this.specVersion = specVersion;
