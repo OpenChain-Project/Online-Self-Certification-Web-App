@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public class YesNoQuestionWithEvidence extends YesNoQuestion {
 	
-	public static String TYPE_NAME = "YES_NO_EVIDENCE";
+	public static String TYPE_NAME = "YES_NO_EVIDENCE"; //$NON-NLS-1$
 
 	private String evidencePrompt;
 	private Pattern evidenceValidation;

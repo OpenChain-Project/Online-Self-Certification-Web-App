@@ -28,7 +28,7 @@ import org.openchain.certification.model.YesNoQuestion.YesNo;
  */
 public class YesNoAnswer extends Answer {
 
-	private static final String ANSWER_MESSAGE_KEY_PREFIX = "YesNo";
+	private static final String ANSWER_MESSAGE_KEY_PREFIX = "YesNo"; //$NON-NLS-1$
 	protected YesNo answer;
 	
 	/**
@@ -83,9 +83,9 @@ public class YesNoAnswer extends Answer {
 	@Override
 	public String getAnswerString() {
 		if (answer == null) {
-			return "";
+			return ""; //$NON-NLS-1$
 		} else {
-			String key = ANSWER_MESSAGE_KEY_PREFIX + "." + answer.toString();
+			String key = ANSWER_MESSAGE_KEY_PREFIX + "." + answer.toString(); //$NON-NLS-1$
 			String retval = I18N.getMessage(key, language);
 			if (retval == null) {
 				retval = answer.toString();

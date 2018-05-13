@@ -153,7 +153,7 @@ public class UserSession {
 			User user = UserDb.getUserDb(config).getUser(username);
 			if (user == null) {
 				logger.error("NO user found for completing email verification - username "+username);
-				throw new InvalidUserException("User "+username+" not found.  Could not complete registration.");
+				throw new InvalidUserException("User"+" "+username+" "+"not found.  Could not complete registration.");
 			}
 			if (user.isVerified()) {
 				logger.warn("Attempting to verify an already verified user");
@@ -581,7 +581,7 @@ public class UserSession {
 						ynAnswer = YesNo.NotApplicable;
 					} else {
 						logger.error("Invalid yes no value: "+response.getValue());
-						throw(new QuestionTypeException("Invalid yes/no value: "+response.getValue()));
+						throw(new QuestionTypeException("Invalid yes/no value:"+" "+response.getValue()));
 					}
 				}
 
@@ -594,7 +594,7 @@ public class UserSession {
 					answer = new SubQuestionAnswers(language);
 				} else {
 					logger.error("Invalid answer type for question "+response.getQuestionNumber());
-					throw(new QuestionTypeException("Invalid answer type for question "+response.getQuestionNumber()));
+					throw(new QuestionTypeException("Invalid answer type for question"+" "+response.getQuestionNumber()));
 				}
 				currentResponses.put(response.getQuestionNumber(), answer);
 				if (question.getSubQuestionOfNumber() != null) {
@@ -606,7 +606,7 @@ public class UserSession {
 					subQuestionAnswer.addSubAnswer(question.getNumber(), answer);
 				}
 			} else {
-				logger.warn("Skipping a response answer "+response.getQuestionNumber());
+				logger.warn("Skipping a response answer"+" "+response.getQuestionNumber());
 			}
 		}
 		Connection con = SurveyDatabase.createConnection(config);

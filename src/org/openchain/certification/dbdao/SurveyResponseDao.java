@@ -78,67 +78,67 @@ public class SurveyResponseDao {
 	public SurveyResponseDao(Connection con) throws SQLException {
 		this.con = con;
 		this.con.setAutoCommit(false);
-		getUserQuery = con.prepareStatement("select password_token, name, address, email," +
-				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization, id, name_permission, email_permission from openchain_user where username=?",
+		getUserQuery = con.prepareStatement("select password_token, name, address, email," + //$NON-NLS-1$
+				"verified, passwordReset, admin, verificationExpirationDate," + //$NON-NLS-1$
+				" uuid, organization, id, name_permission, email_permission from openchain_user where username=?", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		getLatestSpecVersionForUserQuery = con.prepareStatement("select max(version) from survey_response join " +
-				"spec on survey_response.spec_version=spec.id where user_id=?",
+		getLatestSpecVersionForUserQuery = con.prepareStatement("select max(version) from survey_response join " + //$NON-NLS-1$
+				"spec on survey_response.spec_version=spec.id where user_id=?", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		getAnswersQuery = con.prepareStatement("select number, answer, evidence, type, question_id, subquestion_of from " +
-				"answer join survey_response on answer.response_id=survey_response.id " +
-				"join question on answer.question_id=question.id " +
-				"join spec on survey_response.spec_version=spec.id " +
-				"where user_id=? and version=? order by number",
+		getAnswersQuery = con.prepareStatement("select number, answer, evidence, type, question_id, subquestion_of from " + //$NON-NLS-1$
+				"answer join survey_response on answer.response_id=survey_response.id " + //$NON-NLS-1$
+				"join question on answer.question_id=question.id " + //$NON-NLS-1$
+				"join spec on survey_response.spec_version=spec.id " + //$NON-NLS-1$
+				"where user_id=? and version=? order by number", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		getUserIdQuery = con.prepareStatement("select id from openchain_user where username=?",
+		getUserIdQuery = con.prepareStatement("select id from openchain_user where username=?", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		addSurveyResponseQuery = con.prepareStatement("insert into survey_response (user_id, spec_version, submitted, approved, rejected) values (?,?,?,?,?)",
+		addSurveyResponseQuery = con.prepareStatement("insert into survey_response (user_id, spec_version, submitted, approved, rejected) values (?,?,?,?,?)", //$NON-NLS-1$
 				Statement.RETURN_GENERATED_KEYS);
-		deleteAnswerQuery = con.prepareStatement("delete from answer where response_id in (select id from " +
-				"survey_response where user_id=? and spec_version=?) and question_id in (select id from question where number=? and section_id in " +
-				"(select id from section where spec_version=?))",
+		deleteAnswerQuery = con.prepareStatement("delete from answer where response_id in (select id from " + //$NON-NLS-1$
+				"survey_response where user_id=? and spec_version=?) and question_id in (select id from question where number=? and section_id in " + //$NON-NLS-1$
+				"(select id from section where spec_version=?))", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		updateAnswerQuery = con.prepareStatement("update answer set answer=?, evidence=? where response_id in (select id from " +
-				"survey_response where user_id=? and spec_version=?) and question_id in (select id from question where number=? and section_id in " +
-				"(select id from section where spec_version=?))",
+		updateAnswerQuery = con.prepareStatement("update answer set answer=?, evidence=? where response_id in (select id from " + //$NON-NLS-1$
+				"survey_response where user_id=? and spec_version=?) and question_id in (select id from question where number=? and section_id in " + //$NON-NLS-1$
+				"(select id from section where spec_version=?))", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		addAnswerQuery = con.prepareStatement("insert into answer (response_id, question_id, answer, evidence) values((select id from " +
-				"survey_response where user_id=? and spec_version=?), (select id from question where number=? and section_id in " +
-				"(select id from section where spec_version=?)), ?, ?)",
+		addAnswerQuery = con.prepareStatement("insert into answer (response_id, question_id, answer, evidence) values((select id from " + //$NON-NLS-1$
+				"survey_response where user_id=? and spec_version=?), (select id from question where number=? and section_id in " + //$NON-NLS-1$
+				"(select id from section where spec_version=?)), ?, ?)", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		setSubmittedQuery = con.prepareStatement("update survey_response set submitted=? where " +
-				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)",
+		setSubmittedQuery = con.prepareStatement("update survey_response set submitted=? where " + //$NON-NLS-1$
+				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		getStatusQuery = con.prepareStatement("select survey_response.id as id, approved, rejected, submitted from survey_response " +
-				"join spec on survey_response.spec_version=spec.id " +
-				" where user_id=? and version=?",
+		getStatusQuery = con.prepareStatement("select survey_response.id as id, approved, rejected, submitted from survey_response " + //$NON-NLS-1$
+				"join spec on survey_response.spec_version=spec.id " + //$NON-NLS-1$
+				" where user_id=? and version=?", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		setApprovedQuery = con.prepareStatement("update survey_response set approved=? where " +
-				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)",
+		setApprovedQuery = con.prepareStatement("update survey_response set approved=? where " + //$NON-NLS-1$
+				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		setApprovedIdsQuery = con.prepareStatement("update survey_response set approved=? where id=?",
+		setApprovedIdsQuery = con.prepareStatement("update survey_response set approved=? where id=?", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		setRejectedQuery = con.prepareStatement("update survey_response set rejected=? where " +
-				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)",
+		setRejectedQuery = con.prepareStatement("update survey_response set rejected=? where " + //$NON-NLS-1$
+				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		setRejectedIdsQuery = con.prepareStatement("update survey_response set rejected=? where id=?",
+		setRejectedIdsQuery = con.prepareStatement("update survey_response set rejected=? where id=?", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		getQuestionNameQuery = con.prepareStatement("select number from question where id=?",
+		getQuestionNameQuery = con.prepareStatement("select number from question where id=?", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		getUsersWithResponsesQuery = con.prepareStatement("select username, password_token, name, address, email," +
-				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization, openchain_user.id as id, submitted, approved, rejected, version, " +
-				"survey_response.id as responseid, name_permission, email_permission from survey_response join openchain_user " +
-				"on survey_response.user_id=openchain_user.id join spec on survey_response.spec_version=spec.id" +
-				" order by username asc",
+		getUsersWithResponsesQuery = con.prepareStatement("select username, password_token, name, address, email," + //$NON-NLS-1$
+				"verified, passwordReset, admin, verificationExpirationDate," + //$NON-NLS-1$
+				" uuid, organization, openchain_user.id as id, submitted, approved, rejected, version, " + //$NON-NLS-1$
+				"survey_response.id as responseid, name_permission, email_permission from survey_response join openchain_user " + //$NON-NLS-1$
+				"on survey_response.user_id=openchain_user.id join spec on survey_response.spec_version=spec.id" + //$NON-NLS-1$
+				" order by username asc", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		getResponsesForUserQuery = con.prepareStatement("select username, password_token, name, address, email," +
-				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization, openchain_user.id as id, submitted, approved, rejected, version, " +
-				"survey_response.id as responseid, name_permission, email_permission from survey_response join openchain_user " +
-				"on survey_response.user_id=openchain_user.id join spec on survey_response.spec_version=spec.id" +
-				" where username = ?" +	" order by username asc",
+		getResponsesForUserQuery = con.prepareStatement("select username, password_token, name, address, email," + //$NON-NLS-1$
+				"verified, passwordReset, admin, verificationExpirationDate," + //$NON-NLS-1$
+				" uuid, organization, openchain_user.id as id, submitted, approved, rejected, version, " + //$NON-NLS-1$
+				"survey_response.id as responseid, name_permission, email_permission from survey_response join openchain_user " + //$NON-NLS-1$
+				"on survey_response.user_id=openchain_user.id join spec on survey_response.spec_version=spec.id" + //$NON-NLS-1$
+				" where username = ?" +	" order by username asc", //$NON-NLS-1$ //$NON-NLS-2$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 	}
 
@@ -159,32 +159,32 @@ public class SurveyResponseDao {
 				return null;	// No user, no user response
 			}
 			User user = new User();
-			user.setAddress(result.getString("address"));
-			user.setAdmin(result.getBoolean("admin"));
-			user.setEmail(result.getString("email"));
-			user.setName(result.getString("name"));
-			user.setPasswordReset(result.getBoolean("passwordReset"));
-			user.setPasswordToken(result.getString("password_token"));
+			user.setAddress(result.getString("address")); //$NON-NLS-1$
+			user.setAdmin(result.getBoolean("admin")); //$NON-NLS-1$
+			user.setEmail(result.getString("email")); //$NON-NLS-1$
+			user.setName(result.getString("name")); //$NON-NLS-1$
+			user.setPasswordReset(result.getBoolean("passwordReset")); //$NON-NLS-1$
+			user.setPasswordToken(result.getString("password_token")); //$NON-NLS-1$
 			user.setUsername(username);
-			user.setUuid(result.getString("uuid"));
-			user.setVerificationExpirationDate(result.getDate("verificationExpirationDate"));
-			user.setVerified(result.getBoolean("verified"));
-			user.setOrganization(result.getString("organization"));
-			user.setNamePermission(result.getBoolean("name_permission"));
-			user.setEmailPermission(result.getBoolean("email_permission"));
-			long userId = result.getLong("id");
+			user.setUuid(result.getString("uuid")); //$NON-NLS-1$
+			user.setVerificationExpirationDate(result.getDate("verificationExpirationDate")); //$NON-NLS-1$
+			user.setVerified(result.getBoolean("verified")); //$NON-NLS-1$
+			user.setOrganization(result.getString("organization")); //$NON-NLS-1$
+			user.setNamePermission(result.getBoolean("name_permission")); //$NON-NLS-1$
+			user.setEmailPermission(result.getBoolean("email_permission")); //$NON-NLS-1$
+			long userId = result.getLong("id"); //$NON-NLS-1$
 			if (specVersion == null) {
 				// get the latest spec version that is stored in the database
 				result.close();
 				getLatestSpecVersionForUserQuery.setLong(1, userId);
 				result = getLatestSpecVersionForUserQuery.executeQuery();
 				if (!result.next()) {
-					logger.info("No survey results found for username "+username);
+					logger.info("No survey results found for username "+username); //$NON-NLS-1$
 					return null;	// no survey responses for this user
 				}
 				specVersion = result.getString(1);
 				if (specVersion == null || specVersion.trim().isEmpty()) {
-					logger.info("No survey results found for username "+username);
+					logger.info("No survey results found for username "+username); //$NON-NLS-1$
 					return null;	// no survey responses for this user
 				}
 			}
@@ -199,22 +199,22 @@ public class SurveyResponseDao {
 			result.close();
 			result = getStatusQuery.executeQuery();
 			if (!result.next()) {
-				logger.warn("Failed to obtain status");
+				logger.warn("Failed to obtain status"); //$NON-NLS-1$
 				return null;
 			}
-			retval.setSubmitted(result.getBoolean("submitted"));
-			retval.setApproved(result.getBoolean("approved"));
-			retval.setRejected(result.getBoolean("rejected"));
-			retval.setId(String.valueOf(result.getLong("id")));
+			retval.setSubmitted(result.getBoolean("submitted")); //$NON-NLS-1$
+			retval.setApproved(result.getBoolean("approved")); //$NON-NLS-1$
+			retval.setRejected(result.getBoolean("rejected")); //$NON-NLS-1$
+			retval.setId(String.valueOf(result.getLong("id"))); //$NON-NLS-1$
 			return retval;
 		} catch (QuestionTypeException e) {
-			logger.error("Invalid question type getting survey response for user "+username,e);
+			logger.error("Invalid question type getting survey response for user "+username,e); //$NON-NLS-1$
 			throw(e);
 		} catch (SurveyResponseException e) {
-			logger.error("Invalid survey response getting survey response for user "+username,e);
+			logger.error("Invalid survey response getting survey response for user "+username,e); //$NON-NLS-1$
 			throw(e);
 		} catch (SQLException e) {
-			logger.error("SQL Exception getting survey response for user "+username,e);
+			logger.error("SQL Exception getting survey response for user "+username,e); //$NON-NLS-1$
 			throw(e);
 		} finally {
 			if (result != null) {
@@ -238,28 +238,28 @@ public class SurveyResponseDao {
 		try {
 			result = getUsersWithResponsesQuery.executeQuery();
 			while (result.next()) {
-				String specVersion = result.getString("version");
+				String specVersion = result.getString("version"); //$NON-NLS-1$
 				SurveyResponse response = new SurveyResponse(specVersion, language);
 				User user = new User();
-				user.setAddress(result.getString("address"));
-				user.setAdmin(result.getBoolean("admin"));
-				user.setEmail(result.getString("email"));
-				user.setName(result.getString("name"));
-				user.setPasswordReset(result.getBoolean("passwordReset"));
-				user.setPasswordToken(result.getString("password_token"));
-				user.setUsername(result.getString("username"));
-				user.setUuid(result.getString("uuid"));
-				user.setVerificationExpirationDate(result.getDate("verificationExpirationDate"));
-				user.setVerified(result.getBoolean("verified"));
-				user.setOrganization(result.getString("organization"));
-				user.setNamePermission(result.getBoolean("name_permission"));
-				user.setEmailPermission(result.getBoolean("email_permission"));
-				long userId = result.getLong("id");
+				user.setAddress(result.getString("address")); //$NON-NLS-1$
+				user.setAdmin(result.getBoolean("admin")); //$NON-NLS-1$
+				user.setEmail(result.getString("email")); //$NON-NLS-1$
+				user.setName(result.getString("name")); //$NON-NLS-1$
+				user.setPasswordReset(result.getBoolean("passwordReset")); //$NON-NLS-1$
+				user.setPasswordToken(result.getString("password_token")); //$NON-NLS-1$
+				user.setUsername(result.getString("username")); //$NON-NLS-1$
+				user.setUuid(result.getString("uuid")); //$NON-NLS-1$
+				user.setVerificationExpirationDate(result.getDate("verificationExpirationDate")); //$NON-NLS-1$
+				user.setVerified(result.getBoolean("verified")); //$NON-NLS-1$
+				user.setOrganization(result.getString("organization")); //$NON-NLS-1$
+				user.setNamePermission(result.getBoolean("name_permission")); //$NON-NLS-1$
+				user.setEmailPermission(result.getBoolean("email_permission")); //$NON-NLS-1$
+				long userId = result.getLong("id"); //$NON-NLS-1$
 				response.setResponder(user);
-				response.setSubmitted(result.getBoolean("submitted"));
-				response.setApproved(result.getBoolean("approved"));
-				response.setRejected(result.getBoolean("rejected"));
-				response.setId(String.valueOf(result.getLong("responseid")));
+				response.setSubmitted(result.getBoolean("submitted")); //$NON-NLS-1$
+				response.setApproved(result.getBoolean("approved")); //$NON-NLS-1$
+				response.setRejected(result.getBoolean("rejected")); //$NON-NLS-1$
+				response.setId(String.valueOf(result.getLong("responseid"))); //$NON-NLS-1$
 				Survey survey = surveys.get(specVersion);
 				if (survey == null) {
 					survey = SurveyDbDao.getSurvey(con, specVersion, language);
@@ -271,7 +271,7 @@ public class SurveyResponseDao {
 			}
 			return retval;
 		} catch (SQLException e) {
-			logger.error("SQL error getting users with responses",e);
+			logger.error("SQL error getting users with responses",e); //$NON-NLS-1$
 			throw(e);
 		} finally {
 			if (result != null) {
@@ -300,21 +300,21 @@ public class SurveyResponseDao {
 			result = getAnswersQuery.executeQuery();	
 			Map<Long,SubQuestionAnswers> questionNumSubQuestionAnswer = new HashMap<Long,SubQuestionAnswers>();
 			while (result.next()) {
-				String questionNumber = result.getString("number");
-				String type = result.getString("type");
-				long questionId = result.getLong("question_id");
-				long subQuestionOfId = result.getLong("subquestion_of");
+				String questionNumber = result.getString("number"); //$NON-NLS-1$
+				String type = result.getString("type"); //$NON-NLS-1$
+				long questionId = result.getLong("question_id"); //$NON-NLS-1$
+				long subQuestionOfId = result.getLong("subquestion_of"); //$NON-NLS-1$
 				Answer answer;
 				if (type == null) {
-					throw(new QuestionTypeException("No question type stored in the database"));
+					throw(new QuestionTypeException("No question type stored in the database")); //$NON-NLS-1$
 				}
 				if (type.equals(YesNoQuestion.TYPE_NAME)) {
-					answer = new YesNoAnswer(language, YesNo.valueOf(result.getString("answer")));
+					answer = new YesNoAnswer(language, YesNo.valueOf(result.getString("answer"))); //$NON-NLS-1$
 				} else if (type.equals(YesNoQuestionWithEvidence.TYPE_NAME)) {
-					answer = new YesNoAnswerWithEvidence(language, YesNo.valueOf(result.getString("answer")),
-							result.getString("evidence"));
+					answer = new YesNoAnswerWithEvidence(language, YesNo.valueOf(result.getString("answer")), //$NON-NLS-1$
+							result.getString("evidence")); //$NON-NLS-1$
 				} else if (type.equals(YesNoNotApplicableQuestion.TYPE_NAME)) {
-					answer = new YesNoAnswer(language, YesNo.valueOf(result.getString("answer")));
+					answer = new YesNoAnswer(language, YesNo.valueOf(result.getString("answer"))); //$NON-NLS-1$
 				} else if (type.equals(SubQuestion.TYPE_NAME)) {
 					answer = questionNumSubQuestionAnswer.get(questionId);
 					if (answer == null) {
@@ -322,7 +322,7 @@ public class SurveyResponseDao {
 						questionNumSubQuestionAnswer.put(questionId, (SubQuestionAnswers)answer);
 					}
 				} else {
-					throw(new QuestionTypeException("Unknown question type in database: "+type));
+					throw(new QuestionTypeException("Unknown question type in database: "+type)); //$NON-NLS-1$
 				}
 				if (subQuestionOfId > 0) {
 					SubQuestionAnswers parentAnswer = questionNumSubQuestionAnswer.get(subQuestionOfId);
@@ -374,9 +374,9 @@ public class SurveyResponseDao {
 		
 		try {
 			stmt = con.createStatement();
-			result = stmt.executeQuery("select max(version) from spec");
+			result = stmt.executeQuery("select max(version) from spec"); //$NON-NLS-1$
 			if (!result.next()) {
-				throw new SurveyResponseException("No specs found in database");
+				throw new SurveyResponseException("No specs found in database"); //$NON-NLS-1$
 			}
 			return result.getString(1);
 		} finally {
@@ -410,11 +410,11 @@ public class SurveyResponseDao {
 			addSurveyResponseQuery.setBoolean(5, response.isRejected());
 			int count = addSurveyResponseQuery.executeUpdate();
 			if (count != 1) {
-				logger.error("Unexpected count for adding survey response.  Expected one, returned "+String.valueOf(count));
+				logger.error("Unexpected count for adding survey response.  Expected one, returned "+String.valueOf(count)); //$NON-NLS-1$
 			}
 			result = addSurveyResponseQuery.getGeneratedKeys();
 			if (!result.next()) {
-				throw new SQLException("No key generated for add survey response");
+				throw new SQLException("No key generated for add survey response"); //$NON-NLS-1$
 			}
 			response.setId(String.valueOf(result.getLong(1)));
 			_updateSurveyResponseAnswers(response, userId, versionId, language);
@@ -422,11 +422,11 @@ public class SurveyResponseDao {
 			// Fill in the ID for the survey response
 			
 		} catch(SQLException ex) {
-			logger.error("SQL exception updating survey response answers for "+response.getResponder().getUsername(),ex);
+			logger.error("SQL exception updating survey response answers for "+response.getResponder().getUsername(),ex); //$NON-NLS-1$
 			try {
 				con.rollback(save);
 			} catch (SQLException ex2) {
-				logger.error("Error rolling back transaction",ex2);
+				logger.error("Error rolling back transaction",ex2); //$NON-NLS-1$
 			}
 			throw(ex);
 		} finally {
@@ -447,7 +447,7 @@ public class SurveyResponseDao {
 			setSubmittedQuery.setString(3, specVersion);
 			int count = setSubmittedQuery.executeUpdate();
 			if (count != 1) {
-				logger.warn("Unexpected count on setting submitted.  Expected 1, found "+String.valueOf(count));
+				logger.warn("Unexpected count on setting submitted.  Expected 1, found "+String.valueOf(count)); //$NON-NLS-1$
 			}
 		} finally {
 			if (save != null) {
@@ -464,7 +464,7 @@ public class SurveyResponseDao {
 			setApprovedQuery.setString(3, specVersion);
 			int count = setApprovedQuery.executeUpdate();
 			if (count != 1) {
-				logger.warn("Unexpected count on setting approved.  Expected 1, found "+String.valueOf(count));
+				logger.warn("Unexpected count on setting approved.  Expected 1, found "+String.valueOf(count)); //$NON-NLS-1$
 			}
 		} finally {
 			if (save != null) {
@@ -481,7 +481,7 @@ public class SurveyResponseDao {
 			setRejectedQuery.setString(3, specVersion);
 			int count = setRejectedQuery.executeUpdate();
 			if (count != 1) {
-				logger.warn("Unexpected count on setting submitted.  Expected 1, found "+String.valueOf(count));
+				logger.warn("Unexpected count on setting submitted.  Expected 1, found "+String.valueOf(count)); //$NON-NLS-1$
 			}
 		} finally {
 			if (save != null) {
@@ -496,8 +496,8 @@ public class SurveyResponseDao {
 			getUserIdQuery.setString(1, username);
 			result = getUserIdQuery.executeQuery();
 			if (!result.next()) {
-				logger.error("Missing user for username "+username);
-				throw(new SurveyResponseException("Missing user "+username));
+				logger.error("Missing user for username "+username); //$NON-NLS-1$
+				throw(new SurveyResponseException("Missing user "+username)); //$NON-NLS-1$
 			}
 			return result.getLong(1);
 		} finally {
@@ -522,11 +522,11 @@ public class SurveyResponseDao {
 			long versionId = SurveyDbDao.getSpecId(con, response.getSpecVersion(), language, true);
 			_updateSurveyResponseAnswers(response, userId, versionId, language);
 		} catch(SQLException ex) {
-			logger.error("SQL exception updating survey response answers for "+response.getResponder().getUsername(),ex);
+			logger.error("SQL exception updating survey response answers for "+response.getResponder().getUsername(),ex); //$NON-NLS-1$
 			try {
 				con.rollback(save);
 			} catch (SQLException ex2) {
-				logger.error("Error rolling back transaction",ex2);
+				logger.error("Error rolling back transaction",ex2); //$NON-NLS-1$
 			}
 			throw(ex);
 		} finally {
@@ -538,11 +538,11 @@ public class SurveyResponseDao {
 	
 	private void _updateSurveyResponseAnswers(SurveyResponse response, long userId, long versionId, String language) throws SQLException, QuestionTypeException, SurveyResponseException {
 		if (response == null) {
-			logger.warn("Null survey response passed to update server response answers");
+			logger.warn("Null survey response passed to update server response answers"); //$NON-NLS-1$
 			return;
 		}
 		if (response.getSurvey() == null) {
-			logger.warn("No survey in survey response");
+			logger.warn("No survey in survey response"); //$NON-NLS-1$
 			return;
 		}
 		// First, verify the question numbers
@@ -559,12 +559,12 @@ public class SurveyResponseDao {
 			while (iter.hasNext()) {
 				Entry<String, Answer> entry = iter.next();
 				if (!numbers.contains(entry.getKey())) {
-					logger.error("Attempting to update an answer for a question that does not exist.  Username="+
-									response.getResponder().getUsername()+", specVersion="+response.getSpecVersion() +
-									"language: " + language + ", " + 
-									"question number: "+entry.getKey());
+					logger.error("Attempting to update an answer for a question that does not exist.  Username="+ //$NON-NLS-1$
+									response.getResponder().getUsername()+", specVersion="+response.getSpecVersion() + //$NON-NLS-1$
+									"language: " + language + ", " +  //$NON-NLS-1$ //$NON-NLS-2$
+									"question number: "+entry.getKey()); //$NON-NLS-1$
 					
-					throw(new SurveyResponseException("Can not update answers.  Question "+entry.getKey()+" does not exist."));
+					throw(new SurveyResponseException("Can not update answers.  Question "+entry.getKey()+" does not exist.")); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				if (storedAnswers.containsKey(entry.getKey())) {
 					// already there
@@ -641,33 +641,33 @@ public class SurveyResponseDao {
 			if (numAdds > 0) {
 				int[] counts = this.addAnswerQuery.executeBatch();
 				if (counts.length != numAdds) {
-					logger.warn("Number of adds did not match. Expected "+String.valueOf(numAdds)+".  Found "+String.valueOf(counts.length));
+					logger.warn("Number of adds did not match. Expected "+String.valueOf(numAdds)+".  Found "+String.valueOf(counts.length)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				for (int count:counts) {
 					if (count != 1) {
-						logger.warn("Expected 1 update for add index.  found "+String.valueOf(count));
+						logger.warn("Expected 1 update for add index.  found "+String.valueOf(count)); //$NON-NLS-1$
 					}
 				}
 			}
 			if (numDeletes > 0) {
 				int[] counts = this.deleteAnswerQuery.executeBatch();
 				if (counts.length != numDeletes) {
-					logger.warn("Number of deletes did not match. Expected "+String.valueOf(numDeletes)+".  Found "+String.valueOf(counts.length));
+					logger.warn("Number of deletes did not match. Expected "+String.valueOf(numDeletes)+".  Found "+String.valueOf(counts.length)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				for (int count:counts) {
 					if (count != 1) {
-						logger.warn("Expected 1 update for delete index.  found "+String.valueOf(count));
+						logger.warn("Expected 1 update for delete index.  found "+String.valueOf(count)); //$NON-NLS-1$
 					}
 				}
 			}
 			if (numUpdates > 0) {
 				int[] counts = this.updateAnswerQuery.executeBatch();
 				if (counts.length != numUpdates) {
-					logger.warn("Number of updates did not match. Expected "+String.valueOf(numDeletes)+".  Found "+String.valueOf(counts.length));
+					logger.warn("Number of updates did not match. Expected "+String.valueOf(numDeletes)+".  Found "+String.valueOf(counts.length)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				for (int count:counts) {
 					if (count != 1) {
-						logger.warn("Expected 1 update for update index.  found "+String.valueOf(count));
+						logger.warn("Expected 1 update for update index.  found "+String.valueOf(count)); //$NON-NLS-1$
 					}
 				}
 			}
@@ -691,22 +691,22 @@ public class SurveyResponseDao {
 				try {
 					setApprovedIdsQuery.setLong(2, Long.parseLong(id));
 				} catch (Exception ex2) {
-					throw new SurveyResponseException("Invalid ID - must be a number:"+id);
+					throw new SurveyResponseException("Invalid ID - must be a number:"+id); //$NON-NLS-1$
 				}
 				setApprovedIdsQuery.addBatch();
 			}
 			int[] counts = setApprovedIdsQuery.executeBatch();
 			if (counts.length != ids.length) {
-				logger.warn("Number of counts from batch does not match.  Expected "+
-						String.valueOf(ids.length) + ", found "+String.valueOf(counts.length));
+				logger.warn("Number of counts from batch does not match.  Expected "+ //$NON-NLS-1$
+						String.valueOf(ids.length) + ", found "+String.valueOf(counts.length)); //$NON-NLS-1$
 			}
 			for (int count:counts) {
 				if (count != 1) {
-					logger.warn("Unexpected count.  Expected 1, found "+String.valueOf(count));
+					logger.warn("Unexpected count.  Expected 1, found "+String.valueOf(count)); //$NON-NLS-1$
 				}
 			}
 		} catch(SQLException ex) {
-			logger.error("SQL Exception: ",ex);
+			logger.error("SQL Exception: ",ex); //$NON-NLS-1$
 			con.rollback(save);
 			throw(ex);
 		} catch(SurveyResponseException ex) {
@@ -734,22 +734,22 @@ public class SurveyResponseDao {
 				try {
 					setRejectedIdsQuery.setLong(2, Long.parseLong(id));
 				} catch (Exception ex2) {
-					throw new SurveyResponseException("Invalid ID - must be a number:"+id);
+					throw new SurveyResponseException("Invalid ID - must be a number:"+id); //$NON-NLS-1$
 				}
 				setRejectedIdsQuery.addBatch();
 			}
 			int[] counts = setRejectedIdsQuery.executeBatch();
 			if (counts.length != ids.length) {
-				logger.warn("Number of counts from batch does not match.  Expected "+
-						String.valueOf(ids.length) + ", found "+String.valueOf(counts.length));
+				logger.warn("Number of counts from batch does not match.  Expected "+ //$NON-NLS-1$
+						String.valueOf(ids.length) + ", found "+String.valueOf(counts.length)); //$NON-NLS-1$
 			}
 			for (int count:counts) {
 				if (count != 1) {
-					logger.warn("Unexpected count.  Expected 1, found "+String.valueOf(count));
+					logger.warn("Unexpected count.  Expected 1, found "+String.valueOf(count)); //$NON-NLS-1$
 				}
 			}
 		} catch(SQLException ex) {
-			logger.error("SQL Exception: ",ex);
+			logger.error("SQL Exception: ",ex); //$NON-NLS-1$
 			con.rollback(save);
 			throw(ex);
 		} catch(SurveyResponseException ex) {
@@ -773,18 +773,18 @@ public class SurveyResponseDao {
 		try {
 			save = con.setSavepoint();
 			stmt = con.createStatement();
-			int count = stmt.executeUpdate("delete from answer where response_id="+surveyResponse.getId());
-			count = stmt.executeUpdate("delete from survey_response where id="+surveyResponse.getId());
+			int count = stmt.executeUpdate("delete from answer where response_id="+surveyResponse.getId()); //$NON-NLS-1$
+			count = stmt.executeUpdate("delete from survey_response where id="+surveyResponse.getId()); //$NON-NLS-1$
 			if (count != 1) {
-				logger.warn("Unexpected update count for delete survey response.  Execpted 1, found "+String.valueOf(count));
+				logger.warn("Unexpected update count for delete survey response.  Execpted 1, found "+String.valueOf(count)); //$NON-NLS-1$
 			}
 		} catch (SQLException e) {
-			logger.error("SQL Exception deleting answers",e);
+			logger.error("SQL Exception deleting answers",e); //$NON-NLS-1$
 			if (save != null) {
 				try {
 					con.rollback(save);
 				} catch (SQLException e1) {
-					logger.warn("SQL Exception rolling back transaction.",e1);
+					logger.warn("SQL Exception rolling back transaction.",e1); //$NON-NLS-1$
 				}
 				throw(e);
 			}
@@ -793,14 +793,14 @@ public class SurveyResponseDao {
 				try {
 					stmt.close();
 				} catch (SQLException e) {
-					logger.warn("Error closing statement",e);
+					logger.warn("Error closing statement",e); //$NON-NLS-1$
 				}
 			}
 			if (save != null) {
 				try {
 					con.commit();
 				} catch (SQLException e) {
-					logger.error("SQL Exception committing transaction",e);
+					logger.error("SQL Exception committing transaction",e); //$NON-NLS-1$
 					throw(e);
 				}
 			}
@@ -823,28 +823,28 @@ public class SurveyResponseDao {
 			getResponsesForUserQuery.setString(1, username);
 			result = getResponsesForUserQuery.executeQuery();
 			while (result.next()) {
-				String specVersion = result.getString("version");
+				String specVersion = result.getString("version"); //$NON-NLS-1$
 				SurveyResponse response = new SurveyResponse(specVersion, language);
 				User user = new User();
-				user.setAddress(result.getString("address"));
-				user.setAdmin(result.getBoolean("admin"));
-				user.setEmail(result.getString("email"));
-				user.setName(result.getString("name"));
-				user.setPasswordReset(result.getBoolean("passwordReset"));
-				user.setPasswordToken(result.getString("password_token"));
-				user.setUsername(result.getString("username"));
-				user.setUuid(result.getString("uuid"));
-				user.setVerificationExpirationDate(result.getDate("verificationExpirationDate"));
-				user.setVerified(result.getBoolean("verified"));
-				user.setOrganization(result.getString("organization"));
-				user.setNamePermission(result.getBoolean("name_permission"));
-				user.setEmailPermission(result.getBoolean("email_permission"));
-				long userId = result.getLong("id");
+				user.setAddress(result.getString("address")); //$NON-NLS-1$
+				user.setAdmin(result.getBoolean("admin")); //$NON-NLS-1$
+				user.setEmail(result.getString("email")); //$NON-NLS-1$
+				user.setName(result.getString("name")); //$NON-NLS-1$
+				user.setPasswordReset(result.getBoolean("passwordReset")); //$NON-NLS-1$
+				user.setPasswordToken(result.getString("password_token")); //$NON-NLS-1$
+				user.setUsername(result.getString("username")); //$NON-NLS-1$
+				user.setUuid(result.getString("uuid")); //$NON-NLS-1$
+				user.setVerificationExpirationDate(result.getDate("verificationExpirationDate")); //$NON-NLS-1$
+				user.setVerified(result.getBoolean("verified")); //$NON-NLS-1$
+				user.setOrganization(result.getString("organization")); //$NON-NLS-1$
+				user.setNamePermission(result.getBoolean("name_permission")); //$NON-NLS-1$
+				user.setEmailPermission(result.getBoolean("email_permission")); //$NON-NLS-1$
+				long userId = result.getLong("id"); //$NON-NLS-1$
 				response.setResponder(user);
-				response.setSubmitted(result.getBoolean("submitted"));
-				response.setApproved(result.getBoolean("approved"));
-				response.setRejected(result.getBoolean("rejected"));
-				response.setId(String.valueOf(result.getLong("responseid")));
+				response.setSubmitted(result.getBoolean("submitted")); //$NON-NLS-1$
+				response.setApproved(result.getBoolean("approved")); //$NON-NLS-1$
+				response.setRejected(result.getBoolean("rejected")); //$NON-NLS-1$
+				response.setId(String.valueOf(result.getLong("responseid"))); //$NON-NLS-1$
 				Survey survey = surveys.get(specVersion);
 				if (survey == null) {
 					survey = SurveyDbDao.getSurvey(con, specVersion, language);
@@ -856,7 +856,7 @@ public class SurveyResponseDao {
 			}
 			return retval;
 		} catch (SQLException e) {
-			logger.error("SQL error getting users with responses",e);
+			logger.error("SQL error getting users with responses",e); //$NON-NLS-1$
 			throw(e);
 		} finally {
 			if (result != null) {

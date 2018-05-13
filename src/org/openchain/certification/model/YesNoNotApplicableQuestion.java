@@ -24,7 +24,7 @@ package org.openchain.certification.model;
  */
 public class YesNoNotApplicableQuestion extends YesNoQuestion {
 	
-	public static final String TYPE_NAME = "YES_NO_NA";
+	public static final String TYPE_NAME = "YES_NO_NA"; //$NON-NLS-1$
 	
 	String notApplicablePrompt;
 

@@ -37,9 +37,9 @@ import com.opencsv.CSVWriter;
  */
 public class Survey {
 	public static final String[] CSV_COLUMNS = new String[] {
-		"Section Name", "Question Number", "Spec Reference Number", "Question Text",
-		"Answer Type", "Correct Answer", "Evidence Prompt", "Evidence Validation",
-		"Sub-Question Of Number"
+		"Section Name", "Question Number", "Spec Reference Number", "Question Text", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		"Answer Type", "Correct Answer", "Evidence Prompt", "Evidence Validation", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		"Sub-Question Of Number" //$NON-NLS-1$
 	};
 	private String specVersion;
 	private String language;

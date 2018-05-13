@@ -37,7 +37,7 @@ import com.opencsv.CSVWriter;
 public class SurveyResponse {
 	
 	transient static final String[] CSV_COLUMNS = new String[] {
-		"Number", "Question", "Answer", "Additional Information"
+		"Number", "Question", "Answer", "Additional Information" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	};
 
 	User responder;
@@ -152,7 +152,7 @@ public class SurveyResponse {
 	public void printCsv(PrintWriter out) throws IOException {
 		CSVWriter csv = new CSVWriter(out);
 		try {
-			csv.writeNext(new String[] {"Questionnaire Version=",this.getSpecVersion()});
+			csv.writeNext(new String[] {"Questionnaire Version=",this.getSpecVersion()}); //$NON-NLS-1$
 			csv.writeNext(CSV_COLUMNS);
 			
 			// sort the responses by question number
@@ -174,7 +174,7 @@ public class SurveyResponse {
 					if (entry.getValue() instanceof YesNoAnswerWithEvidence) {
 						nextLine[3] = ((YesNoAnswerWithEvidence)entry.getValue()).getEvidence();
 					} else {
-						nextLine[3] = "";
+						nextLine[3] = ""; //$NON-NLS-1$
 					}
 					csv.writeNext(nextLine);
 				}

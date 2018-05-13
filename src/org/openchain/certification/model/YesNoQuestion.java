@@ -28,7 +28,7 @@ public class YesNoQuestion extends Question {
 	 * NotApplicable means that answer does not apply and NotAnswered indicates no response was given
 	 */
 	public enum YesNo {Yes, No, Any, NotApplicable, NotAnswered, YesNotApplicable, NoNotApplicable};
-	public static final String TYPE_NAME = "YES_NO";
+	public static final String TYPE_NAME = "YES_NO"; //$NON-NLS-1$
 	protected YesNo correctAnswer;
 	
 	/**

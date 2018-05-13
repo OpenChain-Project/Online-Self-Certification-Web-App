@@ -30,7 +30,7 @@ import java.util.Map.Entry;
  */
 public class SubQuestion extends Question {
 	
-	public static final String TYPE_NAME = "SUBQUESTIONS";
+	public static final String TYPE_NAME = "SUBQUESTIONS"; //$NON-NLS-1$
 	private int minNumberValidatedAnswers;
 	private Map<String, Question> subQuestions;
 	

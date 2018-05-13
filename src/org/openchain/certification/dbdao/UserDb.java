@@ -95,21 +95,21 @@ public class UserDb {
 	 * @throws SQLException
 	 */
 	private void prepareStatements() throws SQLException {
-		getUserQuery = connection.prepareStatement("select password_token, name, address, email," +
-				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization, name_permission, email_permission, language from openchain_user where username=?");
-		getAllUserQuery = connection.prepareStatement("select username, password_token, name, address, email," +
-				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization, name_permission, email_permission, language from openchain_user order by username asc");
-		addUserQuery = connection.prepareStatement("insert into openchain_user (username, password_token, name, address, email," +
-				"verified, passwordReset, admin, verificationExpirationDate," +
-				" uuid, organization, name_permission, email_permission, language) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-		updateVerifiedQuery = connection.prepareStatement("update openchain_user set verified=? where username=?");
-		updateUserQuery = connection.prepareStatement("update openchain_user set password_token=?, " +
-				"name=?, address=?, verified=?, passwordReset=?, admin=?, " +
-				"verificationExpirationDate=?, uuid=?, organization=?, email=?, name_permission=?, email_permission=?," +
-				"language=? where username=?");
-		getUserIdQuery = connection.prepareStatement("select id from openchain_user where username=?");
+		getUserQuery = connection.prepareStatement("select password_token, name, address, email," + //$NON-NLS-1$
+				"verified, passwordReset, admin, verificationExpirationDate," + //$NON-NLS-1$
+				" uuid, organization, name_permission, email_permission, language from openchain_user where username=?"); //$NON-NLS-1$
+		getAllUserQuery = connection.prepareStatement("select username, password_token, name, address, email," + //$NON-NLS-1$
+				"verified, passwordReset, admin, verificationExpirationDate," + //$NON-NLS-1$
+				" uuid, organization, name_permission, email_permission, language from openchain_user order by username asc"); //$NON-NLS-1$
+		addUserQuery = connection.prepareStatement("insert into openchain_user (username, password_token, name, address, email," + //$NON-NLS-1$
+				"verified, passwordReset, admin, verificationExpirationDate," + //$NON-NLS-1$
+				" uuid, organization, name_permission, email_permission, language) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"); //$NON-NLS-1$
+		updateVerifiedQuery = connection.prepareStatement("update openchain_user set verified=? where username=?"); //$NON-NLS-1$
+		updateUserQuery = connection.prepareStatement("update openchain_user set password_token=?, " + //$NON-NLS-1$
+				"name=?, address=?, verified=?, passwordReset=?, admin=?, " + //$NON-NLS-1$
+				"verificationExpirationDate=?, uuid=?, organization=?, email=?, name_permission=?, email_permission=?," + //$NON-NLS-1$
+				"language=? where username=?"); //$NON-NLS-1$
+		getUserIdQuery = connection.prepareStatement("select id from openchain_user where username=?"); //$NON-NLS-1$
 	}
 
 	/**
@@ -127,20 +127,20 @@ public class UserDb {
 				return null;
 			}
 			User retval = new User();
-			retval.setAddress(result.getString("address"));
-			retval.setAdmin(result.getBoolean("admin"));
-			retval.setEmail(result.getString("email"));
-			retval.setName(result.getString("name"));
-			retval.setPasswordReset(result.getBoolean("passwordReset"));
-			retval.setPasswordToken(result.getString("password_token"));
+			retval.setAddress(result.getString("address")); //$NON-NLS-1$
+			retval.setAdmin(result.getBoolean("admin")); //$NON-NLS-1$
+			retval.setEmail(result.getString("email")); //$NON-NLS-1$
+			retval.setName(result.getString("name")); //$NON-NLS-1$
+			retval.setPasswordReset(result.getBoolean("passwordReset")); //$NON-NLS-1$
+			retval.setPasswordToken(result.getString("password_token")); //$NON-NLS-1$
 			retval.setUsername(username);
-			retval.setUuid(result.getString("uuid"));
-			retval.setVerificationExpirationDate(result.getDate("verificationExpirationDate"));
-			retval.setVerified(result.getBoolean("verified"));
-			retval.setOrganization(result.getString("organization"));
-			retval.setNamePermission(result.getBoolean("name_permission"));
-			retval.setEmailPermission(result.getBoolean("email_permission"));
-			retval.setLanguage(result.getString("language"));
+			retval.setUuid(result.getString("uuid")); //$NON-NLS-1$
+			retval.setVerificationExpirationDate(result.getDate("verificationExpirationDate")); //$NON-NLS-1$
+			retval.setVerified(result.getBoolean("verified")); //$NON-NLS-1$
+			retval.setOrganization(result.getString("organization")); //$NON-NLS-1$
+			retval.setNamePermission(result.getBoolean("name_permission")); //$NON-NLS-1$
+			retval.setEmailPermission(result.getBoolean("email_permission")); //$NON-NLS-1$
+			retval.setLanguage(result.getString("language")); //$NON-NLS-1$
 			return retval;
 		} finally {
 			if (result != null) {
@@ -161,20 +161,20 @@ public class UserDb {
 			result = getAllUserQuery.executeQuery();
 			while (result.next()) {
 				User user = new User();
-				user.setAddress(result.getString("address"));
-				user.setAdmin(result.getBoolean("admin"));
-				user.setEmail(result.getString("email"));
-				user.setName(result.getString("name"));
-				user.setPasswordReset(result.getBoolean("passwordReset"));
-				user.setPasswordToken(result.getString("password_token"));
-				user.setUsername(result.getString("username"));
-				user.setUuid(result.getString("uuid"));
-				user.setVerificationExpirationDate(result.getDate("verificationExpirationDate"));
-				user.setVerified(result.getBoolean("verified"));
-				user.setOrganization(result.getString("organization"));
-				user.setNamePermission(result.getBoolean("name_permission"));
-				user.setEmailPermission(result.getBoolean("email_permission"));
-				user.setLanguage(result.getString("language"));
+				user.setAddress(result.getString("address")); //$NON-NLS-1$
+				user.setAdmin(result.getBoolean("admin")); //$NON-NLS-1$
+				user.setEmail(result.getString("email")); //$NON-NLS-1$
+				user.setName(result.getString("name")); //$NON-NLS-1$
+				user.setPasswordReset(result.getBoolean("passwordReset")); //$NON-NLS-1$
+				user.setPasswordToken(result.getString("password_token")); //$NON-NLS-1$
+				user.setUsername(result.getString("username")); //$NON-NLS-1$
+				user.setUuid(result.getString("uuid")); //$NON-NLS-1$
+				user.setVerificationExpirationDate(result.getDate("verificationExpirationDate")); //$NON-NLS-1$
+				user.setVerified(result.getBoolean("verified")); //$NON-NLS-1$
+				user.setOrganization(result.getString("organization")); //$NON-NLS-1$
+				user.setNamePermission(result.getBoolean("name_permission")); //$NON-NLS-1$
+				user.setEmailPermission(result.getBoolean("email_permission")); //$NON-NLS-1$
+				user.setLanguage(result.getString("language")); //$NON-NLS-1$
 				retval.add(user);
 			}
 			return retval;
@@ -197,7 +197,7 @@ public class UserDb {
 		Savepoint save = connection.setSavepoint();
 		long userId = getUserId(user.getUsername());
 		if (userId >0) {
-			throw(new InvalidUserException("Can not add user "+user.getUsername()+": already exists."));
+			throw(new InvalidUserException("Can not add user "+user.getUsername()+": already exists.")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		try {
 			this.addUserQuery.setString(1, user.getUsername());
@@ -225,7 +225,7 @@ public class UserDb {
 				try {
 					connection.rollback(save);
 				} catch (SQLException ex2) {
-					logger.error("Error rolling back transaction",ex2);
+					logger.error("Error rolling back transaction",ex2); //$NON-NLS-1$
 				}
 			}
 			throw(ex);
@@ -289,7 +289,7 @@ public class UserDb {
 				try {
 					connection.rollback(save);
 				} catch (SQLException ex2) {
-					logger.error("Error rolling back transaction",ex2);
+					logger.error("Error rolling back transaction",ex2); //$NON-NLS-1$
 				}
 			}
 			throw(ex);
@@ -308,7 +308,7 @@ public class UserDb {
 	 */
 	public synchronized void updateUser(User user) throws SQLException, InvalidUserException {
 		if (user == null || user.getUsername() == null || user.getUsername().trim().isEmpty()) {
-			throw(new InvalidUserException("Can not update user.  No username specified"));
+			throw(new InvalidUserException("Can not update user.  No username specified")); //$NON-NLS-1$
 		}
 		try {
 			updateUserQuery.setString(1, user.getPasswordToken());
@@ -331,7 +331,7 @@ public class UserDb {
 			updateUserQuery.setString(14, user.getUsername());
 			int count = updateUserQuery.executeUpdate();
 			if (count != 1) {
-				logger.warn("Unexpected count result from update user query.  Expected 1, found "+String.valueOf(count));
+				logger.warn("Unexpected count result from update user query.  Expected 1, found "+String.valueOf(count)); //$NON-NLS-1$
 			}
 		} finally {
 			this.connection.commit();

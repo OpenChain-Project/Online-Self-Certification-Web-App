@@ -93,6 +93,6 @@ public class SubQuestionAnswers extends Answer {
 
 	@Override
 	public String getAnswerString() {
-		return "";	// no answer for a subquestionanswer
+		return "";	// no answer for a subquestionanswer //$NON-NLS-1$
 	}
 }
