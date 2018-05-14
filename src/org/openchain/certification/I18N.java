@@ -19,6 +19,7 @@ package org.openchain.certification;
 import org.apache.log4j.Logger;
 import org.openchain.certification.model.User;
 
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -40,7 +41,7 @@ public final class I18N {
 	 * @param language tag in IETF RFC 5646 format
 	 * @return
 	 */
-	public static String getMessage(String key, String language) {
+	public static String getMessage(String key, String language, Object... args) {
 		if (language == null) {
 			language = User.DEFAULT_LANGUAGE;
 		}
@@ -54,7 +55,10 @@ public final class I18N {
 			}
 		}
 		ResourceBundle bundle = ResourceBundle.getBundle(BASE_RESOURCE_NAME, locale);
-		return bundle.getString(key);
+		String template = bundle.getString(key);
+		MessageFormat mf = new MessageFormat(template, locale);
+		
+		return mf.format(args, new StringBuffer(), null).toString();
 	}
 
 }
