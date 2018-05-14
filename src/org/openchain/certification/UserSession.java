@@ -146,37 +146,38 @@ public class UserSession {
 	 * @param username Username
 	 * @param uuid UUID generated for the verification email
 	 * @param config
+	 * @param language
 	 * @throws InvalidUserException
 	 */
-	public static void completeEmailVerification(String username, String uuid, ServletConfig config) throws InvalidUserException  {
+	public static void completeEmailVerification(String username, String uuid, ServletConfig config, String language) throws InvalidUserException  {
 		try {
 			User user = UserDb.getUserDb(config).getUser(username);
 			if (user == null) {
-				logger.error("NO user found for completing email verification - username "+username);
-				throw new InvalidUserException("User"+" "+username+" "+"not found.  Could not complete registration.");
+				logger.error("NO user found for completing email verification - username "+username);  //$NON-NLS-1$
+				throw new InvalidUserException(I18N.getMessage("UserSession.0",language)+" "+username+" "+I18N.getMessage("UserSession.3",language)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			}
 			if (user.isVerified()) {
-				logger.warn("Attempting to verify an already verified user");
+				logger.warn("Attempting to verify an already verified user");  //$NON-NLS-1$
 				return;
 			}
 			if (!isValidExpirationDate(user.getVerificationExpirationDate())) {
-				logger.error("Expiration date for verification has passed for user "+username);
-				throw(new InvalidUserException("The verification has expired.  Please resend the verification email.  When logging in using your username and password, you will be prompted to resend the verification."));
+				logger.error("Expiration date for verification has passed for user "+username);  //$NON-NLS-1$
+				throw(new InvalidUserException(I18N.getMessage("UserSession.4",language))); //$NON-NLS-1$
 			}
 			if (!PasswordUtil.validate(uuid.toString(), user.getUuid())) {
-				logger.error("Verification tokens do not match for user "+username+".  Supplied = "+uuid+", expected = "+user.getUuid());
-				throw(new InvalidUserException("Verification failed.  Invalid registration ID.  Please retry."));
+				logger.error("Verification tokens do not match for user "+username+".  Supplied = "+uuid+", expected = "+user.getUuid());  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				throw(new InvalidUserException(I18N.getMessage("UserSession.7",language))); //$NON-NLS-1$
 			}
 			UserDb.getUserDb(config).setVerified(username, true);
 		} catch (SQLException e) {
-			logger.error("Unexpected SQL exception completing the email verification",e);
-			throw(new InvalidUserException("Unexpected SQL exception completing verification.  Please report this error to the OpenChain group"));
+			logger.error("Unexpected SQL exception completing the email verification",e);  //$NON-NLS-1$
+			throw(new InvalidUserException(I18N.getMessage("UserSession.8",language))); //$NON-NLS-1$
 		} catch (NoSuchAlgorithmException e) {
-			logger.error("Unexpected No Such Algorithm Exception completing the email verification",e);
-			throw(new InvalidUserException("Unexpected No Such Algorithm exception completing verification.  Please report this error to the OpenChain group"));
+			logger.error("Unexpected No Such Algorithm Exception completing the email verification",e);  //$NON-NLS-1$
+			throw(new InvalidUserException(I18N.getMessage("UserSession.9",language))); //$NON-NLS-1$
 		} catch (InvalidKeySpecException e) {
-			logger.error("Unexpected Invalid Key Exception completing the email verification",e);
-			throw(new InvalidUserException("Unexpected Invalid Key exception completing verification.  Please report this error to the OpenChain group"));
+			logger.error("Unexpected Invalid Key Exception completing the email verification",e);  //$NON-NLS-1$
+			throw(new InvalidUserException(I18N.getMessage("UserSession.10",language))); //$NON-NLS-1$
 		}
 	}
 	
@@ -204,12 +205,12 @@ public class UserSession {
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
 		} catch (SQLException e) {
-			this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
-			logger.error("SQL Exception logging in user",e);
+			this.lastError = I18N.getMessage("UserSession.11",language)+" "+e.getMessage(); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.error("SQL Exception logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
 		if (user == null) {
-			this.lastError = "User "+username+" does not exist.  Please review the username or sign up as a new user.";
+			this.lastError = I18N.getMessage("UserSession.13",language)+" "+username+" "+I18N.getMessage("UserSession.16",language); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			return false;
 		}
 		if (user.isVerified()) {
@@ -217,16 +218,16 @@ public class UserSession {
 		}
 		try {
 			if (!PasswordUtil.validate(password, user.getPasswordToken())) {
-				this.lastError = "Passwords do not match.  Please retry or reset your password";
+				this.lastError = I18N.getMessage("UserSession.17",language); //$NON-NLS-1$
 				return false;
 			}
 		} catch (NoSuchAlgorithmException e) {
-			logger.error("Unexpected No Such Algorithm error logging in user",e);
-			this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected No Such Algorithm error logging in user",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.18",language); //$NON-NLS-1$
 			return false;
 		} catch (InvalidKeySpecException e) {
-			this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
-			logger.error("Unexpected Invalid Key Spec error logging in user",e);
+			this.lastError = I18N.getMessage("UserSession.19",language); //$NON-NLS-1$
+			logger.error("Unexpected Invalid Key Spec error logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
 		return true;
@@ -243,34 +244,34 @@ public class UserSession {
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
 		} catch (SQLException e) {
-			this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
-			logger.error("SQL Exception logging in user",e);
+			this.lastError = I18N.getMessage("UserSession.20",language)+" "+e.getMessage(); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.error("SQL Exception logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
 		if (user == null) {
-			this.lastError = "User "+username+" does not exist.  Please review the username or sign up as a new user.";
+			this.lastError = I18N.getMessage("UserSession.22",language)+" "+username+" "+I18N.getMessage("UserSession.16",language); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			return false;
 		}
 		if (!user.isVerified()) {
-			this.lastError = "This use has not been verified.  Please check your email and click on the provided link to verify this user and email address";
+			this.lastError = I18N.getMessage("UserSession.26",language); //$NON-NLS-1$
 			return false;
 		}
 		if (user.isPasswordReset()) {
-			this.lastError = "A password reset is in process.  Login is not allowed until the password has been reset.";
+			this.lastError = I18N.getMessage("UserSession.27",language); //$NON-NLS-1$
 			return false;
 		}
 		try {
 			if (!PasswordUtil.validate(password, user.getPasswordToken())) {
-				this.lastError = "Passwords do not match.  Please retry or reset your password";
+				this.lastError = I18N.getMessage("UserSession.28",language); //$NON-NLS-1$
 				return false;
 			}
 		} catch (NoSuchAlgorithmException e) {
-			logger.error("Unexpected No Such Algorithm error logging in user",e);
-			this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected No Such Algorithm error logging in user",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.29",language); //$NON-NLS-1$
 			return false;
 		} catch (InvalidKeySpecException e) {
-			this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
-			logger.error("Unexpected Invalid Key Spec error logging in user",e);
+			this.lastError = I18N.getMessage("UserSession.30",language); //$NON-NLS-1$
+			logger.error("Unexpected Invalid Key Spec error logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
 		this.loggedIn = true;
@@ -309,7 +310,7 @@ public class UserSession {
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
 			if (user != null) {
-				this.lastError = "User "+username+" already exist.  Please select a different unique username.";
+				this.lastError = I18N.getMessage("UserSession.31",language)+" "+username+" "+I18N.getMessage("UserSession.34",language); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 				return false;
 			}
 			user = new User();
@@ -333,24 +334,24 @@ public class UserSession {
 			EmailUtility.emailVerification(name, email, uuid, username, responseServletUrl, config, language);
 	        return true;
 		} catch (SQLException e) {
-			this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
-			logger.error("SQL Exception signing up user",e);
+			this.lastError = I18N.getMessage("UserSession.35",language)+" "+e.getMessage(); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.error("SQL Exception signing up user",e);  //$NON-NLS-1$
 			return false;
 		} catch (NoSuchAlgorithmException e) {
-			logger.error("Unexpected No Such Algorithm error signing up user",e);
-			this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected No Such Algorithm error signing up user",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.37",language); //$NON-NLS-1$
 			return false;
 		} catch (InvalidKeySpecException e) {
-			logger.error("Unexpected Invalid Key Spec error signing up user",e);
-			this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected Invalid Key Spec error signing up user",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.38",language); //$NON-NLS-1$
 			return false;
 		} catch (EmailUtilException e) {
-			logger.error("Error emailing invitation",e);
-			this.lastError = "Unable to email the invitiation: "+e.getMessage();
+			logger.error("Error emailing invitation",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.39",language)+" "+e.getMessage(); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		} catch (InvalidUserException e) {
-			logger.error("Invalid user specified in add user request",e);
-			this.lastError = "Error adding user: "+e.getMessage();
+			logger.error("Invalid user specified in add user request",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.41",language)+" "+e.getMessage(); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		}
 	}
@@ -396,7 +397,7 @@ public class UserSession {
 	 * @return Only the spec version portion of a full spec version (e.g. 1.1.1 -> 1.1)
 	 */
 	static String extractSpecVersion(String fullSpecVersion) {
-		String[] versionParts = fullSpecVersion.split("\\.");
+		String[] versionParts = fullSpecVersion.split("\\."); //$NON-NLS-1$
 		StringBuilder sb = new StringBuilder();
 		sb.append(versionParts[0]);
 		if (versionParts.length > 1) {
@@ -416,7 +417,7 @@ public class UserSession {
 		if (allSpecVersions == null) {
 			_getAllSpecVersions();
 		}
-		String retval = "";
+		String retval = ""; //$NON-NLS-1$
 		for (String fullSpecVer:allSpecVersions) {
 			String majorSpecVer = extractSpecVersion(fullSpecVer);
 			if (majorSpecVer.equals(majorVersion)) {
@@ -426,7 +427,7 @@ public class UserSession {
 			}
 		}
 		if (retval.isEmpty()) {
-			throw new SurveyResponseException("Could not find a full spec version for major version "+majorVersion);
+			throw new SurveyResponseException(I18N.getMessage("UserSession.45",language)+" "+majorVersion); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return retval;
 	}
@@ -509,14 +510,14 @@ public class UserSession {
 		}
 		if (!found) {
 			if (!create) {
-				throw new SurveyResponseException("No survey response was found matching version "+specVersion);
+				throw new SurveyResponseException(I18N.getMessage("UserSession.47",language)+specVersion); //$NON-NLS-1$
 			}
 			Connection con;
 			try {
 				con = SurveyDatabase.createConnection(config);
 			} catch (SQLException e) {
-				logger.error("Unable to get connection for creating answers",e);
-				throw new SurveyResponseException("Unable to get connection for creating answers.  Please report this error to the OpenChain team",e);
+				logger.error("Unable to get connection for creating answers",e); //$NON-NLS-1$
+				throw new SurveyResponseException(I18N.getMessage("UserSession.49",language),e); //$NON-NLS-1$
 			}
 			try {
 				SurveyResponseDao dao = new SurveyResponseDao(con);
@@ -529,13 +530,13 @@ public class UserSession {
 				dao.addSurveyResponse(currentSurveyResponse, language);
 				surveyResponses.add(currentSurveyResponse);
 			} catch (SQLException e) {
-				logger.error("SQL Exception adding answers",e);
-				throw new SurveyResponseException("Unexpectes SQL error adding answers.  Please report this error to the OpenChain team",e);
+				logger.error("SQL Exception adding answers",e);  //$NON-NLS-1$
+				throw new SurveyResponseException(I18N.getMessage("UserSession.50",language),e); //$NON-NLS-1$
 			} finally {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					logger.warn("Error closing connection",e);
+					logger.warn("Error closing connection",e); //$NON-NLS-1$
 				}
 			}
 		}
@@ -543,7 +544,7 @@ public class UserSession {
 	
 	private void checkLoggedIn() throws SurveyResponseException {
 		if (!this.isLoggedIn()) {
-			throw new SurveyResponseException("User is not logged in");
+			throw new SurveyResponseException(I18N.getMessage("UserSession.52",language)); //$NON-NLS-1$
 		}
 	}
 	/**
@@ -570,18 +571,18 @@ public class UserSession {
 				YesNo ynAnswer = null;
 				if (question instanceof YesNoQuestion) {
 					if (response.getValue() == null) {
-						logger.error("No answer provided for a yes/no question");
-						throw(new QuestionTypeException("No value specified for a yes/no question"));
+						logger.error("No answer provided for a yes/no question"); //$NON-NLS-1$
+						throw(new QuestionTypeException(I18N.getMessage("UserSession.54",language))); //$NON-NLS-1$
 					}
-					if (response.getValue().toUpperCase().trim().equals("YES")) {
+					if (response.getValue().toUpperCase().trim().equals("YES")) {  //$NON-NLS-1$
 						ynAnswer = YesNo.Yes;
-					} else if (response.getValue().toUpperCase().trim().equals("NO")) {
+					} else if (response.getValue().toUpperCase().trim().equals("NO")) {  //$NON-NLS-1$
 						ynAnswer = YesNo.No;
-					} else if (response.getValue().toUpperCase().trim().equals("NA")) {
+					} else if (response.getValue().toUpperCase().trim().equals("NA")) {  //$NON-NLS-1$
 						ynAnswer = YesNo.NotApplicable;
 					} else {
-						logger.error("Invalid yes no value: "+response.getValue());
-						throw(new QuestionTypeException("Invalid yes/no value:"+" "+response.getValue()));
+						logger.error("Invalid yes no value: "+response.getValue()); //$NON-NLS-1$
+						throw(new QuestionTypeException(I18N.getMessage("UserSession.56",language)+" "+response.getValue())); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 
@@ -593,8 +594,8 @@ public class UserSession {
 				} else if (question instanceof SubQuestion) {
 					answer = new SubQuestionAnswers(language);
 				} else {
-					logger.error("Invalid answer type for question "+response.getQuestionNumber());
-					throw(new QuestionTypeException("Invalid answer type for question"+" "+response.getQuestionNumber()));
+					logger.error("Invalid answer type for question "+response.getQuestionNumber());  //$NON-NLS-1$
+					throw(new QuestionTypeException(I18N.getMessage("UserSession.58",language)+" "+response.getQuestionNumber())); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				currentResponses.put(response.getQuestionNumber(), answer);
 				if (question.getSubQuestionOfNumber() != null) {
@@ -606,7 +607,7 @@ public class UserSession {
 					subQuestionAnswer.addSubAnswer(question.getNumber(), answer);
 				}
 			} else {
-				logger.warn("Skipping a response answer"+" "+response.getQuestionNumber());
+				logger.warn("Skipping a response answer "+response.getQuestionNumber());  //$NON-NLS-1$
 			}
 		}
 		Connection con = SurveyDatabase.createConnection(config);
@@ -633,10 +634,10 @@ public class UserSession {
 		}
 		List<Question> invalidQuestions = currentSurveyResponse.invalidAnswers();
 		if (invalidQuestions.size() > 0) {
-			StringBuilder er = new StringBuilder("Can not submit - the following question(s) either has missing answers or invalid answers: ");
+			StringBuilder er = new StringBuilder(I18N.getMessage("UserSession.60",language)+" "); //$NON-NLS-1$ //$NON-NLS-2$
 			er.append(invalidQuestions.get(0).getNumber());
 			for (int i = 1; i < invalidQuestions.size(); i++) {
-				er.append(", ");
+				er.append(", "); //$NON-NLS-1$
 				er.append(invalidQuestions.get(i).getNumber());
 			}
 			this.lastError = er.toString();
@@ -680,12 +681,12 @@ public class UserSession {
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
 		} catch (SQLException e) {
-			this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
-			logger.error("SQL Exception logging in user",e);
+			this.lastError = I18N.getMessage("UserSession.63",language)+" "+e.getMessage(); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.error("SQL Exception logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
 		if (user == null) {
-			this.lastError = "User "+username+" does not exist.  Please review the username or sign up as a new user.";
+			this.lastError = I18N.getMessage("UserSession.65",language)+" "+username+" "+I18N.getMessage("UserSession.67",language); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return false;
 		}
 		if (user.isVerified()) {
@@ -693,16 +694,16 @@ public class UserSession {
 		}
 		try {
 			if (!PasswordUtil.validate(password, user.getPasswordToken())) {
-				this.lastError = "Passwords do not match.  Please retry or reset your password";
+				this.lastError = I18N.getMessage("UserSession.68",language); //$NON-NLS-1$
 				return false;
 			}
 		} catch (NoSuchAlgorithmException e) {
-			logger.error("Unexpected No Such Algorithm error logging in user",e);
-			this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected No Such Algorithm error logging in user",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.69",language); //$NON-NLS-1$
 			return false;
 		} catch (InvalidKeySpecException e) {
-			this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
-			logger.error("Unexpected Invalid Key Spec error logging in user",e);
+			this.lastError = I18N.getMessage("UserSession.70",language); //$NON-NLS-1$
+			logger.error("Unexpected Invalid Key Spec error logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
 		UUID uuid = UUID.randomUUID();
@@ -710,12 +711,12 @@ public class UserSession {
 		try {
 			hashedUuid = PasswordUtil.getToken(uuid.toString());
 		} catch (NoSuchAlgorithmException e) {
-			logger.error("Unexpected No Such Algorithm error logging in user",e);
-			this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected No Such Algorithm error logging in user",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.71",language); //$NON-NLS-1$
 			return false;
 		} catch (InvalidKeySpecException e) {
-			this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
-			logger.error("Unexpected Invalid Key Spec error logging in user",e);
+			this.lastError = I18N.getMessage("UserSession.72",language); //$NON-NLS-1$
+			logger.error("Unexpected Invalid Key Spec error logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
 		user.setUuid(hashedUuid);
@@ -723,19 +724,19 @@ public class UserSession {
 		try {
 			UserDb.getUserDb(config).updateUser(user);
 		} catch (SQLException e) {
-			this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
-			logger.error("SQL Exception updating user during re-verification",e);
+			this.lastError = I18N.getMessage("UserSession.73",language)+" "+e.getMessage(); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.error("SQL Exception updating user during re-verification",e);  //$NON-NLS-1$
 			return false;
 		} catch (InvalidUserException e) {
-			this.lastError = "Unexpected invalid user error.  Please report this error to the OpenChain team: "+e.getMessage();
-			logger.error("Invalid user error in resending verification",e);
+			this.lastError = I18N.getMessage("UserSession.75",language)+" "+e.getMessage(); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.error("Invalid user error in resending verification",e);  //$NON-NLS-1$
 		}
 		try {
 			EmailUtility.emailVerification(user.getName(), user.getEmail(), 
 					uuid, username, responseServletUrl, config, language);
 		} catch (EmailUtilException e) {
-			logger.error("Error emailing invitation",e);
-			this.lastError = "Unable to re-email the invitiation: "+e.getMessage();
+			logger.error("Error emailing invitation",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.77",language)+" "+e.getMessage(); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		}
 		return true;
@@ -752,8 +753,8 @@ public class UserSession {
 		try {
 			con = SurveyDatabase.createConnection(config);
 		} catch (SQLException e) {
-			logger.error("Unable to get connection for resetting answers",e);
-			throw new SurveyResponseException("Unable to get connection for resetting answers.  Please report this error to the OpenChain team",e);
+			logger.error("Unable to get connection for resetting answers",e);  //$NON-NLS-1$
+			throw new SurveyResponseException(I18N.getMessage("UserSession.79",language),e); //$NON-NLS-1$
 		}
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
@@ -768,13 +769,13 @@ public class UserSession {
 			con.commit();
 			surveyResponses.add(currentSurveyResponse);
 		} catch (SQLException e) {
-			logger.error("SQL Exception resetting answers",e);
-			throw new SurveyResponseException("Unexpectes SQL error resetting answers.  Please report this error to the OpenChain team",e);
+			logger.error("SQL Exception resetting answers",e);  //$NON-NLS-1$
+			throw new SurveyResponseException(I18N.getMessage("UserSession.80",language),e); //$NON-NLS-1$
 		} finally {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				logger.warn("Error closing connection",e);
+				logger.warn("Error closing connection",e);  //$NON-NLS-1$
 			}
 		}
 	}
@@ -843,14 +844,14 @@ public class UserSession {
 			String newAddress, String newPassword, boolean newNamePermission,
 			boolean newEmailPermission, String preferredLanguage) throws InvalidUserException, SQLException, NoSuchAlgorithmException, InvalidKeySpecException, EmailUtilException, QuestionException, SurveyResponseException {
 		if (!loggedIn) {
-			this.lastError = "Can not update a user which is not logged in.";
+			this.lastError = I18N.getMessage("UserSession.81",language); //$NON-NLS-1$
 			throw new InvalidUserException(this.lastError);
 		}
 			User user = null;
 			try {
 				user = UserDb.getUserDb(config).getUser(username);
 				if (user == null) {
-					this.lastError = "User "+username+" no longer exist.  Please report this error to the open chain team.";
+					this.lastError = I18N.getMessage("UserSession.82",language)+" "+username+" "+I18N.getMessage("UserSession.85",language); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 					throw new InvalidUserException(this.lastError);
 				}
 				boolean needUpdate = false;
@@ -904,21 +905,21 @@ public class UserSession {
 					try {
 						EmailUtility.emailProfileUpdate(username, this.email, config, language);
 					}catch (EmailUtilException e) {
-						logger.warn("Error emailing profile update notice",e);
-						this.lastError = "Unable to email the for the profile update: "+e.getMessage();
+						logger.warn("Error emailing profile update notice",e);  //$NON-NLS-1$
+						this.lastError = I18N.getMessage("UserSession.86",language)+" "+e.getMessage(); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			} catch (SQLException e) {
-				this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
-				logger.error("SQL Exception signing up user",e);
+				this.lastError = I18N.getMessage("UserSession.88",language)+" "+e.getMessage(); //$NON-NLS-1$ //$NON-NLS-2$
+				logger.error("SQL Exception signing up user",e);  //$NON-NLS-1$
 				throw e;
 			} catch (NoSuchAlgorithmException e) {
-				logger.error("Unexpected No Such Algorithm error signing up user",e);
-				this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+				logger.error("Unexpected No Such Algorithm error signing up user",e);  //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.90",language); //$NON-NLS-1$
 				throw e;
 			} catch (InvalidKeySpecException e) {
-				logger.error("Unexpected Invalid Key Spec error signing up user",e);
-				this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
+				logger.error("Unexpected Invalid Key Spec error signing up user",e);  //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.91",language); //$NON-NLS-1$
 				throw e;
 			} 
 	}
@@ -935,32 +936,32 @@ public class UserSession {
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
 			if (!user.isPasswordReset()) {
-				this.lastError = "Attempting to reset a password when a reset password email was not sent.";
+				this.lastError = I18N.getMessage("UserSession.92",language); //$NON-NLS-1$
 				return false;
 			}
 			if (!PasswordUtil.validate(uuid.toString(), user.getUuid())) {
-				logger.error("Password reset tokens do not match for user "+username+".  Supplied = "+uuid+", expected = "+user.getUuid());
-				this.lastError = "Email password reset tokens does not match.  Please re-send the password reset.";
+				logger.error("Password reset tokens do not match for user "+username+".  Supplied = "+uuid+", expected = "+user.getUuid());  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				this.lastError = I18N.getMessage("UserSession.95",language); //$NON-NLS-1$
 				return false;
 			}
 			if (!isValidExpirationDate(user.getVerificationExpirationDate())) {
-				logger.error("Expiration date for verification has passed for user "+username);
-				this.lastError = "The verification has expired.  Please resend the verification email.  When logging in using your username and password, you will be prompted to resend the verification.";
+				logger.error("Expiration date for verification has passed for user "+username);  //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.96",language); //$NON-NLS-1$
 				return false;
 			}
 			this.passwordReset  = true;
 			return true;
 		} catch (SQLException e) {
-			logger.error("SQL Exception setting password reset",e);
-			this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
+			logger.error("SQL Exception setting password reset",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.97",language)+" "+e.getMessage(); //$NON-NLS-1$ //$NON-NLS-2$
 			throw(e);
 		} catch (NoSuchAlgorithmException e) {
-			logger.error("Unexpected No Such Algorithm error signing up user",e);
-			this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected No Such Algorithm error signing up user",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.99",language); //$NON-NLS-1$
 			throw e;
 		} catch (InvalidKeySpecException e) {
-			logger.error("Unexpected Invalid Key Spec error signing up user",e);
-			this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected Invalid Key Spec error signing up user",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.100",language); //$NON-NLS-1$
 			throw e;
 		} 
 	}
@@ -969,14 +970,14 @@ public class UserSession {
 	}
 	public synchronized boolean setPassword(String username, String password) {
 		if (!Objects.equals(username, this.username)) {
-			this.lastError = "Username for password reset does not match the username in the email reset.";
+			this.lastError = I18N.getMessage("UserSession.101",language); //$NON-NLS-1$
 			return false;
 		}
 		User user = null;
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
 			if (!user.isPasswordReset()) {
-				this.lastError = "Attempting to reset a password when a reset password email was not sent.";
+				this.lastError = I18N.getMessage("UserSession.92",language); //$NON-NLS-1$
 				return false;
 			}
 			user.setPasswordReset(false);
@@ -986,20 +987,20 @@ public class UserSession {
 			this.password = password;
 			return true;
 		} catch (SQLException e) {
-			logger.error("SQL Exception setting password reset",e);
-			this.lastError = "Unexpected SQL error.  Please report this error to the OpenChain team: "+e.getMessage();
+			logger.error("SQL Exception setting password reset",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.103",language)+" "+e.getMessage(); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		} catch (NoSuchAlgorithmException e) {
-			logger.error("Unexpected No Such Algorithm error signing up user",e);
-			this.lastError = "Unexpected No Such Algorithm error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected No Such Algorithm error signing up user",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.105",language); //$NON-NLS-1$
 			return false;
 		} catch (InvalidKeySpecException e) {
-			logger.error("Unexpected Invalid Key Spec error signing up user",e);
-			this.lastError = "Unexpected Invalid Key Spec error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected Invalid Key Spec error signing up user",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.106",language); //$NON-NLS-1$
 			return false;
 		} catch (InvalidUserException e) {
-			logger.error("Unexpected Invalid User error signing up user",e);
-			this.lastError = "Unexpected Invalid User error.  Please report this error to the OpenChain team";
+			logger.error("Unexpected Invalid User error signing up user",e);  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.107",language); //$NON-NLS-1$
 			return false;
 		} 
 	}
@@ -1017,7 +1018,7 @@ public class UserSession {
 			_getSurveyResponses();
 		}
 		if (!currentSurveyResponse.isSubmitted()) {
-			logger.warn("Attempting to unsubmit an unsubmitted response for user "+this.username);
+			logger.warn("Attempting to unsubmit an unsubmitted response for User"+" "+this.username); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
 		currentSurveyResponse.setApproved(false);

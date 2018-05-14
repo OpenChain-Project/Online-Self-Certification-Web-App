@@ -157,7 +157,7 @@ public class CertificationServlet extends HttpServlet {
 	            	String username = request.getParameter(PARAMETER_USERNAME);
 	            	String uuid = request.getParameter(PARAMETER_UUID);
 	            	try {
-	            		UserSession.completeEmailVerification(username, uuid, getServletConfig());
+	            		UserSession.completeEmailVerification(username, uuid, getServletConfig(),language);
 	            		response.sendRedirect("regcomplete.html");
 	            	} catch (Exception ex) {
 	            		response.sendRedirect("regfailed.html");
