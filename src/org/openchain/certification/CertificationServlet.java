@@ -480,7 +480,7 @@ public class CertificationServlet extends HttpServlet {
         		} else {
         			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         			postResponse.setStatus(Status.ERROR);
-	        		postResponse.setError(I18N.getMessage("CertificationServlet.31",language)); //$NON-NLS-1$
+	        		postResponse.setError(I18N.getMessage("CertificationServlet.29",language)); //$NON-NLS-1$
         		}
         		
         	} else if (rj.getRequest().equals(SET_APPROVED)) {
@@ -509,7 +509,7 @@ public class CertificationServlet extends HttpServlet {
         		} else {
         			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         			postResponse.setStatus(Status.ERROR);
-	        		postResponse.setError(I18N.getMessage("CertificationServlet.33",language)); //$NON-NLS-1$
+	        		postResponse.setError(I18N.getMessage("CertificationServlet.32",language)); //$NON-NLS-1$
         		}
         	} else if (rj.getRequest().equals(SET_REJECTED)) {
         		if (user.isAdmin()) {
@@ -523,7 +523,7 @@ public class CertificationServlet extends HttpServlet {
         		} else {
         			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         			postResponse.setStatus(Status.ERROR);
-	        		postResponse.setError(I18N.getMessage("CertificationServlet.34",language)); //$NON-NLS-1$
+	        		postResponse.setError(I18N.getMessage("CertificationServlet.32",language)); //$NON-NLS-1$
         		}
         	} else if (rj.getRequest().equals(RESET_REJECTED)) {
         		if (user.isAdmin()) {
@@ -537,7 +537,7 @@ public class CertificationServlet extends HttpServlet {
         		} else {
         			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         			postResponse.setStatus(Status.ERROR);
-	        		postResponse.setError(I18N.getMessage("CertificationServlet.35",language)); //$NON-NLS-1$
+	        		postResponse.setError(I18N.getMessage("CertificationServlet.32",language)); //$NON-NLS-1$
         		}
         	} else if (rj.getRequest().equals(LOGOUT_REQUEST)) {
         		user.logout();
@@ -552,7 +552,7 @@ public class CertificationServlet extends HttpServlet {
         	logger.error("SQL Error in post"+".  Request="+rj.getRequest(),e);  //$NON-NLS-1$ //$NON-NLS-2$
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			postResponse.setStatus(Status.ERROR);
-			postResponse.setError(I18N.getMessage("CertificationServlet.39",language,e.getMessage())); //$NON-NLS-1$
+			postResponse.setError(I18N.getMessage("CertificationServlet.11",language,e.getMessage())); //$NON-NLS-1$
 			gson.toJson(postResponse, out);
 		} catch (QuestionException e) {
         	logger.error("Question Error in post"+".  Request="+rj.getRequest(),e);  //$NON-NLS-1$ //$NON-NLS-2$
@@ -564,7 +564,7 @@ public class CertificationServlet extends HttpServlet {
         	logger.error("Survey Response error in post"+".  Request="+rj.getRequest(),e);  //$NON-NLS-1$ //$NON-NLS-2$
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			postResponse.setStatus(Status.ERROR);
-			postResponse.setError(I18N.getMessage("CertificationServlet.43",language,e.getMessage())); //$NON-NLS-1$
+			postResponse.setError(I18N.getMessage("CertificationServlet.9",language,e.getMessage())); //$NON-NLS-1$
 			gson.toJson(postResponse, out);
 		} catch (EmailUtilException e) {
         	logger.error("Error sending email in post"+".  Request="+rj.getRequest(),e);  //$NON-NLS-1$ //$NON-NLS-2$
@@ -576,7 +576,7 @@ public class CertificationServlet extends HttpServlet {
         	logger.error("Uncaught exception",e);  //$NON-NLS-1$
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			postResponse.setStatus(Status.ERROR);
-			postResponse.setError(I18N.getMessage("CertificationServlet.46",language,e.getMessage())); //$NON-NLS-1$
+			postResponse.setError(I18N.getMessage("CertificationServlet.14",language,e.getMessage())); //$NON-NLS-1$
 			gson.toJson(postResponse, out);
 		} finally {
         	out.close();
