@@ -49,9 +49,9 @@ public class TestI18N {
 		String template1 = "This is a template ";
 		String template2 = " with ";
 		@SuppressWarnings("unused")
-		String template = template1 + "{0}" + "{1}";
+		String template = template1 + "{0}" + "\"{1}\"";
 		String p1 = "test1";
 		Integer p2 = new Integer(7);
-		assertEquals(template1+p1+template2+p2, I18N.getMessage(TEST_KEY2, TEST_LANGUAGE, p1, p2));
+		assertEquals(template1+p1+template2+"\""+p2+"\"", I18N.getMessage(TEST_KEY2, TEST_LANGUAGE, p1, p2));
 	}
 }

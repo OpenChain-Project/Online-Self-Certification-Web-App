@@ -38,14 +38,14 @@ import org.openchain.certification.model.SubQuestion;
  */
 public class QuestionJsonDeserializer implements JsonDeserializer<Question> {
 	
-	static final String TYPE_PROPERTY = "type";
+	static final String TYPE_PROPERTY = "type"; //$NON-NLS-1$
 	static final Map<String, String> TYPE_TO_CLASS = new HashMap<String, String>();
-	private static final String SUBQUESTION_INDENT = "     ";
+	private static final String SUBQUESTION_INDENT = "     "; //$NON-NLS-1$
 	static {
-		TYPE_TO_CLASS.put("SUBQUESTIONS", "org.openchain.certification.model.SubQuestion");
-		TYPE_TO_CLASS.put("YES_NO", "org.openchain.certification.model.YesNoQuestion");
-		TYPE_TO_CLASS.put("YES_NO_NA", "org.openchain.certification.model.YesNoNotApplicableQuestion");
-		TYPE_TO_CLASS.put("YES_NO_EVIDENCE", "org.openchain.certification.model.YesNoQuestionWithEvidence");
+		TYPE_TO_CLASS.put("SUBQUESTIONS", "org.openchain.certification.model.SubQuestion"); //$NON-NLS-1$ //$NON-NLS-2$
+		TYPE_TO_CLASS.put("YES_NO", "org.openchain.certification.model.YesNoQuestion"); //$NON-NLS-1$ //$NON-NLS-2$
+		TYPE_TO_CLASS.put("YES_NO_NA", "org.openchain.certification.model.YesNoNotApplicableQuestion"); //$NON-NLS-1$ //$NON-NLS-2$
+		TYPE_TO_CLASS.put("YES_NO_EVIDENCE", "org.openchain.certification.model.YesNoQuestionWithEvidence"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/* (non-Javadoc)
@@ -58,7 +58,7 @@ public class QuestionJsonDeserializer implements JsonDeserializer<Question> {
 		String questionType = jo.get(TYPE_PROPERTY).getAsString();
 		String subClassName = TYPE_TO_CLASS.get(questionType);
 		if (subClassName == null) {
-			throw new JsonParseException("Unknown question type: "+questionType);
+			throw new JsonParseException(I18N.getMessage("QuestionJsonDeserializer.10",questionType)); //$NON-NLS-1$
 		}
 		Class<?> clazz = null;
 		try {
@@ -71,7 +71,7 @@ public class QuestionJsonDeserializer implements JsonDeserializer<Question> {
 			SubQuestion sq = (SubQuestion)retval;
 			// Add indentation if necessary to the sub questions
 			for (Question q:sq.getAllSubquestions()) {
-				if (q.getQuestion() != null && !q.getQuestion().startsWith(" ")) {
+				if (q.getQuestion() != null && !q.getQuestion().startsWith(" ")) { //$NON-NLS-1$
 					q.setQuestion(SUBQUESTION_INDENT + q.getQuestion());
 				}
 			}

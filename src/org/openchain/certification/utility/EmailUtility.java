@@ -86,26 +86,11 @@ public class EmailUtility {
 			throw(new EmailUtilException(I18N.getMessage("EmailUtility.7",language))); //$NON-NLS-1$
 		}
 		String link = responseServletUrl + "?request=register&username=" + username + "&uuid=" + uuid.toString(); //$NON-NLS-1$ //$NON-NLS-2$
-		StringBuilder msg = new StringBuilder("<div>"); //$NON-NLS-1$
-		msg.append(I18N.getMessage("EmailUtility.11",language)); //$NON-NLS-1$
-		msg.append(" "); //$NON-NLS-1$
-		msg.append(name);
-		msg.append(" "); //$NON-NLS-1$
-		msg.append(I18N.getMessage("EmailUtility.14",language)); //$NON-NLS-1$
-		msg.append("<br /> <br />"); //$NON-NLS-1$
-		msg.append(I18N.getMessage("EmailUtility.16",language)); //$NON-NLS-1$
-		msg.append("<a href=\""); //$NON-NLS-1$
-		msg.append(link);
-		msg.append("\">"); //$NON-NLS-1$
-		msg.append(link);
-		msg.append("</a><br/><br/>"); //$NON-NLS-1$
-		msg.append(I18N.getMessage("EmailUtility.20",language)); //$NON-NLS-1$
-		msg.append("<br/>"); //$NON-NLS-1$
-		msg.append(I18N.getMessage("EmailUtility.22",language)); //$NON-NLS-1$
-		msg.append("</div>"); //$NON-NLS-1$
+		// EmailUtility.11=<div>Welcome {0} to the OpenChain Certification website.<br /> <br />To complete your registration, click on the following or copy/paste into your web browser <a href="{1}">{1}</a><br/><br/>Thanks,<br/>The OpenChain team</div>
+		String msg = I18N.getMessage("EmailUtility.11",language, name, link);  //$NON-NLS-1$
 		Destination destination = new Destination().withToAddresses(new String[]{email});
 		Content subject = new Content().withData(I18N.getMessage("EmailUtility.24",language)); //$NON-NLS-1$
-		Content bodyData = new Content().withData(msg.toString());
+		Content bodyData = new Content().withData(msg);
 		Body body = new Body();
 		body.setHtml(bodyData);
 		Message message = new Message().withSubject(subject).withBody(body);
@@ -138,30 +123,17 @@ public class EmailUtility {
 	
 	public static void emailCompleteSubmission(String username, String name, String email,
 			String specVersion, ServletConfig config, String language) throws EmailUtilException {
-		StringBuilder adminMsg = new StringBuilder("<div>"); //$NON-NLS-1$
-		adminMsg.append("User"); //$NON-NLS-1$
-		adminMsg.append(" "); //$NON-NLS-1$
+		StringBuilder adminMsg = new StringBuilder("<div>User "); //$NON-NLS-1$
 		adminMsg.append(name);
-		adminMsg.append(" "); //$NON-NLS-1$
-		adminMsg.append("with username"); //$NON-NLS-1$
-		adminMsg.append(" "); //$NON-NLS-1$
+		adminMsg.append(" with username "); //$NON-NLS-1$
 		adminMsg.append(username);
-		adminMsg.append(" "); //$NON-NLS-1$
-		adminMsg.append("and email"); //$NON-NLS-1$
-		adminMsg.append(" "); //$NON-NLS-1$
+		adminMsg.append(" and email "); //$NON-NLS-1$
 		adminMsg.append(email);
-		adminMsg.append(" "); //$NON-NLS-1$
-		adminMsg.append("has just submitted a cerification request."); //$NON-NLS-1$
-		adminMsg.append("</div>"); //$NON-NLS-1$
-		emailAdmin("Notification - new OpenChain submission [do not reply]", adminMsg.toString(), config); //$NON-NLS-1$
-		
-		StringBuilder userMsg = new StringBuilder("<div>"); //$NON-NLS-1$
-		userMsg.append(I18N.getMessage("EmailUtility.48",language)); //$NON-NLS-1$
-		userMsg.append(" "); //$NON-NLS-1$
-		userMsg.append(name);
-		userMsg.append(I18N.getMessage("EmailUtility.50",language)); //$NON-NLS-1$
-		userMsg.append("</div>"); //$NON-NLS-1$
-		emailUser(email, I18N.getMessage("EmailUtility.52",language), userMsg.toString(), config, language); //$NON-NLS-1$
+		adminMsg.append(" has just submitted a cerification request.</div>"); //$NON-NLS-1$
+		emailAdmin("Notification - new OpenChain submission [do not reply]", adminMsg.toString(), config); //$NON-NLS-1$		
+		// EmailUtility.48=<div>Congratulations {0} .  Your certification request has been accepted.  If you did not submit a request for OpenChain certification, please notify the OpenChain group at openchain-conformance@lists.linuxfoundation.org.</div>
+		String userMsg = I18N.getMessage("EmailUtility.48",language, name); //$NON-NLS-1$
+		emailUser(email, I18N.getMessage("EmailUtility.52",language), userMsg, config, language); //$NON-NLS-1$
 
 		logger.info("Submittal notification email sent for "+email); //$NON-NLS-1$
 	}
@@ -171,7 +143,7 @@ public class EmailUtility {
 		String fromEmail = config.getServletContext().getInitParameter("return_email"); //$NON-NLS-1$
 		if (fromEmail == null || fromEmail.isEmpty()) {
 			logger.error("Missing return_email parameter in the web.xml file"); //$NON-NLS-1$
-			throw(new EmailUtilException(I18N.getMessage("EmailUtility.56",language))); //$NON-NLS-1$
+			throw(new EmailUtilException(I18N.getMessage("EmailUtility.7",language))); //$NON-NLS-1$
 		}
 		if (toEmail == null || toEmail.isEmpty()) {
 			logger.error("Missing notification_email parameter in the web.xml file"); //$NON-NLS-1$
@@ -237,17 +209,12 @@ public class EmailUtility {
 		String fromEmail = config.getServletContext().getInitParameter("return_email"); //$NON-NLS-1$
 		if (fromEmail == null || fromEmail.isEmpty()) {
 			logger.error("Missing return_email parameter in the web.xml file"); //$NON-NLS-1$
-			throw(new EmailUtilException(I18N.getMessage("EmailUtility.75",language))); //$NON-NLS-1$
+			throw(new EmailUtilException(I18N.getMessage("EmailUtility.7",language))); //$NON-NLS-1$
 		}
-		StringBuilder msg = new StringBuilder("<div>"); //$NON-NLS-1$
-		msg.append(I18N.getMessage("EmailUtility.77",language)); //$NON-NLS-1$
-		msg.append(" "); //$NON-NLS-1$
-		msg.append(username);
-		msg.append(" "); //$NON-NLS-1$
-		msg.append(I18N.getMessage("EmailUtility.80",language)); //$NON-NLS-1$
+		String msg = I18N.getMessage("EmailUtility.77",language, username); //$NON-NLS-1$
 		Destination destination = new Destination().withToAddresses(new String[]{email});
 		Content subject = new Content().withData(I18N.getMessage("EmailUtility.81",language)); //$NON-NLS-1$
-		Content bodyData = new Content().withData(msg.toString());
+		Content bodyData = new Content().withData(msg);
 		Body body = new Body();
 		body.setHtml(bodyData);
 		Message message = new Message().withSubject(subject).withBody(body);
@@ -267,21 +234,13 @@ public class EmailUtility {
 		String fromEmail = config.getServletContext().getInitParameter("return_email"); //$NON-NLS-1$
 		if (fromEmail == null || fromEmail.isEmpty()) {
 			logger.error("Missing return_email parameter in the web.xml file"); //$NON-NLS-1$
-			throw(new EmailUtilException(I18N.getMessage("EmailUtility.87",language))); //$NON-NLS-1$
+			throw(new EmailUtilException(I18N.getMessage("EmailUtility.7",language))); //$NON-NLS-1$
 		}
 		String link = responseServletUrl + "?request=pwreset&username=" + username + "&uuid=" + uuid.toString(); //$NON-NLS-1$ //$NON-NLS-2$
-		StringBuilder msg = new StringBuilder("<div>"); //$NON-NLS-1$
-		msg.append(I18N.getMessage("EmailUtility.91",language)); //$NON-NLS-1$
-		msg.append("<a href=\""); //$NON-NLS-1$
-		msg.append(link);
-		msg.append("\">"); //$NON-NLS-1$
-		msg.append(link);
-		msg.append("</a><br/><br/><br/>"); //$NON-NLS-1$
-		msg.append(I18N.getMessage("EmailUtility.95",language)); //$NON-NLS-1$
-		msg.append("</div>"); //$NON-NLS-1$
+		String msg = I18N.getMessage("EmailUtility.91", language, link); //$NON-NLS-1$
 		Destination destination = new Destination().withToAddresses(new String[]{email});
 		Content subject = new Content().withData(I18N.getMessage("EmailUtility.96",language)); //$NON-NLS-1$
-		Content bodyData = new Content().withData(msg.toString());
+		Content bodyData = new Content().withData(msg);
 		Body body = new Body();
 		body.setHtml(bodyData);
 		Message message = new Message().withSubject(subject).withBody(body);

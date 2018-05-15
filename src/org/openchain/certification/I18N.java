@@ -34,7 +34,7 @@ public final class I18N {
 	
 	static final Logger logger = Logger.getLogger(I18N.class);
 
-	private static final String BASE_RESOURCE_NAME = "messages";
+	private static final String BASE_RESOURCE_NAME = "messages"; //$NON-NLS-1$
 
 	/**
 	 * @param key Key for the resource file
@@ -47,11 +47,11 @@ public final class I18N {
 		}
 		Locale locale = Locale.forLanguageTag(language);
 		if (locale == null) {
-			logger.warn("Language "+language+" not supported by Java.  Using default language");
+			logger.warn("Language "+language+" not supported by Java.  Using default language"); //$NON-NLS-1$ //$NON-NLS-2$
 			locale = Locale.forLanguageTag(User.DEFAULT_LANGUAGE);
 			if (locale == null) {
-				logger.error("No locale for the default language");
-				throw(new RuntimeException("No local for the default language"));
+				logger.error("No locale for the default language"); //$NON-NLS-1$
+				throw(new RuntimeException("No local for the default language")); //$NON-NLS-1$
 			}
 		}
 		ResourceBundle bundle = ResourceBundle.getBundle(BASE_RESOURCE_NAME, locale);

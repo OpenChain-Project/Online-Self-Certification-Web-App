@@ -58,9 +58,9 @@ public abstract class Question implements Comparable<Question> {
 		this.setNumberMatcher(number, specVersion);
 		if (!this.numberMatch.matches()) {
 			if (specVersion.compareTo("1.0.2") < 0) { //$NON-NLS-1$
-				throw(new QuestionException(I18N.getMessage("Question.7",language)+number+I18N.getMessage("Question.6",language))); //$NON-NLS-1$ //$NON-NLS-2$
+				throw(new QuestionException(I18N.getMessage("Question.6", language, number))); //$NON-NLS-1$
 			} else {
-				throw(new QuestionException(I18N.getMessage("Question.7",language)+number+I18N.getMessage("Question.8",language))); //$NON-NLS-1$ //$NON-NLS-2$
+				throw(new QuestionException(I18N.getMessage("Question.8", language, number))); //$NON-NLS-1$
 			}
 		}
 		this.question = question;
@@ -134,7 +134,7 @@ public abstract class Question implements Comparable<Question> {
 	 */
 	public void setNumber(String number) throws QuestionException {
 		if (number == null) {
-			throw(new QuestionException(I18N.getMessage("Question.9",language))); //$NON-NLS-1$
+			throw(new QuestionException(I18N.getMessage("Question.3",language))); //$NON-NLS-1$
 		}
 		setNumberMatcher(number, this.specVersion);
 		if (!this.numberMatch.matches()) {
