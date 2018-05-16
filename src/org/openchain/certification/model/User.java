@@ -25,7 +25,7 @@ import java.util.Date;
  */
 public class User {
 
-	public static final String DEFAULT_LANGUAGE = "eng"; //$NON-NLS-1$
+	public static final String DEFAULT_LANGUAGE = "en"; //$NON-NLS-1$
 	private String username;
 	private String passwordToken;
 	private String name;

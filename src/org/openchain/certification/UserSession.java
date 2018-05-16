@@ -477,7 +477,7 @@ public class UserSession {
 				currentSurveyResponse = surveyResponses.get(0);
 				for (int i = 1; i < surveyResponses.size(); i++) {
 					if (surveyResponses.get(i).getSpecVersion().compareToIgnoreCase(currentSurveyResponse.getSpecVersion()) > 0) {
-						currentSurveyResponse = surveyResponses.get(1);
+						currentSurveyResponse = surveyResponses.get(i);
 					}
 				}
 				

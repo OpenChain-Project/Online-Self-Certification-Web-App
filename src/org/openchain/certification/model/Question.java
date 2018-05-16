@@ -339,10 +339,10 @@ public abstract class Question implements Comparable<Question> {
 	}
 
 	/**
-	 * @param subQuestionNumber the subQuestionNumber to set
+	 * @param subQuestionOfNumber the subQuestionOfNumber to set
 	 */
-	public void setSubQuestionOfNumber(String subQuestionNumber) {
-		this.subQuestionOfNumber = subQuestionNumber;
+	public void setSubQuestionOfNumber(String subQuestionOfNumber) {
+		this.subQuestionOfNumber = subQuestionOfNumber;
 	}
 
 	/**
@@ -393,7 +393,7 @@ public abstract class Question implements Comparable<Question> {
 		String correctAnswer = row[5];
 		String evidencePrompt = row[6];
 		String evidenceValidation = row[7];
-		String subQuestionNumber = row[8];
+		String subQuestionOfNumber = row[8];
 		if (sectionName == null || sectionName.isEmpty()) {
 			throw(new QuestionTypeException("No section name specified in CSV row")); //$NON-NLS-1$
 		}
@@ -430,8 +430,8 @@ public abstract class Question implements Comparable<Question> {
 			throw(new QuestionTypeException("Unknown question type: "+type)); //$NON-NLS-1$
 		}
 		retval.setSpecReference(specReferenceStrToArray(specReference));
-		if (subQuestionNumber != null && !subQuestionNumber.isEmpty()) {
-			retval.setSubQuestionOfNumber(subQuestionNumber);
+		if (subQuestionOfNumber != null && !subQuestionOfNumber.isEmpty()) {
+			retval.setSubQuestionOfNumber(subQuestionOfNumber);
 		}
 		return retval;
 	}

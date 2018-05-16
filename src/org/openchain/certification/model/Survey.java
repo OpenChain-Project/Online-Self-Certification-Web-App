@@ -222,6 +222,9 @@ public class Survey {
 			}
 			for (SubQuestion questionsWithSubquestion:questionsWithSubquestions.values()) {
 				for (Question subQuestion:questionsWithSubquestion.getAllSubquestions()) {
+					subQuestion.setSpecVersion(specV);
+					subQuestion.setLanguage(lang);
+					subQuestion.setSection(sectionName);
 					// Add the redundant subquestion of number
 					subQuestion.setSubQuestionOfNumber(questionsWithSubquestion.getNumber());
 					// Add the redundant copy of the subquestion to the section

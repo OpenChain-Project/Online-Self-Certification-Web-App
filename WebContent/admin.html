@@ -25,7 +25,12 @@
     </h2>
     <div id="manage-survey" class="admin-buttons">
         <button id="btDownloadSurvey" class="ui-button ui-widget ui-corner-all">Download Survey Questions</button>
-        <button id="btUploadSurvey" class="ui-button ui-widget ui-corner-all">Upload New Survey Version</button>
+        <span class="ui-button ui-widget ui-corner-all file-input-button">
+            <i class="ui-icon ui-icon-arrowthick-1-n"></i>
+            <span id="upload-file-name">[no file]</span>
+            <input type="file" onchange="selectSurvey(event)" name="uploadsurvey-file" id="uploadsurvey-file"/>
+        </span>
+        <button id="btUploadSurvey" class="ui-button ui-widget ui-corner-all">New Survey Version</button>
         <button id="btUpdateSurvey" class="ui-button ui-widget ui-corner-all">Update Survey Questions</button>
     </div>
     <h2>Submission Status</h2>
@@ -59,71 +64,6 @@
         <fieldset>
             <label for="downloadsurvey-version">Specification Version</label>
             <input type="text" name="downloadsurvey-version" id="downloadsurvey-version" class="text ui-widget-content ui-corner-all">
-        </fieldset>
-        </form>
-    </div>
-        <div id="uploadsurvey">
-        <form name="uploadsurvey-form" id="upload-survey-questions-form">
-        <fieldset>
-            <label for="uploadsurvey-version" class="inline-label">Specification Version:</label>
-            <input type="text" name="uploadsurvey-version" id="uploadsurvey-version" class="ui-widget-content ui-corner-all specversion">
-            <div id="sectiontext-input-area">
-                <fieldset id="section1names" class="section-text-group ui-corner-all">
-                    <label for="section1names-sname" class="inline-label">Section Name:</label>
-                    <input type="text" name="section1names-sname" id="section1names-sname" class="ui-widget-content ui-corner-all sectionname">
-                    <br />
-                    <label for="section1names-stitle" class="inline-label">Section Title:</label>
-                    <input type="text" name="section1names-stitle" id="section1names-stitle" class="ui-widget-content ui-corner-all sectiontitle">
-                </fieldset>
-                <fieldset id="section2names" class="section-text-group ui-corner-all">
-                    <label for="section2names-sname" class="inline-label">Section Name:</label>
-                    <input type="text" name="section2names-sname" id="section2names-sname" class="ui-widget-content ui-corner-all sectionname">
-                    <br />
-                    <label for="section2names-stitle" class="inline-label">Section Title:</label>
-                    <input type="text" name="section2names-stitle" id="section2names-stitle" class="ui-widget-content ui-corner-all sectiontitle">
-                </fieldset>
-                <fieldset id="section3names" class="section-text-group ui-corner-all">
-                    <label for="section3names-sname" class="inline-label">Section Name:</label>
-                    <input type="text" name="section3names-sname" id="section3names-sname" class="ui-widget-content ui-corner-all sectionname">
-                    <br />
-                    <label for="section3names-stitle" class="inline-label">Section Title:</label>
-                    <input type="text" name="section3names-stitle" id="section3names-stitle" class="ui-widget-content ui-corner-all sectiontitle">
-                </fieldset>
-                <fieldset id="section4names" class="section-text-group ui-corner-all">
-                    <label for="section4names-sname" class="inline-label">Section Name:</label>
-                    <input type="text" name="section4names-sname" id="section4names-sname" class="ui-widget-content ui-corner-all sectionname">
-                    <br />
-                    <label for="section4names-stitle" class="inline-label">Section Title:</label>
-                    <input type="text" name="section4names-stitle" id="section4names-stitle" class="ui-widget-content ui-corner-all sectiontitle">
-                </fieldset>
-                <fieldset id="section5names" class="section-text-group ui-corner-all">
-                    <label for="section5names-sname" class="inline-label">Section Name:</label>
-                    <input type="text" name="section5names-sname" id="section5names-sname" class="ui-widget-content ui-corner-all sectionname">
-                    <br />
-                    <label for="section5names-stitle" class="inline-label">Section Title:</label>
-                    <input type="text" name="section5names-stitle" id="section5names-stitle" class="ui-widget-content ui-corner-all sectiontitle">
-                </fieldset>
-                <fieldset id="section6names" class="section-text-group ui-corner-all">
-                    <label for="section6names-sname" class="inline-label">Section Name:</label>
-                    <input type="text" name="section6names-sname" id="section6names-sname" class="ui-widget-content ui-corner-all sectionname">
-                    <br />
-                    <label for="section6names-stitle" class="inline-label">Section Title:</label>
-                    <input type="text" name="section6names-stitle" id="section6names-stitle" class="ui-widget-content ui-corner-all sectiontitle">
-                </fieldset>                
-            </div> 
-            <label for="uploadsurvey-file" class="inline-label">File:</label>
-            <input type="file" onchange="storeCsvFileUpload(event)" name="uploadsurvey-file" id="uploadsurvey-file" class="fileupload"/>
-        </fieldset>
-        </form>
-        
-    </div>
-    <div id="updatesurvey">
-        <form name="updatesurvey-form" id="update-survey-questions-form">
-        <fieldset>
-            <label for="updatesurvey-version">Specification Version</label>
-            <input type="text" name="updatesurvey-version" id="updatesurvey-version" class="text ui-widget-content ui-corner-all specversion">
-            <label for="updatesurvey-file">File</label>
-            <input type="file" onchange="storeCsvFileUpdate(event)" name="updatesurvey-file" id="updatesurvey-file"  class="fileupload"/>
         </fieldset>
         </form>
     </div>

@@ -114,11 +114,16 @@ public class CertificationServlet extends HttpServlet {
 	private static final String REQUEST_UNSUBMIT = "unsubmit";  //$NON-NLS-1$
 	private static final String SET_LANGUAGE_REQUEST = "setlanguage";  //$NON-NLS-1$
 	
+	private Gson gson;
+	
     /**
      * @see HttpServlet#HttpServlet()
      */
     public CertificationServlet() {
         super();
+        GsonBuilder builder = new GsonBuilder();
+		builder.registerTypeAdapter(Question.class, new QuestionJsonDeserializer());
+		gson = builder.create();
     }
 
 	/**
@@ -137,7 +142,6 @@ public class CertificationServlet extends HttpServlet {
 				if (language == null) {
 					language = User.DEFAULT_LANGUAGE;
 				}
-				Gson gson = new Gson();
 	            response.setContentType("application/json");   //$NON-NLS-1$
 	            if (requestParam.equals(GET_SOFTWARE_VERSION_REQUEST)) {
 	            	gson.toJson(version, out);
@@ -335,7 +339,6 @@ public class CertificationServlet extends HttpServlet {
 		response.setContentType("application/json"); //$NON-NLS-1$
 		HttpSession session = request.getSession(true);
 		UserSession user = (UserSession)session.getAttribute(SESSION_ATTRIBUTE_USER);
-		Gson gson = new Gson();
 		RequestJson rj = gson.fromJson(new JsonReader(new InputStreamReader(request.getInputStream())), RequestJson.class);
         PrintWriter out = response.getWriter();
         PostResponse postResponse = new PostResponse(Status.OK);
@@ -443,8 +446,6 @@ public class CertificationServlet extends HttpServlet {
         		if (user.isAdmin()) {
         			try {
         				uploadSurvey(rj.getSurvey(), language);
-    					uploadSurvey(rj.getSpecVersion(), user.getLanguage(), rj.getSectionTexts(),
-    							rj.getCsvLines());
     				} catch (UpdateSurveyException e) {
     					logger.warn("Invalid survey question update",e);  //$NON-NLS-1$
     					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -626,6 +627,15 @@ public class CertificationServlet extends HttpServlet {
 		}
 	}
 	
+	/**
+	 * Add a new survey to the database
+	 * @param survey survey to add
+	 * @param language language for the user to be used for rendering any errors (not the language for the survey to be uploaded)
+	 * @throws SQLException
+	 * @throws UpdateSurveyException
+	 * @throws SurveyResponseException
+	 * @throws QuestionException
+	 */
 	private void uploadSurvey(Survey survey, String language) throws SQLException, UpdateSurveyException, SurveyResponseException, QuestionException {
 		survey.addInfoToSectionQuestions();
 		logger.info("Uploading new survey for spec version "+survey.getSpecVersion() + " language "+survey.getLanguage());  //$NON-NLS-1$  //$NON-NLS-2$
@@ -656,6 +666,7 @@ public class CertificationServlet extends HttpServlet {
 	 * @throws SurveyResponseException 
 	 * @throws IOException 
 	 */
+	@SuppressWarnings("unused")	// Leaving this code in case we want to go back to a CSV version
 	private void uploadSurvey(String specVersion, String language,
 			SectionTextJson[] sectionTexts, String[] csvLines) throws UpdateSurveyException, SQLException, SurveyResponseException, QuestionException, IOException {
 		// Check if the version is aready in the database

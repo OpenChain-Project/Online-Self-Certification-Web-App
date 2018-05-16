@@ -23,7 +23,7 @@ function getQuestionFormHtml(questions) {
 	html += '<th class="number_col">#</th><th class="question_col">Question</th><th class="answer_col">Answer</th><th class="answer_col"></th><th class="number_col">Spec Ref</th>\n';
 	for (var i = 0; i < questions.length; i++) {
 		var type = questions[i].type;
-		var isSubQuestion = (questions[i].hasOwnProperty('subQuestionNumber'));
+		var isSubQuestion = (questions[i].hasOwnProperty('subQuestionOfNumber'));
 		html += '<tr><td>'+questions[i].number + ':</td>';
 		if (isSubQuestion && inSubQuestions) {
 			html += '<td class=tablebullet>&bull;&nbsp;';
@@ -41,19 +41,19 @@ function getQuestionFormHtml(questions) {
 			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"  class="choicena-yes';
 			if (isSubQuestion && inSubQuestions) {
 				html += ' subquestion-of-';
-				html += questions[i].subQuestionNumber;
+				html += questions[i].subQuestionOfNumber;
 			}
 			html += '"  value="yes" />';		
 			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no" class="choicena-no';
 			if (isSubQuestion && inSubQuestions) {
 				html += ' subquestion-of-';
-				html += questions[i].subQuestionNumber;
+				html += questions[i].subQuestionOfNumber;
 			}
 			html += '" value="no" />';
 			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_na" class="choicena-na';
 			if (isSubQuestion && inSubQuestions) {
 				html += ' subquestion-of-';
-				html += questions[i].subQuestionNumber;
+				html += questions[i].subQuestionOfNumber;
 			}
 			html += '" value="na" />';
 			html += '<span class="yesnona-switch">';
@@ -71,13 +71,13 @@ function getQuestionFormHtml(questions) {
 			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"  class="choice-yes';
 			if (isSubQuestion && inSubQuestions) {
 				html += ' subquestion-of-';
-				html += questions[i].subQuestionNumber;
+				html += questions[i].subQuestionOfNumber;
 			}
 			html += '"  value="yes" />';		
 			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no" class="choice-no';
 			if (isSubQuestion && inSubQuestions) {
 				html += ' subquestion-of-';
-				html += questions[i].subQuestionNumber;
+				html += questions[i].subQuestionOfNumber;
 			}
 			html += '" value="no" />';
 			html += '<span class="yesno-switch">';
