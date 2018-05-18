@@ -471,7 +471,7 @@ public class CertificationServlet extends HttpServlet {
         	} else if (rj.getRequest().equals(UPDATE_SURVEY_REQUEST)) {
         		if (user.isAdmin()) {
         			try {
-    					updateSurveyQuestions(rj.getSpecVersion(), user.getLanguage(), rj.getCsvLines());
+    					updateSurveyQuestions(rj.getSurvey(), language);
     				} catch (UpdateSurveyException e) {
     					logger.warn("Invalid survey question update",e);  //$NON-NLS-1$
     					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -761,6 +761,7 @@ public class CertificationServlet extends HttpServlet {
 	 * @throws UpdateSurveyException
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unused")
 	private void updateSurveyQuestions(String specVersion, String language, String[] csvLines) throws SQLException, QuestionException, SurveyResponseException, UpdateSurveyException, IOException {
 		cleanUpLines(csvLines);
 		logger.info("Updating survey questions for spec version "+specVersion);  //$NON-NLS-1$
@@ -818,6 +819,77 @@ public class CertificationServlet extends HttpServlet {
 			}
 			// set the subquestions
 			
+			dao.updateQuestions(updatedQuestions);
+			dao.addQuestions(addedQuestions);
+		} finally {
+			if (con != null) {
+				con.close();
+			}
+		}
+	}
+	
+	/**
+	 * @param survey Survey with updated questions
+	 * @param language Language to render any error in (this is not necessarily the same language as the survey language)
+	 * @throws SQLException
+	 * @throws QuestionException
+	 * @throws SurveyResponseException
+	 * @throws UpdateSurveyException
+	 * @throws IOException
+	 */
+	private void updateSurveyQuestions(Survey survey, String language) throws SQLException, QuestionException, SurveyResponseException, UpdateSurveyException, IOException {
+		survey.addInfoToSectionQuestions();
+		logger.info("Updating survey questions for spec version "+survey.getSpecVersion()+", "+survey.getLanguage());  //$NON-NLS-1$    //$NON-NLS-2$
+		Connection con = null;
+		try {
+			con = SurveyDatabase.createConnection(getServletConfig());
+			long existingId = SurveyDbDao.getSpecId(con, survey.getSpecVersion(), survey.getLanguage(), false);
+			if (existingId < 0) {
+				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.58",language,survey.getSpecVersion()))); //$NON-NLS-1$
+			}
+			SurveyDbDao dao = new SurveyDbDao(con);
+			Survey existing = dao.getSurvey(survey.getSpecVersion(), survey.getLanguage());
+			if (existing == null) {
+				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.58",language,survey.getSpecVersion()))); //$NON-NLS-1$
+			}
+			List<Question> updatedQuestions = new ArrayList<Question>();
+			List<Question> addedQuestions = new ArrayList<Question>();
+			Set<String> foundQuestionNumbers = new HashSet<String>();
+			Set<String> existingQuestionNumbers = existing.getQuestionNumbers();
+			Map<String, SubQuestion> questionsWithSubs = new HashMap<String, SubQuestion>();
+			for (Section section:survey.getSections()) {
+				for (Question question:section.getQuestions()) {
+					if (foundQuestionNumbers.contains(question.getNumber())) {
+						throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.60",language,question.getNumber()))); //$NON-NLS-1$
+					}
+					foundQuestionNumbers.add(question.getNumber());
+					if (question.getSubQuestionOfNumber() != null) {
+						SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionOfNumber());
+						if (parentQuestion == null) {
+							parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionOfNumber(), survey.getSpecVersion(), survey.getLanguage(), 0); //$NON-NLS-1$ //$NON-NLS-2$
+							questionsWithSubs.put(question.getSubQuestionOfNumber(), parentQuestion);
+						}
+						parentQuestion.addSubQuestion(question);
+					}
+					if (question instanceof SubQuestion) {
+						SubQuestion toBeReplaced = questionsWithSubs.get(question.getNumber());
+						if (toBeReplaced != null) {
+							for(Question qtoadd:toBeReplaced.getAllSubquestions()) {
+								((SubQuestion) question).addSubQuestion(qtoadd);
+							}
+						}
+						questionsWithSubs.put(question.getNumber(), (SubQuestion) question);
+					}
+					if (existingQuestionNumbers.contains(question.getNumber())) {
+						updatedQuestions.add(question);
+					} else {
+						addedQuestions.add(question);
+					}
+				}
+			}
+			if (!existingQuestionNumbers.containsAll(foundQuestionNumbers)) {
+				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.63",language))); //$NON-NLS-1$
+			}
 			dao.updateQuestions(updatedQuestions);
 			dao.addQuestions(addedQuestions);
 		} finally {

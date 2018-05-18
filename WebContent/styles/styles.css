@@ -291,7 +291,7 @@ table tr:nth-child(odd) {
 .admin-buttons {
 	padding:3px;
 	margin:auto; 
-	width: 50%;
+	text-align:center;
 }
 .tablebullet {
     padding-left:3em
@@ -301,7 +301,8 @@ table tr:nth-child(odd) {
 #manage-survey {
 	padding:3px;
     margin:auto; 
-    width: 50%;
+    text-align:center;
+    width: 90%;
 }
 /* admin page inputs */
 .fileupload {

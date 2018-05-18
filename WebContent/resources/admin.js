@@ -40,23 +40,24 @@ function downloadSurvey() {
 }
 
 function updateSurvey() {
-	$("#btUpdateSurvey").button("disable");
-	var specVersion = $("#updatesurvey-version").val();
-	if (csvFileForUpdate == null) {
-		dislplayError("No file choosen for update");
+	fileForUpload = surveyFile;
+	if (fileForUpload == null) {
+		displayError("No file choosen for update");
 		return;
 	}
-	var csvLines;
+	$("#btUpdateSurvey").button("disable");
+
 	var reader = new FileReader();
 	reader.onload = function(){
 		var text = reader.result;
-		csvLines = text.split('\n');
+		survey = JSON.parse(text);
 		$.ajax({
 		    url: "CertificationServlet",
 		    data:JSON.stringify({
 		        request: "updatesurvey",
-		        specVersion: specVersion,
-		        csvLines: csvLines
+		        survey: survey,
+		        language: currentLanguage
+		        //TODO verify the current language works
 		    }),
 		    type: "POST",
 		    dataType : "json",
@@ -81,7 +82,7 @@ function updateSurvey() {
 		    	}
 		    },
 		    error: function( xhr, status, errorThrown ) {
-		    	$("#btUpdateSurvey").button("enable");
+		    	$("#btUploadSurvey").button("enable");
 		    	handleError( xhr, status, errorThrown);
 		    }
 		});
@@ -91,7 +92,7 @@ function updateSurvey() {
 			displayError(reader.error.message);
 		}
 	};
-	reader.readAsText(csvFileForUpdate);
+	reader.readAsText(fileForUpload);
 }
 
 
