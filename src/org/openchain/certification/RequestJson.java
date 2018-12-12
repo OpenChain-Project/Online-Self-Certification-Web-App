@@ -44,6 +44,8 @@ public class RequestJson {
 	private boolean create;
 	private String language;
 	private Survey survey;
+	private String tag;
+	private String commit;
 	
 	/**
 	 * @return the create
@@ -245,4 +247,29 @@ public class RequestJson {
 	public void setSurvey(Survey survey) {
 		this.survey = survey;
 	}
+	/**
+	 * @return the tag
+	 */
+	public String getTag() {
+		return tag;
+	}
+	/**
+	 * @param tag the tag to set
+	 */
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+	/**
+	 * @return the commit
+	 */
+	public String getCommit() {
+		return commit;
+	}
+	/**
+	 * @param commit the commit to set
+	 */
+	public void setCommit(String commit) {
+		this.commit = commit;
+	}
+	
 }

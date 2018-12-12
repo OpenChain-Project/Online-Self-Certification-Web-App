@@ -4,7 +4,9 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.eclipse.jgit.lib.ObjectId;
 import org.junit.After;
@@ -18,6 +20,7 @@ public class QuestionnaireGitRepoTest {
 	static final String TEST_SHORT_COMMIT = "24a01eb";
 	static final ObjectId TEST_TAG_HEAD = ObjectId.fromString("f660c4334fa205027131c9671a53da70561632fd");
 	static final ObjectId TEST_COMMIT_HEAD = ObjectId.fromString(TEST_COMMIT);
+	static final String[] EXPECTED_TAGS = new String[] {"1.2","v1.0.1","v1.0.3","v1.1.0"};
 
 	@Before
 	public void setUp() throws Exception {
@@ -82,6 +85,31 @@ public class QuestionnaireGitRepoTest {
 		File qfile = iter.next();
 		assertTrue(qfile.isFile());
 		assertEquals("questionnaire.json", qfile.getName());
+	}
+	
+	@Test
+	public void testGetTags() throws GitRepoException, IOException {
+		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo();
+		String[] tags = repo.getTags();
+		assertTrue(tags.length >= 4);
+		Set<String> tagSet = new HashSet<String>();
+		for (String tag:tags) {
+			tagSet.add(tag);
+		}
+		for (String expected:EXPECTED_TAGS) {
+			assertTrue(tagSet.contains(expected));
+		}
+	}
+	
+	@Test
+	public void testGetHeadCommit() throws GitRepoException, IOException {
+		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo();
+		String currentHead = repo.getHeadCommit();
+		repo.checkOut(null, TEST_COMMIT);
+		String result = repo.getHeadCommit();
+		assertEquals(TEST_COMMIT, result);
+		repo.checkOut(null, null);
+		assertEquals(currentHead, repo.getHeadCommit());
 	}
 
 }

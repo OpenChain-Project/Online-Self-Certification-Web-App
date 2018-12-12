@@ -23,6 +23,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.CloneCommand;
@@ -40,6 +42,11 @@ import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
+import org.eclipse.jgit.errors.AmbiguousObjectException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
 
@@ -51,8 +58,10 @@ import org.eclipse.jgit.lib.RepositoryBuilder;
  * 
  * The following is a typical worflow:
  * - Refresh the repo by calling <code>refresh()</code>.  This will pull the latest from the repository
+ * - Lock the repository so that no one else will checkout a different version
  * - Checkout a specific commit or tag by calling <code>File checkout(String tag, String commitRef)</code>
  * - Access the checked out files using the directory return value from checkout
+ * - Unlock the repository
  */
 public class QuestionnaireGitRepo {
 	
@@ -116,6 +125,7 @@ public class QuestionnaireGitRepo {
 	File workingDir = null;
 	Repository repo = null;
 	Git git = null;
+	private ReentrantLock lock = new ReentrantLock();
 	
 	private static QuestionnaireGitRepo instance = null;
 
@@ -237,9 +247,9 @@ public class QuestionnaireGitRepo {
 	public synchronized void checkOut(String tag, String commitRef) throws GitRepoException
 	{
 		try {
-			if (commitRef != null) {
+			if (commitRef != null && !commitRef.isEmpty()) {
 				git.checkout().setName(commitRef).call();
-			} else if (tag != null) {
+			} else if (tag != null && !tag.isEmpty()) {
 				git.checkout().setName("refs/tags/"+tag).call();
 			} else {
 				git.checkout().setName("master").call();
@@ -274,7 +284,15 @@ public class QuestionnaireGitRepo {
 	 */
 	public synchronized void refresh() throws GitRepoException {
 		try {
-			git.pull().call();
+			String fullBranch = repo.getFullBranch();
+			if (fullBranch == null || !fullBranch.startsWith("refs/")) {
+				// we are in a detached head state
+				checkOut(null, null);
+				git.pull().call();
+				checkOut(null, fullBranch);
+			} else {
+				git.pull().call();
+			}
 		} catch (WrongRepositoryStateException e) {
 			logger.error("Wrong repository exception refreshing repo",e);
 			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
@@ -304,6 +322,9 @@ public class QuestionnaireGitRepo {
 			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
 		} catch (GitAPIException e) {
 			logger.error("GIT API exception refreshing repo",e);
+			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+		} catch (IOException e) {
+			logger.error("I/O error refreshing repo",e);
 			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
 		}
 	}
@@ -341,5 +362,58 @@ public class QuestionnaireGitRepo {
 	protected synchronized static void resetInstance() {
 		instance.repo.close();
 		instance = null;
+	}
+
+	public String[] getTags() throws GitRepoException {
+		List<Ref> tags;
+		try {
+			tags = git.tagList().call();
+			String[] retval = new String[tags.size()];
+			int i = 0;
+			int trimLen = "refs/tags/".length();
+			for (Ref tag:tags) {
+				retval[i++] = tag.getName().substring(trimLen);
+			}
+			return retval;
+		} catch (GitAPIException e) {
+			logger.error("Error getting GIT tags",e);
+			throw new GitRepoException("Unable to obtain tags from the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+		}
+	}
+	
+	/**
+	 * Locks the repository preventing other threads from locking the repository until it is unlocked
+	 */
+	public void lock() {
+		this.lock.lock();
+	}
+	
+	/**
+	 * Unlocks the repository
+	 */
+	public void unlock() {
+		this.lock.unlock();
+	}
+
+	/**
+	 * @return The hash of the head commit for the repository
+	 * @throws GitRepoException
+	 */
+	public String getHeadCommit() throws GitRepoException {
+		try {
+			return this.repo.resolve(Constants.HEAD).getName();
+		} catch (RevisionSyntaxException e) {
+			logger.error("Invalid syntax getting commit head information", e);
+			throw new GitRepoException("Unexpected error getting Questionnaire Repository information.  Please contact the OpenChain team with this error.");
+		} catch (AmbiguousObjectException e) {
+			logger.error("Ambiguous object exception getting commit head information", e);
+			throw new GitRepoException("Unexpected error getting Questionnaire Repository information.  Please contact the OpenChain team with this error.");
+		} catch (IncorrectObjectTypeException e) {
+			logger.error("Incorrect object type exception getting commit head information", e);
+			throw new GitRepoException("Unexpected error getting Questionnaire Repository information.  Please contact the OpenChain team with this error.");
+		} catch (IOException e) {
+			logger.error("I/O error getting commit head information", e);
+			throw new GitRepoException("Unexpected error getting Questionnaire Repository information.  Please contact the OpenChain team with this error.");
+		}
 	}
 }

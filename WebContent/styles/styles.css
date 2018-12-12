@@ -305,9 +305,16 @@ table tr:nth-child(odd) {
     width: 90%;
 }
 /* admin page inputs */
-.fileupload {
+label.inlineLabel {
+	display: inline;
+}
+#gitTagLabel {
 	display: inline;
 	padding: .4em;
+}
+#gitCommit {
+	display: inline;
+    padding: .4em;
 }
 .specversion {
 	display: inline;
