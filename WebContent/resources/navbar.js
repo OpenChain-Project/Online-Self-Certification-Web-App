@@ -21,9 +21,9 @@
 /**
  * List of all supported language keyed by 2 or 3 character ISO language
  */
-var LANGUAGES = {"eng":"English", 
-                 "deu":"German",
-                 "fra":"French"};
+var LANGUAGES = {"en":"English", 
+                 "de":"German",
+                 "fr":"French"};
 
 var DEFAULT_LANGUAGE = "eng";
 

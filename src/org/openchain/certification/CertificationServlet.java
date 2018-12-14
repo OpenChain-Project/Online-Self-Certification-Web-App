@@ -651,6 +651,7 @@ public class CertificationServlet extends HttpServlet {
 				try {
 					reader = new BufferedReader(new FileReader(jsonFile));
 					Survey survey = gson.fromJson(reader, Survey.class);
+					survey.addInfoToSectionQuestions();
 					if (dao.surveyExists(survey.getSpecVersion(), survey.getLanguage(), false)) {
 						try {
 							SurveyQuestionUpdateStats updateStats = updateSurveyQuestions(survey, language, con, updateDb);
@@ -673,6 +674,7 @@ public class CertificationServlet extends HttpServlet {
 					} else {
 						if (updateDb) {
 							try {
+								logger.info("Adding survey questions for spec version "+survey.getSpecVersion()+", "+survey.getLanguage());  //$NON-NLS-1$    //$NON-NLS-2$
 								dao.addSurvey(survey);
 							} catch (SurveyResponseException e) {
 								logger.error("Survey response error adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);
@@ -705,8 +707,7 @@ public class CertificationServlet extends HttpServlet {
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * @param survey Survey with updated questions
 	 * @param language Language to render any error in (this is not necessarily the same language as the survey language)
@@ -721,7 +722,6 @@ public class CertificationServlet extends HttpServlet {
 	private SurveyQuestionUpdateStats updateSurveyQuestions(Survey survey, String language, Connection con, boolean updateDb) throws SQLException, QuestionException, SurveyResponseException, UpdateSurveyException, IOException {
 		SurveyQuestionUpdateStats stats = new SurveyQuestionUpdateStats();
 		survey.addInfoToSectionQuestions();
-		logger.info("Updating survey questions for spec version "+survey.getSpecVersion()+", "+survey.getLanguage());  //$NON-NLS-1$    //$NON-NLS-2$
 		long existingId = SurveyDbDao.getSpecId(con, survey.getSpecVersion(), survey.getLanguage(), false);
 		if (existingId < 0) {
 			throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.58",language,survey.getSpecVersion()))); //$NON-NLS-1$
@@ -770,6 +770,7 @@ public class CertificationServlet extends HttpServlet {
 			throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.63",language))); //$NON-NLS-1$
 		}
 		if (updateDb) {
+			logger.info("Updating survey questions for spec version "+survey.getSpecVersion()+", "+survey.getLanguage());  //$NON-NLS-1$    //$NON-NLS-2$
 			dao.updateQuestions(updatedQuestions);
 			dao.addQuestions(addedQuestions);
 		}

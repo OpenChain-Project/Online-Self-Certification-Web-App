@@ -63,7 +63,7 @@ public class SurveyQuestionUpdateStats {
 				sb.append(", ");
 				sb.append(this.addedQuestions.get(i).getNumber());
 			}
-			sb.append("). ");
+			sb.append(". ");
 		}
 		if (this.updatedQuestions.size() > 0) {
 			sb.append("Updated ");
@@ -74,7 +74,7 @@ public class SurveyQuestionUpdateStats {
 				sb.append(", ");
 				sb.append(this.updatedQuestions.get(i).getNumber());
 			}
-			sb.append("). ");
+			sb.append(". ");
 		}
 		if (sb.length() == 0) {
 			sb.append("No Changes");

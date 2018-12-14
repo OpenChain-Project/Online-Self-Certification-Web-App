@@ -50,6 +50,7 @@ public class Survey {
 		this.specVersion = specVersion;
 		this.language = language;
 	}
+
 	/**
 	 * @return the language
 	 */
@@ -182,7 +183,7 @@ public class Survey {
 			for (Question question:section.getQuestions()) {
 				question.setSpecVersion(null);
 				question.setLanguage(null);
-				question.setSection(null);
+				question.setSectionName(null);
 				if (question instanceof SubQuestion) {
 					questionsWithSubquestions.put(question.getNumber(), (SubQuestion)question);
 				}
@@ -215,7 +216,7 @@ public class Survey {
 			for (Question question:section.getQuestions()) {
 				question.setSpecVersion(specV);
 				question.setLanguage(lang);
-				question.setSection(sectionName);
+				question.setSectionName(sectionName);
 				if (question instanceof SubQuestion) {
 					questionsWithSubquestions.put(question.getNumber(), (SubQuestion)question);
 				}
@@ -224,7 +225,7 @@ public class Survey {
 				for (Question subQuestion:questionsWithSubquestion.getAllSubquestions()) {
 					subQuestion.setSpecVersion(specV);
 					subQuestion.setLanguage(lang);
-					subQuestion.setSection(sectionName);
+					subQuestion.setSectionName(sectionName);
 					// Add the redundant subquestion of number
 					subQuestion.setSubQuestionOfNumber(questionsWithSubquestion.getNumber());
 					// Add the redundant copy of the subquestion to the section

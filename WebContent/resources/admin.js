@@ -130,8 +130,8 @@ function updateSurveyForReal( commit ) {
 	    		$( "#status" ).dialog({
 	    			title: "Updated",
 	    			resizable: false,
-	    		    height: 200,
-	    		    width: 200,
+	    		    height: 250,
+	    		    width: 250,
 	    		    modal: true,
 	    		    buttons: {
 	    		        "Ok" : function () {
