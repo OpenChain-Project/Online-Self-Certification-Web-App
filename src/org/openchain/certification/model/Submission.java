@@ -90,7 +90,11 @@ public class Submission {
 				}
 			}
 		}
-		return (numCorrectAnswers * 100) / numQuestions;
+		if (numQuestions == 0) {
+			return 100;
+		} else {
+			return (numCorrectAnswers * 100) / numQuestions;
+		}
 	}
 
 	private int calcPercentComplete(Survey survey, Map<String, Answer> answers) {
@@ -107,7 +111,11 @@ public class Submission {
 				}
 			}
 		}
-		return (numAnswers * 100) / numQuestions;
+		if (numQuestions == 0) {
+			return 100;
+		} else {
+			return (numAnswers * 100) / numQuestions;
+		}
 	}
 
 	/**

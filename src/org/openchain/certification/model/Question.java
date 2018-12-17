@@ -115,13 +115,6 @@ public abstract class Question implements Comparable<Question> {
 	}
 
 	/**
-	 * @param section the section to set
-	 */
-	public void setSection(String sectionName) {
-		this.sectionName = sectionName;
-	}
-
-	/**
 	 * @return the number
 	 */
 	public String getNumber() {

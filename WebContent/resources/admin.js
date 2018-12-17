@@ -15,142 +15,140 @@
  *
 */
 
+var lastUpdateCommit; // Holds the last survey update commit hash
+
 function openDownloadSurveyDialog() {
 	$("#downloadsurvey").dialog("open");
 }
-
-function openUploadSurveyDialog() {
-	$("#uploadsurvey").dialog("open");
-}
-
-function openUpdateSurveyDialog() {
-	$("#updatesurvey").dialog("open");
-}
-
-var surveyFile;
-
-var selectSurvey  = function(event) {
-	surveyFile = event.target.files[0];
-	$("#upload-file-name").text(surveyFile.name);
-};
 
 function downloadSurvey() {
 	var specVersion = $("#downloadsurvey-version").val();
 	window.location="CertificationServlet?request=downloadSurvey&specVersion="+specVersion;
 }
 
+/**
+ * On initial click of the update survey button, opens a dialog confirming you want to "updateSurveyForReal"
+ */
 function updateSurvey() {
-	fileForUpload = surveyFile;
-	if (fileForUpload == null) {
-		displayError("No file choosen for update");
-		return;
+	var tag = $( "#gitTag" ).val();
+	if ( tag == "None" ) {
+		tag = null;
 	}
-	$("#btUpdateSurvey").button("disable");
-
-	var reader = new FileReader();
-	reader.onload = function(){
-		var text = reader.result;
-		survey = JSON.parse(text);
-		$.ajax({
-		    url: "CertificationServlet",
-		    data:JSON.stringify({
-		        request: "updatesurvey",
-		        survey: survey,
-		        language: currentLanguage
-		        //TODO verify the current language works
-		    }),
-		    type: "POST",
-		    dataType : "json",
-		    contentType: "json",
-		    success: function( json ) {
-		    	$("#btUpdateSurvey").button("enable");
-		    	if (json.status == "OK") {
-		    		$( "#status" ).dialog({
-		    			title: "Updated",
-		    			resizable: false,
-		    		    height: 200,
-		    		    width: 200,
-		    		    modal: true,
-		    		    buttons: {
-		    		        "Ok" : function () {
-		    		            $( this ).dialog( "close" );
-		    		        }
-		    		    }
-		    		}).text( "Questions successfully updated" );
-		    	} else {
-		    		displayError(json.error);
-		    	}
-		    },
-		    error: function( xhr, status, errorThrown ) {
-		    	$("#btUploadSurvey").button("enable");
-		    	handleError( xhr, status, errorThrown);
-		    }
-		});
-	};
-	reader.onloadend = function(){
-		if (reader.error != null) {
-			displayError(reader.error.message);
-		}
-	};
-	reader.readAsText(fileForUpload);
+	var commit = $( "#gitCommit" ).val();
+	if ( !commit || commit.trim() === "" ) {
+		commit = null;
+	}
+	$( "#btUpdateSurvey" ).button( "disable" );
+	$.ajax({
+	    url: "CertificationServlet",
+	    data: {
+	        request: "getUpdateSurveyResults",
+	        tag: tag,
+	        commit: commit
+	    },
+	    type: "GET",
+	    dataType : "json",
+	    success: function( json ) {
+	    	lastUpdateCommit = json.commit;
+	    	var summaryHtml = "";
+	    	if ( json.warnings.length > 0 ) {
+	    		summaryHtml += "<h3>Warning:</h3>\n";
+	    		for (i in json.warnings) {
+	    			summaryHtml += "<p>";
+	    			summaryHtml += json.warnings[i];
+	    			summaryHtml += "</p>\n";
+	    		}
+	    	}
+    		summaryHtml += "<p>";
+    		summaryHtml += json.versionsUpdated.length.toString();
+    		summaryHtml += " survey version/languages will be updated</p>\n";
+    		summaryHtml += json.versionsAdded.length.toString();
+    		summaryHtml += " survey version/languages will be added</p>\n";
+	    	$("#confirm-update-tab-summary").html(summaryHtml);
+	    	var updatedHtml = "";
+	    	if ( json.versionsUpdated.length == 0 ) {
+	    		updatedHtml = "No survey/versions were updated";
+	    	} else {
+	    		for ( i in json.versionsUpdated ) {
+	    			updatedHtml += "<p>";
+	    			updatedHtml += json.versionsUpdated[i];
+	    			updatedHtml += "</p>\n";
+	    		}
+	    	}
+	    	$( "#confirm-update-tab-updates" ).html( updatedHtml );
+	    	var addedHtml = "";
+	    	if ( json.versionsAdded.length == 0 ) {
+	    		addedHtml = "No survey/versions were added";
+	    	} else {
+	    		for ( i in json.versionsAdded ) {
+	    			addedHtml += "<p>";
+	    			addedHtml += json.versionsAdded[i];
+	    			addedHtml += "</p>\n";
+	    		}
+	    	}
+	    	$( "#confirm-update-tab-added" ).html( addedHtml );
+	    	$( "#confirm-update-tabs" ).tabs();
+	    	$( "#dialog-confirm-update" ).dialog( "open" );
+	    },
+	    error: function( xhr, status, errorThrown ) {
+	    	$( "#btUpdateSurvey" ).button( "enable" );
+	    	handleError( xhr, status, errorThrown );
+	    }
+	});
 }
 
-
-function uploadSurvey() {
-	fileForUpload = surveyFile;
-	if (fileForUpload == null) {
-		displayError("No file choosen for upload");
-		return;
-	}
-	$("#btUploadSurvey").button("disable");
-
-	var reader = new FileReader();
-	reader.onload = function(){
-		var text = reader.result;
-		survey = JSON.parse(text);
-		$.ajax({
-		    url: "CertificationServlet",
-		    data:JSON.stringify({
-		        request: "uploadsurvey",
-		        survey: survey,
-		        language: currentLanguage
-		        //TODO verify the current language works
-		    }),
-		    type: "POST",
-		    dataType : "json",
-		    contentType: "json",
-		    success: function( json ) {
-		    	$("#btUploadSurvey").button("enable");
-		    	if (json.status == "OK") {
-		    		$( "#status" ).dialog({
-		    			title: "Uploaded",
-		    			resizable: false,
-		    		    height: 200,
-		    		    width: 200,
-		    		    modal: true,
-		    		    buttons: {
-		    		        "Ok" : function () {
-		    		            $( this ).dialog( "close" );
-		    		        }
-		    		    }
-		    		}).text( "Questions successfully uploaded" );
-		    	} else {
-		    		displayError(json.error);
-		    	}
-		    },
-		    error: function( xhr, status, errorThrown ) {
-		    	$("#btUploadSurvey").button("enable");
-		    	handleError( xhr, status, errorThrown);
-		    }
-		});
-	};
-	reader.onloadend = function(){
-		if (reader.error != null) {
-			displayError(reader.error.message);
-		}
-	};
-	reader.readAsText(fileForUpload);
-};
+/**
+ * Update the survey including an update to the database
+ */
+function updateSurveyForReal( commit ) {
+	$( "#btUpdateSurvey" ).button( "disable" );
+	$.ajax({
+	    url: "CertificationServlet",
+	    data:JSON.stringify({
+	        request: "updatesurvey",
+	        tag: null,
+	        commit: lastUpdateCommit
+	    }),
+	    type: "POST",
+	    dataType : "json",
+	    contentType: "json",
+	    success: function( json ) {
+	    	$( "#btUpdateSurvey" ).button( "enable" );
+	    	if ( json.status == "OK" ) {
+	    		var dialogText = json.surveyUpdateResult.versionsUpdated.length.toString();
+	    		dialogText += " survey version/languages were updated; ";
+	    		dialogText += json.surveyUpdateResult.versionsAdded.length.toString();
+	    		dialogText += " survey version/languages were added";
+	    		if ( json.surveyUpdateResult.warnings.length > 0 ) {
+	    			dialogText += " with the following warnings:";
+	    			for ( i in json.surveyUpdateResult.warnings ) {
+	    				dialogText += " '";
+	    				dialogText += json.surveyUpdateResult.warnings[i];
+	    				dialogText += "';";
+	    			}
+	    		}
+	    		$( "#status" ).dialog({
+	    			title: "Updated",
+	    			resizable: false,
+	    		    height: 250,
+	    		    width: 250,
+	    		    modal: true,
+	    		    buttons: {
+	    		        "Ok" : function () {
+	    		            $( this ).dialog( "close" );
+	    		        }
+	    		    }
+	    		}).text( dialogText );
+	    	} else {
+	    		displayError( json.error );
+	    	}
+	    },
+	    error: function( xhr, status, errorThrown ) {
+	    	$( "#btUpdateSurvey" ).button( "enable" );
+	    	handleError( xhr, status, errorThrown );
+	    }
+	});
+}
 
 function fillSubmissionStatusTable(submissions) {
 	$("#submitted-awaiting-approval").empty();
@@ -308,8 +306,60 @@ function reloadSubmissionStatus() {
 	});
 }
 
+/**
+ * Fill in the tags dropdown list
+ */
+function getTags() {
+	$( "#gitTag" ).html( '<option value="None">[Most Recent]</option>' ); // Temporary placeholder until we retrieve the information from the backend
+	$.ajax({
+	    url: "CertificationServlet",
+	    data: {
+	        request: "getGitTags"
+	    },
+	    type: "GET",
+	    dataType : "json",
+	    success: function( json ) {
+	    	var newHtml = '<option value="None">[Most Recent]</option>';
+	    	for (s in json) {
+	    		newHtml += '\n<option value="';
+	    		newHtml += json[s];
+	    		newHtml += '">';
+	    		newHtml += json[s];
+	    		newHtml += "</option>";
+	    	}
+	    	$( "#gitTag" ).html( newHtml );
+	    },
+	    error: function( xhr, status, errorThrown ) {
+	    	handleError( xhr, status, errorThrown );
+	    }
+	});
+}
+
 $(document).ready( function() {
-	$("#downloadsurvey").dialog({
+	
+	getTags();
+	$( "#dialog-confirm-update" ).dialog({
+	  title: "Confirm Survey Update",  
+	  autoOpen: false,
+	  resizable: true,
+	  height: 450,
+	  width: 400,
+	  modal: true,
+	  buttons: {
+	    "Update": function() {
+	      updateSurveyForReal( lastUpdateCommit );
+	      $( this ).dialog( "close" );
+	    },
+	    Cancel: function() {
+	      $( "#btUpdateSurvey" ).button( "enable" );
+	      $( this ).dialog( "close" );
+	    }
+	  }
+	});
+	
+	$( "#confirm-update-tabs" ).tabs();
+	
+	$( "#downloadsurvey" ).dialog({
 		title: "Download Survey",
 		autoOpen: false,
 		height: 300,
@@ -336,10 +386,6 @@ $(document).ready( function() {
 	$("#btDownloadSurvey").button().click(function(event) {
 	      event.preventDefault();
 	      openDownloadSurveyDialog();
-	});
-	$("#btUploadSurvey").button().button().click(function(event) {
-	      event.preventDefault();
-	      uploadSurvey();
 	});
 	
 	$("#btUpdateSurvey").button().button().click(function(event) {

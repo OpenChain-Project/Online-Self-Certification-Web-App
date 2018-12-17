@@ -16,6 +16,10 @@
 */
 package org.openchain.certification;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -27,9 +31,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,6 +50,8 @@ import org.openchain.certification.dbdao.SurveyDatabase;
 import org.openchain.certification.dbdao.SurveyDbDao;
 import org.openchain.certification.dbdao.SurveyResponseDao;
 import org.openchain.certification.dbdao.UserDb;
+import org.openchain.certification.git.GitRepoException;
+import org.openchain.certification.git.QuestionnaireGitRepo;
 import org.openchain.certification.model.Question;
 import org.openchain.certification.model.QuestionException;
 import org.openchain.certification.model.Section;
@@ -62,7 +68,6 @@ import org.openchain.certification.utility.PasswordUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import com.opencsv.CSVParser;
 
 /**
  * Servlet implementation class CertificationServlet
@@ -82,6 +87,8 @@ public class CertificationServlet extends HttpServlet {
 	public static final String PARAMETER_USERNAME = "username";  //$NON-NLS-1$
 	public static final String PARAMETER_UUID = "uuid";  //$NON-NLS-1$
 	public static final String PARAMETER_SPEC_VERSION = "specVersion";  //$NON-NLS-1$
+	public static final String PARAMETER_GIT_TAG = "tag";
+	public static final String PARAMETER_GIT_COMMIT = "commit";
 	private static final String GET_SOFTWARE_VERSION_REQUEST = "version";  //$NON-NLS-1$
 	private static final String GET_SURVEY = "getsurvey";  //$NON-NLS-1$
 	private static final String GET_SUPPORTED_SPEC_VERSIONS = "getSupportedSpecVersions";  //$NON-NLS-1$
@@ -96,7 +103,6 @@ public class CertificationServlet extends HttpServlet {
 	private static final String UPDATE_ANSWERS_REQUEST = "updateAnswers";  //$NON-NLS-1$
 	private static final String LOGOUT_REQUEST = "logout";  //$NON-NLS-1$
 	private static final String FINAL_SUBMISSION_REQUEST = "finalSubmission";  //$NON-NLS-1$
-	private static final String UPLOAD_SURVEY_REQUEST = "uploadsurvey";  //$NON-NLS-1$
 	private static final String UPDATE_SURVEY_REQUEST = "updatesurvey";  //$NON-NLS-1$
 	private static final String RESEND_VERIFICATION = "resendverify";  //$NON-NLS-1$
 	private static final String DOWNLOAD_ANSWERS = "downloadanswers";  //$NON-NLS-1$
@@ -113,6 +119,9 @@ public class CertificationServlet extends HttpServlet {
 	private static final String REQUEST_RESET_PASSWORD = "requestResetPassword";	  //$NON-NLS-1$
 	private static final String REQUEST_UNSUBMIT = "unsubmit";  //$NON-NLS-1$
 	private static final String SET_LANGUAGE_REQUEST = "setlanguage";  //$NON-NLS-1$
+	private static final String GET_GIT_TAGS_REQUEST = "getGitTags";
+	private static final String GET_UPDATE_SURVEY_RESULTS = "getUpdateSurveyResults";
+
 	
 	private Gson gson;
 	
@@ -189,6 +198,9 @@ public class CertificationServlet extends HttpServlet {
 	            } else if (requestParam.equals(GET_SUPPORTED_SPEC_VERSIONS)) {
 	            	List<String> supportedSpecVersions = getSupportedSpecVersions(getServletConfig());
 	            	gson.toJson(supportedSpecVersions, out);
+	            } else if (requestParam.equals(GET_GIT_TAGS_REQUEST)) {
+	            	String[] tags = QuestionnaireGitRepo.getQuestionnaireGitRepo().getTags();
+	            	gson.toJson(tags, out);
 	            } else if (user == null) {
         			// Not logged in - set the status to unauthorized
             		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -225,6 +237,14 @@ public class CertificationServlet extends HttpServlet {
 		                response.setContentType("text/json");  //$NON-NLS-1$
 		                response.setHeader("Content-Disposition", "attachment;filename=\"openchain-survey-version-"+specVersion+".json\"");  //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
 		            	printSurvey(specVersion, language, out);
+	            	}
+	            } else if (requestParam.equals(GET_UPDATE_SURVEY_RESULTS)) {
+	            	if (!user.isAdmin()) {
+	            		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	            	} else {
+	            		String tag = request.getParameter(PARAMETER_GIT_TAG);
+	            		String commit = request.getParameter(PARAMETER_GIT_COMMIT);
+	            		gson.toJson(updateSurvey(tag, commit, language, false), out);
 	            	}
 	            } else {
 	            	logger.error("Unknown get request: "+requestParam);  //$NON-NLS-1$
@@ -442,42 +462,10 @@ public class CertificationServlet extends HttpServlet {
         		user.setCurrentSurveyResponse(rj.getSpecVersion(), rj.isCreate());
         	} else if (rj.getRequest().equals(REQUEST_UNSUBMIT)) {
         		user.unsubmit();
-        	} else if (rj.getRequest().equals(UPLOAD_SURVEY_REQUEST)) {
-        		if (user.isAdmin()) {
-        			try {
-        				uploadSurvey(rj.getSurvey(), language);
-    				} catch (UpdateSurveyException e) {
-    					logger.warn("Invalid survey question update",e);  //$NON-NLS-1$
-    					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-    	        		postResponse.setStatus(Status.ERROR);
-    	        		postResponse.setError(I18N.getMessage("CertificationServlet.26",language,e.getMessage())); //$NON-NLS-1$
-    				} catch (SurveyResponseException e) {
-    					logger.warn("Invalid survey question update",e);  //$NON-NLS-1$
-    					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-    	        		postResponse.setStatus(Status.ERROR);
-    	        		postResponse.setError(I18N.getMessage("CertificationServlet.26",language,e.getMessage())); //$NON-NLS-1$
-    				} catch (QuestionException e) {
-    					logger.warn("Invalid survey question update",e);  //$NON-NLS-1$
-    					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-    	        		postResponse.setStatus(Status.ERROR);
-    	        		postResponse.setError(I18N.getMessage("CertificationServlet.26",language,e.getMessage())); //$NON-NLS-1$
-    				}
-        		} else {
-        			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        			postResponse.setStatus(Status.ERROR);
-	        		postResponse.setError(I18N.getMessage("CertificationServlet.29",language)); //$NON-NLS-1$
-        		}
-        		
         	} else if (rj.getRequest().equals(UPDATE_SURVEY_REQUEST)) {
         		if (user.isAdmin()) {
-        			try {
-    					updateSurveyQuestions(rj.getSurvey(), language);
-    				} catch (UpdateSurveyException e) {
-    					logger.warn("Invalid survey question update",e);  //$NON-NLS-1$
-    					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-    	        		postResponse.setStatus(Status.ERROR);
-    	        		postResponse.setError(I18N.getMessage("CertificationServlet.30",language,e.getMessage())); //$NON-NLS-1$
-    				}
+					SurveyUpdateResult result = updateSurvey(rj.getTag(), rj.getCommit(), language, true);
+					postResponse.setSurveyUpdateResult(result);
         		} else {
         			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         			postResponse.setStatus(Status.ERROR);
@@ -573,6 +561,12 @@ public class CertificationServlet extends HttpServlet {
 			postResponse.setStatus(Status.ERROR);
 			postResponse.setError(I18N.getMessage("CertificationServlet.45",language,e.getMessage())); //$NON-NLS-1$
 			gson.toJson(postResponse, out);
+		} catch(GitRepoException e) {
+        	logger.error("GIT Repository exception.  Request="+rj.getRequest(),e);  //$NON-NLS-1$ //$NON-NLS-2$
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			postResponse.setStatus(Status.ERROR);
+			postResponse.setError(I18N.getMessage("CertificationServlet.1",language)); //$NON-NLS-1$
+			gson.toJson(postResponse, out);
 		} catch (Exception e) {
         	logger.error("Uncaught exception",e);  //$NON-NLS-1$
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -628,26 +622,86 @@ public class CertificationServlet extends HttpServlet {
 	}
 	
 	/**
-	 * Add a new survey to the database
-	 * @param survey survey to add
-	 * @param language language for the user to be used for rendering any errors (not the language for the survey to be uploaded)
+	 * Update the survey results from the Questionnaire GIT repository.  New languages or versions
+	 * will be added and existing versions will be updated.  Note - database will only be updated if
+	 * updateDB is set to true
+	 * @param tag Git tag to be used - most recent if null
+	 * @param commit Commit hash to be used - if null, the most recent will be used
+	 * @param language Language to be used for error handling
+	 * @param updateDb if true, the database will be updated.  If false, only stats will be calculated
+	 * @return statistics on what would be updated if the updateDb is set to true
+	 * @throws GitRepoException
 	 * @throws SQLException
-	 * @throws UpdateSurveyException
-	 * @throws SurveyResponseException
-	 * @throws QuestionException
 	 */
-	private void uploadSurvey(Survey survey, String language) throws SQLException, UpdateSurveyException, SurveyResponseException, QuestionException {
-		survey.addInfoToSectionQuestions();
-		logger.info("Uploading new survey for spec version "+survey.getSpecVersion() + " language "+survey.getLanguage());  //$NON-NLS-1$  //$NON-NLS-2$
+	private SurveyUpdateResult updateSurvey(String tag, String commit, String language, boolean updateDb) throws GitRepoException, SQLException {
+		SurveyUpdateResult result = new SurveyUpdateResult();
+		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo();
+		repo.refresh();
+		repo.lock();
 		Connection con = null;
 		try {
-			con = SurveyDatabase.createConnection(getServletConfig());
+			con = SurveyDatabase.createConnection(this.getServletConfig());
 			SurveyDbDao dao = new SurveyDbDao(con);
-			if (dao.surveyExists(survey.getSpecVersion(), survey.getLanguage(), true)) {
-				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.47",language,survey.getSpecVersion(),survey.getLanguage())));  //$NON-NLS-1$
+			repo.checkOut(tag, commit);
+			result.setCommit(repo.getHeadCommit());
+			Iterator<File> jsonFiles = repo.getQuestionnaireJsonFiles();
+			while (jsonFiles.hasNext()) {
+				File jsonFile = jsonFiles.next();
+				BufferedReader reader = null;
+				try {
+					reader = new BufferedReader(new FileReader(jsonFile));
+					Survey survey = gson.fromJson(reader, Survey.class);
+					survey.addInfoToSectionQuestions();
+					if (dao.surveyExists(survey.getSpecVersion(), survey.getLanguage(), false)) {
+						try {
+							SurveyQuestionUpdateStats updateStats = updateSurveyQuestions(survey, language, con, updateDb);
+							if (updateStats.getNumChanges() > 0) {
+								result.addVersionUpdated(survey.getSpecVersion(), survey.getLanguage(), updateStats);
+							}
+						} catch (QuestionException e) {
+							logger.error("Question error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);
+							result.addWarning("Error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage() + ".  Update for this file will be skipped.");
+						} catch (SurveyResponseException e) {
+							logger.error("Survey response error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);
+							result.addWarning("Error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage() + ".  Update for this file will be skipped.");
+						} catch (UpdateSurveyException e) {
+							logger.error("Update survey error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);
+							result.addWarning("Error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage() + ".  Update for this file will be skipped.");
+						} catch (IOException e) {
+							logger.error("I/O error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);
+							result.addWarning("Error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage() + ".  Update for this file will be skipped.");
+						}
+					} else {
+						if (updateDb) {
+							try {
+								logger.info("Adding survey questions for spec version "+survey.getSpecVersion()+", "+survey.getLanguage());  //$NON-NLS-1$    //$NON-NLS-2$
+								dao.addSurvey(survey);
+							} catch (SurveyResponseException e) {
+								logger.error("Survey response error adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);
+								result.addWarning("Error adding spec version "+survey.getSpecVersion()+" language "+survey.getLanguage() + ".  Update for this file will be skipped.");
+							} catch (QuestionException e) {
+								logger.error("Question exception adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);
+								result.addWarning("Error adding spec version "+survey.getSpecVersion()+" language "+survey.getLanguage() + ".  Update for this file will be skipped.");;
+							}
+						}
+						result.addVersionAdded(survey.getSpecVersion(), survey.getLanguage());
+					}
+				} catch (FileNotFoundException e) {
+					logger.error("File not found while updating survey questions from GIT: "+jsonFile.getName());
+					result.addWarning("Unexpected error - missing file in Conformance Questionnaire GIT Repository.  Please notify the OpenChain team of this error.");
+				} finally {
+					if (reader != null) {
+						try {
+							reader.close();
+						} catch (IOException e) {
+							logger.warn("Unable to close reader for "+jsonFile.getName());
+						}
+					}
+				}
 			}
-			dao.addSurvey(survey);
+			return result;
 		} finally {
+			repo.unlock();
 			if (con != null) {
 				con.close();
 			}
@@ -655,138 +709,35 @@ public class CertificationServlet extends HttpServlet {
 	}
 
 	/**
-	 * Upload a new version of a survey
-	 * @param specVersion
-	 * @param language
-	 * @param sectionText
-	 * @param csvLines
-	 * @throws UpdateSurveyException
-	 * @throws SQLException 
-	 * @throws QuestionException 
-	 * @throws SurveyResponseException 
-	 * @throws IOException 
-	 */
-	@SuppressWarnings("unused")	// Leaving this code in case we want to go back to a CSV version
-	private void uploadSurvey(String specVersion, String language,
-			SectionTextJson[] sectionTexts, String[] csvLines) throws UpdateSurveyException, SQLException, SurveyResponseException, QuestionException, IOException {
-		// Check if the version is aready in the database
-		cleanUpLines(csvLines);
-		Survey survey = new Survey(specVersion, language);
-		Map<String, List<Question>> sectionQuestions = new HashMap<String, List<Question>>();
-		List<Section> sections = new ArrayList<Section>();
-		for (SectionTextJson sectionText:sectionTexts) {
-			Section section = new Section(language);
-			if (sectionText.getName() == null || sectionText.getName().isEmpty()) {
-				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.50",language))); //$NON-NLS-1$
-			}
-			if (sectionText.getTitle() == null || sectionText.getTitle().isEmpty()) {
-				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.51",language))); //$NON-NLS-1$
-			}
-			section.setName(sectionText.getName());
-			section.setTitle(sectionText.getTitle());
-			List<Question> questions = new ArrayList<Question>();
-			section.setQuestions(questions);
-			sectionQuestions.put(sectionText.getName(), questions);
-			sections.add(section);
-		}
-		survey.setSections(sections);
-		CSVParser csvParser = new CSVParser();
-		Set<String> foundQuestionNumbers = new HashSet<String>();
-		Map<String, SubQuestion> questionsWithSubs = new HashMap<String, SubQuestion>();
-		validateCsvHeader(csvLines, csvParser, language);
-		for (int i = 1; i < csvLines.length; i++) {
-			if (csvLines[i] == null || csvLines[i].isEmpty()) {
-				logger.warn("Skipping blank CSV line");  //$NON-NLS-1$
-				continue;
-			}
-			Question question = Question.fromCsv(csvParser.parseLine(csvLines[i]), specVersion, language);
-			if (foundQuestionNumbers.contains(question.getNumber())) {
-				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.52",language,question.getNumber()))); //$NON-NLS-1$
-			}
-			foundQuestionNumbers.add(question.getNumber());
-			if (question.getSubQuestionOfNumber() != null) {
-				SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionOfNumber());
-				if (parentQuestion == null) {
-					try {
-						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionOfNumber(), specVersion, language, 0); //$NON-NLS-1$ //$NON-NLS-2$
-					} catch(QuestionException ex) {
-						throw new UpdateSurveyException(I18N.getMessage("CertificationServlet.55",language,question.getNumber())); //$NON-NLS-1$
-					}
-					questionsWithSubs.put(question.getSubQuestionOfNumber(), parentQuestion);
-				}
-				parentQuestion.addSubQuestion(question);
-			}
-			if (question instanceof SubQuestion) {
-				SubQuestion toBeReplaced = questionsWithSubs.get(question.getNumber());
-				if (toBeReplaced != null) {
-					for(Question qtoadd:toBeReplaced.getAllSubquestions()) {
-						((SubQuestion) question).addSubQuestion(qtoadd);
-					}
-				}
-				questionsWithSubs.put(question.getNumber(), (SubQuestion) question);
-			}
-			List<Question> questionList = sectionQuestions.get(question.getSectionName());
-			if (questionList == null) {
-				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.56",language,question.getSectionName(),question.getNumber()))); //$NON-NLS-1$
-			}
-			questionList.add(question);
-		}
-		uploadSurvey(survey, language);
-	}
-
-	/**
-	 * Clean up the lines, removing any trailing new lines or line feeds
-	 * @param csvLines
-	 */
-	private void cleanUpLines(String[] csvLines) {
-		for (int i = 0; i < csvLines.length; i++) {
-			if (csvLines[i].endsWith("\n")) {  //$NON-NLS-1$
-				csvLines[i] = csvLines[i].substring(0, csvLines[i].length()-1);
-			}
-			if (csvLines[i].endsWith("\r")) {  //$NON-NLS-1$
-				csvLines[i] = csvLines[i].substring(0, csvLines[i].length()-1);
-			}
-		}
-	}
-
-	/**
-	 * Update questions for an existing survey.  Note that questions can not be deleted, 
-	 * only added and updated.  
-	 * @param specVersion
-	 * @param language
-	 * @param csvLines
+	 * @param survey Survey with updated questions
+	 * @param language Language to render any error in (this is not necessarily the same language as the survey language)
+	 * @param con DB Connection to use
+	 * @param updateDb if true, the database will be updated.  If false, only stats will be returned
 	 * @throws SQLException
 	 * @throws QuestionException
 	 * @throws SurveyResponseException
 	 * @throws UpdateSurveyException
 	 * @throws IOException
 	 */
-	@SuppressWarnings("unused")
-	private void updateSurveyQuestions(String specVersion, String language, String[] csvLines) throws SQLException, QuestionException, SurveyResponseException, UpdateSurveyException, IOException {
-		cleanUpLines(csvLines);
-		logger.info("Updating survey questions for spec version "+specVersion);  //$NON-NLS-1$
-		Connection con = null;
-		CSVParser csvParser = new CSVParser();
-		
-		try {
-			con = SurveyDatabase.createConnection(getServletConfig());
-			SurveyDbDao dao = new SurveyDbDao(con);
-			Survey existing = dao.getSurvey(specVersion, language);
-			if (existing == null) {
-				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.58",language,specVersion))); //$NON-NLS-1$
-			}
-			List<Question> updatedQuestions = new ArrayList<Question>();
-			List<Question> addedQuestions = new ArrayList<Question>();
-			Set<String> foundQuestionNumbers = new HashSet<String>();
-			Set<String> existingQuestionNumbers = existing.getQuestionNumbers();
-			Map<String, SubQuestion> questionsWithSubs = new HashMap<String, SubQuestion>();
-			validateCsvHeader(csvLines, csvParser, language);
-			for (int i = 1; i < csvLines.length; i++) {
-				if (csvLines[i] == null || csvLines[i].isEmpty()) {
-					logger.warn("Skipping blank CSV line");  //$NON-NLS-1$
-					continue;
-				}
-				Question question = Question.fromCsv(csvParser.parseLine(csvLines[i]), specVersion, language);
+	private SurveyQuestionUpdateStats updateSurveyQuestions(Survey survey, String language, Connection con, boolean updateDb) throws SQLException, QuestionException, SurveyResponseException, UpdateSurveyException, IOException {
+		SurveyQuestionUpdateStats stats = new SurveyQuestionUpdateStats();
+		survey.addInfoToSectionQuestions();
+		long existingId = SurveyDbDao.getSpecId(con, survey.getSpecVersion(), survey.getLanguage(), false);
+		if (existingId < 0) {
+			throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.58",language,survey.getSpecVersion()))); //$NON-NLS-1$
+		}
+		SurveyDbDao dao = new SurveyDbDao(con);
+		Survey existing = dao.getSurvey(survey.getSpecVersion(), survey.getLanguage());
+		if (existing == null) {
+			throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.58",language,survey.getSpecVersion()))); //$NON-NLS-1$
+		}
+		List<Question> updatedQuestions = new ArrayList<Question>();
+		List<Question> addedQuestions = new ArrayList<Question>();
+		Set<String> foundQuestionNumbers = new HashSet<String>();
+		Set<String> existingQuestionNumbers = existing.getQuestionNumbers();
+		Map<String, SubQuestion> questionsWithSubs = new HashMap<String, SubQuestion>();
+		for (Section section:survey.getSections()) {
+			for (Question question:section.getQuestions()) {
 				if (foundQuestionNumbers.contains(question.getNumber())) {
 					throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.60",language,question.getNumber()))); //$NON-NLS-1$
 				}
@@ -794,7 +745,7 @@ public class CertificationServlet extends HttpServlet {
 				if (question.getSubQuestionOfNumber() != null) {
 					SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionOfNumber());
 					if (parentQuestion == null) {
-						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionOfNumber(), specVersion, language, 0); //$NON-NLS-1$ //$NON-NLS-2$
+						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionOfNumber(), survey.getSpecVersion(), survey.getLanguage(), 0); //$NON-NLS-1$ //$NON-NLS-2$
 						questionsWithSubs.put(question.getSubQuestionOfNumber(), parentQuestion);
 					}
 					parentQuestion.addSubQuestion(question);
@@ -814,110 +765,17 @@ public class CertificationServlet extends HttpServlet {
 					addedQuestions.add(question);
 				}
 			}
-			if (!existingQuestionNumbers.containsAll(foundQuestionNumbers)) {
-				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.63",language))); //$NON-NLS-1$
-			}
-			// set the subquestions
-			
+		}
+		if (!existingQuestionNumbers.containsAll(foundQuestionNumbers)) {
+			throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.63",language))); //$NON-NLS-1$
+		}
+		if (updateDb) {
+			logger.info("Updating survey questions for spec version "+survey.getSpecVersion()+", "+survey.getLanguage());  //$NON-NLS-1$    //$NON-NLS-2$
 			dao.updateQuestions(updatedQuestions);
 			dao.addQuestions(addedQuestions);
-		} finally {
-			if (con != null) {
-				con.close();
-			}
 		}
-	}
-	
-	/**
-	 * @param survey Survey with updated questions
-	 * @param language Language to render any error in (this is not necessarily the same language as the survey language)
-	 * @throws SQLException
-	 * @throws QuestionException
-	 * @throws SurveyResponseException
-	 * @throws UpdateSurveyException
-	 * @throws IOException
-	 */
-	private void updateSurveyQuestions(Survey survey, String language) throws SQLException, QuestionException, SurveyResponseException, UpdateSurveyException, IOException {
-		survey.addInfoToSectionQuestions();
-		logger.info("Updating survey questions for spec version "+survey.getSpecVersion()+", "+survey.getLanguage());  //$NON-NLS-1$    //$NON-NLS-2$
-		Connection con = null;
-		try {
-			con = SurveyDatabase.createConnection(getServletConfig());
-			long existingId = SurveyDbDao.getSpecId(con, survey.getSpecVersion(), survey.getLanguage(), false);
-			if (existingId < 0) {
-				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.58",language,survey.getSpecVersion()))); //$NON-NLS-1$
-			}
-			SurveyDbDao dao = new SurveyDbDao(con);
-			Survey existing = dao.getSurvey(survey.getSpecVersion(), survey.getLanguage());
-			if (existing == null) {
-				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.58",language,survey.getSpecVersion()))); //$NON-NLS-1$
-			}
-			List<Question> updatedQuestions = new ArrayList<Question>();
-			List<Question> addedQuestions = new ArrayList<Question>();
-			Set<String> foundQuestionNumbers = new HashSet<String>();
-			Set<String> existingQuestionNumbers = existing.getQuestionNumbers();
-			Map<String, SubQuestion> questionsWithSubs = new HashMap<String, SubQuestion>();
-			for (Section section:survey.getSections()) {
-				for (Question question:section.getQuestions()) {
-					if (foundQuestionNumbers.contains(question.getNumber())) {
-						throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.60",language,question.getNumber()))); //$NON-NLS-1$
-					}
-					foundQuestionNumbers.add(question.getNumber());
-					if (question.getSubQuestionOfNumber() != null) {
-						SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionOfNumber());
-						if (parentQuestion == null) {
-							parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionOfNumber(), survey.getSpecVersion(), survey.getLanguage(), 0); //$NON-NLS-1$ //$NON-NLS-2$
-							questionsWithSubs.put(question.getSubQuestionOfNumber(), parentQuestion);
-						}
-						parentQuestion.addSubQuestion(question);
-					}
-					if (question instanceof SubQuestion) {
-						SubQuestion toBeReplaced = questionsWithSubs.get(question.getNumber());
-						if (toBeReplaced != null) {
-							for(Question qtoadd:toBeReplaced.getAllSubquestions()) {
-								((SubQuestion) question).addSubQuestion(qtoadd);
-							}
-						}
-						questionsWithSubs.put(question.getNumber(), (SubQuestion) question);
-					}
-					if (existingQuestionNumbers.contains(question.getNumber())) {
-						updatedQuestions.add(question);
-					} else {
-						addedQuestions.add(question);
-					}
-				}
-			}
-			if (!existingQuestionNumbers.containsAll(foundQuestionNumbers)) {
-				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.63",language))); //$NON-NLS-1$
-			}
-			dao.updateQuestions(updatedQuestions);
-			dao.addQuestions(addedQuestions);
-		} finally {
-			if (con != null) {
-				con.close();
-			}
-		}
-	}
-
-	/**
-	 * Verifies the header for a CSV questions file and throws an exception if not valid
-	 * @param csvLines
-	 * @param csvParser
-	 * @param language
-	 * @throws UpdateSurveyException
-	 * @throws IOException
-	 */
-	private void validateCsvHeader(String[] csvLines, CSVParser csvParser, String language) throws UpdateSurveyException, IOException {
-		if (csvLines.length > 0) {
-			String[] headerCols = csvParser.parseLine(csvLines[0]);
-			if (headerCols.length != Survey.CSV_COLUMNS.length) {
-				throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.64",language,String.valueOf(Survey.CSV_COLUMNS.length)))); //$NON-NLS-1$
-			}
-			for (int i = 0; i < headerCols.length; i++) {
-				if (!Objects.equals(Survey.CSV_COLUMNS[i], headerCols[i])) {
-					throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.66",language,Survey.CSV_COLUMNS[i],headerCols[i]))); //$NON-NLS-1$
-				}
-			}
-		}
+		stats.addUpdateQuestions(updatedQuestions);
+		stats.addAddedQuestions(addedQuestions);
+		return stats;
 	}
 }

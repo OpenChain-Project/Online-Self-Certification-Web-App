@@ -24,14 +24,14 @@
         Manage Survey Question Content
     </h2>
     <div id="manage-survey" class="admin-buttons">
-        <button id="btDownloadSurvey" class="ui-button ui-widget ui-corner-all">Download Survey Questions</button>
-        <span class="ui-button ui-widget ui-corner-all file-input-button">
-            <i class="ui-icon ui-icon-arrowthick-1-n"></i>
-            <span id="upload-file-name">[no file]</span>
-            <input type="file" onchange="selectSurvey(event)" name="uploadsurvey-file" id="uploadsurvey-file"/>
-        </span>
-        <button id="btUploadSurvey" class="ui-button ui-widget ui-corner-all">New Survey Version</button>
-        <button id="btUpdateSurvey" class="ui-button ui-widget ui-corner-all">Update Survey Questions</button>
+	        <label for="gitTag" style="display:inline">Git Tag:</label>
+	        <!-- TODO: Move these inline styles to CSS -->
+	        <select name="gitTag" id="gitTag" style="display:inline">
+	        </select>
+	        <label for="gitCommit" style="display:inline">Git Commit:</label>
+	        <input type="text" name="gitCommit" id="gitCommit" class="ui-corner-all">
+	        <button id="btUpdateSurvey" class="ui-button ui-widget ui-corner-all">Update Survey Questions</button>
+	        <button id="btDownloadSurvey" class="ui-button ui-widget ui-corner-all">Download Survey Questions</button>
     </div>
     <h2>Submission Status</h2>
     <div id="submission-status-loading">
@@ -59,13 +59,17 @@
     <h3>Not Submitted</h3>
     <table id="not-submitted" class="admin-table ui-corner-all">
     </table>
-    <div id="downloadsurvey">
-        <form name="downloadsurvey-form" id="downloadsurvey-form">
-        <fieldset>
-            <label for="downloadsurvey-version">Specification Version</label>
-            <input type="text" name="downloadsurvey-version" id="downloadsurvey-version" class="text ui-widget-content ui-corner-all">
-        </fieldset>
-        </form>
+    <div id="dialog-confirm-update">
+      <div id="confirm-update-tabs">
+        <ul>
+            <li><a href="#confirm-update-tab-summary">Summary</a></li>
+            <li><a href="#confirm-update-tab-updates">Updates</a></li>
+            <li><a href="#confirm-update-tab-added">Added</a></li>
+        </ul>
+        <div id="confirm-update-tab-summary"></div>
+        <div id="confirm-update-tab-updates"></div>
+        <div id="confirm-update-tab-added"></div>
+      </div>
     </div>
     <div id="errors"></div>
     <div id="status"></div>
