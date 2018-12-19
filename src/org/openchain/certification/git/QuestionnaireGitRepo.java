@@ -49,6 +49,7 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
+import org.openchain.certification.I18N;
 
 
 /**
@@ -65,26 +66,33 @@ import org.eclipse.jgit.lib.RepositoryBuilder;
  */
 public class QuestionnaireGitRepo {
 	
-	public static final String QUESTIONNAIRE_PREFIX = "questionnaire";
-	public static final String QUESTIONNAIRE_SUFFIX = ".json";
+	public static final String QUESTIONNAIRE_PREFIX = "questionnaire";  //$NON-NLS-1$
+	public static final String QUESTIONNAIRE_SUFFIX = ".json";  //$NON-NLS-1$
 	
 	public class QuestionnaireFileIterator implements Iterator<File> {
 		
 		private File[] jsonFiles;
 		private int jsonFileIndex = 0;
+		private String language;
 		
-		public QuestionnaireFileIterator(File repoDir) throws GitRepoException {
+		/**
+		 * @param repoDir Directory containing the questionnaire repository
+		 * @param language Language for the logged in user
+		 * @throws GitRepoException
+		 */
+		public QuestionnaireFileIterator(File repoDir, String language) throws GitRepoException {
+			this.language = language;
 			if (repoDir == null) {
-				logger.error("Null repository in new Questionnaire File Iterator");
-				throw new GitRepoException("Unexpected error getting Questionnair files.  Please contact the OpenChain team with this error.");
+				logger.error("Null repository in new Questionnaire File Iterator");  //$NON-NLS-1$
+				throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.0", language)); //$NON-NLS-1$
 			}
 			if (!repoDir.exists()) {
-				logger.error("Non existent directory for Questionnaire File Iterator: "+repoDir.getAbsolutePath());
-				throw new GitRepoException("Unexpected error getting Questionnair files.  Please contact the OpenChain team with this error.");				
+				logger.error("Non existent directory for Questionnaire File Iterator: "+repoDir.getAbsolutePath());  //$NON-NLS-1$
+				throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.0", language));				 //$NON-NLS-1$
 			}
 			if (!repoDir.isDirectory()) {
-				logger.error(repoDir.getAbsolutePath()+" is not a directory.");
-				throw new GitRepoException("Unexpected error getting Questionnair files.  Please contact the OpenChain team with this error.");				
+				logger.error(repoDir.getAbsolutePath()+" is not a directory.");  //$NON-NLS-1$
+				throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.0", language));				 //$NON-NLS-1$
 			}
 			jsonFiles = repoDir.listFiles(new FilenameFilter() {
 
@@ -112,15 +120,14 @@ public class QuestionnaireGitRepo {
 
 		@Override
 		public void remove() {
-			throw new RuntimeException("Remove not supported for Questionnaire File Iterator");
+			throw new RuntimeException(I18N.getMessage("QuestionnaireGitRepo.3", language)); //$NON-NLS-1$
 		}
 		
 	}
 	
-	public static final String TMP_DIR = System.getProperty("java.io.tmpdir");
-	public static final String REPO_DIR_NAME = "questionnaire_repo";
+	public static final String TMP_DIR = System.getProperty("java.io.tmpdir");  //$NON-NLS-1$
+	public static final String REPO_DIR_NAME = "questionnaire_repo";  //$NON-NLS-1$
 	static final Logger logger = Logger.getLogger(QuestionnaireGitRepo.class);
-	//TODO Internationalize the error strings
 	
 	File workingDir = null;
 	Repository repo = null;
@@ -129,64 +136,74 @@ public class QuestionnaireGitRepo {
 	
 	private static QuestionnaireGitRepo instance = null;
 
-	public String QUESTIONAIRRE_URI = "https://github.com/OpenChain-Project/conformance-questionnaire.git";
+	public String QUESTIONAIRRE_URI = "https://github.com/OpenChain-Project/conformance-questionnaire.git";  //$NON-NLS-1$
 	
-	public static synchronized QuestionnaireGitRepo getQuestionnaireGitRepo() throws GitRepoException {
+	/**
+	 * @param language Language for the logged in user
+	 * @return The questionnaire git instance
+	 * @throws GitRepoException
+	 */
+	public static synchronized QuestionnaireGitRepo getQuestionnaireGitRepo(String language) throws GitRepoException {
 		if (instance == null) {
-			instance = new QuestionnaireGitRepo();
+			instance = new QuestionnaireGitRepo(language);
 		}
 		return instance;
 	}
 	
-	private QuestionnaireGitRepo() throws GitRepoException {
-		openRepo();
+	/**
+	 * @param language Language for the logged in user
+	 * @throws GitRepoException
+	 */
+	private QuestionnaireGitRepo(String language) throws GitRepoException {
+		openRepo(language);
 	}
 	
 	/**
 	 * Initializes properties for the class and refreshes or clones the repository to make it
 	 * current
+	 * @param language Language for the logged in user
 	 * @throws GitRepoException
 	 */
-	private void openRepo() throws GitRepoException {
+	private void openRepo(String language) throws GitRepoException {
 		
 		Path gitPath = FileSystems.getDefault().getPath(TMP_DIR).resolve(REPO_DIR_NAME);
 		workingDir = gitPath.toFile();
-		File gitDir = gitPath.resolve(".git").toFile();
+		File gitDir = gitPath.resolve(".git").toFile(); //$NON-NLS-1$
 		
 		if (workingDir.exists()) {
 			if (workingDir.isFile()) {
 				// Hmmm, I guess we just delete this rather odd file
-				logger.warn("Unexpected file foundin the git path.  Deleting "+gitPath.toString());
+				logger.warn("Unexpected file foundin the git path.  Deleting "+gitPath.toString());  //$NON-NLS-1$
 				if (!workingDir.delete()) {
-					logger.error("Unable to delete unexpected file foundin the git path "+gitPath.toString());
-					throw new GitRepoException("Unexpected error cleaning up the Git directory.  Please contact the OpenChain team with this error.");
+					logger.error("Unable to delete unexpected file foundin the git path "+gitPath.toString());  //$NON-NLS-1$
+					throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.5", language)); //$NON-NLS-1$
 				}
 			} else if (workingDir.isDirectory()){
 				// Check to see if this is already a repo
 				try {
 					RepositoryBuilder builder = new RepositoryBuilder().setGitDir(gitDir);
 					repo = builder.build();
-					String remoteUrl = repo.getConfig().getString( "remote", "origin", "url" );
+					String remoteUrl = repo.getConfig().getString( "remote", "origin", "url" );  //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
 					if (QUESTIONAIRRE_URI.equals(remoteUrl)) {
 						// Matches the remote repo - we can just refresh the directory and return
 						git = new Git(repo);
-						refresh();
+						refresh(language);
 						return;
 					} else {
-						logger.warn("Found a directory other than the questionnaire repo - deleting and starting from scratch");
+						logger.warn("Found a directory other than the questionnaire repo - deleting and starting from scratch");  //$NON-NLS-1$
 						repo.close();
 						repo = null;
-						deleteDirectory(workingDir);
+						deleteDirectory(workingDir, language);
 					}
 				} catch (Exception ex) {
-					logger.warn("Error opening and checking existing repo - starting from scratch", ex);
+					logger.warn("Error opening and checking existing repo - starting from scratch", ex);  //$NON-NLS-1$
 					if (repo != null) {
 						repo.close();
 						repo = null;
 						try {
-							deleteDirectory(workingDir);
+							deleteDirectory(workingDir, language);
 						} catch (IOException e) {
-							logger.warn("Unable to delete git repository directory on error",e);
+							logger.warn("Unable to delete git repository directory on error",e);  //$NON-NLS-1$
 						}
 					}
 				}
@@ -200,37 +217,38 @@ public class QuestionnaireGitRepo {
 			git = command.call();
 			repo = git.getRepository();
 		} catch (IOException e) {
-			logger.error("I/O Error cloning repository to directory "+gitPath.toString(), e);
-			throw new GitRepoException("I/O error cloning repository", e);
+			logger.error("I/O Error cloning repository to directory "+gitPath.toString(), e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.6", language), e); //$NON-NLS-1$
 		} catch (InvalidRemoteException e) {
-			logger.error("Unable to access the github repository "+QUESTIONAIRRE_URI, e);
-			throw new GitRepoException("Unable to access the github repository", e);
+			logger.error("Unable to access the github repository "+QUESTIONAIRRE_URI, e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.7", language), e); //$NON-NLS-1$
 		} catch (TransportException e) {
-			logger.error("Unable to access the github repository (transport error) "+QUESTIONAIRRE_URI, e);
-			throw new GitRepoException("Unable to access the github repository", e);
+			logger.error("Unable to access the github repository (transport error) "+QUESTIONAIRRE_URI, e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.7", language), e); //$NON-NLS-1$
 		} catch (GitAPIException e) {
-			logger.error("API error accessing the github repository "+QUESTIONAIRRE_URI, e);
-			throw new GitRepoException("Unable to access the github repository", e);
+			logger.error("API error accessing the github repository "+QUESTIONAIRRE_URI, e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.7", language), e); //$NON-NLS-1$
 		}
 	}
 	
 	/**
 	 * Deletes a directory including subdirectories
 	 * @param dirOrFile
+	 * @param language Language for the logged in user
 	 * @throws IOException
 	 */
-	private void deleteDirectory(File dirOrFile) throws IOException {
+	private void deleteDirectory(File dirOrFile, String language) throws IOException {
 		if (dirOrFile.isFile()) {
 			if (!dirOrFile.delete()) {
-				throw new IOException("Unable to delete file "+dirOrFile.getAbsolutePath());
+				throw new IOException(I18N.getMessage("QuestionnaireGitRepo.10", language, dirOrFile.getAbsolutePath())); //$NON-NLS-1$
 			}
 		} else {
 			File[] files = dirOrFile.listFiles();
 			for (File f : files) {
-				deleteDirectory(f);
+				deleteDirectory(f, language);
 			}
 			if (!dirOrFile.delete()) {
-				throw new IOException("Unable to delete directory "+dirOrFile.getAbsolutePath());
+				throw new IOException(I18N.getMessage("QuestionnaireGitRepo.11", language, dirOrFile.getAbsolutePath())); //$NON-NLS-1$
 			}
 		}
 	}
@@ -241,91 +259,93 @@ public class QuestionnaireGitRepo {
 	 * then "master" will be checked out.
 	 * Note: you may want to call <code>refresh()</code> prior to checking out to make sure you have the latest
 	 * @param tag Tag to checkout - may be null
-	 * @param commitRef
+	 * @param commitRef Commit reference tage - may be null
+	 * @param language Language for the logged in user
 	 * @throws GitRepoException 
 	 */
-	public synchronized void checkOut(String tag, String commitRef) throws GitRepoException
+	public synchronized void checkOut(String tag, String commitRef, String language) throws GitRepoException
 	{
 		try {
 			if (commitRef != null && !commitRef.isEmpty()) {
 				git.checkout().setName(commitRef).call();
 			} else if (tag != null && !tag.isEmpty()) {
-				git.checkout().setName("refs/tags/"+tag).call();
+				git.checkout().setName("refs/tags/"+tag).call();  //$NON-NLS-1$
 			} else {
-				git.checkout().setName("master").call();
+				git.checkout().setName("master").call();  //$NON-NLS-1$
 			}
 		} catch (RefAlreadyExistsException e) {
-			logger.error("Unexpected ref already exists exception checking out",e);
-			throw new GitRepoException("Unable to check out specific questionnaire version.  Please contact the OpenChain team with this error.");
+			logger.error("Unexpected ref already exists exception checking out",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.12", language)); //$NON-NLS-1$
 		} catch (RefNotFoundException e) {
-			logger.error("Reference not found checking out",e);
+			logger.error("Reference not found checking out",e);  //$NON-NLS-1$
 			if (commitRef != null) {
-				throw new GitRepoException("Commit reference "+commitRef+" was not found.");
+				throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.13", language, commitRef)); //$NON-NLS-1$ //$NON-NLS-2$
 			} else if (tag != null) {
-				throw new GitRepoException("Tag "+tag+" was not found.");
+				throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.15", language, tag)); //$NON-NLS-1$ //$NON-NLS-2$
 			} else {
-				throw new GitRepoException("Unable to check out the master version.  Please contact the OpenChain team with this error.");
+				throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.17", language)); //$NON-NLS-1$
 			}
 		} catch (InvalidRefNameException e) {
-			logger.error("Invalid ref name exception checking out",e);
-			throw new GitRepoException("Unable to check out specific questionnaire version.  Please contact the OpenChain team with this error.");
+			logger.error("Invalid ref name exception checking out",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.18", language)); //$NON-NLS-1$
 		} catch (CheckoutConflictException e) {
-			logger.error("Checkout conflict exception checking out",e);
-			throw new GitRepoException("Unable to check out specific questionnaire version.  Please contact the OpenChain team with this error.");
+			logger.error("Checkout conflict exception checking out",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.19", language)); //$NON-NLS-1$
 		} catch (GitAPIException e) {
-			logger.error("Unexpected GIT API exception checking out",e);
-			throw new GitRepoException("Unable to check out specific questionnaire version.  Please contact the OpenChain team with this error.");
+			logger.error("Unexpected GIT API exception checking out",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.19", language)); //$NON-NLS-1$
 		}
 	}
 	
 	/**
 	 * Pulls the latest from the repository
+	 * @param language Language for the logged in user
 	 * @throws GitRepoException 
 	 */
-	public synchronized void refresh() throws GitRepoException {
+	public synchronized void refresh(String language) throws GitRepoException {
 		try {
 			String fullBranch = repo.getFullBranch();
-			if (fullBranch == null || !fullBranch.startsWith("refs/")) {
+			if (fullBranch == null || !fullBranch.startsWith("refs/")) {  //$NON-NLS-1$
 				// we are in a detached head state
-				checkOut(null, null);
+				checkOut(null, null, language);
 				git.pull().call();
-				checkOut(null, fullBranch);
+				checkOut(null, fullBranch, language);
 			} else {
 				git.pull().call();
 			}
 		} catch (WrongRepositoryStateException e) {
-			logger.error("Wrong repository exception refreshing repo",e);
-			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+			logger.error("Wrong repository exception refreshing repo",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.20", language)); //$NON-NLS-1$
 		} catch (InvalidConfigurationException e) {
-			logger.error("Invalid configuration exception refreshing repo",e);
-			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+			logger.error("Invalid configuration exception refreshing repo",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.20", language)); //$NON-NLS-1$
 		} catch (DetachedHeadException e) {
-			logger.error("Detached Head exception refreshing repo",e);
-			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+			logger.error("Detached Head exception refreshing repo",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.20", language)); //$NON-NLS-1$
 		} catch (InvalidRemoteException e) {
-			logger.error("Invalid remote exception refreshing repo",e);
-			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+			logger.error("Invalid remote exception refreshing repo",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.20", language)); //$NON-NLS-1$
 		} catch (CanceledException e) {
-			logger.error("Git pull unexpectededly cancelled",e);
-			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+			logger.error("Git pull unexpectededly cancelled",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.20", language)); //$NON-NLS-1$
 		} catch (RefNotFoundException e) {
-			logger.error("Ref not found exception refreshing repo",e);
-			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+			logger.error("Ref not found exception refreshing repo",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.20", language)); //$NON-NLS-1$
 		} catch (RefNotAdvertisedException e) {
-			logger.error("Ref not advertised exception refreshing repo",e);
-			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+			logger.error("Ref not advertised exception refreshing repo",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.20", language)); //$NON-NLS-1$
 		} catch (NoHeadException e) {
-			logger.error("No head exception refreshing repo",e);
-			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+			logger.error("No head exception refreshing repo",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.20", language)); //$NON-NLS-1$
 		} catch (TransportException e) {
-			logger.error("Transport exception refreshing repo",e);
-			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+			logger.error("Transport exception refreshing repo",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.20", language)); //$NON-NLS-1$
 		} catch (GitAPIException e) {
-			logger.error("GIT API exception refreshing repo",e);
-			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+			logger.error("GIT API exception refreshing repo",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.20", language)); //$NON-NLS-1$
 		} catch (IOException e) {
-			logger.error("I/O error refreshing repo",e);
-			throw new GitRepoException("Unable to refresh the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+			logger.error("I/O error refreshing repo",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.20", language)); //$NON-NLS-1$
 		}
 	}
 	
@@ -338,20 +358,22 @@ public class QuestionnaireGitRepo {
 	
 	/**
 	 * @return an iterator which iterates through all questionnaire repository files
+	 * @param language
 	 * @throws GitRepoException
 	 */
-	public synchronized Iterator<File> getQuestionnaireJsonFiles() throws GitRepoException {
-		return new QuestionnaireFileIterator(this.workingDir);
+	public synchronized Iterator<File> getQuestionnaireJsonFiles(String language) throws GitRepoException {
+		return new QuestionnaireFileIterator(this.workingDir, language);
 	}
 
 	/**
 	 * Only used for test!  If the repository is open, deletes the repository directory and removes the instance
+	 * @param language Language for the logged in user
 	 * @throws IOException 
 	 */
-	protected synchronized static void cleanupDelete() throws IOException {
+	protected synchronized static void cleanupDelete(String language) throws IOException {
 		if (instance != null) {
 			instance.repo.close();
-			instance.deleteDirectory(instance.getDirectory());
+			instance.deleteDirectory(instance.getDirectory(), language);
 			instance = null;
 		}
 	}
@@ -364,20 +386,25 @@ public class QuestionnaireGitRepo {
 		instance = null;
 	}
 
-	public String[] getTags() throws GitRepoException {
+	/**
+	 * @param language Language for the logged in user
+	 * @return List of all tags in the repository
+	 * @throws GitRepoException
+	 */
+	public String[] getTags(String language) throws GitRepoException {
 		List<Ref> tags;
 		try {
 			tags = git.tagList().call();
 			String[] retval = new String[tags.size()];
 			int i = 0;
-			int trimLen = "refs/tags/".length();
+			int trimLen = "refs/tags/".length(); //$NON-NLS-1$
 			for (Ref tag:tags) {
 				retval[i++] = tag.getName().substring(trimLen);
 			}
 			return retval;
 		} catch (GitAPIException e) {
-			logger.error("Error getting GIT tags",e);
-			throw new GitRepoException("Unable to obtain tags from the Questionnaire Git Repository.  Please contact the OpenChain team with this error.");
+			logger.error("Error getting GIT tags",e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.33", language)); //$NON-NLS-1$
 		}
 	}
 	
@@ -396,24 +423,25 @@ public class QuestionnaireGitRepo {
 	}
 
 	/**
+	 * @param language Language for the logged in user
 	 * @return The hash of the head commit for the repository
 	 * @throws GitRepoException
 	 */
-	public String getHeadCommit() throws GitRepoException {
+	public String getHeadCommit(String language) throws GitRepoException {
 		try {
 			return this.repo.resolve(Constants.HEAD).getName();
 		} catch (RevisionSyntaxException e) {
-			logger.error("Invalid syntax getting commit head information", e);
-			throw new GitRepoException("Unexpected error getting Questionnaire Repository information.  Please contact the OpenChain team with this error.");
+			logger.error("Invalid syntax getting commit head information", e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.34", language)); //$NON-NLS-1$
 		} catch (AmbiguousObjectException e) {
-			logger.error("Ambiguous object exception getting commit head information", e);
-			throw new GitRepoException("Unexpected error getting Questionnaire Repository information.  Please contact the OpenChain team with this error.");
+			logger.error("Ambiguous object exception getting commit head information", e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.34", language)); //$NON-NLS-1$
 		} catch (IncorrectObjectTypeException e) {
-			logger.error("Incorrect object type exception getting commit head information", e);
-			throw new GitRepoException("Unexpected error getting Questionnaire Repository information.  Please contact the OpenChain team with this error.");
+			logger.error("Incorrect object type exception getting commit head information", e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.34", language)); //$NON-NLS-1$
 		} catch (IOException e) {
-			logger.error("I/O error getting commit head information", e);
-			throw new GitRepoException("Unexpected error getting Questionnaire Repository information.  Please contact the OpenChain team with this error.");
+			logger.error("I/O error getting commit head information", e);  //$NON-NLS-1$
+			throw new GitRepoException(I18N.getMessage("QuestionnaireGitRepo.34", language)); //$NON-NLS-1$
 		}
 	}
 }

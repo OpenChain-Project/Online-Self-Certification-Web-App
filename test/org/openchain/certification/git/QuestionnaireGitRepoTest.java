@@ -21,20 +21,21 @@ public class QuestionnaireGitRepoTest {
 	static final ObjectId TEST_TAG_HEAD = ObjectId.fromString("f660c4334fa205027131c9671a53da70561632fd");
 	static final ObjectId TEST_COMMIT_HEAD = ObjectId.fromString(TEST_COMMIT);
 	static final String[] EXPECTED_TAGS = new String[] {"1.2","v1.0.1","v1.0.3","v1.1.0"};
+	static final String LANGUAGE = "en";
 
 	@Before
 	public void setUp() throws Exception {
-		QuestionnaireGitRepo.cleanupDelete();
+		QuestionnaireGitRepo.cleanupDelete(LANGUAGE);
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		QuestionnaireGitRepo.cleanupDelete();
+		QuestionnaireGitRepo.cleanupDelete(LANGUAGE);
 	}
 
 	@Test
 	public void testGetQuestionnaireGitRepoClone() throws GitRepoException {
-		File rootDir = QuestionnaireGitRepo.getQuestionnaireGitRepo().getDirectory();
+		File rootDir = QuestionnaireGitRepo.getQuestionnaireGitRepo(LANGUAGE).getDirectory();
 		assertTrue(rootDir != null);
 		assertTrue(rootDir.isDirectory());
 		assertTrue(rootDir.listFiles().length > 0);
@@ -42,9 +43,9 @@ public class QuestionnaireGitRepoTest {
 	
 	@Test
 	public void testGetQuestionnaireGitRepoAlreadyExists() throws GitRepoException {
-		QuestionnaireGitRepo.getQuestionnaireGitRepo().getDirectory();
+		QuestionnaireGitRepo.getQuestionnaireGitRepo(LANGUAGE).getDirectory();
 		QuestionnaireGitRepo.resetInstance();
-		File rootDir = QuestionnaireGitRepo.getQuestionnaireGitRepo().getDirectory();
+		File rootDir = QuestionnaireGitRepo.getQuestionnaireGitRepo(LANGUAGE).getDirectory();
 		assertTrue(rootDir != null);
 		assertTrue(rootDir.isDirectory());
 		assertTrue(rootDir.listFiles().length > 0);
@@ -52,24 +53,24 @@ public class QuestionnaireGitRepoTest {
 
 	@Test
 	public void testCheckOutTop() throws GitRepoException, IOException {
-		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo();
+		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo(LANGUAGE);
 		ObjectId originalHead = repo.repo.getRefDatabase().getRef("HEAD").getObjectId();
-		repo.checkOut(TEST_TAG, null);
+		repo.checkOut(TEST_TAG, null, LANGUAGE);
 		ObjectId tagHead = repo.repo.getRefDatabase().getRef("HEAD").getObjectId();
 		assertEquals(TEST_TAG_HEAD, tagHead);
-		repo.checkOut(null, TEST_COMMIT);
+		repo.checkOut(null, TEST_COMMIT, LANGUAGE);
 		ObjectId commitHead = repo.repo.getRefDatabase().getRef("HEAD").getObjectId();
 		assertEquals(TEST_COMMIT_HEAD, commitHead);
-		repo.checkOut(null, null);
+		repo.checkOut(null, null, LANGUAGE);
 		assertEquals(originalHead, repo.repo.getRefDatabase().getRef("HEAD").getObjectId());
-		repo.checkOut(null, TEST_SHORT_COMMIT);
+		repo.checkOut(null, TEST_SHORT_COMMIT, LANGUAGE);
 		assertEquals(TEST_COMMIT_HEAD, repo.repo.getRefDatabase().getRef("HEAD").getObjectId());
 	}
 
 	@Test
 	public void testRefresh() throws GitRepoException, IOException {
-		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo();
-		repo.refresh();
+		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo(LANGUAGE);
+		repo.refresh(LANGUAGE);
 		File rootDir = repo.getDirectory();
 		assertTrue(rootDir != null);
 		assertTrue(rootDir.isDirectory());
@@ -78,9 +79,9 @@ public class QuestionnaireGitRepoTest {
 
 	@Test
 	public void testGetQuestionnaireJsonFiles() throws GitRepoException, IOException {
-		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo();
-		repo.checkOut(null, TEST_COMMIT);
-		Iterator<File> iter = repo.getQuestionnaireJsonFiles();
+		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo(LANGUAGE);
+		repo.checkOut(null, TEST_COMMIT, LANGUAGE);
+		Iterator<File> iter = repo.getQuestionnaireJsonFiles(LANGUAGE);
 		assertTrue(iter.hasNext());
 		File qfile = iter.next();
 		assertTrue(qfile.isFile());
@@ -89,8 +90,8 @@ public class QuestionnaireGitRepoTest {
 	
 	@Test
 	public void testGetTags() throws GitRepoException, IOException {
-		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo();
-		String[] tags = repo.getTags();
+		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo(LANGUAGE);
+		String[] tags = repo.getTags(LANGUAGE);
 		assertTrue(tags.length >= 4);
 		Set<String> tagSet = new HashSet<String>();
 		for (String tag:tags) {
@@ -103,13 +104,13 @@ public class QuestionnaireGitRepoTest {
 	
 	@Test
 	public void testGetHeadCommit() throws GitRepoException, IOException {
-		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo();
-		String currentHead = repo.getHeadCommit();
-		repo.checkOut(null, TEST_COMMIT);
-		String result = repo.getHeadCommit();
+		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo(LANGUAGE);
+		String currentHead = repo.getHeadCommit(LANGUAGE);
+		repo.checkOut(null, TEST_COMMIT, LANGUAGE);
+		String result = repo.getHeadCommit(LANGUAGE);
 		assertEquals(TEST_COMMIT, result);
-		repo.checkOut(null, null);
-		assertEquals(currentHead, repo.getHeadCommit());
+		repo.checkOut(null, null, LANGUAGE);
+		assertEquals(currentHead, repo.getHeadCommit(LANGUAGE));
 	}
 
 }

@@ -38,30 +38,50 @@ public class SurveyUpdateResult {
 		
 	}
 	
+	/**
+	 * @param commit Git commit reference used for the survey update
+	 */
 	public SurveyUpdateResult(String commit) {
 		this.commit = commit;
 	}
 	
-	public void addVersionUpdated(String version, String language, SurveyQuestionUpdateStats updateStats) {
-		this.versionsUpdated.add("Version: "+version+"; Language: "+language + " " + updateStats.toString());
+	/**
+	 * @param version Specification version
+	 * @param specLanguage Lanauge for the questionnaire
+	 * @param updateStats Statistics for the udpate
+	 * @param language Local language for the logged in user
+	 */
+	public void addVersionUpdated(String version, String specLanguage, SurveyQuestionUpdateStats updateStats, String language) {
+		this.versionsUpdated.add(I18N.getMessage("SurveyUpdateResult.1", language, version, specLanguage, updateStats.toString(language))); //$NON-NLS-1$
 	}
 	
 	public List<String> getVersionsUpdated() {
 		return this.versionsUpdated;
 	}
 	
-	public void addVersionAdded(String version, String language) {
-		this.versionsAdded.add("Version: "+version+"; Language: "+language);
+	/**
+	 * @param version Specification version
+	 * @param specLanguage Lanauge for the questionnaire
+	 * @param language Local language for the logged in user
+	 */
+	public void addVersionAdded(String version, String specLanguage, String language) {
+		this.versionsAdded.add(I18N.getMessage("SurveyUpdateResult.2", language, version, specLanguage)); //$NON-NLS-1$
 	}
 	
 	public List<String> getVersionsAdded() {
 		return this.versionsAdded;
 	}
 	
+	/**
+	 * @return Git commmit reference for this update
+	 */
 	public String getCommit() {
 		return this.commit;
 	}
 	
+	/**
+	 * @param commit commmit reference for this update
+	 */
 	public void setCommit(String commit) {
 		this.commit = commit;
 	}

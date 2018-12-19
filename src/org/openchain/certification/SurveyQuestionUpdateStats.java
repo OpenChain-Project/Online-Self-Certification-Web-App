@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openchain.certification.model.Question;
+import org.openchain.certification.model.User;
 
 /**
  * Statistics on updates to survey questions
@@ -51,35 +52,66 @@ public class SurveyQuestionUpdateStats {
 		return this.updatedQuestions;
 	}
 	
-	@Override
-	public String toString() {
+	/**
+	 * @param list List of strings
+	 * @param startIndex index of the list to start
+	 * @param language to use for localization
+	 * @return a localized comma separated list of strings
+	 */
+	public String buildCommaList(List<String> list, int startIndex, String language) {
+		// See http://cldr.unicode.org/translation/lists for patterns used in this algorithm
+		if (startIndex >= list.size()) {
+			return ""; //$NON-NLS-1$
+		} else if (list.size() == 2) {
+			return I18N.getMessage("SurveyQuestionUpdateStats.2list", language, list.get(0), list.get(1)); //$NON-NLS-1$
+		} else if (startIndex == list.size()-1) {
+			return I18N.getMessage("SurveyQuestionUpdateStats.1list", language, list.get(0));
+		}else if (startIndex == 0) {	// must be size > 2
+			return I18N.getMessage("SurveyQuestionUpdateStats.start", language, list.get(0), buildCommaList(list, 1, language)); //$NON-NLS-1$
+		} else if (startIndex == list.size()-2) { // end of the list
+			return I18N.getMessage("SurveyQuestionUpdateStats.end", language, list.get(startIndex), list.get(startIndex+1)); //$NON-NLS-1$
+		} else { // middle of a list of 4 or more items
+			return I18N.getMessage("SurveyQuestionUpdateStats.middle", language, list.get(startIndex), buildCommaList(list, startIndex+1, language)); //$NON-NLS-1$
+		}
+	}
+	
+	/**
+	 * @param questions
+	 * @param language to use for localization
+	 * @return Comma separated list of question numbers
+	 */
+	public String buildQuestionNumberList(List<Question> questions, String language) {
+		List<String> questionNumbers = new ArrayList<String>();
+		for (Question question:questions) {
+			questionNumbers.add(question.getNumber());
+		}
+		return buildCommaList(questionNumbers, 0, language);
+	}
+	
+	
+	/**
+	 * @param language Local language for the logged in user
+	 * @return
+	 */
+	public String toString(String language) {
 		StringBuilder sb = new StringBuilder();
 		if (this.addedQuestions.size() > 0) {
-			sb.append("Added ");
-			sb.append(this.addedQuestions.size());
-			sb.append(" questions: ");
-			sb.append(this.addedQuestions.get(0).getNumber());
-			for (int i = 1; i < this.addedQuestions.size(); i++) {
-				sb.append(", ");
-				sb.append(this.addedQuestions.get(i).getNumber());
-			}
-			sb.append(". ");
+			sb.append(I18N.getMessage("SurveyQuestionUpdateStats.0", language, Integer.toString(this.addedQuestions.size()))); //$NON-NLS-1$
+			sb.append(buildQuestionNumberList(this.addedQuestions, language));
 		}
 		if (this.updatedQuestions.size() > 0) {
-			sb.append("Updated ");
-			sb.append(this.updatedQuestions.size());
-			sb.append(" questions: ");
-			sb.append(this.updatedQuestions.get(0).getNumber());
-			for (int i = 1; i < this.updatedQuestions.size(); i++) {
-				sb.append(", ");
-				sb.append(this.updatedQuestions.get(i).getNumber());
-			}
-			sb.append(". ");
+			sb.append(I18N.getMessage("SurveyQuestionUpdateStats.1", language, Integer.toString(this.updatedQuestions.size()))); //$NON-NLS-1$
+			sb.append(buildQuestionNumberList(this.updatedQuestions, language));
 		}
 		if (sb.length() == 0) {
-			sb.append("No Changes");
+			sb.append(I18N.getMessage("SurveyQuestionUpdateStats.2",language)); //$NON-NLS-1$
 		}
-		return sb.toString();
+		return sb.toString().trim();
+	}
+	
+	@Override
+	public String toString() {
+		return toString(User.DEFAULT_LANGUAGE);
 	}
 	
 	public int getNumChanges() {

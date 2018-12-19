@@ -87,8 +87,8 @@ public class CertificationServlet extends HttpServlet {
 	public static final String PARAMETER_USERNAME = "username";  //$NON-NLS-1$
 	public static final String PARAMETER_UUID = "uuid";  //$NON-NLS-1$
 	public static final String PARAMETER_SPEC_VERSION = "specVersion";  //$NON-NLS-1$
-	public static final String PARAMETER_GIT_TAG = "tag";
-	public static final String PARAMETER_GIT_COMMIT = "commit";
+	public static final String PARAMETER_GIT_TAG = "tag"; //$NON-NLS-1$
+	public static final String PARAMETER_GIT_COMMIT = "commit"; //$NON-NLS-1$
 	private static final String GET_SOFTWARE_VERSION_REQUEST = "version";  //$NON-NLS-1$
 	private static final String GET_SURVEY = "getsurvey";  //$NON-NLS-1$
 	private static final String GET_SUPPORTED_SPEC_VERSIONS = "getSupportedSpecVersions";  //$NON-NLS-1$
@@ -119,8 +119,8 @@ public class CertificationServlet extends HttpServlet {
 	private static final String REQUEST_RESET_PASSWORD = "requestResetPassword";	  //$NON-NLS-1$
 	private static final String REQUEST_UNSUBMIT = "unsubmit";  //$NON-NLS-1$
 	private static final String SET_LANGUAGE_REQUEST = "setlanguage";  //$NON-NLS-1$
-	private static final String GET_GIT_TAGS_REQUEST = "getGitTags";
-	private static final String GET_UPDATE_SURVEY_RESULTS = "getUpdateSurveyResults";
+	private static final String GET_GIT_TAGS_REQUEST = "getGitTags"; //$NON-NLS-1$
+	private static final String GET_UPDATE_SURVEY_RESULTS = "getUpdateSurveyResults"; //$NON-NLS-1$
 
 	
 	private Gson gson;
@@ -199,7 +199,7 @@ public class CertificationServlet extends HttpServlet {
 	            	List<String> supportedSpecVersions = getSupportedSpecVersions(getServletConfig());
 	            	gson.toJson(supportedSpecVersions, out);
 	            } else if (requestParam.equals(GET_GIT_TAGS_REQUEST)) {
-	            	String[] tags = QuestionnaireGitRepo.getQuestionnaireGitRepo().getTags();
+	            	String[] tags = QuestionnaireGitRepo.getQuestionnaireGitRepo(language).getTags(language);
 	            	gson.toJson(tags, out);
 	            } else if (user == null) {
         			// Not logged in - set the status to unauthorized
@@ -635,16 +635,16 @@ public class CertificationServlet extends HttpServlet {
 	 */
 	private SurveyUpdateResult updateSurvey(String tag, String commit, String language, boolean updateDb) throws GitRepoException, SQLException {
 		SurveyUpdateResult result = new SurveyUpdateResult();
-		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo();
-		repo.refresh();
+		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo(language);
+		repo.refresh(language);
 		repo.lock();
 		Connection con = null;
 		try {
 			con = SurveyDatabase.createConnection(this.getServletConfig());
 			SurveyDbDao dao = new SurveyDbDao(con);
-			repo.checkOut(tag, commit);
-			result.setCommit(repo.getHeadCommit());
-			Iterator<File> jsonFiles = repo.getQuestionnaireJsonFiles();
+			repo.checkOut(tag, commit, language);
+			result.setCommit(repo.getHeadCommit(language));
+			Iterator<File> jsonFiles = repo.getQuestionnaireJsonFiles(language);
 			while (jsonFiles.hasNext()) {
 				File jsonFile = jsonFiles.next();
 				BufferedReader reader = null;
@@ -656,20 +656,20 @@ public class CertificationServlet extends HttpServlet {
 						try {
 							SurveyQuestionUpdateStats updateStats = updateSurveyQuestions(survey, language, con, updateDb);
 							if (updateStats.getNumChanges() > 0) {
-								result.addVersionUpdated(survey.getSpecVersion(), survey.getLanguage(), updateStats);
+								result.addVersionUpdated(survey.getSpecVersion(), survey.getLanguage(), updateStats, language);
 							}
 						} catch (QuestionException e) {
-							logger.error("Question error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);
-							result.addWarning("Error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage() + ".  Update for this file will be skipped.");
+							logger.error("Question error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+							result.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
 						} catch (SurveyResponseException e) {
-							logger.error("Survey response error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);
-							result.addWarning("Error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage() + ".  Update for this file will be skipped.");
+							logger.error("Survey response error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+							result.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
 						} catch (UpdateSurveyException e) {
-							logger.error("Update survey error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);
-							result.addWarning("Error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage() + ".  Update for this file will be skipped.");
+							logger.error("Update survey error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+							result.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
 						} catch (IOException e) {
-							logger.error("I/O error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);
-							result.addWarning("Error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage() + ".  Update for this file will be skipped.");
+							logger.error("I/O error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+							result.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
 						}
 					} else {
 						if (updateDb) {
@@ -677,24 +677,24 @@ public class CertificationServlet extends HttpServlet {
 								logger.info("Adding survey questions for spec version "+survey.getSpecVersion()+", "+survey.getLanguage());  //$NON-NLS-1$    //$NON-NLS-2$
 								dao.addSurvey(survey);
 							} catch (SurveyResponseException e) {
-								logger.error("Survey response error adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);
-								result.addWarning("Error adding spec version "+survey.getSpecVersion()+" language "+survey.getLanguage() + ".  Update for this file will be skipped.");
+								logger.error("Survey response error adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+								result.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
 							} catch (QuestionException e) {
-								logger.error("Question exception adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);
-								result.addWarning("Error adding spec version "+survey.getSpecVersion()+" language "+survey.getLanguage() + ".  Update for this file will be skipped.");;
+								logger.error("Question exception adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+								result.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
 							}
 						}
-						result.addVersionAdded(survey.getSpecVersion(), survey.getLanguage());
+						result.addVersionAdded(survey.getSpecVersion(), survey.getLanguage(), language);
 					}
 				} catch (FileNotFoundException e) {
-					logger.error("File not found while updating survey questions from GIT: "+jsonFile.getName());
-					result.addWarning("Unexpected error - missing file in Conformance Questionnaire GIT Repository.  Please notify the OpenChain team of this error.");
+					logger.error("File not found while updating survey questions from GIT: "+jsonFile.getName()); //$NON-NLS-1$
+					result.addWarning(I18N.getMessage("CertificationServlet.27",language)); //$NON-NLS-1$
 				} finally {
 					if (reader != null) {
 						try {
 							reader.close();
 						} catch (IOException e) {
-							logger.warn("Unable to close reader for "+jsonFile.getName());
+							logger.warn("Unable to close reader for "+jsonFile.getName()); //$NON-NLS-1$
 						}
 					}
 				}
