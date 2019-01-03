@@ -14,11 +14,15 @@
  *   limitations under the License.
  *
 */
-
+/**
+ * Functions added by visolve
+ * 001: Pagination for Table. Note: Include DataTable library files
+ */
 var lastUpdateCommit; // Holds the last survey update commit hash
 
 function openDownloadSurveyDialog() {
-	$("#downloadsurvey").dialog("open");
+	downloadSurvey();
+	//$("#downloadsurvey").dialog("open");
 }
 
 function downloadSurvey() {
@@ -30,6 +34,7 @@ function downloadSurvey() {
  * On initial click of the update survey button, opens a dialog confirming you want to "updateSurveyForReal"
  */
 function updateSurvey() {
+	
 	var tag = $( "#gitTag" ).val();
 	if ( tag == "None" ) {
 		tag = null;
@@ -133,6 +138,7 @@ function updateSurveyForReal( commit ) {
 	    		    height: 250,
 	    		    width: 250,
 	    		    modal: true,
+	    		    dialogClass: 'success-dialog',
 	    		    buttons: {
 	    		        "Ok" : function () {
 	    		            $( this ).dialog( "close" );
@@ -156,10 +162,10 @@ function fillSubmissionStatusTable(submissions) {
 	$("#submitted-rejected").empty();
 	$("#not-submitted").empty();
 	$(".status-button").button("disable");
-	var submittedAwaitingApprovalHtml = '<tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
-	var submittedRejectedHtml = '<tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
-	var notSubmittedHtml = '<tr><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
-	var submittedApprovedHtml = '<tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
+	var submittedAwaitingApprovalHtml = '<thead><tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr></thead>\n<tbody>';
+	var submittedRejectedHtml = '<thead><tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr></thead>\n<tbody>';
+	var notSubmittedHtml = '<thead><tr><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr></thead>\n<tbody>';
+	var submittedApprovedHtml = '<thead><tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr></thead>\n<tbody>';
 	for (var i = 0; i < submissions.length; i++) {
 		var html = '<tr id="submission-';
 		html += submissions[i].id;
@@ -189,11 +195,13 @@ function fillSubmissionStatusTable(submissions) {
 				submittedRejectedHtml += html;
 			} else {
 				submittedAwaitingApprovalHtml += html;
+				
 			}
 		} else {
 			notSubmittedHtml += html;
 		}
 	}
+	html +='</tbody>';
 	var submittedAwaitingApproval = $("#submitted-awaiting-approval");
 	submittedAwaitingApproval.html(submittedAwaitingApprovalHtml);
 	var submittedApproved = $("#submitted-approved");
@@ -205,6 +213,47 @@ function fillSubmissionStatusTable(submissions) {
 	addCheckboxButtonEnablers(submittedAwaitingApproval, $(".submitted-awaiting-approval-button"));
 	addCheckboxButtonEnablers(submittedRejected, $(".submitted-rejected-button"));
 	addCheckboxButtonEnablers(submittedApproved, $(".submitted-approved-button"));
+	
+	/*************001 starts  here	************/
+	
+	if(!$.fn.dataTable.isDataTable("#submitted-awaiting-approval")){
+		$('#submitted-awaiting-approval').DataTable( {
+		       searching : false,
+		       "bLengthChange": false,
+		       "processing": true,
+		       "bInfo" : false,
+		       "pageLength": 5
+		       //"bFilter": true
+		} );
+	}
+	if(!$.fn.dataTable.isDataTable("#submitted-approved")){
+		$('#submitted-approved').DataTable( {
+		       searching : false,
+		       "bLengthChange": false,
+		       "bInfo" : false,
+		       "pageLength": 5
+		       //"bFilter": true
+		} );
+	}
+	if(!$.fn.dataTable.isDataTable("#submitted-rejected")){
+		$('#submitted-rejected').DataTable( {
+		       searching : false,
+		       "bLengthChange": false,
+		       "bInfo" : false,
+		       "pageLength": 5
+		       //"bFilter": true
+		} );
+	}
+	if(!$.fn.dataTable.isDataTable("#not-submitted")){
+		$('#not-submitted').DataTable( {
+		       searching : false,
+		       "bLengthChange": false,
+		       "bInfo" : false,
+		       "pageLength": 5
+		       //"bFilter": true
+		});
+	}
+	/*************001 ends  here	************/
 }
 
 function addCheckboxButtonEnablers(context, buttons) {
@@ -345,6 +394,7 @@ $(document).ready( function() {
 	  height: 450,
 	  width: 400,
 	  modal: true,
+	  dialogClass: 'success-dialog',
 	  buttons: {
 	    "Update": function() {
 	      updateSurveyForReal( lastUpdateCommit );
@@ -365,6 +415,7 @@ $(document).ready( function() {
 		height: 300,
 		width: 350,
 		modal: true,
+		dialogClass: 'success-dialog',
 		buttons: [{
 			text: "Download",
 			click: function() {
@@ -383,7 +434,7 @@ $(document).ready( function() {
 		downloadSurvey();
 	});
 	
-	$("#btDownloadSurvey").button().click(function(event) {
+	$("#btDownloadSurvey").click(function(event) {
 	      event.preventDefault();
 	      openDownloadSurveyDialog();
 	});

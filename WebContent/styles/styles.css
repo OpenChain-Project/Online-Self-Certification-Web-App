@@ -19,6 +19,9 @@ input.text {
 	margin-bottom:12px; 
 	width:95%; 
 	padding: .4em; 
+	border: none;
+    border-bottom: 2px solid #b7b7b7;
+    background: none;
 }
 fieldset { 
 	padding:0; 
@@ -46,18 +49,19 @@ fieldset {
 	
 }
 
-#footer-outer {
+ #footer-outer {
     color: #ccc;
     position: relative; 
     z-index: 10;
-    background-color: #252525;
+    background-color: #000;
     margin: 20px 0px;
-}
+} 
+
+
 
 #footer-outer #copyright {
     padding: 10px 5px;
-    font-size: 12px;
-    background-color: #1c1c1c;
+    font-size: 14px;
     color: #777;
 }
 
@@ -70,7 +74,7 @@ td, th {
 }
 
 table tr:nth-child(even) {
-	 background: #CCC
+	 background: #f9f9f9;
 
 }
 table tr:nth-child(odd) {
@@ -100,7 +104,9 @@ table tr:nth-child(odd) {
 .number_cell {
     text-align:center;
 }
-
+/*.answer_cell {
+    text-align: end;
+}*/
 .yesno-switch {
     font-family: sans-serif;
     font-size: 12px;
@@ -143,7 +149,6 @@ table tr:nth-child(odd) {
 }
 
 .choice-no:checked ~ .yesno-switch span:after {
-    color: #fff;
     content: "\2718";
     /* that's an x mark */
 }
@@ -237,16 +242,15 @@ table tr:nth-child(odd) {
     text-align:center;
     margin: 2px 2px 2px 2px;
     padding: 2px 2px 2px 2px;
+    width:15px;
 }
 
 /* Navbar */
 .navbar {
 	display: inline-block;
-	background-color: white;
+	background-color: #222;
 	width: 100%;
-    padding: 1px;
-    overflow: auto;
-}
+	padding: 1px;}
 
 .navbar button {
     padding: 3px !important;
@@ -256,6 +260,7 @@ table tr:nth-child(odd) {
 	background: none;
 	display: inline-block;
 	list-style: none;
+	font-weight: bold;
 }
 
 #usermenu {
@@ -265,25 +270,15 @@ table tr:nth-child(odd) {
 	width: 120px;
 }
 #user-dropdown_launcher {
-	display: inline-block;
+	display: inline-block;cursor: pointer;
+    padding-top: 6px;
 }
 #user-dropdown_menu {
-	position: absolute;
-	margin-top: 3px !important;
+	margin-top: 7px !important;
 }
-#languagemenu {
-    width: 120px;
-}
-#language-dropdown_container {
-    width: 120px;
-}
-#language-dropdown_launcher {
-    display: inline-block;
-}
-#language-dropdown_menu {
-    position: absolute;
-    margin-top: 3px !important;
-}
+#user-dropdown_menu > li {
+	display:inline;
+} 
 .navlink {
 	font-size: 14px;
 	padding: 3px;
@@ -291,30 +286,23 @@ table tr:nth-child(odd) {
 .admin-buttons {
 	padding:3px;
 	margin:auto; 
-	text-align:center;
+	width: 50%;
 }
 .tablebullet {
-    padding-left:3em
+    padding-left:3em !important;
+    
 }
 
 /* admin page */
 #manage-survey {
 	padding:3px;
     margin:auto; 
-    text-align:center;
-    width: 90%;
+    width: 50%;
 }
 /* admin page inputs */
-label.inlineLabel {
-	display: inline;
-}
-#gitTagLabel {
+.fileupload {
 	display: inline;
 	padding: .4em;
-}
-#gitCommit {
-	display: inline;
-    padding: .4em;
 }
 .specversion {
 	display: inline;
@@ -350,9 +338,7 @@ label.inlineLabel {
 	font-size: 11px;
 }
 
-#pwform {
-	width: 600px;
-}
+
 
 .cert-table {
 	border: 1px solid black;
@@ -362,7 +348,7 @@ label.inlineLabel {
 }
 
 .cert-table-cell {
-	border: 1px solid black;
+	border: 1px solid #ddd;
     margin: 12px 6px 6px 6px;
     padding: 2px 2px 2px 6px;
     width: auto;
@@ -372,20 +358,3 @@ label.inlineLabel {
 	width: 100%;
 }
 
-.file-input-button {
-  position: relative;
-  overflow: hidden;
-  display: inline-block;
-}
-
-.file-input-button input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 0;
-  opacity: 0;
-  -ms-filter: 'alpha(opacity=0)';
-  font-size: 200px !important;
-  direction: ltr;
-  cursor: pointer;
-}

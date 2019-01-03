@@ -13,47 +13,48 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  *
-*/
+ *
+/* Functions added by ViSolve
+ * 001:  Yes No Images are added based on Radio button checked
+ * 
+ */
 
 var submitted, resetDialog, selectVersionDialog;
 
 function getQuestionFormHtml(questions) {
-	var html = '<table class="questiontable ui-corner-all">\n<col class="number_col" /><col class="question_col" /><col class="answer_col" /><col class="answer_col" />\n<col class="number_col" />\n';
+	console.log(questions);
+	var html = '<div ><table class="questiontable ui-corner-all table table-hover ">\n';
 	var inSubQuestions = false;
-	html += '<th class="number_col">#</th><th class="question_col">Question</th><th class="answer_col">Answer</th><th class="answer_col"></th><th class="number_col">Spec Ref</th>\n';
+	//html += '<tr class="bord"><th class="answer_cell"></th><th class="answer_cell">Answer</th><th class="answer_cell"></th><th class="answer_cell">Question</th></tr>\n';
 	for (var i = 0; i < questions.length; i++) {
 		var type = questions[i].type;
 		var isSubQuestion = (questions[i].hasOwnProperty('subQuestionOfNumber'));
-		html += '<tr><td>'+questions[i].number + ':</td>';
-		if (isSubQuestion && inSubQuestions) {
-			html += '<td class=tablebullet>&bull;&nbsp;';
-		} else {
-			html += '<td>';
-		}
-		html+= questions[i].question + '</td>';
-		
+		html += '<tr class="bord_"><td class="answer_cell" style="width:100px;">';
+		//<span><img id="yes_no_img" class="img-fluid"  /></span></td>';
+		html += '<span> <i class="fa yes_no_img"></i></span></td>';
 		if (type == 'SUBQUESTIONS') {
 			html += '<td class="answer_cell"></td>';
 			html += '<td class="answer_cell"></td>';
 			inSubQuestions = true;
-		} else if (type=="YES_NO_NA") {
+		} 
+		else if (type=="YES_NO_NA") {
 			html += '<td class="answer_cell"><span>';
 			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"  class="choicena-yes';
 			if (isSubQuestion && inSubQuestions) {
 				html += ' subquestion-of-';
-				html += questions[i].subQuestionOfNumber;
+				html += questions[i].subQuestionNumber;
 			}
 			html += '"  value="yes" />';		
 			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no" class="choicena-no';
 			if (isSubQuestion && inSubQuestions) {
 				html += ' subquestion-of-';
-				html += questions[i].subQuestionOfNumber;
+				html += questions[i].subQuestionNumber;
 			}
 			html += '" value="no" />';
 			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_na" class="choicena-na';
 			if (isSubQuestion && inSubQuestions) {
 				html += ' subquestion-of-';
-				html += questions[i].subQuestionOfNumber;
+				html += questions[i].subQuestionNumber;
 			}
 			html += '" value="na" />';
 			html += '<span class="yesnona-switch">';
@@ -66,53 +67,61 @@ function getQuestionFormHtml(questions) {
 			if (!isSubQuestion) {
 				inSubQuestions = false;
 			}
-		} else {
-			html += '<td class="answer_cell"><span>';
-			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"  class="choice-yes';
+		} else 
+			{
+			
+			
+			html += '<td class="answer_cell pad_cell"><div class="form-check custom-checkbox"><label class="form-check-label">';
+			
+			html += '<input type="radio" class="form-check-input custom-radiobtn" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"';
 			if (isSubQuestion && inSubQuestions) {
 				html += ' subquestion-of-';
-				html += questions[i].subQuestionOfNumber;
+				html += questions[i].subQuestionNumber;
 			}
-			html += '"  value="yes" />';		
-			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no" class="choice-no';
+			html += '"  value="yes" />Yes';
+			html += '</label></div>';
+			
+			html += '<div class="form-check custom-checkbox"><label class="form-check-label">';		
+			html += '<input type="radio" class="form-check-input custom-radiobtn" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no"';
 			if (isSubQuestion && inSubQuestions) {
 				html += ' subquestion-of-';
-				html += questions[i].subQuestionOfNumber;
+				html += questions[i].subQuestionNumber;
 			}
-			html += '" value="no" />';
-			html += '<span class="yesno-switch">';
-			html += '<label for="answer-' + questions[i].number + '_yes">Yes</label>';		
-			html += '<span></span>';
-			html += '<label for="answer-' + questions[i].number + '_no">No</label>';
-			html += '</span></span></td>';
-			html += '<td class="answer_cell"></td>';
+			html += '" value="no" />No';
+			html += '</label></div></td>';
+			
+			html += '<td class="answer_cell pad_cell"></td>';
 			if (!isSubQuestion) {
 				inSubQuestions = false;
 			}
 		}
-		html += '<td class="number_cell">';
-		if (questions[i].specReference != null && questions[i].specReference.length > 0) {
-			html += questions[i].specReference[0];
-			for (var j = 1; j < questions[i].specReference.length; j++) {
-				html += ',';
-				html += questions[i].specReference[j];
-			}
+		console.log("ssss",isSubQuestion,inSubQuestions);
+		if (isSubQuestion) {
+			html += '<td class="tablebullet answer_cell"> <p id="question-pad" class="table-bullet" >';
+			//html +='&#9654;';
+		} else {
+			html += '<td class="answer_cell pad_cell"><p id="question-pad">';
 		}
-		
-		html += '</td>';
+		html+= questions[i].question + '</p></td>\n';
+
 		html += '</tr>\n';
 	}
-	html += '</table>\n';
+	html += '</table>\n</div>';
+	
 	return html;
 }
+
+
 function getSurvey() {
 	var certForm = $("#CertForm");
+	
 	if (!certForm.length ) {
 		return;
 	}
 	if (certForm.is(':ui-accordion')) {
 		certForm.accordion("destroy");
 	}
+
 	certForm.html('Loading <img src="resources/loading.gif" alt="Loading" class="loading" id="survey-loading">');
 	$.ajax({
 	    url: "CertificationServlet",
@@ -139,13 +148,13 @@ function getSurvey() {
 	    	for ( var i = 0; i < sections.length; i++ ) {
 	    		var divReference = 'section_' + sections[i].name;
 	    		html += '<h3>' + sections[i].name + ': ' + sections[i].title + 
-	    		'<div style="float:right" id="h_'+divReference+'">[NUM] answered out of [NUM]</div>'+'</h3>\n';
-	    		html += '<div id="' + divReference + '">\n';
+	    		'<div  style="float:right" id="h_'+divReference+'">[NUM] answered out of [NUM]</div>'+'</h3>\n';
+	    		html += '<div id="' + divReference + '" class="no-ofquestion">\n';
 	    		html += getQuestionFormHtml(sections[i].questions);
 	    		html += '</div>\n';
 	    	}
 	    	certForm.html(html);
-	    	certForm.accordion({heightStyle:"content"});
+	    	certForm.accordion({heightStyle:"content",collapsible: true});
 	    	// For each section, set any answers, tally the num answered, and 
 	    	// set set the button click to keep track of the numbers
 	    	for ( var i = 0; i < sections.length; i++ ) {
@@ -156,11 +165,16 @@ function getSurvey() {
 		    			var questionNumber = id.substring(7,id.lastIndexOf('_'));
 		    			var myresponse = responses[questionNumber];
 		    			if (myresponse) {
+		    				var a = $(this).parent().parent().parent().parent().children(":first").children(":first").children(":first");
 		    				// Fill in the existing value
 		    				if (myresponse.answer == 'Yes' && $(this).attr('value') == 'yes') {
 		    					$(this).prop('checked',true);
+		    					//console.log($(this));
+		    					
+		    					a.addClass('fa-check-circle');
 		    				} else if (myresponse.answer == 'No' && $(this).attr('value') == 'no') {
 		    					$(this).prop('checked',true);
+		    					a.addClass('fa-times-circle-o');
 		    				} else if (myresponse.answer == 'NotApplicable' && $(this).attr('value') == 'n/a') {
 		    					$(this).prop('checked',true);
 		    				} else {
@@ -240,6 +254,12 @@ function updateSectionQuestionCounts(section) {
 		}
 	});
 	updateSectionHtml(section,numQuestions,numAnswered);
+	
+	if (numQuestions == numAnswered){
+		$("#"+$(section).attr('aria-labelledby')).addClass("all-answered");
+		console.log();
+		
+	}
 }
 
 function saveAll( showDialog ) {
@@ -273,13 +293,14 @@ function saveAll( showDialog ) {
 		    			resizable: false,
 		    		    height: 200,
 		    		    width: 200,
+		    		    dialogClass: 'success-dialog',
 		    		    modal: true,
 		    		    buttons: {
 		    		        "Ok" : function () {
 		    		            $( this ).dialog( "close" );
 		    		        }
 		    		    }
-		    		}).text( "Save Successful" );
+		    		}).text( "Saved Successful" );
 	    		}
 	    	} else {
 	    		displayError(json.error);
@@ -314,6 +335,7 @@ function unsubmit() {
 	    		    height: 200,
 	    		    width: 200,
 	    		    modal: true,
+	    		    dialogClass: 'success-dialog',
 	    		    buttons: {
 	    		        "Ok" : function () {
 	    		            $( this ).dialog( "close" );
@@ -366,6 +388,7 @@ function finalSubmission() {
 	    		    height: 200,
 	    		    width: 200,
 	    		    modal: true,
+	    		    dialogClass: 'success-dialog',
 	    		    buttons: {
 	    		        "Ok" : function () {
 	    		            $( this ).dialog( "close" );
@@ -405,6 +428,7 @@ $(document).ready( function() {
 			    height: 270,
 			    width: 350,
 			    modal: true,
+			    dialogClass: 'success-dialog',
 			    buttons: [{
 			    		text: "Agree",
 			    		click: function () {
@@ -470,6 +494,7 @@ $(document).ready( function() {
 	    height: 250,
 	    width: 330,
 	    modal: true,
+	    dialogClass: 'success-dialog',
 	    buttons: [{
 	    		text: "Yes",
 	    		click: function () {
@@ -549,6 +574,7 @@ $(document).ready( function() {
 	    height: 250,
 	    width: 330,
 	    modal: true,
+	    dialogClass: 'success-dialog',
 	    buttons: [{
 	    		text: "OK",
 	    		click: function () {
@@ -594,4 +620,30 @@ $(document).ready( function() {
 	    
 	});
 	getSurvey();
+});
+
+
+
+$(document).ready(function () {
+
+	/* 001 Starts here */
+	$(document).delegate('.form-check-input','click', function($this){ 
+  	
+  	var appendimg = $(this).parent().parent().parent().parent().children(":first").children(":first").children(":first");
+
+      if ($this.target.value == 'yes') {
+      	
+        appendimg.removeClass('fa-times-circle-o');
+      	appendimg.addClass('fa-check-circle');
+      }
+      else if ($this.target.value == 'no') {
+        appendimg.removeClass('fa-check-circle');
+        appendimg.addClass('fa-times-circle-o');
+      }
+      
+  });
+	
+	/* 001 ends here */
+	
+	 
 });

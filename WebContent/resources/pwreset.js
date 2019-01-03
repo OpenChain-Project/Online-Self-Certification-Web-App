@@ -1,5 +1,5 @@
 function resetPassword() {
-	var username = $("#reset-username");
+	var username = $("#reset-acc-username");
 	var password = $("#reset-pass");
 	var passwordVerify = $("#reset-pass-verify");
 	tips = $(".validateTips");
@@ -42,8 +42,9 @@ function resetPassword() {
 
 
 $(document).ready( function() {
-	$("#pwform").find("form").on("submit", function(event) {
-		event.preventDefault();
-		resetPassword();
-	});
+//	$("#pwform").find("form").on("submit", function(event) {
+//		event.preventDefault();
+//		resetPassword();
+//	});
+	$(document).on('click', '#reset-user-password', function(){resetPassword();});
 });

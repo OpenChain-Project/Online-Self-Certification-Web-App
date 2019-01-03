@@ -1,0 +1,88 @@
+<!-- 
+Author(s): ViSolve 03/01/2019
+Description: A new Responsive Template for login 
+001: Responsive Navigation bar.
+002: Modal for reset password.
+ -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OpenChain Self Certification</title>
+    <link rel="stylesheet" href="styles/openchain.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="resources/jquery-ui/jquery-ui.min.css">
+    <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="resources/jquery.jui_dropdown.css">
+    <link rel="stylesheet" href="styles/bootstrap.min.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="styles/font-awesome.min.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="styles/newstyle.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="resources/jquery-ui/external/jquery/jquery.js"></script>
+    <script src="resources/jquery-ui/jquery-ui.min.js"></script>
+    <script src="resources/jquery.jui_dropdown.min.js"></script>
+    <script src="resources/navbar.js"></script>
+    <script src="resources/bootstrap.min.js"></script>
+  </head>
+  <body>
+  
+      <!-- 001 Starts here -->
+	    <div id="topnav"></div>
+	  <!-- 001 ends here --> 
+    <div class="container">
+	    <div id="TitleArea">
+	        <h1>OpenChain Self Certification</h1>
+	    </div>
+	    <h3 class="text-center sub-heading">Welcome Back</h3>		
+		<div class="form-group">
+			<div class="wrap">
+			    <form>
+			  		<p class="validateTips"></p>
+				    <div class="row">
+				      <input type="text" class="form-control custom-input" name="login-username" id="login-username" required>
+				      <label class= "custom-label" for="login-username">Username</label>
+				    </div>
+				    <div class="row">
+				      <input type="password" class="form-control custom-input"  name="login-password" id="login-password" required>
+				      <label class= "custom-label" for="login-password">Password</label>
+				    </div>
+				    <!-- 002 starts here -->
+				    <div class="row">
+				     	<a data-toggle="modal" data-target="#resetpasswordModal" class="reset-password">Reset Password</a>
+				     </div>
+				    <!-- 002 starts here -->>
+				     <div class="row">
+					     <div class="ui-dialog-buttonset">
+					     	<button type="button" class="btn btn-login btn-md" id="login-button">Login</button>
+					     	<button type="button" class="btn btn-cancel btn-md" id="index-home"  >Cancel</button>
+					     </div>
+				     </div>
+			   </form>
+		   	</div>
+		 </div>
+  
+  
+		
+	    <div id="user-dropdown_signin"></div>
+	    <div id="errors"></div>
+	    <div id="status"></div>
+	    <div id="resendveify"></div>
+    </div>
+        
+      <!--  <div id="reset-password">
+            <form name="reset-pw-form" id="reset-pw-form">
+            <p class="validateTips"></p>
+            <fieldset>
+                <label for="reset-username">Username</label>
+                <input type="text" name="reset-username" id="reset-username" class="text ui-widget-content ui-corner-all">
+                 <label for="reset-email">Email</label>
+                <input type="text" name="reset-email" id="reset-email" class="text ui-widget-content ui-corner-all">
+               Allow form submission with keyboard without duplicating the dialog button
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div> -->
+    <div id="footer-outer"></div> 
+  </body>
+</html>

@@ -1,0 +1,110 @@
+<!-- 
+Author(s): ViSolve 03/01/2019
+Description: A new Responsive Template to receive the user inputs during Signup. 
+001: Responsive Navigation bar.
+002: New Form for SignUp.
+ -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OpenChain Self Certification</title>
+    <link rel="stylesheet" href="styles/openchain.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="resources/jquery-ui/jquery-ui.min.css">
+    <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="resources/jquery.jui_dropdown.css">
+    <link rel="stylesheet" href="styles/bootstrap.min.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="styles/font-awesome.min.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="styles/newstyle.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="resources/jquery-ui/external/jquery/jquery.js"></script>
+    <script src="resources/jquery-ui/jquery-ui.min.js"></script>
+    <script src="resources/jquery.jui_dropdown.min.js"></script>
+    <script src="resources/navbar.js"></script>
+    <script src="resources/bootstrap.min.js"></script>
+  </head>
+  <body>
+     <!-- 001 Starts here -->
+	    <div id="topnav"></div>
+	  <!-- 001 ends here -->
+	  
+    <div class="container">
+	    <div id="TitleArea">
+	        <h1>OpenChain Self Certification</h1>
+	    </div>
+	    <h3 class="text-center sub-heading">Sign Up</h3>		
+	    <!-- 002 Starts here -->
+		<div class="form-group">
+			<div class="wrap">
+			    <form>
+			  		<p class="validateTips"></p>
+				    <div class="row custom-row">
+					    <div class="col-md-6 col-sm-12 custom-col">
+					    	<input type="text" name="signup-name" id="signup-name" class="form-control custom-input"  required>
+				      		<label class= "custom-label" for="signup-name">Name</label>
+					    </div>
+					    <div class="col-md-6 col-sm-12 custom-col">
+					    	<input type="text" name="signup-email" id="signup-email" class="form-control custom-input"  required>
+				      		<label class= "custom-label" for="signup-email">Email</label>
+					    </div>
+				    </div>
+				    <div class="row custom-row">
+					    <div class="col-md-6 col-sm-12 custom-col">
+					    	<input type="text" name="signup-organization" id="signup-organization" class="form-control custom-input" required>
+				      		<label class= "custom-label" for="signup-organization">Organization</label>
+					    </div>
+					    <div class="col-md-6 col-sm-12 custom-col">
+					    	<input type="text" name="signup-username" id="signup-username" class="form-control custom-input"  required>
+				      		<label class= "custom-label" for="signup-username">Username</label>
+					    </div>
+				    </div>
+				    <div class="row custom-row">
+					    <div class="col-md-6 col-sm-12 custom-col">
+					    	<input type="password" name="signup-password" id="signup-password" class="form-control custom-input"   required>
+				      		<label class= "custom-label" for="signup-password">Password</label>
+					    </div>
+					    <div class="col-md-6 col-sm-12 custom-col">
+					    	<input type="password" name="signup-passwordverify" id="signup-passwordverify" class="form-control custom-input"   required>
+				      		<label class= "custom-label" for="signup-passwordverify">Re-enter Password</label>
+					    </div>
+				    </div>
+				    
+				    
+				    <div class="row custom-row">
+				      <textarea rows="3" name="signup-address" id="signup-address" class="form-control custom-input" form="signup-form" required></textarea>
+				      <label class= "custom-label" for="signup-address">Organization Postal Address</label>
+				    </div>
+				    <div class="row">
+					    <div class="form-check">
+						    <input type="checkbox" name="approval-use-name-email" id="approval-use-name-email" class="form-check-input" >
+						    <label class="form-check-label custom-lable checkbox-label" for="approval-use-name-email">My name and email may be shared on conformance page of the OpenChain website</label>
+						</div>
+				    </div>
+				    <div class="row">
+				    
+					    <div class="form-check mr-40">
+						    <input type="checkbox" name="read-terms" id="read-terms" class="form-check-input" >
+						    <label class="form-check-label custom-lable checkbox-label" for="read-terms">I agree to the Linux Foundation <a href="https://www.openchainproject.org/terms">Terms of Use</a> and <a href="https://www.openchainproject.org/privacy">Privacy Policy</a></label>
+						</div>
+				    </div>
+				     <div class="row">
+					     <div class="ui-dialog-buttonset">
+					     	<button type="button" class="btn btn-login btn-md" id="signup-button">Sign Up</button>
+					     	<button type="button" class="btn btn-cancel btn-md" id="index-home">Cancel</button>
+					     </div>
+				     </div>
+			   </form>
+		   	</div>
+		 </div>
+		 <!-- 002 ends here -->
+  
+	    <div id="errors"></div>
+	    <div id="status"></div>
+	    <div id="resendveify"></div>
+    </div>
+        
+       
+    <div id="footer-outer"></div> 
+  </body>
+</html>

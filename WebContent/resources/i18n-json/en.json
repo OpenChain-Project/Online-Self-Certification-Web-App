@@ -1,0 +1,23 @@
+{
+  "@metadata": {
+    "authors": [
+      "Ilya"
+    ],
+    "last-updated": "2016-10-25",
+    "locale": "en"
+  },
+  "title": "OpenChain Self Certification",
+  "welcome": "Welcome",
+  "intro-content": "The OpenChain Specification represents a core set of requirements a quality FOSS compliance program must satisfy. It fosters efficient and effective compliance of open source licenses across the supply chain. By self-certifying, participants are able to confirm they are in compliance with the Specification’s requirements.",
+  "gs": "Getting Started",
+  "apps": "Applicants confirm their understanding of the OpenChain Specification and the need to complete Self-Certification to become OpenChain Conformant. The Online Self-Certification requires you to:",
+  "li1": "Fulfill all requirements set forth in the ",
+  "a": "Specification.",
+  "li2":"Create an account by selecting sign-up in the user menu.",
+  "li3":"Name a contact person to handle inquiries.",
+  "li4":"Have an authorized representative complete the web-based Online Self-Certification by answering all the questions.",
+  "li5":"Fill out the submission form.",
+  "li6":"Archive a Reference Copy of all Verification Artifacts as a record in support of the Online Self-Certification."
+  
+
+}

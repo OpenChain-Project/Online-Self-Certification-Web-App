@@ -1,0 +1,745 @@
+/*==================================================================
+		 					CSS Added by ViSolve 
+=====================================================================*/
+       
+/**************************** Header CSS ******************************/
+
+/* Black Background header */
+
+.nav-bg-dark{
+	background-color: #222;
+	}
+
+/* Logo */
+
+.openchain-logo{
+	width:190px;
+	}
+
+/*Header Icons */	
+
+.fa-language, fa-caret-down{
+	color:white
+	}
+
+.language-setup{
+	font-size: 25px !important;
+    margin-top: 6px;
+    margin-right: 5px;
+    color: white;
+    }
+
+ /*Header Menu margin align */ 
+   
+ .mr-auto > li {
+ 	margin-right:10px;
+ 	}  
+ 
+ /*Header attributes */	
+ 
+ .ui-widget-header {
+    color: #333;
+    font-weight: bold;
+    text-align: center;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    font-size: 1.3rem;
+	}
+
+/* Custom container Padding*/	
+
+.container_padding {
+    padding: 0.4em 0;
+	}
+
+/* Navigation Menus like login,update profile,signout,signup*/	
+
+.user-nav{
+	margin-right: 30px;
+	color: white !important;
+	} 
+	
+/* color changes on header menu hover */	
+
+.user-nav:hover, .nav-link:hover {
+	text-decoration: none;
+	color:#4791FF !important;
+	}
+	
+/* account, Language menu attribues */
+
+ .dropdown {
+    position: relative;
+    display: inline-block;
+    cursor:pointer;
+    margin-right: 15px;
+    color: white;
+	}
+
+/* account, Language sub - menu attribues */	
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #222;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    z-index: 1;
+    width: 220px;
+    right:0px;
+ 	}
+ 	
+.dropdown-content > ul >li{
+	margin-bottom: 5px;
+	}
+	
+.dropdown-content > ul >li > a{
+	cursor:pointer;
+	font-weight: normal;
+	}
+
+.dropdown:hover .dropdown-content {
+	 display: block;
+	}
+.language-setup-dropdown{
+	display:grid;
+	}
+.language-setup-dropdown >li :hover {
+	color: #4791FF !important;
+}	
+.update-profile-dropdown{
+	width:182px;
+	}
+	
+.update-profile-dropdown > ul{
+	padding:0px;
+	}
+	
+.ui-state-active {
+	border: none !important;
+    background: #f77c52 !important;
+    color: white !important;
+	text-decoration:none;
+    }
+
+
+/* Color changes on hovering over admin menus */   
+ 
+#adminlink > li > a:hover, #surveylink > li >a:hover {
+	text-decoration: none;
+	color: #4791FF !important;
+	}
+	
+/* Admin user menus */    
+
+#adminlink, #surveylink{
+	margin-top:7px;
+	text-decoration: none;
+	font-size: 15px;
+    padding: 3px;
+    font-weight: normal;
+    float: left;
+	}
+
+.mb-0{
+	margin-bottom:0px;    
+	padding-top: 15px;
+	}
+	
+
+	
+/* Account menus like signin, signup, update profile and signout */
+	
+#user-dropdown_menu{
+	padding-left: 10px !important;
+	}
+/**************************** Header CSS ******************************/
+
+
+
+
+
+/******************************* FOOTER CSS ******************************/
+	
+#footer-outer{
+	  position:absolute; 
+	  bottom:0; 
+	  width:100%; 
+	  height:auto;
+	  background:black; 
+	  margin-bottom:0px;
+	}
+	
+.bottom-zero{
+	margin-bottom:0px;
+	}
+/******************************* FOOTER CSS ******************************/
+
+  	
+  	
+  	
+  	
+/******************************** INDEX CSS *********************************/
+
+#TitleArea{
+	text-align: center;
+    margin: 20px 0px;
+	}
+	
+.mr-40{
+	margin-top:40px;margin-bottom:30px;	
+	}
+
+ /* setting popup messages all above the screen */ 	
+
+#status, #error{
+	z-index:9999;
+	}
+.ui-dialog-titlebar{
+ 	border: none;
+    background: none;
+    }
+    
+.ui-widget{
+   	  border: none !important;
+      /*box-shadow: 2px 4px 15px #464646;*/
+    }
+    
+.ui-state-error{
+    z-index:9999 !important;
+    border: 1px solid #ddd !important;
+    background: white;
+    box-shadow: none;
+    }
+    
+.ui-dialog, .ui-corner-all, .ui-widget, .ui-widget-content, .ui-dialog-buttons, .ui-draggable{
+    z-index:9999 !important;
+    }
+ 
+ /* set transparent background for input field */
+ 
+ input, input[type="text"], input[type="password"], input[type="url"], input[type="email"], input[type="tel"], textarea{
+ 	background-color: transparent !important;
+ }
+    /*** Custom Text field */
+input[type="text"]:focus,  input[type="password"]:focus, textarea:focus {
+    background: none !important;
+    border: none !important;
+    border-bottom: 2px solid #009688 !important;
+    box-shadow: none !important;
+    }
+ 
+ /*form margin */
+.wrap {
+	  width: 50%;
+	  margin: 0 auto;
+	}
+/** Custom Row */
+
+.row{
+  margin: 30px 0; 
+  position: relative; 
+	}
+
+/*make label absolute and position it on input area*/
+label{
+	  font-size: 15px;
+	  top: 6px;
+	  left: 0;
+	  -webkit-transition: .1s;
+	  -o-transition: .1s;
+	  transition: .1s;
+	}
+
+.custom-lable{
+	position: absolute;
+    top: -5px !important;
+    left: 50px;
+    font-weight: normal !important;
+    width: 500px;
+    color: black !important;
+	}
+
+input, textarea {
+	  padding: 15px 0 15px;
+	  width: 100%;
+	  border: none;
+	  border-bottom: 3px solid #34495e;
+	  font-size: 20px;
+	  background: #ecf0f1;
+	}
+
+input:focus, textarea:focus{
+	  outline: none;
+	  border-color: none;
+	}
+
+input:valid ~ label, /*detects if input has valid input*/
+textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{ 
+	  top: -30px;
+	  color: #009688;
+	}
+.form-control[readonly] ~ label, .form-control[placeholder] ~ label {
+	cursor: not-allowed; 
+	top: -30px;
+	color: #009688;
+	}
+.custom-label{
+	position:absolute;
+	}
+.custom-input{
+ 	border: none !important;
+    border-bottom: 1px solid #607D8B !important;
+    margin-bottom: 20px;	
+    border-radius: 0px;
+    }
+    
+ /* Custom Buttons */
+.btn-login {
+    color: #fff;
+    background-color: #009688;
+    border-color: #009688;
+	}
+.btn-cancel {
+    color: #fff;
+    background-color: #de5628;
+    border-color: #de5628;
+	}
+.reset-password{
+	color: #de5628 !important;
+    font-size: small;
+    cursor: pointer;
+	}
+ 
+ /* Custom Column*/
+ .custom-col{
+ 	padding: 0px;
+    padding-right: 15px;
+    }
+  
+  /* color of accordion header changes when all the questions are answered */
+.all-answered {
+	    background-color: #4CAF50 !important;
+	    color:white !important;
+}
+/******************************** INDEX CSS *********************************/
+
+
+
+ 
+ /********************************* ADMIN CSS *******************************/
+ 
+ #btDownloadSurvey, #btUploadSurvey, #btUpdateSurvey, #btApprove, #btReject, #btSaveAnswers, #btSaveAndSubmit, #btUnSubmit, #btDownloadAnswers, #btResetAnswers, #btSelectVersion{
+ 	margin-bottom:15px;
+ 	}
+ 	
+ /* set border as non for modal */	
+ 
+ .modal-header, .modal-footer{
+ 	border: none;
+ 	}   
+ 	
+.mr-100{
+	margin-bottom:100px;
+	}
+.git-tag{
+	display:inline
+	}
+.git-select{
+	width:60% !important;
+	}
+.mr-bt15{
+	margin-bottom:15px;
+	}
+/********************************* ADMIN CSS*******************************/
+
+
+
+
+/********************************* SURVEY CSS********************************/
+
+/* sub heading */
+.section-heading{
+	padding: 13px 20px !important;
+    border: 1px solid #ddd !important;
+    background: #337ab7 !important;
+    color: white !important;
+       
+    }
+    
+.section-heading:focus {
+	 outline: none;
+    }
+    
+#CertForm{
+	box-shadow:none;
+   }
+
+.no-ofquestion{
+	padding:0px;width: 100%;
+   }
+   
+.ui-accordion .ui-accordion-header {
+    display: block;
+    cursor: pointer;
+    position: relative;
+    margin: 2px 0 0 0;
+    padding: .9em .7em .9em .7em;
+    font-size: 100%;
+    background-color: #0499a5 ;
+    color: white;
+    }
+    
+.ui-accordion .ui-accordion-content{
+	padding:0px !important;
+	}
+	
+.answer_cell input[type="radio"] {
+    display: block !important;
+    width: 23px !important;
+    }
+    
+.pad_cell{
+	padding-top: 2.8% !important;
+	}
+	
+/* yes no Image append */
+		
+.yes_no_img{
+	font-size: 50px;
+    margin: 10px;
+	
+}
+.table-bullet:before{
+    content:"\2022";
+    color:black;
+}
+/*** Fa icon (Yes no) Append **/
+.fa-check-circle{
+	color:#4CAF50;
+	}
+.fa-times-circle-o{
+	color:#de5628;
+	}
+.custom-radiobtn{
+	width:50% !important;
+	}
+/* Error Status Model Css */
+
+.ui-widget.success-dialog {
+    font-family: Verdana,Arial,sans-serif;
+    font-size: .8em;
+}
+
+.ui-widget-content.success-dialog {
+    background: #F9F9F9;
+    color: #222222;
+}
+
+.ui-dialog.success-dialog {
+    background-color: white !important;
+    animation : example 0.5s;
+    top:395.5px !important;
+    }
+
+@keyframes example 
+{
+  0%   {top:-245.5px;}
+  100% {top:395.5px;}
+}
+
+.ui-dialog.success-dialog .ui-dialog-content {
+    background: none repeat scroll 0 0 transparent;
+    border: 0 none;
+    overflow: auto;
+    position: relative;
+    font-size: 11pt;
+    margin: 0;
+    height: auto !important;
+}
+
+.ui-dialog.success-dialog .ui-widget-header {
+    font-weight: bold !important;
+    font-size: 20px !important;
+    margin: 20px 0px;
+}
+
+.ui-dialog.success-dialog .ui-icon {
+    background-color: #57acb3 !important;
+    border: none !important;
+}
+
+.ui-dialog.success-dialog .ui-dialog-titlebar {
+    padding: 0.1em .5em;
+    position: relative;
+    font-size: 1em;
+}
+
+.ui-dialog.success-dialog .ui-dialog-titlebar-close{
+	background-color: transparent;
+	border: medium none;
+}
+
+/* custom ok button in Error dialog */
+
+.ui-dialog.success-dialog .ui-dialog-buttonpane button {
+    cursor: pointer;
+    background-color: #8BC34A;
+    color: white;
+    border: none !important;
+    font-family: unset;
+    font-size: small;
+    padding: 6px 15px;
+    border-radius: 5px;
+    
+}
+
+.ui-dialog .ui-dialog-buttonpane{border:none;}
+
+.table-responsive {
+    overflow: hidden !important;
+}	
+/*************************************** SURVEY CSS********************************************/
+
+
+
+
+
+/************************************* Comforming Organisation pages ************************/
+
+/*Custom select */
+
+#certified-table_filter{
+	text-align: right;
+    padding-right: 20px;
+}
+
+.custom-select-sm{
+	    width: 40% !important;
+}
+
+.page-item.active .page-link {
+    z-index: 1;
+    color: #fff;
+    background-color: #009688 !important;
+    border-color: #009688 !important;
+}
+
+
+.dataTables_paginate{
+	display: flex;
+    justify-content: flex-end;
+}
+/************************************* Comforming Organisation pages ************************/
+
+
+
+
+
+
+/******************************************* Responsive Design ***********************************/
+
+ @media (max-width: 768px) {  
+ 	/*logo */
+	.openchain-logo {
+	    width: 80%;
+	}
+	
+	.navbar-nav{
+		display: grid;
+	}
+	
+	/*** Dropdown Menu ***/
+	#user-dropdown_menu > li{ 
+		margin-bottom:10px;
+	}
+	
+	/*** Form Wrapper **/
+	.wrap {
+		 width: 100%;
+		 margin: 0 auto;
+	     margin-bottom: 130px;
+	}
+	
+	.navbar{
+	padding: 1rem 1rem;
+	}
+	
+	/*** Sub menus ***/
+	.navbar ul li{
+		font-size: 14px;
+	}
+	
+	.mr-auto > li {
+    	margin-right: 0px;
+	}
+	
+	.user-nav {
+    	margin-right: 15px;
+	}
+	
+	#user-dropdown_menu{
+		padding-left: 20px;
+		padding: 0px !important;
+	}
+	
+	.language-setup {
+		margin-top: 15px;
+	}
+	
+	/**** FOOTER ***/
+	#footer-outer #copyright{
+		font-size: 12px;
+	}
+	
+	/**** Update Profile ***/
+	.update-profile-dropdown{
+    	left: 60px !important;
+    	width: 150px !important;
+    }
+    
+    .dropdown-content {
+    	right: -250px;
+    }
+    
+    .signin{
+        display:grid !important;
+	    position: relative;
+	    top: -20px;
+	}
+	
+    .table-responsive {
+    	overflow-x: auto !important;
+  	}
+  	
+  	.answer_cell{
+		border-top:none !important;
+		display:table-row-group;
+		font-size: 14px;
+	}
+	
+	.bord_{
+		border-top: 1px solid #dee2e6;
+		  
+	}
+	
+	.ui-accordion .ui-accordion-header{	
+		font-size: 95% !important;
+		height:70px !important;
+	}
+	
+	.pad_cell{
+		padding-top: 1.0% !important;
+		
+	}
+	
+	/* Padding for question */
+	#question-pad{
+		padding-top: 20px;
+		padding-left: 5px;
+	}
+	
+	.custom-checkbox{
+		margin-top: 10px;
+	}
+	
+}
+@media (max-width:425px){
+	.openchain-logo {
+	    width: 60%;
+	}
+	.custom-row{
+		margin:0px;
+	}
+	input:valid ~ label, textarea:focus ~ label, input:focus ~ label {
+    	top: -20px;
+    }
+    #TitleArea > h1{
+    	font-size: 21px;
+    }
+    .sub-title-area {
+    	font-size: 18px;
+    }
+    .sub-heading{
+    	font-size:20px;
+    }
+    
+    .mr-30{
+    	margin-top:30px;
+    }
+}
+
+@media (max-width: 320px) {
+	.checkbox-label{
+		width:250px;
+	}
+	.dropdown-content {
+	   left: -16px;
+    	width: 320px;
+	}
+	.dropdown-content > ul{
+		display:grid;
+	}
+	.ui-dialog.success-dialog{
+    	left: 3% !important;
+    }
+}
+@media (max-width: 375px) and (min-width: 321px) {
+	.checkbox-label{
+		width:290px;
+	}
+	.dropdown-content {
+		left: -16px;
+		width: 375px;
+     }
+	 .dropdown-content > ul{
+		display:grid;
+	 }
+	 
+}
+
+@media (max-width: 425px) and (min-width: 376px) {
+	.checkbox-label{
+		width:340px;
+	}	
+	.dropdown-content {
+		left: -16px;
+    	width: 425px;
+	}
+	.dropdown-content > ul{
+		display:grid;
+	}
+}
+
+@media (max-width: 768px) and (min-width: 426px) {
+	.checkbox-label{
+		width:500px;
+	}	
+	.openchain-logo {
+	    width: 32%;
+	}
+	 #TitleArea > h1{
+	 font-size: 30px;
+	 }
+	 .sub-title-area{
+	 font-size: 20px;
+	 }
+	
+}
+@media (max-width: 1024px) and (min-width: 769px) {
+	.dropdown-content {
+        left: -220px;
+	}
+	.update-profile-dropdown {
+	   left: 0px !important;
+	}
+}
+@media only screen and (max-width: 40em) {
+	  .custom-radiobtn{
+	  		width:10% !important;
+	  }
+ 
+}
+/******************************************* Responsive Design ***********************************/
+
+
+

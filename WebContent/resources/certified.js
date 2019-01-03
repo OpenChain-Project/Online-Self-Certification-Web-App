@@ -1,3 +1,7 @@
+/**
+ * Functions added by visolve
+ * 001: Pagination for Table. Note: Include DataTable library files
+ */
 function loadCertifiedTable() {
 	$("#certified-table").empty();
 	$("#status-loading").show();
@@ -21,38 +25,49 @@ function loadCertifiedTable() {
 
 function fillCertifiedTable(submissions) {
 	$("#certified-table").empty();
-	var html = '<tr><th class="cert-table-cell">Organization</th><th class="cert-table-cell">Specification Version</th><th class="cert-table-cell">Contact Email</th><th class="cert-table-cell">Contact Name</th></tr>\n';
+	var html = '<thead><tr><th class="cert-table-cell all">Organization</th><th class="cert-table-cell none">Specification Version</th><th class="cert-table-cell none">Contact Email</th><th class="cert-table-cell none">Contact Name</th></tr></thead>\n<tbody>';
 	for (var i = 0; i < submissions.length; i++) {
+
 		if (submissions[i].approved) {
 			html += '<tr id="submission-';
 			html += submissions[i].id;
-			html += '"></td><td class="organization_col cert-table-cell">';
+			html += '"></td><td>';
 			html += submissions[i].user.organization;
-			html += '</td><td class="cert-table-cell" style="text-align:center">';
+			html += '</td><td>';
 			var specVersion = submissions[i].specVersion;
 	    	var versionParts = specVersion.split( "." );
 	    	if ( versionParts.length > 2 ) {
 	    		specVersion = versionParts[0] + "." + versionParts[1];
 	    	}
 	    	html += specVersion;
-			html += '</td><td class="cert-table-cell">';
+			html += '</td><td >';
 			if (submissions[i].user.emailPermission) {
 				html += submissions[i].user.email;
 			} else {
 				html += "Not Available";
 			}
-			html += '</td><td class="cert-table-cell">';
+			html += '</td><td >';
 			if (submissions[i].user.namePermission) {
 				html += submissions[i].user.name;
 			}else {
 				html += "Not Available";
-			}
+			}			
 			html += '</td></tr>\n';
+			
 		}
 	}
+	
+	html +='</tbody>';
+	//******************** 001 starts here *******************//
 	$("#certified-table").html(html);
+	$('#certified-table').DataTable( {
+       "bFilter": true,
+    
+   } );
+	//******************** 001 ends here *******************//
 }
 
 $(document).ready( function() {
 	loadCertifiedTable();
+	
 });
