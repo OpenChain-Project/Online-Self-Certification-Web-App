@@ -20,16 +20,6 @@
  */
 var lastUpdateCommit; // Holds the last survey update commit hash
 
-function openDownloadSurveyDialog() {
-	downloadSurvey();
-	//$("#downloadsurvey").dialog("open");
-}
-
-function downloadSurvey() {
-	var specVersion = $("#downloadsurvey-version").val();
-	window.location="CertificationServlet?request=downloadSurvey&specVersion="+specVersion;
-}
-
 /**
  * On initial click of the update survey button, opens a dialog confirming you want to "updateSurveyForReal"
  */
@@ -408,36 +398,6 @@ $(document).ready( function() {
 	});
 	
 	$( "#confirm-update-tabs" ).tabs();
-	
-	$( "#downloadsurvey" ).dialog({
-		title: "Download Survey",
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		dialogClass: 'success-dialog',
-		buttons: [{
-			text: "Download",
-			click: function() {
-				$(this).dialog("close");
-				downloadSurvey();
-			}
-		}, {
-			text: "Cancel",
-			click: function() {
-				$(this).dialog("close");
-			}
-		}]
-	}).find("form").on("submit", function(event) {
-		event.preventDefault();
-		$(this).dialog("close");
-		downloadSurvey();
-	});
-	
-	$("#btDownloadSurvey").click(function(event) {
-	      event.preventDefault();
-	      openDownloadSurveyDialog();
-	});
 	
 	$("#btUpdateSurvey").button().button().click(function(event) {
 	      event.preventDefault();
