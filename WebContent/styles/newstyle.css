@@ -107,7 +107,7 @@
 	color: #4791FF !important;
 }	
 .update-profile-dropdown{
-	width:182px;
+	width:200px;
 	}
 	
 .update-profile-dropdown > ul{
@@ -230,7 +230,7 @@ input[type="text"]:focus,  input[type="password"]:focus, textarea:focus {
  
  /*form margin */
 .wrap {
-	  width: 50%;
+	  width: 60%;
 	  margin: 0 auto;
 	}
 /** Custom Row */
@@ -377,7 +377,7 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{
 .no-ofquestion{
 	padding:0px;width: 100%;
    }
-   
+  
 .ui-accordion .ui-accordion-header {
     display: block;
     cursor: pointer;
@@ -504,11 +504,13 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{
 
 
 
-/************************************* Comforming Organisation pages ************************/
+
+
+/************************************* Conforming Organisation pages ************************/
 
 /*Custom select */
 
-#certified-table_filter{
+#certified-table_filter,  #submitted-awaiting-approval_filter, #submitted-rejected_filter, #submitted-approved_filter , #not-submitted_filter{
 	text-align: right;
     padding-right: 20px;
 }
@@ -528,6 +530,9 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{
 .dataTables_paginate{
 	display: flex;
     justify-content: flex-end;
+}
+.pad-zero{
+	padding:0px;
 }
 /************************************* Comforming Organisation pages ************************/
 
@@ -650,7 +655,7 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{
 	.custom-row{
 		margin:0px;
 	}
-	input:valid ~ label, textarea:focus ~ label, input:focus ~ label {
+	input:valid ~ label, textarea:focus ~ label, input:focus ~ label,textarea:valid ~ label {
     	top: -20px;
     }
     #TitleArea > h1{
@@ -665,6 +670,12 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{
     
     .mr-30{
     	margin-top:30px;
+    }
+    #certified-table_filter, #submitted-awaiting-approval_filter, #submitted-rejected_filter, #submitted-approved_filter, #not-submitted_filter {
+     	text-align: left;
+    }
+    .custom-input{
+    	margin-bottom: 30px;
     }
 }
 

@@ -290,6 +290,7 @@ table tr:nth-child(odd) {
 }
 .tablebullet {
     padding-left:3em !important;
+    padding-top: 20px !important;
     
 }
 

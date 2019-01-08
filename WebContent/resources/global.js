@@ -1,15 +1,22 @@
 
 
-
-var set_locale_to = function(locale) {
+var set_locale_to = function(locale) 
+{
   if (locale)
     $.i18n().locale = locale;
-
-  $('.translate').each(function() {
+  else
+    locale = 'en';
+  
+   $.i18n().load( 
+  './resources/i18n-json/'+locale+'.json',locale
+  ).done(function() {
+  
+$('.translate').each(function() {
     var args = [], $this = $(this);
     if ($this.data('args'))
       args = $this.data('args').split(',');
     $this.html( $.i18n.apply(null, args) );
+  }); 
   });
 };
 
@@ -17,41 +24,40 @@ var set_locale_to = function(locale) {
 
 jQuery(function() {
 
-  $.i18n().load( {
-    'ru': './resources/i18n-json/ru.json',
-    'en': './resources/i18n-json/en.json'
+ 
+ set_locale_to(url('?locale'));
 
-  } ).done(function() {
-
-
-  var w = new URLSearchParams(window.location.search);
-  var value = w.get('locale');
-  set_locale_to(value);
-
-  //set_locale_to(url('?locale'));
-
-   /* var userLang = navigator.language || navigator.userLanguage; 
-    alert ("The language is: " + userLang);*/
-    
+/****************When Language is changed from navbar dropdown ***********************/
 
   $(".language-setup-dropdown li a").click(function(){
       var value = $(this).attr('language');
-      
-       var u = new URL(window.location.href);
+      History.pushState(null, null, "?locale=" + value); 
+   });
 
-       if(u.searchParams.has("locale"))
-       {
-          u.searchParams.set("locale",value);
-       }
-       else
-       {
-        u.searchParams.append("locale",value);
-       }
 
-       window.location.href=u;
- 
+/****************TO get the language of a previous page *****************************/
+
+  
+    $("#toggle").click(function() 
+    {
+    	window.location.href = $("#toggle").attr("href")+'?locale='+(url('?locale'));
+	    
+    });
+
+    
+
+
+/****************To change a language inside same html******************************/
+
+    History.Adapter.bind(window, 'statechange', function()
+    {
+      set_locale_to(url('?locale'));
     });
 
 
-  });
+
+
+
+
 });
+

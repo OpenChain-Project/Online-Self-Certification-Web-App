@@ -42,9 +42,5 @@ function resetPassword() {
 
 
 $(document).ready( function() {
-//	$("#pwform").find("form").on("submit", function(event) {
-//		event.preventDefault();
-//		resetPassword();
-//	});
 	$(document).on('click', '#reset-user-password', function(){resetPassword();});
 });

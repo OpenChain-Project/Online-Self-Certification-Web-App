@@ -25,7 +25,7 @@ function loadCertifiedTable() {
 
 function fillCertifiedTable(submissions) {
 	$("#certified-table").empty();
-	var html = '<thead><tr><th class="cert-table-cell all">Organization</th><th class="cert-table-cell none">Specification Version</th><th class="cert-table-cell none">Contact Email</th><th class="cert-table-cell none">Contact Name</th></tr></thead>\n<tbody>';
+	var html = '<thead><tr><th class="cert-table-cell all" data-priority="1">Organization</th><th class="cert-table-cell none">Specification Version</th><th class="cert-table-cell none">Contact Email</th><th class="cert-table-cell none" data-priority="2">Contact Name</th></tr></thead>\n<tbody>';
 	for (var i = 0; i < submissions.length; i++) {
 
 		if (submissions[i].approved) {
@@ -58,13 +58,20 @@ function fillCertifiedTable(submissions) {
 	}
 	
 	html +='</tbody>';
-	//******************** 001 starts here *******************//
+	
+	
 	$("#certified-table").html(html);
-	$('#certified-table').DataTable( {
-       "bFilter": true,
-    
-   } );
+	
+	//******************** 001 starts here *******************//
+	$('#certified-table').DataTable({
+		"sDom": '<"top"f>rt<"bottom"lpi><"clear">'
+	});
 	//******************** 001 ends here *******************//
+	
+	$( ".bottom" ).addClass( "row" );            
+	$( "#certified-table_length").addClass( "col-md-3 custom-col");
+	$( "#certified-table_paginate").addClass( "col-md-9 custom-col pad-zero");
+	
 }
 
 $(document).ready( function() {

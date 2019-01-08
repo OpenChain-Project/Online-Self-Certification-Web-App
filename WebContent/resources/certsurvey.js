@@ -25,12 +25,11 @@ function getQuestionFormHtml(questions) {
 	console.log(questions);
 	var html = '<div ><table class="questiontable ui-corner-all table table-hover ">\n';
 	var inSubQuestions = false;
-	//html += '<tr class="bord"><th class="answer_cell"></th><th class="answer_cell">Answer</th><th class="answer_cell"></th><th class="answer_cell">Question</th></tr>\n';
-	for (var i = 0; i < questions.length; i++) {
+		for (var i = 0; i < questions.length; i++) {
 		var type = questions[i].type;
 		var isSubQuestion = (questions[i].hasOwnProperty('subQuestionOfNumber'));
 		html += '<tr class="bord_"><td class="answer_cell" style="width:100px;">';
-		//<span><img id="yes_no_img" class="img-fluid"  /></span></td>';
+		
 		html += '<span> <i class="fa yes_no_img"></i></span></td>';
 		if (type == 'SUBQUESTIONS') {
 			html += '<td class="answer_cell"></td>';
@@ -42,7 +41,7 @@ function getQuestionFormHtml(questions) {
 			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"  class="choicena-yes';
 			if (isSubQuestion && inSubQuestions) {
 				html += ' subquestion-of-';
-				html += questions[i].subQuestionNumber;
+				html += questions[i].subQuestionOfNumber;
 			}
 			html += '"  value="yes" />';		
 			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no" class="choicena-no';
@@ -98,7 +97,7 @@ function getQuestionFormHtml(questions) {
 		console.log("ssss",isSubQuestion,inSubQuestions);
 		if (isSubQuestion) {
 			html += '<td class="tablebullet answer_cell"> <p id="question-pad" class="table-bullet" >';
-			//html +='&#9654;';
+			
 		} else {
 			html += '<td class="answer_cell pad_cell"><p id="question-pad">';
 		}

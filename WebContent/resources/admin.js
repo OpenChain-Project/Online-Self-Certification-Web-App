@@ -20,15 +20,6 @@
  */
 var lastUpdateCommit; // Holds the last survey update commit hash
 
-function openDownloadSurveyDialog() {
-	downloadSurvey();
-	//$("#downloadsurvey").dialog("open");
-}
-
-function downloadSurvey() {
-	var specVersion = $("#downloadsurvey-version").val();
-	window.location="CertificationServlet?request=downloadSurvey&specVersion="+specVersion;
-}
 
 /**
  * On initial click of the update survey button, opens a dialog confirming you want to "updateSurveyForReal"
@@ -218,42 +209,37 @@ function fillSubmissionStatusTable(submissions) {
 	
 	if(!$.fn.dataTable.isDataTable("#submitted-awaiting-approval")){
 		$('#submitted-awaiting-approval').DataTable( {
-		       searching : false,
+		       "searching" : false,
 		       "bLengthChange": false,
 		       "processing": true,
-		       "bInfo" : false,
 		       "pageLength": 5
-		       //"bFilter": true
 		} );
 	}
 	if(!$.fn.dataTable.isDataTable("#submitted-approved")){
 		$('#submitted-approved').DataTable( {
-		       searching : false,
+			   "searching" : false,
 		       "bLengthChange": false,
-		       "bInfo" : false,
+		       "processing": true,
 		       "pageLength": 5
-		       //"bFilter": true
 		} );
 	}
 	if(!$.fn.dataTable.isDataTable("#submitted-rejected")){
 		$('#submitted-rejected').DataTable( {
-		       searching : false,
+			   "searching" : false,
 		       "bLengthChange": false,
-		       "bInfo" : false,
+		       "processing": true,
 		       "pageLength": 5
-		       //"bFilter": true
 		} );
 	}
 	if(!$.fn.dataTable.isDataTable("#not-submitted")){
 		$('#not-submitted').DataTable( {
-		       searching : false,
+			   "searching" : false,
 		       "bLengthChange": false,
-		       "bInfo" : false,
+		       "processing": true,
 		       "pageLength": 5
-		       //"bFilter": true
 		});
 	}
-	/*************001 ends  here	************/
+	/*************001 ends  here************/
 }
 
 function addCheckboxButtonEnablers(context, buttons) {
@@ -409,35 +395,7 @@ $(document).ready( function() {
 	
 	$( "#confirm-update-tabs" ).tabs();
 	
-	$( "#downloadsurvey" ).dialog({
-		title: "Download Survey",
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		dialogClass: 'success-dialog',
-		buttons: [{
-			text: "Download",
-			click: function() {
-				$(this).dialog("close");
-				downloadSurvey();
-			}
-		}, {
-			text: "Cancel",
-			click: function() {
-				$(this).dialog("close");
-			}
-		}]
-	}).find("form").on("submit", function(event) {
-		event.preventDefault();
-		$(this).dialog("close");
-		downloadSurvey();
-	});
 	
-	$("#btDownloadSurvey").click(function(event) {
-	      event.preventDefault();
-	      openDownloadSurveyDialog();
-	});
 	
 	$("#btUpdateSurvey").button().button().click(function(event) {
 	      event.preventDefault();
@@ -447,21 +405,26 @@ $(document).ready( function() {
 	$("#btApprove").button().button().click(function(event) {
 	      event.preventDefault();
 	      requestStatusChange("setApproved", getCheckedIds($("#submitted-awaiting-approval")));
+	      location.reload();
 	});
 	
 	$("#btReject").button().button().click(function(event) {
 	      event.preventDefault();
 	      requestStatusChange("setRejected", getCheckedIds($("#submitted-awaiting-approval")));
+	      location.reload();
+	      
 	});
 	
 	$("#btUnReject").button().button().click(function(event) {
 	      event.preventDefault();
 	      requestStatusChange("resetRejected", getCheckedIds($("#submitted-rejected")));
+	      location.reload();
 	});
 	
 	$("#btUnApprove").button().button().click(function(event) {
 	      event.preventDefault();
 	      requestStatusChange("resetApproved", getCheckedIds($("#submitted-approved")));
+	      location.reload();
 	});
 	
 	$.ajax({
@@ -480,4 +443,7 @@ $(document).ready( function() {
 	});
 	
 	reloadSubmissionStatus();
+	
+	
+	
 });

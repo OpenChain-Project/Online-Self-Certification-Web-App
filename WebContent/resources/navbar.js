@@ -194,7 +194,6 @@ function displayError( error ) {
 	        }
 	    }
 	}).text( error ).parent().addClass( "ui-state-error" );
-	
 }
 
 function handleError(xhr, status, errorThrown, msg) {
@@ -204,18 +203,21 @@ function handleError(xhr, status, errorThrown, msg) {
 			msg = "Sorry - there was a problem loading data: " + xhr.responseText;
 		} else if ( responseType.indexOf('json') > 1 && xhr.responseText != null && xhr.responseText!= "" ) {
 			response = JSON.parse(xhr.responseText);
-			msg = response.error;
+			msg = response.error;		
 		} else {
 			msg = "Sorry - there was a problem loading data: " + errorThrown;
+			
 		}
 	}
 	if ( xhr.status == 401 ) {
-		openSignInDialog();	// open the login dialog
+		// Redirect to login page
+		window.location="login.html";
 	} else {
 		displayError( msg );
         console.log( "Error: " + xhr.responseText );
         console.log( "Status: " + status );
         console.dir( xhr );
+        
 	}	
 }
 
@@ -309,8 +311,7 @@ function updateUser(username, password, name, address, organization, email, okUs
 	    async: false, 
 	    success: function( json ) {
 	    	if ( json.status == "OK" ) {
-	    		//$("#user-profile").dialog("close");
-	    		$( "#status" ).dialog({
+	    			$( "#status" ).dialog({
 	    			title: "Updated",
 	    			resizable: false,
 	    			height: 200,
@@ -399,7 +400,6 @@ function signup(username, password, name, address, organization, email, approveU
 	    async: false, 
 	    success: function( json ) {
 	    	if ( json.status == "OK" ) {
-	    		//$("#signup").dialog("close");
 	    		// redirect to the successful signup page
 	    		window.location = "signupsuccess.html";
 	    	} else {
@@ -507,33 +507,13 @@ function createNavMenu() {
 	    success: function( json ) {
 	    	userHtml = '';
 	    	if (json.loggedIn) {
-	    		userHtml += '<li class="nav-item active"><div class="dropdown"><span><i class="fa fa-user" aria-hidden="true">&nbsp;</i><span class="translate" data-args="Account"> Account </span>&nbsp;<i class="fa fa-caret-down" aria-hidden="true"></i></span><div class="dropdown-content update-profile-dropdown"><ul><li class="nav-item active" data-toggle="modal" data-target="#updateprofileModal" id="user-dropdown_updateprofile"><a class="user-nav"><i class="fa fa-refresh"></i>&nbsp;Update profile</a></li>';
-	    		//userHtml += '<li class="nav-item active"><div class="dropdown"><span><i class="fa fa-user" aria-hidden="true"></i> Account <i class="fa fa-caret-down" aria-hidden="true"></i></span><div class="dropdown-content update-profile-dropdown" ><ul><li class="nav-item active" id="user-dropdown_updateprofile" ><a class="user-nav"><i class="fa fa-refresh"></i>&nbsp;Update profile</a></li>';
-	    		userHtml += '<li class="nav-item active" id="user-dropdown_signout"><a class="user-nav" ><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;Sign out</a></li></ul></div></div>\n';
+	    		userHtml += '<li class="nav-item active"><div class="dropdown"><span><i class="fa fa-user" aria-hidden="true">&nbsp;</i><span class="translate" data-args="Account"> Account </span>&nbsp;<i class="fa fa-caret-down" aria-hidden="true"></i></span><div class="dropdown-content update-profile-dropdown"><ul><li class="nav-item active" data-toggle="modal" data-target="#updateprofileModal" id="user-dropdown_updateprofile"><a class="user-nav" id="toggle"><i class="fa fa-refresh"></i>&nbsp;Update profile</a></li>';
+	    		userHtml += '<li class="nav-item active" id="user-dropdown_signout"><a class="user-nav" id="toggle"><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;Sign out</a></li></ul></div></div>\n';
 	    	} else {
-	    		userHtml += '<li class="nav-item active signin" ><a class="user-nav" href="login.html"><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;Sign in</a></li>\n';
-	    		userHtml += '<li class="nav-item active signin mb-0" ><a class="user-nav" href="signup.html"><i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp;Sign up</a></li>\n';
+	    		userHtml += '<li class="nav-item active signin" ><a class="user-nav" href="login.html" id="toggle"><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;Sign in</a></li>\n';
+	    		userHtml += '<li class="nav-item active signin mb-0" ><a class="user-nav" href="signup.html" id="toggle" id="toggle"><i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp;Sign up</a></li>\n';
 	    	}
-	    	$("#user-dropdown_menu").html(userHtml);
-//	    	$("#usermenu").jui_dropdown( {
-//	    	    launcher_id: 'user-dropdown_launcher',
-//	    	    launcher_container_id: 'user-dropdown_container',
-//	    	    menu_id: 'user-dropdown_menu',
-//	    	    containerClass: 'user-dropdown_container',
-//	    	    menuClass: 'user-dropdown_menu',
-//	    	    launchOnMouseEnter: true,
-//	    	    onSelect: function( event, data ) {
-//	    	    	if ( data.id == "user-dropdown_signup" ) {
-//	    	    		openSignupDialog();
-//	    	    	} else if ( data.id == "user-dropdown_signout" ) {
-//	    	    		signout();
-//	    	    	} else if (data.id == "user-dropdown_signin") {
-//	    	    		openSignInDialog();
-//	    	    	} else if (data.id == "user-dropdown_updateprofile") {
-//	    	    		openProfileDialog();
-//	    	    	}
-//	    	    }
-//	    	  });
+	    	$("#user-dropdown_menu").html(userHtml);	    	
 	    	languageHtml = '';
 	    	for (var language in LANGUAGES) {
 	    		languageHtml += '<li id="language-dropdown_';
@@ -543,25 +523,6 @@ function createNavMenu() {
 	    		languageHtml += '</span></a></li>\n';
 	    	}
 	    	$("#language-dropdown_menu").html(languageHtml);
-//	    	$("#languagemenu").jui_dropdown( {
-//	    	    launcher_id: 'language-dropdown_launcher',
-//	    	    launcher_container_id: 'language-dropdown_container',
-//	    	    menu_id: 'language-dropdown_menu',
-//	    	    containerClass: 'language-dropdown_container',
-//	    	    menuClass: 'language-dropdown_menu',
-//	    	    launchOnMouseEnter: true,
-//	    	    onSelect: function( event, data ) {
-//	    	    	lang = data.id.substring("language-dropdown_".length, data.id.length);
-//	    	    	display = LANGUAGES[lang];
-//	    	    	if (display == null) {
-//	    	    		displayError("Language not supported");
-//	    	    	} else {
-//	    	    		changeLanguage(lang, display);
-//	    	    	}
-//	    	    }
-//	    	  });
-	    	
-	    	
 	    	if (json.language != null) {
 	    		display = LANGUAGES[json.language];
 	    		if (language != null) {
@@ -571,13 +532,13 @@ function createNavMenu() {
 	    		$( '#language-dropdown_launcher' ).text( LANGUAGES[DEFAULT_LANGUAGE] );
 	    	}
 	    	if (json.loggedIn) {
-	    		$("#surveylink").html('<li><a href="survey.html"><i class="fa fa-pencil"></i>&nbsp; Online Self-Certification&nbsp;&nbsp;&nbsp;</a></li>');
+	    		$("#surveylink").html('<li><a href="survey.html" id="toggle"><i class="fa fa-pencil"></i>&nbsp; Online Self-Certification&nbsp;&nbsp;&nbsp;</a></li>');
 	    	} else {
 	    		$("#surveylink").html('');
 	    	}
 	    	// Check for admin
 	    	if (json.admin && json.loggedIn) {
-	    		$("#adminlink").html('<li><a href="admin.html"><i class="fa fa-key" aria-hidden="true"></i>&nbsp;Admin</a></li></div>');
+	    		$("#adminlink").html('<li><a href="admin.html" id="toggle"><i class="fa fa-key" aria-hidden="true"></i>&nbsp;Admin</a></li></div>');
 	    	} else {
 	    		$("#adminlink").html('');
 	    	}
@@ -651,6 +612,7 @@ $(document).ready( function() {
 	});
 	// Function Call for Reset Password
 	$(document).on('click', '#btnresetpassword', function(){requestPasswordReset();});
+	
 	//Function call for Update Profile 
 	$(document).on('click', '#update-user-profile', function(){updateUserProfile();});
 
@@ -661,102 +623,9 @@ $(document).ready( function() {
 	});
 	
 	$("#topnav").load("topnav.html");
-	$("#login").dialog({
-		title: "Login",
-		autoOpen: false,
-		height: 400,
-		width: 350,
-		modal: true,
-		dialogClass: 'success-dialog',
-		buttons: [{
-			text: "Login",
-			click: function() {
-				loginUser();
-			}
-		}, {
-			text: "Cancel",
-			click: function() {
-				window.location = "index.html";
-				$(this).dialog("close");
-			}
-		}]
-	}).find("form").on("submit", function(event) {
-		event.preventDefault();
-		loginUser();
-	});
-	$("#reset-password").dialog({
-		title: "Password Reset",
-		autoOpen: false,
-		height: 350,
-		width: 350,
-		modal: true,
-		dialogClass: 'success-dialog',
-		buttons: [{
-			text: "Reset Password",
-			click: function() {
-				requestPasswordReset();
-			}
-		}, {
-			text: "Cancel",
-			click: function() {
-				window.location = "index.html";
-				$(this).dialog("close");
-			}
-		}]
-	}).find("form").on("submit", function(event) {
-		event.preventDefault();
-		requestPasswordReset();
-	});
-	$("#login").find("a.reset-password").click(function(event) {
-		event.preventDefault();
-		$("#login").dialog("close");
-		$("#reset-password").dialog("open");
-	});
-	$("#user-profile").dialog({
-		title: "Update Profile",
-		autoOpen: false,
-		height: 600,
-		width: 450,
-		modal: true,
-		dialogClass: 'success-dialog',
-		buttons: [{
-			text: "Update",
-			click: function() {
-				updateUserProfile();
-			}
-		}, {
-			text: "Cancel",
-			click: function() {
-				$(this).dialog("close");
-			}
-		}]
-	}).find("form").on("submit", function(event) {
-		event.preventDefault();
-		updateUserProfile();
-	});
+
 	
-	$("#signup").dialog({
-		title: "Sign Up",
-		autoOpen: false,
-		height: 600,
-		width: 450,
-		modal: true,
-		dialogClass: 'success-dialog',
-		buttons: [{
-			text: "Sign Up",
-			click: function() {
-				signupUser();
-			}
-		}, {
-			text: "Cancel",
-			click: function() {
-				$(this).dialog("close");
-			}
-		}]
-	}).find("form").on("submit", function(event) {
-		event.preventDefault();
-		signupUser();
-	});
+	
 	$("#footer-outer").load('footer.html');
 	createNavMenu();
 });
