@@ -1,17 +1,10 @@
-
-	 <script src="resources/lib/CLDRPluralRuleParser/CLDRPluralRuleParser.js"></script>
-	  <script src="resources/lib/jquery.i18n/jquery.i18n.js"></script>
-	  <script src="resources/lib/jquery.i18n/jquery.i18n.messagestore.js"></script>
-	  <script src="resources/lib/jquery.i18n/jquery.i18n.fallbacks.js"></script>
-	  <script src="resources/lib/jquery.i18n/jquery.i18n.language.js"></script>
-	  <script src="resources/lib/jquery.i18n/jquery.i18n.parser.js"></script>
-	  <script src="resources/lib/jquery.i18n/jquery.i18n.emitter.js"></script>
-	  <script src="resources/lib/jquery.i18n/jquery.i18n.emitter.bidi.js"></script>
-	  <script src="resources/lib/history/jquery.history.js"></script>
-	  <script src="resources/lib/url/url.min.js"></script> 
-	  <script src="resources/global.js"></script> 
+<script src="resources/i18next.min.js" ></script>
+<script src="resources/jquery-i18next.min.js" ></script>
+<script src="resources/i18nextXHRBackend.js"></script>
+<script src="resources/lib/url/url.min.js"></script>  
+<script src="resources/global.js"></script>    
 <nav class="navbar navbar-expand-lg navbar-dark nav-bg-dark navbar-fixed-top">
-	<div class="container container_padding">
+	<div class="container container_padding ">
 	  <a class="navbar-brand openchain-logo" href="index.html"><img src ="images/logo_openchain.png"></a>
 	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
 	    <span class="navbar-toggler-icon"></span>
@@ -19,9 +12,9 @@
 	  <div class="collapse navbar-collapse" id="navbarText">
 	    <ul class="navbar-nav mr-auto"></ul>
 	    <span class="navbar-text">
-	    	<ul class="navbar-nav mr-auto">
+	    	<ul class="navbar-nav mr-auto" >
 	    		  		
-		    	<li class="nav-item active"><a class="nav-link " href="certified.html" > <i class="fa fa-list" aria-hidden="true"></i> <span class="translate" data-args="Conforming Submission">Conforming Submission </span><span class="sr-only">(current)</span></a></li>
+		    	<li class="nav-item active"><a class="nav-link " href="certified.html"  onclick="toggle(event);"  > <i class="fa fa-list" aria-hidden="true"></i> <span class="translate" data-i18n="Conforming Submission">Conforming Submission </span><span class="sr-only">(current)</span></a></li>
 		    	<div id="surveylink"></div>
 				<div id="adminlink"></div>
 			    <li><div><ul id="user-dropdown_menu"></ul></div></li>
@@ -30,8 +23,8 @@
 				  <span><i class="fa fa-language language-setup" aria-hidden="true"></i>  <i class="fa fa-caret-down" aria-hidden="true"></i></span>
 				  <div class="dropdown-content">
 				  	<ul class="language-setup-dropdown">
-					  	<li><a language="en">English (en)</a></li>
-					  	<li><a language="ru">Russian (ru)</a></li>
+					  	<li><a onclick="changeLng('en')" class="translate" data-i18n="English">English (en)</a></li>
+					  	<li><a onclick="changeLng('ru')" class ="translate" data-i18n="Russian">Russian (ru)</a></li>
 				  	</ul>
 			       </div>
 				</div> 
@@ -47,7 +40,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Update Profile</h5>
+        <h5 class="modal-title translate" id="exampleModalLabel" data-i18n="Update Profile">Update Profile</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -57,43 +50,43 @@
             <p class="validateTips"></p>
             <div class="row">
             	<input type="text" class="form-control custom-input update-input" name="update-username" id="update-username"  required>
-		        <label class= "custom-label" for="update-username">Username</label>
+		        <label class= "custom-label translate" data-i18n="Username" for="update-username">Username</label>
 			</div>
 			<div class="row">
 			    <input type="password" class="form-control custom-input" name="update-password" id="update-password"  required>
-		        <label class= "custom-label" for="update-password">Password</label>
+		        <label class= "custom-label translate" data-i18n="Password" for="update-password">Password</label>
 			</div>
 			<div class="row">
 			    <input type="password" class="form-control custom-input" name="update-passwordverify" id="update-passwordverify" required>
-		        <label class= "custom-label" for="update-passwordverify">Re-enter Password</label>
+		        <label class= "custom-label translate" data-i18n="Re-enter Password" for="update-passwordverify">Re-enter Password</label>
 			</div>
 			<div class="row">
 			    <input type="text" class="form-control custom-input" name="update-name" id="update-name" required>
-		        <label class= "custom-label" for="update-name">Name</label>
+		        <label class= "custom-label translate" data-i18n="Name" for="update-name">Name</label>
 			</div>
 			<div class="row">
 			    <input type="text" class="form-control custom-input" name="update-organization" id="update-organization" required>
-		        <label class= "custom-label" for="update-organization">Organization</label>
+		        <label class= "custom-label translate" data-i18n="Organization" for="update-organization">Organization</label>
 			</div>
 			<div class="row">
 			    <input type="text" class="form-control custom-input" name="update-email" id="update-email" required>
-		        <label class= "custom-label" for="update-email">Email</label>
+		        <label class= "custom-label translate" data-i18n="Email" for="update-email">Email</label>
 			</div>
 			<div class="row">
 			    <textarea rows="3" name="update-address" id="update-address" class="form-control custom-input" form="profile-form" required></textarea>
-			    <label class= "custom-label" for="update-address">Organization Postal Address</label>
+			    <label class= "custom-label translate" data-i18n="Organization Postal Address" for="update-address">Organization Postal Address</label>
 			</div>
 			<div class="row ">
 			    <div class="form-check">
 					<input type="checkbox" name="update-use-name-email" id="update-use-name-email" class="form-check-input" >
-				    <label class="form-check-label custom-lable checkbox-label" for="update-use-name-email">My name and email may be shared on conformance page of the OpenChain website</label>
+				    <label class="form-check-label custom-lable checkbox-label translate" data-i18n="Sign Up_content_1" for="update-use-name-email">My name and email may be shared on conformance page of the OpenChain website</label>
 				</div>
 			</div>
 		 </form>
       </div>
       <div class="modal-footer mr-30">
-        <button type="button" class="btn btn-cancel" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-login" id="update-user-profile">Save changes</button>
+        <button type="button" class="btn btn-cancel translate" data-i18n="Cancel" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-login translate" data-i18n="Save Changes" id="update-user-profile">Save changes</button>
       </div>
     </div>
   </div>
@@ -105,7 +98,7 @@
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Reset Password</h5>
+        <h5 class="modal-title translate" data-i18n="Reset Password" id="exampleModalLabel">Reset Password</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -115,22 +108,22 @@
             <p class="validateTips"></p>
             <div class="row">
             	<input type="text" class="form-control custom-input update-input" name="reset-username" id="reset-username"  required>
-		        <label class= "custom-label" for="reset-username">Username</label>
+		        <label class= "custom-label translate" data-i18n="Username" for="reset-username">Username</label>
 			</div>
 			<div class="row">
 			    <input type="text" class="form-control custom-input" name="reset-email" id="reset-email"  required>
-		        <label class= "custom-label" for="reset-email">Email</label>
+		        <label class= "custom-label translate" data-i18n="Email" for="reset-email">Email</label>
 			</div>
 			
 		 </form>
       </div>
       <div class="modal-footer mr-30">
-        <button type="submit" class="btn btn-login" id="btnresetpassword">Reset Password</button>
-        <button type="button" class="btn btn-cancel" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-login translate" data-i18n="Reset Password"  id="btnresetpassword">Reset Password</button>
+        <button type="button" class="btn btn-cancel translate" data-i18n="Cancel" data-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>
 </div>
 
- 
+
  
