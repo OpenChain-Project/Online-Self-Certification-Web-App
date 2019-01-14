@@ -16,7 +16,7 @@ Description: A new Responsive Template for login
     <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen">
     <link rel="stylesheet" href="resources/jquery.jui_dropdown.css">
     <link rel="stylesheet" href="styles/bootstrap.min.css" type="text/css" media="screen">
-    <link rel="stylesheet" href="styles/font-awesome.min.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="styles/font-awesome-master/css/font-awesome.min.css" type="text/css" media="screen">
     <link rel="stylesheet" href="styles/newstyle.css" type="text/css" media="screen">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="resources/jquery-ui/external/jquery/jquery.js"></script>
@@ -32,30 +32,30 @@ Description: A new Responsive Template for login
 	  <!-- 001 ends here --> 
     <div class="container">
 	    <div id="TitleArea">
-	        <h1>OpenChain Self Certification</h1>
+	        <h1 class="translate" data-i18n="title">OpenChain Self Certification</h1>
 	    </div>
-	    <h3 class="text-center sub-heading">Welcome Back</h3>		
+	    <h3 class="text-center sub-heading translate" data-i18n="Welcome Back">Welcome Back</h3>		
 		<div class="form-group">
 			<div class="wrap">
 				 <form>
 			  		<p class="validateTips"></p>
 				    <div class="row">
 				      <input type="text" class="form-control custom-input" name="login-username" id="login-username" required>
-				      <label class= "custom-label" for="login-username">Username</label>
+				      <label class= "custom-label translate" for="login-username" data-i18n="Username">Username</label>
 				    </div>
 				    <div class="row">
 				      <input type="password" class="form-control custom-input"  name="login-password" id="login-password" required>
-				      <label class= "custom-label" for="login-password">Password</label>
+				      <label class= "custom-label translate" data-i18n="Password" for="login-password">Password</label>
 				    </div>
 				    <!-- 002 starts here -->
 				    <div class="row">
-				     	<a data-toggle="modal" data-target="#resetpasswordModal" class="reset-password">Reset Password</a>
+				     	<a data-toggle="modal" data-target="#resetpasswordModal" class="reset-password translate" data-i18n="Reset Password">Reset Password</a>
 				     </div> 
 				    <!-- 002 starts here -->
 				     <div class="row">
 					     <div class="ui-dialog-buttonset">
-					     	<button type="submit" class="btn btn-login btn-md" id="login-button">Login</button>
-					     	<button type="button" class="btn btn-cancel btn-md" id="index-home"  >Cancel</button>
+					     	<button type="submit" class="btn btn-login btn-md translate" data-i18n="Login" id="login-button">Login</button>
+					     	<button type="button" class="btn btn-cancel btn-md translate" data-i18n="Cancel" id="index-home"  >Cancel</button>
 					     </div>
 				     </div>
 			   </form>

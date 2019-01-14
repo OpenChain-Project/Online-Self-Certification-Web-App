@@ -55,15 +55,15 @@ function updateSurvey() {
 	    			summaryHtml += "</p>\n";
 	    		}
 	    	}
-    		summaryHtml += "<p>";
+    		summaryHtml += "<p> ";
     		summaryHtml += json.versionsUpdated.length.toString();
-    		summaryHtml += " survey version/languages will be updated</p>\n";
+    		summaryHtml += "<span class='translate' data-i18n='Summary-history-update'> survey version/languages will be updated</p>\n";
     		summaryHtml += json.versionsAdded.length.toString();
-    		summaryHtml += " survey version/languages will be added</p>\n";
+    		summaryHtml += "<span class='translate' data-i18n='Summary-history-add'> survey version/languages will be added</p>\n";
 	    	$("#confirm-update-tab-summary").html(summaryHtml);
 	    	var updatedHtml = "";
 	    	if ( json.versionsUpdated.length == 0 ) {
-	    		updatedHtml = "No survey/versions were updated";
+	    		updatedHtml = "<span class='translate' data-i18n='no-update'>No survey/versions were updated</span>";
 	    	} else {
 	    		for ( i in json.versionsUpdated ) {
 	    			updatedHtml += "<p>";
@@ -74,7 +74,7 @@ function updateSurvey() {
 	    	$( "#confirm-update-tab-updates" ).html( updatedHtml );
 	    	var addedHtml = "";
 	    	if ( json.versionsAdded.length == 0 ) {
-	    		addedHtml = "No survey/versions were added";
+	    		addedHtml = "<span class='translate' data-i18n='no-new-add'> No survey/versions were added </span>";
 	    	} else {
 	    		for ( i in json.versionsAdded ) {
 	    			addedHtml += "<p>";
@@ -153,10 +153,10 @@ function fillSubmissionStatusTable(submissions) {
 	$("#submitted-rejected").empty();
 	$("#not-submitted").empty();
 	$(".status-button").button("disable");
-	var submittedAwaitingApprovalHtml = '<thead><tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr></thead>\n<tbody>';
-	var submittedRejectedHtml = '<thead><tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr></thead>\n<tbody>';
-	var notSubmittedHtml = '<thead><tr><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr></thead>\n<tbody>';
-	var submittedApprovedHtml = '<thead><tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr></thead>\n<tbody>';
+	var submittedAwaitingApprovalHtml = '<thead><tr><th></th><th class="translate" data-i18n="">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
+	var submittedRejectedHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
+	var notSubmittedHtml = '<thead><tr><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
+	var submittedApprovedHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
 	for (var i = 0; i < submissions.length; i++) {
 		var html = '<tr id="submission-';
 		html += submissions[i].id;
@@ -212,7 +212,10 @@ function fillSubmissionStatusTable(submissions) {
 		       "searching" : false,
 		       "bLengthChange": false,
 		       "processing": true,
-		       "pageLength": 5
+		       "pageLength": 5,
+		       "language": {					
+		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
+		        }
 		} );
 	}
 	if(!$.fn.dataTable.isDataTable("#submitted-approved")){
@@ -220,7 +223,10 @@ function fillSubmissionStatusTable(submissions) {
 			   "searching" : false,
 		       "bLengthChange": false,
 		       "processing": true,
-		       "pageLength": 5
+		       "pageLength": 5,
+		       "language": {					
+		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
+		        }
 		} );
 	}
 	if(!$.fn.dataTable.isDataTable("#submitted-rejected")){
@@ -228,7 +234,10 @@ function fillSubmissionStatusTable(submissions) {
 			   "searching" : false,
 		       "bLengthChange": false,
 		       "processing": true,
-		       "pageLength": 5
+		       "pageLength": 5,
+		       "language": {					
+		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
+		        }
 		} );
 	}
 	if(!$.fn.dataTable.isDataTable("#not-submitted")){
@@ -236,7 +245,10 @@ function fillSubmissionStatusTable(submissions) {
 			   "searching" : false,
 		       "bLengthChange": false,
 		       "processing": true,
-		       "pageLength": 5
+		       "pageLength": 5,
+		       "language": {					
+		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
+		        }
 		});
 	}
 	/*************001 ends  here************/

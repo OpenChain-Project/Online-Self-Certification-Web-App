@@ -24,14 +24,19 @@ Author(s): ViSolve 03/01/2019
    
 	<script src="resources/jquery.dataTables.min.js"></script>
     <script src="resources/dataTables.bootstrap4.min.js"></script>
+    <script src="resources/i18next.min.js" ></script>
+<script src="resources/jquery-i18next.min.js" ></script>
+<script src="resources/i18nextXHRBackend.js"></script>
+<script src="resources/lib/url/url.min.js"></script>  
+<script src="resources/global.js"></script>  
     
 </head>
 <body>
    <div id="topnav"></div>
    <div class="container">
 	    <div id="TitleArea">
-	        <h1>Conforming Organizations</h1>
-	        The following organizations have self-certified conformance to the OpenChain <a href="https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf">Specification.</a>
+	        <h1 class="translate" data-i18n="Conforming Organizations">Conforming Organizations</h1>
+	        <span class="translate" data-i18n="Conforming Organizations_content">The following organizations have self-certified conformance to the OpenChain</span> <a href="https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf">Specification.</a>
 	    </div>
         
 	    <div class="row mr-100">

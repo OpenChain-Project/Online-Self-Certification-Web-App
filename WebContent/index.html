@@ -5,7 +5,7 @@ Description:Responsive Navigation bar using Bootstrap. Included Language Chooser
  -->
  
 <!DOCTYPE html>
-<html>
+<html lang='en'>
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,6 +14,7 @@ Description:Responsive Navigation bar using Bootstrap. Included Language Chooser
     <link rel="stylesheet" href="resources/jquery-ui/jquery-ui.min.css">
     <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen">
     <link rel="stylesheet" href="resources/jquery.jui_dropdown.css">
+     <script src="resources/bootstrap.min.js"></script>
     <link rel="stylesheet" href="styles/bootstrap.min.css" type="text/css" media="screen">
     <link rel="stylesheet" href="styles/font-awesome-master/css/font-awesome.min.css" type="text/css" media="screen">
     <link rel="stylesheet" href="styles/newstyle.css" type="text/css" media="screen">
@@ -21,9 +22,9 @@ Description:Responsive Navigation bar using Bootstrap. Included Language Chooser
     <script src="resources/jquery-ui/jquery-ui.min.js"></script>
     <script src="resources/jquery.jui_dropdown.min.js"></script>
     <script src="resources/navbar.js"></script>
-    <script src="resources/bootstrap.min.js"></script>
-         
     
+  
+
   </head>
   <body>
   <!-- 001 Starts here -->
@@ -32,22 +33,22 @@ Description:Responsive Navigation bar using Bootstrap. Included Language Chooser
   
     <div class="container">
 	    <div id="TitleArea">
-	        <h1 class="translate" data-args="title">OpenChain Self Certification</h1>
+	        <h1 class="translate" data-i18n="title">OpenChain Self Certification</h1>
 	    </div>
 	    <div id="Introduction">
-	    <h2 class="sub-heading translate" data-args="welcome" >Welcome</h2>
-	    <p class="translate" data-args="intro-content">The OpenChain Specification represents a core set of requirements a quality FOSS compliance program must satisfy. It fosters efficient and effective compliance of open source licenses across the supply chain. By self-certifying, participants are able to confirm they are in compliance with the Specification’s requirements.</p>
+	    <h2 class="sub-heading translate" data-i18n="welcome" >Welcome</h2>
+	    <p class="translate" data-i18n="welcome_content">The OpenChain Specification represents a core set of requirements a quality open source compliance program must satisfy. It fosters efficient and effective compliance of open source licenses across the supply chain. By self-certifying, participants are able to confirm they are in compliance with the Specification’s requirements.</p>
 	    </div>
 	    <div id="GettingStarted" >
-	    <h2 class="sub-heading translate" data-args="gs">Getting Started</h2>
-	    <p class="translate" data-args="apps">Applicants confirm their understanding of the OpenChain Specification and the need to complete Self-Certification to become OpenChain Conformant. The Online Self-Certification requires you to:</p>
+	    <h2 class="sub-heading translate" data-i18n="Getting Started">Getting Started</h2>
+	    <p class="translate" data-i18n="Getting Started_content">Applicants confirm their understanding of the OpenChain Specification and the need to complete Self-Certification to become OpenChain Conformant. The Online Self-Certification requires you to:</p>
 	    <ul class="mr-100">
-	    <li> <span class="translate" data-args="li1">Fulfill all requirements set forth in the </span> <a href="https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf" class="translate" data-args="a">Specification.</a></li>
-	    <li class="translate" data-args="li2">Create an account by selecting sign-up in the user menu.
-	    <li class="translate" data-args="li3">Name a contact person to handle inquiries.</li>
-	    <li class="translate" data-args="li4">Have an authorized representative complete the web-based Online Self-Certification by answering all the questions.</li>
-	    <li class="translate" data-args="li5">Fill out the submission form.</li>
-	    <liv class="translate" data-args="li6">Archive a Reference Copy of all Verification Artifacts as a record in support of the Online Self-Certification.</li>
+	    <li> <span class="translate" data-i18n="Getting Started_content_1">Fulfill all requirements set forth in the </span> <a href="https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf" class="translate" data-i18n="Getting Started_content_1_sub">Specification.</a></li>
+	    <li class="translate" data-i18n="Getting Started_content_2">Create an account by selecting sign-up in the user menu.
+	    <li class="translate" data-i18n="Getting Started_content_3">Name a contact person to handle inquiries.</li>
+	    <li class="translate" data-i18n="Getting Started_content_4">Have an authorized representative complete the web-based Online Self-Certification by answering all the questions.</li>
+	    <li class="translate" data-i18n="Getting Started_content_5">Fill out the submission form.</li>
+	    <li class="translate" data-i18n="Getting Started_content_6">Archive a Reference Copy of all Verification Artifacts as a record in support of the Online Self-Certification.</li>
 	    </ul>
 	    </div>
 	    <div id="errors"></div>

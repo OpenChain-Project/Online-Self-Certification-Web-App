@@ -32,40 +32,40 @@ Author(s): ViSolve 03/01/2019
     <!-- 001 Starts here -->
        <div class="container">
     <div id="TitleArea">
-        <h1>OpenChain Self Certification Administration</h1>
+        <h1 class="translate" data-i18n="Admin_title">OpenChain Self Certification Administration</h1>
     </div>
-    <h2 class="text-center sub-title-area">Site Status</h2>
+    <h2 class="text-center sub-title-area translate" data-i18n="Site Status" >Site Status</h2>
     <p class="text-center"> Site Software Version: <span id="software-version"></span> </p><br />
-    <h2 class="sub-heading">
+    <h2 class="sub-heading translate" data-i18n="Manage Survey Question Content" >
        	Manage Survey Question Content       
   	</h2>	
     
 			    <form>
 				  <div class="form-row d-flex justify-content-center container">
 				    <div class="col-md-3">
-				      <label class="mr-sm-2" for="inlineFormCustomSelect" class="git-tag">Git Tag</label>
+				      <label class="mr-sm-2 git-tag translate" for="inlineFormCustomSelect" data-i18n="Git Tag">Git Tag</label>
 		      		  <select class="custom-select mr-sm-10 git-select" id="gitTag" name="gitTag" class="git-tag"> </select>
 				    </div>
 				    <div class="col-md-3 mr-30">
 				      <input type="text" class="form-control custom-input" name="gitCommit" id="gitCommit" required>
-				      <label class= "custom-label" for="gitCommit" class="git-tag">Git Commit</label>
+				      <label class= "custom-label git-tag translate" for="gitCommit" data-i18n="Git Commit">Git Commit</label>
 				    </div>
 				  </div>
 				</form>
     		<div class="row d-flex justify-content-center">
     		    <div class="btn-toolbar d-flex justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
 				   <div class="btn-group" role="group" aria-label="second group">
-				        <button id="btUpdateSurvey" type="button" class="btn btn-info mr-bt15" data-toggle="modal" data-target="#UpdateSurveyModal" ><i class="fa fa-refresh"></i> &nbsp;Update Survey Questions</button>
+				        <button id="btUpdateSurvey" type="button" class="btn btn-info mr-bt15" data-toggle="modal" data-target="#UpdateSurveyModal" ><i class="fa fa-refresh"></i> &nbsp;<span class="translate" data-i18n="Update Survey Questions">Update Survey Questions</span></button>
 				   </div>
 				</div>
 			</div>
 	        
   
-    <h2 class="sub-heading text-center">Submission Status</h2>
+    <h2 class="sub-heading text-center translate" data-i18n="Submission Status">Submission Status</h2>
     <div id="submission-status-loading">
         Loading <img src="resources/loading.gif" alt="Loading" class="loading">
     </div>
-    <h3 class="sub-heading">Submitted Awaiting Approval</h3>
+    <h3 class="sub-heading translate" data-i18n="Submitted Awaiting Approval">Submitted Awaiting Approval</h3>
     <!-- 002 starts here -->
     <div class="table-responsive">
 	    <table id="submitted-awaiting-approval" class="table table-hover">
@@ -76,15 +76,15 @@ Author(s): ViSolve 03/01/2019
     	<div class="row d-flex justify-content-end">
 		    <div class="btn-toolbar d-flex justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
 			  <div class="btn-group mr-2" role="group" aria-label="First group">
-			    <button id="btApprove" type="button" class="btn btn-success"><i class="fa fa-check" aria-hidden="true"></i> &nbsp; Approve Selected</button>
+			    <button id="btApprove" type="button" class="btn btn-success"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Approve Selected">Approve Selected</span></button>
 			  </div>
 			  <div class="btn-group mr-2" role="group" aria-label="Second group">
-			    <button id="btReject" type="button" class="btn btn-danger"><i class="fa fa-ban" aria-hidden="true"></i> &nbsp; Reject Selected</button>
+			    <button id="btReject" type="button" class="btn btn-danger"><i class="fa fa-ban" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Reject Selected">Reject Selected</span></button>
 			  </div>
 			</div>
 		</div>
     </div>    
-    <h3 class="sub-heading">Submitted Rejected</h3>
+    <h3 class="sub-heading translate" data-i18n="Submitted Rejected"> Submitted Rejected</h3>
     <!-- 002 starts here -->
     <div class="table-responsive">
 	    <table id="submitted-rejected" class="table table-hover">
@@ -96,13 +96,13 @@ Author(s): ViSolve 03/01/2019
 	    <div class="btn-toolbar d-flex justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
 		   <div id="submitted-rejected-buttons" >
 			  <div class="btn-group mr-2" role="group" aria-label="First group">
-			    <button id="btUnReject" type="button" class="btn btn-success"> <i class="fa fa-check" aria-hidden="true"></i> &nbsp; Unreject Selected</button>
+			    <button id="btUnReject" type="button" class="btn btn-success"> <i class="fa fa-check" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="UnReject Selected">Unreject Selected</span></button>
 			  </div>
 		  </div>
 		</div>
 	</div>
     
-    <h3 class="sub-heading">Approved</h3>
+    <h3 class="sub-heading translate" data-i18n="Approved">Approved</h3>
     
     <!-- 002 starts here -->
     <div class="table-responsive">
@@ -114,13 +114,13 @@ Author(s): ViSolve 03/01/2019
 	<div class="row d-flex justify-content-end">
 	    <div class="btn-toolbar d-flex justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
 		  <div class="btn-group mr-2" role="group" aria-label="First group">
-		    <button id="btUnApprove" type="button" class="btn btn-danger"> <i class="fa fa-ban" aria-hidden="true"></i> &nbsp; Unapprove Selected</button>
+		    <button id="btUnApprove" type="button" class="btn btn-danger"> <i class="fa fa-ban" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="UnApprove Selected">Unapprove Selected</span></button>
 		  </div>
 		  
 		</div>
 	</div>
     
-    <h3 class="sub-heading">Not Submitted</h3>
+    <h3 class="sub-heading translate" data-i18n="Not Submitted">Not Submitted</h3>
     
     <!-- 002 starts here -->
     <div class="table-responsive mr-100">
@@ -142,7 +142,7 @@ Author(s): ViSolve 03/01/2019
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Update Survey</h5>
+        <h5 class="modal-title translate" id="exampleModalLabel" data-i18n="Update Survey">Update Survey</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -150,9 +150,9 @@ Author(s): ViSolve 03/01/2019
       <div class="modal-body">
         <nav>
 			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
-			    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#confirm-update-tab-summary" role="tab" aria-controls="nav-home" aria-selected="true">Summary</a>
-			    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#confirm-update-tab-updates" role="tab" aria-controls="nav-profile" aria-selected="false">Updates</a>
-			    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#confirm-update-tab-added" role="tab" aria-controls="nav-contact" aria-selected="false">Added</a>
+			    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#confirm-update-tab-summary" role="tab" aria-controls="nav-home" aria-selected="true"><span class="translate" data-i18n="Summary">Summary</span></a>
+			    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#confirm-update-tab-updates" role="tab" aria-controls="nav-profile" aria-selected="false"><span class="translate" data-i18n="Updates">Updates</span></a>
+			    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#confirm-update-tab-added" role="tab" aria-controls="nav-contact" aria-selected="false"><span class="translate" data-i18n="Added">Added</span></a>
 			  </div>
 		</nav>
 		<div class="tab-content" id="nav-tabContent">
@@ -163,8 +163,8 @@ Author(s): ViSolve 03/01/2019
           
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-cancel" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-login">Update</button>
+        <button type="button" class="btn btn-cancel translate" data-dismiss="modal" data-i18n="Cancel">Cancel</button>
+        <button type="button" class="btn btn-login translate" data-i18n="Update">Update</button>
       </div>
     </div>
   </div>

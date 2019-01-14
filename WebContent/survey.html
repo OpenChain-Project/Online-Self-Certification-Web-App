@@ -22,19 +22,24 @@ Author(s): ViSolve 03/01/2019
     <script src="resources/navbar.js"></script>
     <script src="resources/certsurvey.js"></script>
     <script src="resources/bootstrap.min.js"></script>
+    <script src="resources/i18next.min.js" ></script>
+    <script src="resources/jquery-i18next.min.js" ></script>
+    <script src="resources/i18nextXHRBackend.js"></script>
+   	
+    <script src="resources/global.js"></script>
    
-</head>
+</head>F
   <body>
     <!-- 001 Starts here -->
     	<div id="topnav"></div>
     <!-- 001 Starts here -->
     <div class="container">
 	    <div id="TitleArea">
-	        <h1>OpenChain Self Certification Survey</h1>
+	        <h1 class="translate" data-i18n="Survey_title">OpenChain Self Certification Survey</h1>
 	    </div>
-	    <h3 class="sub-title-area">
-	        Specification Version <span id="specVersion"></span>
-	        (Survey Version <span id="surveyVersion"></span>)
+	    <h3 class="sub-title-area" >
+	        <span class="translate" data-i18n="Survey Version">Specification Version</span> <span id="specVersion"></span>
+	        <span class="translate" data-i18n="Survey Version">(Survey Version</span>  <span id="surveyVersion"></span>)
 	    </h3>
 	    
 	    <div id="CertForm">
@@ -42,12 +47,12 @@ Author(s): ViSolve 03/01/2019
 	    </div>
 	   
 	    <div id="CertFormButtons" class="btn-toolbar d-flex justify-content-center mr-40 mr-100" role="toolbar" aria-label="Toolbar with button groups">
-		  <div class="btn-group mr-2" role="group" aria-label="First group"><button id="btSaveAnswers" type="button" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;Save Answers</button></div>
-		  <div class="btn-group mr-2" role="group" aria-label="Second group"><button id="btSaveAndSubmit" type="button" class="btn btn-success"><i class="fa fa-paper-plane" aria-hidden="true"></i>&nbsp;Save and Submit</button></div>
-		  <div class="btn-group mr-2" role="group" aria-label="Third group"><button id="btUnSubmit" type="button" class="btn btn-danger"><i class="fa fa-ban" aria-hidden="true"></i>&nbsp;Unsubmit</button></div>
-		  <div class="btn-group mr-2" role="group" aria-label="First group"><button id="btDownloadAnswers" type="button" class="btn btn-login"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;Download Answers</button></div>
-		  <div class="btn-group mr-2" role="group" aria-label="Second group"><button id="btResetAnswers" type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i>&nbsp;Reset survey</button></div>
-		  <div class="btn-group mr-2" role="group" aria-label="Third group"><button id="btSelectVersion" type="button" class="btn btn-cancel"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;Select Version</button></div>
+		  <div class="btn-group mr-2" role="group" aria-label="First group"><button id="btSaveAnswers" type="button" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Save Answers">Save Answers</span></button></div>
+		  <div class="btn-group mr-2" role="group" aria-label="Second group"><button id="btSaveAndSubmit" type="button" class="btn btn-success"><i class="fa fa-paper-plane" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Save and Submit">Save and Submit</span></button></div>
+		  <div class="btn-group mr-2" role="group" aria-label="Third group"><button id="btUnSubmit" type="button" class="btn btn-danger"><i class="fa fa-ban" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Unsubmit">Unsubmit</span></button></div>
+		  <div class="btn-group mr-2" role="group" aria-label="First group"><button id="btDownloadAnswers" type="button" class="btn btn-login"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Download Answers">Download Answers</span></button></div>
+		  <div class="btn-group mr-2" role="group" aria-label="Second group"><button id="btResetAnswers" type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Reset">Reset survey</span></button></div>
+		  <div class="btn-group mr-2" role="group" aria-label="Third group"><button id="btSelectVersion" type="button" class="btn btn-cancel"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Select Version">Select Version</span></button></div>
 		  
 		</div>
 	
@@ -55,11 +60,11 @@ Author(s): ViSolve 03/01/2019
 	
     <div id="selectversion" title="Select Version">
 	    <form>    
-	        Select the specification version.
+	        <span class="translate" data-i18n="select_version_content">Select the specification version.</span>
 	        <fieldset>
 	            <table>
 	                <tr>
-	                    <td style="text-align: right; padding: 5px"><label for="versionSelect">Version</label></td>
+	                    <td style="text-align: right; padding: 5px"><label for="versionSelect" class="translate" data-i18n="version" >Version</label></td>
 	                    <td style="text-align: left; padding: 5px"><select id="versionSelect"></select></td>
 	                </tr>
 	            </table>
@@ -70,11 +75,11 @@ Author(s): ViSolve 03/01/2019
     </div>
     <div id="resetsurvey" title="Reset Survey">
       <form>
-    This will delete all answers and start a new survey with the latest survey version.  Are you sure you want to continue? 
+    <span class="translate" data-i18n="reset_survey_content">This will delete all answers and start a new survey with the latest survey version.  Are you sure you want to continue? </span>
         <fieldset>
             <table style="width: 100%">
                 <tr>
-                    <td style="text-align: right; padding: 5px"><label for="resetVersionSelect">Version</label></td>
+                    <td style="text-align: right; padding: 5px"><label for="resetVersionSelect" class="translate" data-i18n="version"  >Version</label></td>
                     <td style="text-align: left; padding: 5px"><select id="resetVersionSelect"></select></td>
                 </tr>
             </table>
@@ -87,7 +92,6 @@ Author(s): ViSolve 03/01/2019
     <div id="errors"></div>
     <div id="status"></div>
     <div id="resendveify"></div>
-   
     <div id="footer-outer"></div>
   </body>
 </html>

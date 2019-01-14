@@ -27,7 +27,7 @@
 
   "COMMENT_2": "/****************************** TRANSLATIONS FOR THE NAVIGATION PAGE IS GIVEN BELOW************************************/",
  
-  "Comforming Submission":"Comforming Submission",
+  "Conforming Submission":"Conforming Submission",
   "Sign in":"Sign in",
   "Sign up":"Sign up",
   "Online Self-Certification":"Online Self-Certification",
@@ -67,6 +67,28 @@
   "Specification Version":"Specification Version",
   "Contact Email":"Contact Email",
   "Contact Name":"Contact Name",
+  "Not Available" : "Not Available",
+  "sEmptyTable":     "No data available in table",
+  "sInfo":           "Showing _START_ to _END_ of _TOTAL_ entries",
+  "sInfoEmpty":      "Showing 0 to 0 of 0 entries",
+  "sInfoFiltered":   "(filtered from _MAX_ total entries)",
+  "sInfoPostFix":    "",
+  "sInfoThousands":  ",",
+  "sLengthMenu":     "Show _MENU_ entries",
+  "sLoadingRecords": "Loading...",
+  "sProcessing":     "Processing...",
+  "sSearch":         "Search:",
+  "sZeroRecords":    "No matching records found",
+  "oPaginate": {
+		"sFirst":    "First",
+		"sLast":     "Last",
+		"sNext":     "Next",
+		"sPrevious": "Previous"
+	},
+	"oAria": {
+		"sSortAscending":  ": activate to sort column ascending",
+		"sSortDescending": ": activate to sort column descending"
+	},
 
   "COMMENT_5": "/****************************** TRANSLATIONS FOR THE SIGN IN PAGE IS GIVEN BELOW*********(title)***************************/",
 
@@ -94,7 +116,6 @@
  
   "Update Profile":"Update Profile",
   "Save Changes":"Save Changes",
-
   "success":"Profile updated successfully",
   "Updated":"Updated",
   "ok":"ok",
@@ -129,6 +150,7 @@
   "Summary-history-add" : "survey version/languages will be added",
   "no-update" :"No survey/versions were updated",
   "no-new-add" : "No survey/versions were added",
+  "answered out of" : "answered out of",
   
 
   "COMMENT_10": "/****************************** TRANSLATIONS FOR THE Online Self-Certification PAGE IS GIVEN BELOW*********(title,Specification Version )***************************/",
@@ -143,6 +165,47 @@
   "Select Version":"Select Version",
   "select_version_content":" Select the specification version.",
   "Version":"Version",
-  "reset_survey_content" : "This will delete all answers and start a new survey with the latest survey version.  Are you sure you want to continue?"
-    
+  "reset_survey_content" : "This will delete all answers and start a new survey with the latest survey version.  Are you sure you want to continue?",
+  "Yes" : "Yes",
+  "No" : "No",
+  
+   "COMMENT_11": "/****************************** TRANSLATIONS FOR RESET PASSWORD PAGE IS GIVEN BELOW***********(Username,Password,Re-Enter Password,Reset Password)*************************/",
+
+   "Password Reset" :"Password Resetklkj",
+   
+   
+   "COMMENT_12": "/****************************** TRANSLATIONS FOR PASSWORD RESET INVALID PAGE IS GIVEN BELOW************************************/",
+   
+   "Password-reset-title":"Password Reset Invalid",
+   "Password-reset-invalid-content":"The password reset link is either invalid or expired.  You can try resetting the password again or contact the OpenChain team for assistance.",
+   
+   
+   "COMMENT_13": "/****************************** TRANSLATIONS FOR PASSWORD RESET REQUEST PAGE IS GIVEN BELOW************************************/",
+   
+   "Password-reset-request-title": "Password Reset Request",
+   "Password-reset-request-content": "An email with a link to reset your password has been sent.  If you do not see the email, please check your junk email folder.  The link will expire in 24 hours.",
+   
+   
+   "COMMENT_14": "/****************************** TRANSLATIONS FOR PASSWORD RESET SUCCESS PAGE IS GIVEN BELOW************************************/",
+   
+   "Password-reset-success-title": "Password Reset Request",
+   "Password-reset-success-content": "An email with a link to reset your password has been sent.  If you do not see the email, please check your junk email folder.  The link will expire in 24 hours.",
+   
+   "COMMENT_15": "/****************************** TRANSLATIONS FOR REGISTRATION SUCCESS PAGE IS GIVEN BELOW************************************/",
+   
+   "Reg-success-title" : "Registration Successful",
+   "Reg-success-content" :"You are now successfully registered.  Please login using the menu above to continue to the self certification.",
+   
+   "COMMENT_16": "/****************************** TRANSLATIONS FOR REGISTRATION FAILED PAGE IS GIVEN BELOW************************************/",
+   
+   "Reg-failed-title" : "Registration Failed",
+   "Reg-failed-content" :"Something seems to have gone wrong in the registration. The registration may have expired. Please contact the OpenChain team for additional help.",
+   
+   
+   "COMMENT_17": "/****************************** TRANSLATIONS FOR SIGNUP SUCCESS PAGE IS GIVEN BELOW************************************/",
+   
+   "signup-success-title":"OpenChain Self Certification Signup",
+   "Verification Email" : "Verification Email",
+   "signup-success-content" : "You should receive an email from no-reply@conformance.openchainproject.org sent to the email specified in the sign-up form. Click on the link provided to complete the registration process. If you do not receive an email, check your spam folder and add no-reply@conformance.openchainproject.org to your trusted email list."
+   
 }

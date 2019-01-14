@@ -77,7 +77,7 @@ function getQuestionFormHtml(questions) {
 				html += ' subquestion-of-';
 				html += questions[i].subQuestionNumber;
 			}
-			html += '"  value="yes" />Yes';
+			html += '"  value="yes" /><span class="translate" data-i18n="Yes">Yes</span>';
 			html += '</label></div>';
 			
 			html += '<div class="form-check custom-checkbox"><label class="form-check-label">';		
@@ -86,7 +86,7 @@ function getQuestionFormHtml(questions) {
 				html += ' subquestion-of-';
 				html += questions[i].subQuestionNumber;
 			}
-			html += '" value="no" />No';
+			html += '" value="no" /><span class="translate" data-i18n="No">No</span>';
 			html += '</label></div></td>';
 			
 			html += '<td class="answer_cell pad_cell"></td>';
@@ -101,7 +101,7 @@ function getQuestionFormHtml(questions) {
 		} else {
 			html += '<td class="answer_cell pad_cell"><p id="question-pad">';
 		}
-		html+= questions[i].question + '</p></td>\n';
+		html+=questions[i].question +  '</p></td>\n';
 
 		html += '</tr>\n';
 	}
@@ -217,7 +217,7 @@ function updateSectionHtml(section, numQuestions, numAnswers) {
 	var headerSectionDivId = 'h_' + sectionId;
 	var headerDiv = section.parent().find('#'+headerSectionDivId);
 	var html = String(numAnswers);
-	html += ' answered out of ';
+	html += ' <span class="translate" data-i18n="answered out of" > answered out of </span> ';
 	html += String(numQuestions);
 	headerDiv.html(html);
 }
@@ -443,8 +443,8 @@ $(document).ready( function() {
 			        }
 			    	}]
 			    
-			}).html( 'By clicking "submit" you confirm:<ol type="1"><li>Your answers to the Conformance Self-Certification Questionnaire are accurate and verifiable.</li><li>Your answers reflect your adherence to the OpenChain Specification.</li></ol>');
-	});
+			}).html( '<span class="confirm-submit-content">By clicking "submit" you confirm:</span><ol type="1"><li>Your answers to the Conformance Self-Certification Questionnaire are accurate and verifiable.</li><li>Your answers reflect your adherence to the OpenChain Specification.</li></ol>');
+	});           
 	$("#btUnSubmit").button();
 	$("#btUnSubmit").click(function(event) {
 	      event.preventDefault();

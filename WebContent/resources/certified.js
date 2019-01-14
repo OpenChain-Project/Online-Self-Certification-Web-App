@@ -25,7 +25,7 @@ function loadCertifiedTable() {
 
 function fillCertifiedTable(submissions) {
 	$("#certified-table").empty();
-	var html = '<thead><tr><th class="cert-table-cell all" data-priority="1">Organization</th><th class="cert-table-cell none">Specification Version</th><th class="cert-table-cell none">Contact Email</th><th class="cert-table-cell none" data-priority="2">Contact Name</th></tr></thead>\n<tbody>';
+	var html = '<thead><tr><th class="cert-table-cell all translate" data-i18n="Organization" >Organization</th><th class="cert-table-cell none translate" data-i18n="Specification Version">Specification Version</th><th class="cert-table-cell none translate" data-i18n="Contact Email">Contact Email</th><th class="cert-table-cell none translate" data-i18n="Contact Name">Contact Name</th></tr></thead>\n<tbody>';
 	for (var i = 0; i < submissions.length; i++) {
 
 		if (submissions[i].approved) {
@@ -44,13 +44,13 @@ function fillCertifiedTable(submissions) {
 			if (submissions[i].user.emailPermission) {
 				html += submissions[i].user.email;
 			} else {
-				html += "Not Available";
+				html += '<span class="translate" data-i18n="Not Available" >Not Available</span>';
 			}
 			html += '</td><td >';
 			if (submissions[i].user.namePermission) {
 				html += submissions[i].user.name;
 			}else {
-				html += "Not Available";
+				html += '<span class="translate" data-i18n="Not Available" >Not Available</span>';
 			}			
 			html += '</td></tr>\n';
 			
@@ -64,7 +64,13 @@ function fillCertifiedTable(submissions) {
 	
 	//******************** 001 starts here *******************//
 	$('#certified-table').DataTable({
-		"sDom": '<"top"f>rt<"bottom"lpi><"clear">'
+		"sDom": '<"top"f>rt<"bottom"lpi><"clear">',
+		"language": {
+			
+            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
+        }
+	
+		
 	});
 	//******************** 001 ends here *******************//
 	
