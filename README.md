@@ -8,6 +8,8 @@ answers are stored.
 The UI uses jQuery and a jQuery UI front-end.  The primary style sheet is located 
 in the WebContent/resources/style directory.
 
+The JSON File for Internationalization is located in the WebContent/resources/locales/lang/translation file.
+
 Please feel free to test this code, submit issues, and help make Self-Certification
 around the OpenChain Specification easier for everyone.
 

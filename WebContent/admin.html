@@ -34,38 +34,14 @@ Author(s): ViSolve 03/01/2019
     <div id="TitleArea">
         <h1 class="translate" data-i18n="Admin_title">OpenChain Self Certification Administration</h1>
     </div>
-    <h2 class="text-center sub-title-area translate" data-i18n="Site Status" >Site Status</h2>
-    <p class="text-center"> Site Software Version: <span id="software-version"></span> </p><br />
-    <h2 class="sub-heading translate" data-i18n="Manage Survey Question Content" >
-       	Manage Survey Question Content       
-  	</h2>	
     
-			    <form>
-				  <div class="form-row d-flex justify-content-center container">
-				    <div class="col-md-3">
-				      <label class="mr-sm-2 git-tag translate" for="inlineFormCustomSelect" data-i18n="Git Tag">Git Tag</label>
-		      		  <select class="custom-select mr-sm-10 git-select" id="gitTag" name="gitTag" class="git-tag"> </select>
-				    </div>
-				    <div class="col-md-3 mr-30">
-				      <input type="text" class="form-control custom-input" name="gitCommit" id="gitCommit" required>
-				      <label class= "custom-label git-tag translate" for="gitCommit" data-i18n="Git Commit">Git Commit</label>
-				    </div>
-				  </div>
-				</form>
-    		<div class="row d-flex justify-content-center">
-    		    <div class="btn-toolbar d-flex justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
-				   <div class="btn-group" role="group" aria-label="second group">
-				        <button id="btUpdateSurvey" type="button" class="btn btn-info mr-bt15" data-toggle="modal" data-target="#UpdateSurveyModal" ><i class="fa fa-refresh"></i> &nbsp;<span class="translate" data-i18n="Update Survey Questions">Update Survey Questions</span></button>
-				   </div>
-				</div>
-			</div>
-	        
-  
+    
+    
     <h2 class="sub-heading text-center translate" data-i18n="Submission Status">Submission Status</h2>
     <div id="submission-status-loading">
         Loading <img src="resources/loading.gif" alt="Loading" class="loading">
     </div>
-    <h3 class="sub-heading translate" data-i18n="Submitted Awaiting Approval">Submitted Awaiting Approval</h3>
+    <h3 class="sub-heading translate" data-i18n="Submitted Awaiting Approval">Awaiting Approval</h3>
     <!-- 002 starts here -->
     <div class="table-responsive">
 	    <table id="submitted-awaiting-approval" class="table table-hover">
@@ -84,7 +60,7 @@ Author(s): ViSolve 03/01/2019
 			</div>
 		</div>
     </div>    
-    <h3 class="sub-heading translate" data-i18n="Submitted Rejected"> Submitted Rejected</h3>
+    <h3 class="sub-heading translate" data-i18n="Submitted Rejected">Rejected</h3>
     <!-- 002 starts here -->
     <div class="table-responsive">
 	    <table id="submitted-rejected" class="table table-hover">
@@ -123,12 +99,34 @@ Author(s): ViSolve 03/01/2019
     <h3 class="sub-heading translate" data-i18n="Not Submitted">Not Submitted</h3>
     
     <!-- 002 starts here -->
-    <div class="table-responsive mr-100">
+    <div class="table-responsive">
 	    <table id="not-submitted" class="table table-hover">
 	    </table>
 	</div>
     <!-- 002 ends here -->
+    <h2 class="sub-heading translate" data-i18n="Edit Conformance Questions" >
+       	Edit Conformance Questions       
+  	</h2>	<br />
     
+			    <form>
+				  <div class="form-row container">
+				    <div class="col-md-4">
+				      <label class="mr-sm-2 git-tag translate" for="inlineFormCustomSelect" data-i18n="Git Tag">Git Tag</label>
+		      		  <select class="custom-select mr-sm-10 git-select" id="gitTag" name="gitTag" class="git-tag"> </select>
+				    </div>
+				    <div class="col-md-4 mr-30">
+				      <input type="text" class="form-control custom-input" name="gitCommit" id="gitCommit" required>
+				      <label class= "custom-label git-tag translate" for="gitCommit" data-i18n="Git Commit">Git Commit</label>
+				    </div>
+				    <div class="col-md-4 mr-30 d-flex justify-content-center">
+				      <div class="btn-group" role="group" aria-label="second group">
+				        <button id="btUpdateSurvey" type="button" class="btn btn-info mr-bt15" data-toggle="modal" data-target="#UpdateSurveyModal" ><i class="fa fa-refresh"></i> &nbsp;<span class="translate" data-i18n="Update Survey Questions">Update Survey Questions</span></button>
+				      </div>
+				    </div>
+				  </div>
+				</form>
+    <h5 class="text-center sub-title-area translate" data-i18n="Site Status" >Site Status</h5>
+    <p class="text-center mr-100"> Site Software Version: <span id="software-version"></span> </p><br />
     <div id="errors"></div>
     <div id="status"></div>
     <div id="resendveify"></div>

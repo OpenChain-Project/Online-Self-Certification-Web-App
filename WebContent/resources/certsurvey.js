@@ -146,14 +146,15 @@ function getSurvey() {
 	    	var html = '';
 	    	for ( var i = 0; i < sections.length; i++ ) {
 	    		var divReference = 'section_' + sections[i].name;
-	    		html += '<h3>' + sections[i].name + ': ' + sections[i].title + 
+	    		//html += '<h3>' + sections[i].name + ': ' + sections[i].title + 
+	    		html += '<h3>' + sections[i].title + 
 	    		'<div  style="float:right" id="h_'+divReference+'">[NUM] answered out of [NUM]</div>'+'</h3>\n';
 	    		html += '<div id="' + divReference + '" class="no-ofquestion">\n';
 	    		html += getQuestionFormHtml(sections[i].questions);
 	    		html += '</div>\n';
 	    	}
 	    	certForm.html(html);
-	    	certForm.accordion({heightStyle:"content",collapsible: true});
+	    	certForm.accordion({heightStyle:"content",collapsible: true,active: false});
 	    	// For each section, set any answers, tally the num answered, and 
 	    	// set set the button click to keep track of the numbers
 	    	for ( var i = 0; i < sections.length; i++ ) {
