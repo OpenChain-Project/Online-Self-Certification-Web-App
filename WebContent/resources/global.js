@@ -34,23 +34,9 @@
 		}
 	
 /*******************TO get the language of a previous page ***********************/
-//
-//		function toggle(e)
-//		{
-//			e.preventDefault();
-//			alert( $('#toggle').attr('href')+'?locale='+(url('?locale') || defaultLang));
-//			window.location.href = $('#toggle').attr('href')+'?locale='+(url('?locale') || defaultLang);
-//		}
+
 		$(document).ready(function () 
 				{
-
-//					 $(".append").on("click", function()
-//						{	
-//						 event.preventDefault();
-//						 window.location.href = $(this).attr('href')+'?locale='+(url('?locale') || defaultLang);
-//						 
-//						 
-//						});
 					 $(document).delegate('.append','click', function($this){ 
 						 event.preventDefault();
 						 window.location.href = $(this).attr('href')+'?locale='+(url('?locale') || defaultLang);
