@@ -35,11 +35,13 @@
 	
 /*******************TO get the language of a previous page ***********************/
 
-		function toggle(e)
-		{
-			e.preventDefault();
-			window.location.href = e.target.parentElement.getAttribute('href')+'?locale='+(url('?locale') || defaultLang);
-		}
+		$(document).ready(function () 
+				{
+					 $(document).delegate('.append','click', function($this){ 
+						 event.preventDefault();
+						 window.location.href = $(this).attr('href')+'?locale='+(url('?locale') || defaultLang);
+					 });
+				});
 
 /*****************Function to translate the HTML content***************************/
 	

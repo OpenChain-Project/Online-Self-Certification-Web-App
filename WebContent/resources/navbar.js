@@ -511,8 +511,8 @@ function createNavMenu() {
 	    		userHtml += '<li class="nav-item active" id="user-dropdown_signout"><a class="user-nav" id="toggle"><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign out">Sign out</span></a></li></ul></div></div>\n';
 	    	} else {
 	    	
-	    		userHtml += '<li class="nav-item active signin" ><a class="user-nav" href="login.html" id="toggle"><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign in">Sign in</span></a></li>\n';
-	    		userHtml += '<li class="nav-item active signin mb-0" ><a class="user-nav" href="signup.html" id="toggle"><i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign up">Sign up</span></a></li>\n';
+	    		userHtml += '<li class="nav-item active signin" ><a class="user-nav append" href="login.html" ><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign in">Sign in</span></a></li>\n';
+	    		userHtml += '<li class="nav-item active signin mb-0" ><a class="user-nav append" href="signup.html" ><i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign up">Sign up</span></a></li>\n';
 	    	}
 	    	$("#user-dropdown_menu").html(userHtml);	    	
 	    	languageHtml = '';
