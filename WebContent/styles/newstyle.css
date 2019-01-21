@@ -13,7 +13,7 @@
 /* Logo */
 
 .openchain-logo{
-	width:190px;
+	width:230px;
 	}
 
 /*Header Icons */	
@@ -54,8 +54,8 @@
 /* Navigation Menus like login,update profile,signout,signup*/	
 
 .user-nav{
-	margin-right: 30px;
 	color: white !important;
+	margin-right:30px !important;
 	} 
 	
 /* color changes on header menu hover */	
@@ -63,6 +63,7 @@
 .user-nav:hover, .nav-link:hover {
 	text-decoration: none;
 	color:#4791FF !important;
+	
 	}
 	
 /* account, Language menu attribues */
@@ -76,23 +77,23 @@
 	}
 
 /* account, Language sub - menu attribues */	
-.dropdown-content {
+.dropdown-menu {
     display: none;
     position: absolute;
     background-color: #222;
     min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    padding: 12px 16px;
+    border:none;
+  	padding: 12px 0px 0px 16px !important;
     z-index: 1;
-    width: 180px;
+    width: 200px;
     right:0px;
  	}
  	
-.dropdown-content > ul >li{
+.dropdown-menu > ul >li{
 	margin-bottom: 5px;
 	}
 	
-.dropdown-content > ul >li > a{
+.dropdown-menu > ul >li > a{
 	cursor:pointer;
 	font-weight: normal;
 	}
@@ -102,9 +103,14 @@
 	}
 .language-setup-dropdown{
 	display:grid;
+	padding: 0 !important;
 	}
 .language-setup-dropdown >li :hover {
 	color: #4791FF !important;
+}
+.language-setup-dropdown :hover
+{
+	background-color:#222;
 }	
 .update-profile-dropdown{
 	width:200px;
@@ -135,7 +141,7 @@
 	margin-top:7px;
 	text-decoration: none;
 	font-size: 15px;
-    padding: 3px;
+    padding: 3px 3px 3px 0px ;
     font-weight: normal;
     float: left;
 	}
@@ -509,6 +515,9 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{
 .ui-icon, .ui-widget-content .ui-icon {
     background-image: url(../resources/jquery-ui/images/ui-icons_ffffff_256x240.png);
 }
+.question-revision{
+	    font-weight: bold;
+}
 /*************************************** SURVEY CSS********************************************/
 
 
@@ -543,8 +552,12 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{
     justify-content: flex-end;
 }
 .pad-zero{
-	padding:0px;
+	padding: 0px;
 }
+#certified-table_filter > label {
+	text-align: left;
+}
+#certified-table_info{float:right;}
 /************************************* Comforming Organisation pages ************************/
 
 
@@ -599,7 +612,7 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{
 	}
 	
 	.language-setup {
-		margin-top: 15px;
+		margin-top: 20px;
 	}
 	
 	/**** FOOTER ***/

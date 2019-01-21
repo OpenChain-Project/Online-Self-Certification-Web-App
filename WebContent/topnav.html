@@ -4,7 +4,8 @@
 <script src="resources/i18nextXHRBackend.js"></script>
 <script src="resources/lib/url/url.min.js"></script>  
 <script src="resources/global.js"></script>    
- <nav class="navbar navbar-expand-lg navbar-dark nav-bg-dark navbar-fixed-top">
+
+<nav class="navbar navbar-expand-lg navbar-dark nav-bg-dark navbar-fixed-top">
 	<div class="container container_padding ">
 	  <a class="navbar-brand openchain-logo append" href="index.html"><img src ="images/logo_openchain.png"></a>
 	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,11 +22,11 @@
 			    <li><div><ul id="user-dropdown_menu"></ul></div></li>
 			 	<li class="nav-item active">
 			    <div class="dropdown">
-				  <span><i class="fa fa-language language-setup" aria-hidden="true"></i>  <i class="fa fa-caret-down" aria-hidden="true"></i></span>
-				  <div class="dropdown-content">
+				  <span class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-language language-setup" aria-hidden="true"></i></span>
+				  <div class="dropdown-menu dropdown-menu-right">
 				  	<ul class="language-setup-dropdown">
-					  	<li><a onclick="changeLng('en')" class="translate" data-i18n="English">English (en)</a></li>
-					  	<li><a onclick="changeLng('ru')" class ="translate" data-i18n="Russian">Russian (ru)</a></li>
+					  	<li><a onclick="changeLng('en')" class="dropdown-item translate" data-i18n="English">English (en)</a></li>
+					  	<li><a onclick="changeLng('ru')" class ="dropdown-item translate" data-i18n="Russian">Russian (ru)</a></li>
 				  	</ul>
 			       </div>
 				</div> 

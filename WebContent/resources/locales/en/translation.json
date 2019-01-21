@@ -23,6 +23,8 @@
   "Getting Started_content_4":"Have an authorized representative complete the web-based Online Self-Certification by answering all the questions.",
   "Getting Started_content_5":"Fill out the submission form.",
   "Getting Started_content_6":"Archive a Reference Copy of all Verification Artifacts as a record in support of the Online Self-Certification.",
+  "offline-conformance-pdf" : "Do you prefer to work with a printed checklist? You can download the offline conformance handbook",
+  "here" : "here",
 
 
   "COMMENT_2": "/****************************** TRANSLATIONS FOR THE NAVIGATION PAGE IS GIVEN BELOW************************************/",
@@ -45,6 +47,8 @@
   "Chinese":"Chinese",
   "Resend Verification" : "Resend Verification",
   "Error" : "Error",
+  "verify-username" : "You have not verified the username.  Would you like to resend a verify email to the email address you registered?",
+  "profile-notification" : "Profile updated  successfully",
 
   "COMMENT_3": "/****************************** TRANSLATIONS FOR FOOTER PAGE IS GIVEN BELOW************************************/",
 
@@ -151,12 +155,15 @@
   "no-update" :"No survey/versions were updated",
   "no-new-add" : "No survey/versions were added",
   "answered out of" : "answered out of",
-  
+  "Warning" : "Warning",
+  "survey-updated" : "survey version/languages were updated",
+  "survey-added" : "survey version/languages were added",
+  "survey-warning" : "with the following warnings",
 
-  "COMMENT_10": "/****************************** TRANSLATIONS FOR THE Online Self-Certification PAGE IS GIVEN BELOW*********(title,Specification Version )***************************/",
+  "COMMENT_10": "/****************************** TRANSLATIONS FOR THE QUSETIONNAIRE PAGE IS GIVEN BELOW*********(title,Specification Version )***************************/",
 
-  "Survey_title":"OpenChain Self Certification Survey",
-  "Survey Version":"Survey Version",
+  "Survey_title":"OpenChain Self Certification Questionnaire",
+  "Questionnaire Revision":"Questionnaire Revision",
   "Save Answers":"Save Answers",
   "Save and Submit":"Save and Submit",
   "Unsubmit":"Unsubmit",
@@ -168,6 +175,12 @@
   "reset_survey_content" : "This will delete all answers and start a new survey with the latest survey version.  Are you sure you want to continue?",
   "Yes" : "Yes",
   "No" : "No",
+  "Save-ans-dialog" : "Saved Successful",
+  "Responses Unsubmitted" : "Responses Unsubmitted",
+  "submission-notice" : "Thank you - your information has been submitted",
+  "confirm-submit-dialog" : "By clicking 'submit' you confirm:",
+  "confirm-submit-subdialog1" : "Your answers to the Conformance Self-Certification Questionnaire are accurate and verifiable.",
+  "confirm-submit-subdialog2" : "Your answers reflect your adherence to the OpenChain Specification.",
   
    "COMMENT_11": "/****************************** TRANSLATIONS FOR RESET PASSWORD PAGE IS GIVEN BELOW***********(Username,Password,Re-Enter Password,Reset Password)*************************/",
 

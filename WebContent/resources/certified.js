@@ -66,22 +66,22 @@ function fillCertifiedTable(submissions) {
 	$('#certified-table').DataTable({
 		"sDom": '<"top"f>rt<"bottom"lpi><"clear">',
 		"language": {
-			
-            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
+			"url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
         }
 	
 		
 	});
 	//******************** 001 ends here *******************//
+
 	$( ".bottom" ).addClass( "row" );            
 	$( "#certified-table_length").addClass( "col-md-3 custom-col");
 	$( "#certified-table_paginate").addClass( "col-md-9 custom-col pad-zero");
-	
-
-	
 }
 
 $(document).ready( function() {
 	loadCertifiedTable();
+	
+	
+
 	
 });

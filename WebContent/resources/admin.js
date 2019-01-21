@@ -48,7 +48,7 @@ function updateSurvey() {
 	    	lastUpdateCommit = json.commit;
 	    	var summaryHtml = "";
 	    	if ( json.warnings.length > 0 ) {
-	    		summaryHtml += "<h3>Warning:</h3>\n";
+	    		summaryHtml += "<h3 class='translate' data-i18n='Warning'> Warning <span>: </span> </h3>\n";
 	    		for (i in json.warnings) {
 	    			summaryHtml += "<p>";
 	    			summaryHtml += json.warnings[i];
@@ -112,11 +112,11 @@ function updateSurveyForReal( commit ) {
 	    	$( "#btUpdateSurvey" ).button( "enable" );
 	    	if ( json.status == "OK" ) {
 	    		var dialogText = json.surveyUpdateResult.versionsUpdated.length.toString();
-	    		dialogText += " survey version/languages were updated; ";
+	    		dialogText += "<p class='translate' data-18n='survey-updated'>survey version/languages were updated</p>; ";
 	    		dialogText += json.surveyUpdateResult.versionsAdded.length.toString();
-	    		dialogText += " survey version/languages were added";
+	    		dialogText += "<p class='translate' data-18n='survey-added'>survey version/languages were added </p>";
 	    		if ( json.surveyUpdateResult.warnings.length > 0 ) {
-	    			dialogText += " with the following warnings:";
+	    			dialogText += "<p class='translate' data-18n='survey-warning'> with the following warnings <span>:</span></p>";
 	    			for ( i in json.surveyUpdateResult.warnings ) {
 	    				dialogText += " '";
 	    				dialogText += json.surveyUpdateResult.warnings[i];
@@ -129,7 +129,7 @@ function updateSurveyForReal( commit ) {
 	    		    height: 250,
 	    		    width: 250,
 	    		    modal: true,
-	    		    dialogClass: 'success-dialog',
+	    		    dialogClass: 'success-dialog translate',
 	    		    buttons: {
 	    		        "Ok" : function () {
 	    		            $( this ).dialog( "close" );
@@ -153,7 +153,7 @@ function fillSubmissionStatusTable(submissions) {
 	$("#submitted-rejected").empty();
 	$("#not-submitted").empty();
 	$(".status-button").button("disable");
-	var submittedAwaitingApprovalHtml = '<thead><tr><th></th><th class="translate" data-i18n="">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
+	var submittedAwaitingApprovalHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
 	var submittedRejectedHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
 	var notSubmittedHtml = '<thead><tr><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
 	var submittedApprovedHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
@@ -392,7 +392,7 @@ $(document).ready( function() {
 	  height: 450,
 	  width: 400,
 	  modal: true,
-	  dialogClass: 'success-dialog',
+	  dialogClass: 'success-dialog translate',
 	  buttons: {
 	    "Update": function() {
 	      updateSurveyForReal( lastUpdateCommit );

@@ -293,14 +293,14 @@ function saveAll( showDialog ) {
 		    			resizable: false,
 		    		    height: 200,
 		    		    width: 200,
-		    		    dialogClass: 'success-dialog',
+		    		    dialogClass: 'success-dialog translate',
 		    		    modal: true,
 		    		    buttons: {
 		    		        "Ok" : function () {
 		    		            $( this ).dialog( "close" );
 		    		        }
 		    		    }
-		    		}).text( "Saved Successful" );
+		    		}).html( "<span class='translate' data-i18n='Save-ans-dialog'> Saved Successful </span>" );
 	    		}
 	    	} else {
 	    		displayError(json.error);
@@ -335,13 +335,13 @@ function unsubmit() {
 	    		    height: 200,
 	    		    width: 200,
 	    		    modal: true,
-	    		    dialogClass: 'success-dialog',
+	    		    dialogClass: 'success-dialog translate',
 	    		    buttons: {
 	    		        "Ok" : function () {
 	    		            $( this ).dialog( "close" );
 	    		        }
 	    		    }
-	    		}).text( "Responses Unsubmitted" );
+	    		}).html( "<span class='translate' data-i18n='Responses Unsubmitted'>Responses Unsubmitted</span>" );
 	    	} else {
 	    		displayError(json.error);
 	    	}
@@ -388,13 +388,13 @@ function finalSubmission() {
 	    		    height: 200,
 	    		    width: 200,
 	    		    modal: true,
-	    		    dialogClass: 'success-dialog',
+	    		    dialogClass: 'success-dialog translate',
 	    		    buttons: {
 	    		        "Ok" : function () {
 	    		            $( this ).dialog( "close" );
 	    		        }
-	    		    }
-	    		}).text( "Thank you - your information has been submitted" );
+	    		    } 
+	    		}).html( "<span class='translate' data-i18n='submission-notice' >Thank you - your information has been submitted</span>" );
 	    	} else {
 	    		$("#btSaveAndSubmit").button("enable");
 	    		$("#btSaveAnswers").button("enable");
@@ -428,7 +428,7 @@ $(document).ready( function() {
 			    height: 270,
 			    width: 350,
 			    modal: true,
-			    dialogClass: 'success-dialog',
+			    dialogClass: 'success-dialog translate',
 			    buttons: [{
 			    		text: "Agree",
 			    		click: function () {
@@ -444,7 +444,7 @@ $(document).ready( function() {
 			        }
 			    	}]
 			    
-			}).html( '<span class="confirm-submit-content">By clicking "submit" you confirm:</span><ol type="1"><li>Your answers to the Conformance Self-Certification Questionnaire are accurate and verifiable.</li><li>Your answers reflect your adherence to the OpenChain Specification.</li></ol>');
+			}).html( '<span class="confirm-submit-content translate" data-i18n="confirm-submit-dialog">By clicking "submit" you confirm:</span><ol type="1"><li class="translate" data-i18n="confirm-submit-subdialog1">Your answers to the Conformance Self-Certification Questionnaire are accurate and verifiable.</li><li class="translate" data-i18n="confirm-submit-subdialog2">Your answers reflect your adherence to the OpenChain Specification.</li></ol>');
 	});           
 	$("#btUnSubmit").button();
 	$("#btUnSubmit").click(function(event) {
@@ -494,7 +494,7 @@ $(document).ready( function() {
 	    height: 250,
 	    width: 330,
 	    modal: true,
-	    dialogClass: 'success-dialog',
+	    dialogClass: 'success-dialog translate',
 	    buttons: [{
 	    		text: "Yes",
 	    		click: function () {
@@ -574,7 +574,7 @@ $(document).ready( function() {
 	    height: 250,
 	    width: 330,
 	    modal: true,
-	    dialogClass: 'success-dialog',
+	    dialogClass: 'success-dialog translate',
 	    buttons: [{
 	    		text: "OK",
 	    		click: function () {

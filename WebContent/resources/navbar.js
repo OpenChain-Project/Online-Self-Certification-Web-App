@@ -118,7 +118,7 @@ function openResendVerificationDialog(username, password) {
 	    			    	password.val('');
 	    			    	if ( json.status == "OK" ) {
 	    			    		// redirect to the successful signup page
-	    			    		window.location = "signupsuccess.html";
+	    			    		window.location = "signupsuccess.html"+'?locale='+(url('?locale') || 'en');
 	    			    	} else {
 	    			    		displayError( json.error );
 	    			    	} 	
@@ -132,7 +132,7 @@ function openResendVerificationDialog(username, password) {
 	    		}
 	    	}]
 	    
-	}).text( "You have not verified the username.  Would you like to resend a verify email to the email address you registered?" );
+	}).html( "<span class='translate' data-i18n='verify-username' >You have not verified the username.  Would you like to resend a verify email to the email address you registered?" );
 }
 
 function loginUser() {
@@ -163,9 +163,10 @@ function loginUser() {
 		    	password.val('');
 		    	if ( json.status == "OK" ) {
 		    		if (json.admin) {
-		    			window.location = "admin.html";
+		    			
+		    			window.location = "admin.html"+'?locale='+(url('?locale') || 'en');
 		    		} else {
-		    			window.location = "survey.html";
+		    			window.location = "survey.html"+'?locale='+(url('?locale') || 'en');
 		    		}
 		    	} else if (json.status == "NOT_VERIFIED") {
 		    		openResendVerificationDialog(username, password);
@@ -211,7 +212,7 @@ function handleError(xhr, status, errorThrown, msg) {
 	}
 	if ( xhr.status == 401 ) {
 		// Redirect to login page
-		window.location="login.html";
+		window.location="login.html"+'?locale='+(url('?locale') || 'en');
 	} else {
 		displayError( msg );
         console.log( "Error: " + xhr.responseText );
@@ -239,7 +240,7 @@ function signout() {
 	    			certForm.empty();
 	    		}
 	    		// redirect to home
-	    		window.location = "index.html";
+	    		window.location = "index.html"+'?locale='+(url('?locale') || 'en');
 	    	} else {
 	    		displayError( json.error );
 	    	} 	
@@ -324,7 +325,7 @@ function updateUser(username, password, name, address, organization, email, okUs
 	    			        $('#updateprofileModal').modal('hide');
 	    				      }
 	    		   }
-	    	  }).text( "Profile updated  successfully" );
+	    	  }).html( " <span class='translate' data-i18n='profile-notification'>Profile updated  successfully" );
 	    	} else {
 	    		displayError( json.error );
 	    	} 	
@@ -401,7 +402,7 @@ function signup(username, password, name, address, organization, email, approveU
 	    success: function( json ) {
 	    	if ( json.status == "OK" ) {
 	    		// redirect to the successful signup page
-	    		window.location = "signupsuccess.html";
+	    		window.location = "signupsuccess.html"+'?locale='+(url('?locale') || 'en');
 	    	} else {
 	    		displayError( json.error );
 	    	} 	
@@ -507,8 +508,9 @@ function createNavMenu() {
 	    success: function( json ) {
 	    	userHtml = '';
 	    	if (json.loggedIn) {
-	    		userHtml += '<li class="nav-item active"><div class="dropdown"><span><i class="fa fa-user" aria-hidden="true">&nbsp;</i><span class="translate" data-i18n="Account"> Account </span>&nbsp;<i class="fa fa-caret-down" aria-hidden="true"></i></span><div class="dropdown-content update-profile-dropdown"><ul><li class="nav-item active" data-toggle="modal" data-target="#updateprofileModal" id="user-dropdown_updateprofile"><a class="user-nav" id="toggle"><i class="fa fa-refresh"></i>&nbsp;<span class="translate" data-i18n="Update profile">Update profile</span></a></li>';
-	    		userHtml += '<li class="nav-item active" id="user-dropdown_signout"><a class="user-nav" id="toggle"><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign out">Sign out</span></a></li></ul></div></div>\n';
+	    		userHtml += '<li class="nav-item active"><div class="dropdown"><span class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true">&nbsp;</i><span class="translate" data-i18n="Account"> Account </span></span><div class="dropdown-menu dropdown-menu-right"><ul class="language-setup-dropdown"><li class="nav-item active" data-toggle="modal" data-target="#updateprofileModal" id="user-dropdown_updateprofile"><a class=" dropdown-item" ><i class="fa fa-refresh"></i>&nbsp;<span class="translate" data-i18n="Update profile">Update profile</span></a></li>';
+	    		userHtml += '<li class="nav-item active" id="user-dropdown_signout"><a class=" dropdown-item append" ><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign out">Sign out</span></a></li></ul></div></div>\n';
+	    	
 	    	} else {
 	    	
 	    		userHtml += '<li class="nav-item active signin" ><a class="user-nav append" href="login.html" ><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign in">Sign in</span></a></li>\n';
@@ -533,13 +535,13 @@ function createNavMenu() {
 	    		$( '#language-dropdown_launcher' ).text( LANGUAGES[DEFAULT_LANGUAGE] );
 	    	}
 	    	if (json.loggedIn) {
-	    		$("#surveylink").html('<li><a href="survey.html" id="toggle"><i class="fa fa-pencil"></i>&nbsp; <span class="translate" data-i18n="Online Self-Certification">Online Self-Certification</span>&nbsp;&nbsp;&nbsp;</a></li>');
+	    		$("#surveylink").html('<li><a class="append" href="survey.html" id="toggle"><i class="fa fa-pencil"></i>&nbsp; <span class="translate" data-i18n="Online Self-Certification">Online Self-Certification</span>&nbsp;&nbsp;&nbsp;</a></li>');
 	    	} else {
 	    		$("#surveylink").html('');
 	    	}
 	    	// Check for admin
 	    	if (json.admin && json.loggedIn) {
-	    		$("#adminlink").html('<li><a href="admin.html" id="toggle"><i class="fa fa-key" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Admin">Admin</span></a></li></div>');
+	    		$("#adminlink").html('<li><a class="append" href="admin.html" id="toggle"><i class="fa fa-key" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Admin">Admin</span></a></li></div>');
 	    	} else {
 	    		$("#adminlink").html('');
 	    	}
@@ -577,7 +579,7 @@ function requestPasswordReset() {
 		    	if ( json.status == "OK" ) {
 		    		$("#reset-password").dialog("close");
 		    		// redirect to the pw reset request page
-		    		window.location = "pwresetrequest.html";
+		    		window.location = "pwresetrequest.html"+'?locale='+(url('?locale') || 'en');
 		    	} else {
 		    		displayError( json.error );
 		    	} 	
@@ -617,7 +619,7 @@ $(document).ready( function() {
 	
 	// redirect to the index page
 	$("#index-home").click(function () {
-	window.location = "index.html";
+	window.location = "index.html"+'?locale='+(url('?locale') || 'en');
 	});
 	$("#topnav").load("topnav.html");
 	$("#footer-outer").load('footer.html');
