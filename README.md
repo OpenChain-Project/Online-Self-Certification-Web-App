@@ -8,7 +8,9 @@ answers are stored.
 The UI uses jQuery and a jQuery UI front-end.  The primary style sheet is located 
 in the WebContent/resources/style directory.
 
-The Internationalization uses I18Next Framework. The JSON File for Internationalization is located in the WebContent/resources/locales/lang/translation file.
+The front end Internationalization uses the I18Next Framework. The JSON File for Internationalization is located in the WebContent/resources/locales/lang/translation file.
+
+The back end Internationalization uses Java's built in support for localization.  The message resource files are located in the resources directory.  The messages_xx.properties files contain there translations where xx is the language for the translation.
 
 Please feel free to test this code, submit issues, and help make Self-Certification
 around the OpenChain Specification easier for everyone.
