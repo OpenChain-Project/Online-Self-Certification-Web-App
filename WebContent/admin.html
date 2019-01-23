@@ -59,7 +59,25 @@ Author(s): ViSolve 03/01/2019
 			  </div>
 			</div>
 		</div>
-    </div>    
+    </div>  
+    
+    <h3 class="sub-heading translate" data-i18n="Approved">Approved</h3>  
+    <!-- 002 starts here -->
+    <div class="table-responsive">
+	    <table id="submitted-approved" class="table table-hover">
+	    </table>
+	</div>
+	<!-- 002 ends here -->
+	
+	<div class="row d-flex justify-content-end">
+	    <div class="btn-toolbar d-flex justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
+		  <div class="btn-group mr-2" role="group" aria-label="First group">
+		    <button id="btUnApprove" type="button" class="btn btn-danger"> <i class="fa fa-ban" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="UnApprove Selected">Unapprove Selected</span></button>
+		  </div>
+		  
+		</div>
+	</div>
+      
     <h3 class="sub-heading translate" data-i18n="Submitted Rejected">Rejected</h3>
     <!-- 002 starts here -->
     <div class="table-responsive">
@@ -78,25 +96,8 @@ Author(s): ViSolve 03/01/2019
 		</div>
 	</div>
     
-    <h3 class="sub-heading translate" data-i18n="Approved">Approved</h3>
-    
-    <!-- 002 starts here -->
-    <div class="table-responsive">
-	    <table id="submitted-approved" class="table table-hover">
-	    </table>
-	</div>
-	<!-- 002 ends here -->
-	
-	<div class="row d-flex justify-content-end">
-	    <div class="btn-toolbar d-flex justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
-		  <div class="btn-group mr-2" role="group" aria-label="First group">
-		    <button id="btUnApprove" type="button" class="btn btn-danger"> <i class="fa fa-ban" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="UnApprove Selected">Unapprove Selected</span></button>
-		  </div>
-		  
-		</div>
-	</div>
-    
-    <h3 class="sub-heading translate" data-i18n="Not Submitted">Not Submitted</h3>
+
+    <h3 class="sub-heading translate" data-i18n="Incomplete">Incomplete</h3>
     
     <!-- 002 starts here -->
     <div class="table-responsive">
@@ -125,8 +126,9 @@ Author(s): ViSolve 03/01/2019
 				    </div>
 				  </div>
 				</form>
-    <h5 class="text-center sub-title-area translate" data-i18n="Site Status" >Site Status</h5>
-    <p class="text-center mr-100"> Site Software Version: <span id="software-version"></span> </p><br />
+    <br>
+    <p class="mr-100 text-center"><span class="translate" data-i18n="Site Software Version"> Site Software Version:</span>
+    <span id="software-version"></span></p> <br/>
     <div id="errors"></div>
     <div id="status"></div>
     <div id="resendveify"></div>

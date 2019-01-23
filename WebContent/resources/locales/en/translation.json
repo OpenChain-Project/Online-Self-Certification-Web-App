@@ -7,8 +7,6 @@
     "locale": "en"
   },
 
-  "ALDREADY DEFINED": "THE CONTENT WHICH IS ALREADY DEFINED IS MENTION AS (,) ",
-
   "COMMENT_1": "/****************************** TRANSLATIONS FOR THE INDEX PAGE IS GIVEN BELOW************************************/",
 
   "title": "OpenChain Self Certification",
@@ -68,6 +66,7 @@
   "Conforming Organizations":"Conforming Organizations",
   "Conforming Organizations_content":"The following organizations have self-certified conformance to the OpenChain ",
   "Organization":"Organization",
+  "Specification" : "Specification.",
   "Specification Version":"Specification Version",
   "Contact Email":"Contact Email",
   "Contact Name":"Contact Name",
@@ -112,6 +111,7 @@
   "Name":"Name",
   "Re-enter Password":"Re-enter Password",
   "Organization Postal Address":"Organization Postal Address",
+  "Sign Up":"Sign Up",
   "Sign Up_content_1":"My name and email may be shared on conformance page of the OpenChain website",
   "Sign Up_content_2":"I agree to the Linux Foundation",
   "Sign Up_content_2_T&C" : "Terms of Use",
@@ -141,7 +141,7 @@
   "UnReject Selected":"UnReject Selected",
   "Approved":"Approved",
   "UnApprove Selected":"UnApprove Selected",
-  "Not Submitted":"Not Submitted",
+  "Incomplete":"Incomplete",
   "User Name" : "User Name",
   "% Complete":"% Complete",
   "Score":"Score",
@@ -160,6 +160,9 @@
   "survey-added" : "survey version/languages were added",
   "survey-warning" : "with the following warnings",
 
+  "Site Software Version" : "Site Software Version",
+
+
   "COMMENT_10": "/****************************** TRANSLATIONS FOR THE QUSETIONNAIRE PAGE IS GIVEN BELOW*********(title,Specification Version )***************************/",
 
   "Survey_title":"OpenChain Self Certification Questionnaire",
@@ -168,7 +171,7 @@
   "Save and Submit":"Save and Submit",
   "Unsubmit":"Unsubmit",
   "Download Answers":"Download Answers",
-  "Reset":"Reset Survey",
+  "Reset":"Reset Questionnaire",
   "Select Version":"Select Version",
   "select_version_content":" Select the specification version.",
   "Version":"Version",
@@ -181,6 +184,13 @@
   "confirm-submit-dialog" : "By clicking 'submit' you confirm:",
   "confirm-submit-subdialog1" : "Your answers to the Conformance Self-Certification Questionnaire are accurate and verifiable.",
   "confirm-submit-subdialog2" : "Your answers reflect your adherence to the OpenChain Specification.",
+
+  "Ok":"Ok",
+  "Saved":"Saved",
+  "Confirm Submit":"Confirm Submit",
+  "Agree":"Agree",
+  "Reset Answers":"Reset Answers",
+
   
    "COMMENT_11": "/****************************** TRANSLATIONS FOR RESET PASSWORD PAGE IS GIVEN BELOW***********(Username,Password,Re-Enter Password,Reset Password)*************************/",
 

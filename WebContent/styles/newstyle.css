@@ -85,7 +85,6 @@
     border:none;
   	padding: 12px 0px 0px 16px !important;
     z-index: 1;
-    width: 200px;
     right:0px;
  	}
  	
@@ -277,7 +276,22 @@ input, textarea {
 	  font-size: 20px;
 	  background: #ecf0f1;
 	}
-
+.update-check-box
+{
+	width:auto;
+}
+.update-label
+{
+	color:black !important;
+	position: relative;
+    top: -5px !important;
+    left: 10px;
+}
+#dwnquestionnaire{color: #007bff;}
+.update-success-dialog
+{
+	z-index : 99999999 !important;
+}
 input:focus, textarea:focus{
 	  outline: none;
 	  border-color: none;
@@ -486,8 +500,7 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{
 }
 
 .ui-dialog.success-dialog .ui-dialog-titlebar-close{
-	background-color: transparent;
-	border: medium none;
+	display:none;
 }
 
 /* custom ok button in Error dialog */
@@ -704,9 +717,7 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{
 }
 
 @media (max-width: 320px) {
-	.checkbox-label{
-		width:250px;
-	}
+	
 	.dropdown-content {
 	   left: -16px;
     	width: 320px;
@@ -717,6 +728,9 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{
 	.ui-dialog.success-dialog{
     	left: 3% !important;
     }
+     .mr-100 {
+    margin-bottom: 150px;
+	}
 }
 @media (max-width: 375px) and (min-width: 321px) {
 	.checkbox-label{
@@ -729,7 +743,7 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{
 	 .dropdown-content > ul{
 		display:grid;
 	 }
-	 
+		 
 }
 
 @media (max-width: 425px) and (min-width: 376px) {
@@ -767,12 +781,20 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{
 	.update-profile-dropdown {
 	   left: 0px !important;
 	}
+	.navbar ul li {
+	    font-size: smaller;
+	}
 }
 @media only screen and (max-width: 40em) {
 	  .custom-radiobtn{
 	  		width:10% !important;
 	  }
  
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	.mr-top-20{
+		margin-top:20px;
+	}
 }
 /******************************************* Responsive Design ***********************************/
 
