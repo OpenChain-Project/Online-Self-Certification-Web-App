@@ -22,7 +22,6 @@
 var submitted, resetDialog, selectVersionDialog;
 
 function getQuestionFormHtml(questions) {
-	console.log(questions);
 	var html = '<div ><table class="questiontable ui-corner-all table table-hover ">\n';
 	var inSubQuestions = false;
 		for (var i = 0; i < questions.length; i++) {
@@ -94,7 +93,6 @@ function getQuestionFormHtml(questions) {
 				inSubQuestions = false;
 			}
 		}
-		console.log("ssss",isSubQuestion,inSubQuestions);
 		if (isSubQuestion) {
 			html += '<td class="tablebullet answer_cell"> <p id="question-pad" class="table-bullet" >';
 			
@@ -169,7 +167,7 @@ function getSurvey() {
 		    				// Fill in the existing value
 		    				if (myresponse.answer == 'Yes' && $(this).attr('value') == 'yes') {
 		    					$(this).prop('checked',true);
-		    					//console.log($(this));
+		    					
 		    					
 		    					a.addClass('fa-check-circle');
 		    				} else if (myresponse.answer == 'No' && $(this).attr('value') == 'no') {
@@ -257,7 +255,7 @@ function updateSectionQuestionCounts(section) {
 	
 	if (numQuestions == numAnswered){
 		$("#"+$(section).attr('aria-labelledby')).addClass("all-answered");
-		console.log();
+		
 		
 	}
 }
@@ -288,19 +286,30 @@ function saveAll( showDialog ) {
 	    	$("#btSaveAndSubmit").button("enable");
 	    	if (json.status == "OK") {
 	    		if ( showDialog ) {
+	    			
+	    			event.preventDefault();
+	    		      $( "#status" ).dialog().data( "uiDialog" )._title = function(title) {
+	    		    	    title.html( this.options.title );
+	    		    	};	    			
+   			
 	    			$( "#status" ).dialog({
-		    			title: "Saved",
+		    			title: '<span class="translate" data-i18n="Saved">Saved</span>',
 		    			resizable: false,
 		    		    height: 200,
 		    		    width: 200,
 		    		    dialogClass: 'success-dialog translate',
 		    		    modal: true,
-		    		    buttons: {
-		    		        "Ok" : function () {
+		    		    buttons: [{
+		    		    	text: "Ok",
+				    		"data-i18n": "Ok",
+				    		 click: function () { 
 		    		            $( this ).dialog( "close" );
 		    		        }
-		    		    }
+
+		    		    }]
 		    		}).html( "<span class='translate' data-i18n='Save-ans-dialog'> Saved Successful </span>" );
+	    			$('.translate').localize();
+
 	    		}
 	    	} else {
 	    		displayError(json.error);
@@ -422,8 +431,11 @@ $(document).ready( function() {
 	$("#btSaveAndSubmit").button();
 	$("#btSaveAndSubmit").click(function(event) {
 	      event.preventDefault();
+	      $( "#submitconfirm" ).dialog().data( "uiDialog" )._title = function(title) {
+	    	    title.html( this.options.title );
+	    	};
 	      $( "#submitconfirm" ).dialog({
-				title: "Confirm Submit",
+				title: '<span class="translate" data-i18n="Confirm Submit">Confirm Submit</span>',
 				resizable: false,
 			    height: 270,
 			    width: 350,
@@ -431,6 +443,7 @@ $(document).ready( function() {
 			    dialogClass: 'success-dialog translate',
 			    buttons: [{
 			    		text: "Agree",
+			    		"data-i18n": "Agree",
 			    		click: function () {
 			    			finalSubmission();
 			    			$( this ).dialog( "close" );
@@ -439,12 +452,16 @@ $(document).ready( function() {
 			    	},
 			    	{
 			    		text: "Cancel",
+			    		"data-i18n": "Cancel",
 			    		click: function () {
 			    			$( this ).dialog( "close" );
 			        }
 			    	}]
 			    
-			}).html( '<span class="confirm-submit-content translate" data-i18n="confirm-submit-dialog">By clicking "submit" you confirm:</span><ol type="1"><li class="translate" data-i18n="confirm-submit-subdialog1">Your answers to the Conformance Self-Certification Questionnaire are accurate and verifiable.</li><li class="translate" data-i18n="confirm-submit-subdialog2">Your answers reflect your adherence to the OpenChain Specification.</li></ol>');
+
+			}).html( '<span class="confirm-submit-content" data-i18n="confirm-submit-dialog">By clicking "submit" you confirm:</span><ol type="1"><li class="translate" data-i18n="confirm-submit-subdialog1">Your answers to the Conformance Self-Certification Questionnaire are accurate and verifiable.</li><li class="translate" data-i18n="confirm-submit-subdialog2">Your answers reflect your adherence to the OpenChain Specification.</li></ol>');
+	      $('.translate').localize();
+
 	});           
 	$("#btUnSubmit").button();
 	$("#btUnSubmit").click(function(event) {
@@ -478,6 +495,7 @@ $(document).ready( function() {
 		    	}
 		    	$( "#resetVersionSelect" ).html(items);
 		    	$( "#resetVersionSelect" ).val(maxVersion);
+		    	
 		    	resetDialog.dialog( "open" );
 		    	
 		    },
@@ -487,8 +505,18 @@ $(document).ready( function() {
 		});
 	  	
 	});
+	
+	
+	resetDialog = $( "#resetsurvey" ).dialog().data( "uiDialog" )._title = function(title) 
+	{
+	  	    title.html( this.options.title );
+	  	  $('#resetsurvey').dialog( "close" );
+	  	    
+	 };
+
 	resetDialog = $( "#resetsurvey" ).dialog({
-		title: "Reset Answers",
+				
+		title: '<span class="translate" data-i18n="Reset Answers">Reset Answers</span>',
 		autoOpen: false,
 		resizable: false,
 	    height: 250,
@@ -497,6 +525,7 @@ $(document).ready( function() {
 	    dialogClass: 'success-dialog translate',
 	    buttons: [{
 	    		text: "Yes",
+	    		"data-i18n":"Yes",
 	    		click: function () {
 	    			var certForm = $("#CertForm");
 	    			if (certForm.is(':ui-accordion')) {
@@ -531,6 +560,7 @@ $(document).ready( function() {
 	    	},
 	    	{
 	    		text: "Cancel",
+	    		"data-i18n":"Cancel",
 	    		click: function () {
 	    			$( this ).dialog( "close" );
 	        }
@@ -539,7 +569,8 @@ $(document).ready( function() {
 	});
 	$("#btSelectVersion").button();
 	$("#btSelectVersion").click(function(event) {
-	    event.preventDefault();
+		 
+	    
 	    $.ajax({
 		    url: "CertificationServlet",
 		    data: {
@@ -567,8 +598,16 @@ $(document).ready( function() {
 		});
 	  	
 	});
+	
+	selectVersionDialog = $( "#selectversion" ).dialog().data( "uiDialog" )._title = function(title) 
+	{
+	  	    title.html( this.options.title );
+	  	  $('#selectversion').dialog( "close" );
+	  	    
+	 };
 	selectVersionDialog = $( "#selectversion" ).dialog({
-		title: "Select Version",
+		//title: "Select Version",
+		title: '<span class="translate" data-i18n="Select Version">Select Version</span>',
 		autoOpen: false,
 		resizable: false,
 	    height: 250,
@@ -577,6 +616,7 @@ $(document).ready( function() {
 	    dialogClass: 'success-dialog translate',
 	    buttons: [{
 	    		text: "OK",
+	    		"data-i18n" : "Ok",
 	    		click: function () {
 	    			saveAll( false );
 	    			var certForm = $("#CertForm");
@@ -613,6 +653,7 @@ $(document).ready( function() {
 	    	},
 	    	{
 	    		text: "Cancel",
+	    		"data-i18n" : "Cancel",
 	    		click: function () {
 	    			$( this ).dialog( "close" );
 	        }

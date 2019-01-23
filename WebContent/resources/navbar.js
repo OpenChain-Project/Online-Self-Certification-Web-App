@@ -181,27 +181,38 @@ function loginUser() {
 		});
 	}
 }
-function displayError( error ) {	
+
+function displayError( error ) {
+	
+	event.preventDefault();
+    $( "#errors" ).dialog().data( "uiDialog" )._title = function(title) {
+  	    title.html( this.options.title );
+  	};	
+  	
+  	
 	$( "#errors" ).dialog({
-		title: "Error",
+		title: '<span class="translate" data-i18n="Error">Error</span>',
 		resizable: false,
 	    height: 250,
 	    width: 300,
 	    dialogClass: 'success-dialog translate',
 	    modal: true,
-	    buttons: {
-	        "Ok" : function () {
+	    buttons: [{
+	    	text: "Ok",
+    		"data-i18n": "Ok",
+    		 click: function () { 
 	            $( this ).dialog( "close" );
 	        }
-	    }
+	    }]
 	}).text( error ).parent().addClass( "ui-state-error" );
+	$('.translate').localize();
 }
 
 function handleError(xhr, status, errorThrown, msg) {
 	if ( msg === undefined ) {
 		var responseType = xhr.getResponseHeader("content-type") || "";
 		if ( responseType.indexOf('text') > 1 && xhr.responseText != null && xhr.responseText!= "" ) {
-			msg = "Sorry - there was a problem loading data: " + xhr.responseText;
+			msg = "Sorry - there was a problem loading data:" + xhr.responseText;
 		} else if ( responseType.indexOf('json') > 1 && xhr.responseText != null && xhr.responseText!= "" ) {
 			response = JSON.parse(xhr.responseText);
 			msg = response.error;		
@@ -318,14 +329,16 @@ function updateUser(username, password, name, address, organization, email, okUs
 	    			height: 200,
 	    			width: 200,
 	    			modal: true,
-	    			dialogClass: 'success-dialog translate',
+	    			dialogClass: 'success-dialog translate update-success-dialog',
 	    			buttons: {
 	    			    "Ok" : function () {
 	    			        $( this ).dialog( "close" );
 	    			        $('#updateprofileModal').modal('hide');
 	    				      }
 	    		   }
-	    	  }).html( " <span class='translate' data-i18n='profile-notification'>Profile updated  successfully" );
+
+	    	  }).html( " <span class='translate' data-i18n='profile-notification'>Profile updated successfully" );
+
 	    	} else {
 	    		displayError( json.error );
 	    	} 	
@@ -509,7 +522,10 @@ function createNavMenu() {
 	    	userHtml = '';
 	    	if (json.loggedIn) {
 	    		userHtml += '<li class="nav-item active"><div class="dropdown"><span class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true">&nbsp;</i><span class="translate" data-i18n="Account"> Account </span></span><div class="dropdown-menu dropdown-menu-right"><ul class="language-setup-dropdown"><li class="nav-item active" data-toggle="modal" data-target="#updateprofileModal" id="user-dropdown_updateprofile"><a class=" dropdown-item" ><i class="fa fa-refresh"></i>&nbsp;<span class="translate" data-i18n="Update profile">Update profile</span></a></li>';
+
 	    		userHtml += '<li class="nav-item active" id="user-dropdown_signout"><a class=" dropdown-item append" ><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign out">Sign out</span></a></li></ul></div></div>\n';
+
+
 	    	
 	    	} else {
 	    	
@@ -591,9 +607,26 @@ function requestPasswordReset() {
 	}
 }
 
+
+function FileExist(urlToFile)
+{
+	    var xhr = new XMLHttpRequest();
+	    xhr.open('HEAD', urlToFile, false);
+	    xhr.send();
+	     
+	    if (xhr.status == "404") {
+	        return false;
+	    } else {
+	        return true;
+	    }
+	}
+
+
+
 $(document).ready( function() {
 	// Added by ViSolve 
 	
+
 	
 	// Function Call for Signout
 	$(document).on('click', '#user-dropdown_signout', function(){signout();});
@@ -624,6 +657,24 @@ $(document).ready( function() {
 	$("#topnav").load("topnav.html");
 	$("#footer-outer").load('footer.html');
 	createNavMenu();
+	
+	
+	
+	
+	$('#dwnquestionnaire').click(function(e) 
+	{
+		var result = FileExist("https://openchain-project.github.io/conformance-questionnaire/questionnaire-"+(url('?locale'))+'.pdf');
+		 
+		if (result == true) 
+		{
+			$('#dwnquestionnaire').attr("href","https://openchain-project.github.io/conformance-questionnaire/questionnaire-"+(url('?locale'))+'.pdf');
+		} 
+		else
+		{
+			$('#dwnquestionnaire').attr("href","https://openchain-project.github.io/conformance-questionnaire/questionnaire.pdf");
+		}
+		
+	});
 });
 
 

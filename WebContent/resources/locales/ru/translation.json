@@ -3,26 +3,230 @@
     "authors": [
       "Ilya"
     ],
-    "last-updated": "2019-1-2",
+    "last-updated": "2019-1-22",
     "locale": "ru"
   },
-  
-  "ALDREADY DEFINED": "THE CONTENT WHICH IS ALREADY DEFINED IS MENTION AS (,) ",
 
   "COMMENT_1": "/****************************** TRANSLATIONS FOR THE INDEX PAGE IS GIVEN BELOW************************************/",
   
-  "title": "Самостоятельная сертификация ",
+  "title": "Самостоятельная сертификация открытой цепочки",
   "welcome": "желанный",
-  "welcome_content": "Спецификация OpenChain представляет собой основной набор требований, которым должна соответствовать качественная программа соответствия FOSS. Это способствует эффективному и действенному соблюдению лицензий с открытым исходным кодом по всей цепочке поставок. Благодаря самосертификации участники могут подтвердить, что они соответствуют требованиям Спецификации.Spetsifikatsiya OpenChain predstavlyayet soboy osnovnoy nabor trebovaniy, kotorym dolzhna sootvetstvovat' kachestvennaya programma sootvetstviya FOSS. Eto sposobstvuyet effektivnomu i deystvennomu soblyudeniyu litsenziy s otkrytym iskhodnym kodom po vsey tsepochke postavok. Blagodarya samosertifikatsii uchastniki mogut podtverdit', chto oni sootvetstvuyut trebovaniyam Spetsifikatsii.",
+  "welcome_content": "Спецификация OpenChain представляет собой основной набор требований, которым должна соответствовать качественная программа соответствия FOSS. Это способствует эффективному и действенному соблюдению лицензий с открытым исходным кодом по всей цепочке поставок. Благодаря самосертификации участники могут подтвердить, что они соответствуют требованиям Спецификации.",
   "Getting Started": "Начиная",
-  "Getting Started_content": "Заявители подтверждают свое понимание Спецификации OpenChain и необходимость прохождения Самосертификации, чтобы стать Соответствующим OpenChain Онлайн-сертификация требует от вас:Zayaviteli podtverzhdayut svoye ponimaniye Spetsifikatsii OpenChain i neobkhodimost' prokhozhdeniya Samosertifikatsii, chtoby stat' Sootvetstvuyushchim OpenChain Onlayn-sertifikatsiya trebuyet ot vas:",
+  "Getting Started_content": "Заявители подтверждают свое понимание Спецификации OpenChain и необходимость прохождения Самосертификации, чтобы стать Соответствующим OpenChain. Онлайн-сертификация требует от вас:",
   "Getting Started_content_1": "Выполните все требования, изложенные в",
   "Getting Started_content_1_sub": "Спецификация.",
   "Getting Started_content_2":"Создайте аккаунт, выбрав регистрацию в меню пользователя.Sozdayte akkaunt, vybrav registratsiyu v menyu pol'zovatelya.",
   "Getting Started_content_3":"Назовите контактное лицо для обработки запросов.Nazovite kontaktnoye litso dlya obrabotki zaprosov.",
   "Getting Started_content_4":"Попросите уполномоченного представителя выполнить онлайн-сертификацию через Интернет, ответив на все вопросы.Poprosite upolnomochennogo predstavitelya vypolnit' onlayn-sertifikatsiyu cherez Internet, otvetiv na vse voprosy.",
   "Getting Started_content_5":"Заполните форму заявки.",
-  "Getting Started_content_6":"Архивировать справочную копию всех проверочных артефактов в качестве записи в поддержку онлайн-сертификации.Arkhivirovat' spravochnuyu kopiyu vsekh proverochnykh artefaktov v kachestve zapisi v podderzhku onlayn-sertifikatsii."
+  "Getting Started_content_6":"Архивировать справочную копию всех проверочных артефактов в качестве записи в поддержку онлайн-сертификации.",
+   "offline-conformance-pdf" : "Вы предпочитаете работать с распечатанным контрольным списком? Вы можете скачать руководство по автономному соответствиюVy predpochitayete rabotat' s raspechatannym kontrol'nym spiskom? Vy mozhete skachat' rukovodstvo po avtonomnomu sootvetstviyu",
+  "here" : "Вот",
+
+
+  "COMMENT_2": "/****************************** TRANSLATIONS FOR THE NAVIGATION PAGE IS GIVEN BELOW************************************/",
+ 
+  "Conforming Submission":"Соответствующая подача",
+  "Sign in":"войти в систему",
+  "Sign up":"зарегистрироваться",
+  "Online Self-Certification":"Самоконтроль онлайн",
+  "Admin":"Администратор",
+  "Account":"учетная запись",
+  "Update profile":"Обновить профиль",
+  "Sign out":"выход",
+
+  "English":"английский (en)",
+  "Russian": "русский (ru)",
+  "Spanish":"Spanish",
+  "French":"French",
+  "German":"German",
+  "Japanese":"Japanese",
+  "Chinese":"Chinese",
+  "Resend Verification" : "Отправить подтверждение",
+  "Error" : "ошибка",
+  "verify-username" : "Вы не подтвердили имя пользователя. Вы хотите отправить подтверждение по электронной почте на адрес электронной почты, который вы зарегистрировали?",
+  "profile-notification" : "Профиль успешно обновлен",
+
+  "COMMENT_3": "/****************************** TRANSLATIONS FOR FOOTER PAGE IS GIVEN BELOW************************************/",
+
+  "Please contact":"Пожалуйста, свяжитесь с",
+  "OpenChain Support":"Поддержка открытой цепочки",
+  "report":"сообщать о любых неточностях или проблемах.",
+  "footer_content":"Copyright 2016 Фонд Linux. Все права защищены. Linux Foundation зарегистрировал товарные знаки и использует товарные знаки. Список торговых марок The Linux Foundation приведен на нашем",
+  "Trademark Usage":"Использование торговой марки",
+  "page":"стр.",
+  "linux":"Linux является зарегистрированным товарным знаком Линуса Торвальдса.",
+  "Privacy Policy":"политика конфиденциальности",
+  "and":"а также",
+  "Terms of Use":"Условия эксплуатации",
+
+  "COMMENT_4": "/********TRANSLATIONS FOR THE CONFIRMING PAGE IS GIVEN BELOW********* (Specification) ********************/",
+
+  "Conforming Organizations":"Соответствующие организации",
+  "Conforming Organizations_content":"Следующие организации имеют сертифицированное соответствие Открытая цепь",
+  "Organization":"организация",
+  "Specification" : "Спецификация.",
+  "Specification Version":"Версия спецификации",
+  "Contact Email":"Почта для связи",
+  "Contact Name":"Контактное лицо",
+  "Not Available" : "Недоступен",
+  "sEmptyTable":     "Данные отсутствуют в таблице",
+  "sInfo":           "Показаны _START_ в _END_ из _TOTAL_ записей",
+  "sInfoEmpty":      "Показано с 0 по 0 из 0 записей",
+  "sInfoFiltered":   "(отфильтровано по итоговым записям _MAX_)",
+  "sInfoPostFix":    "",
+  "sInfoThousands":  ",",
+  "sLengthMenu":     "Показать _MENU_ записи",
+  "sLoadingRecords": "загрузка...",
+  "sProcessing":     "обработка...",
+  "sSearch":         "Поиск:",
+  "sZeroRecords":    "Совпадающих записей не найдено",
+  "oPaginate": {
+    "sFirst":    "Первый",
+    "sLast":     "Прошлой",
+    "sNext":     "следующий",
+    "sPrevious": "предыдущий"
+  },
+  "oAria": {
+    "sSortAscending":  ": активировать для сортировки столбца по возрастанию",
+    "sSortDescending": ": активировать для сортировки столбца по убыванию"
+  },
+
+  "COMMENT_5": "/****************************** TRANSLATIONS FOR THE SIGN IN PAGE IS GIVEN BELOW*********(title)***************************/",
+
+  "Welcome Back":"Добро пожаловать обратно",
+  "Username":"имя пользователя",
+  "Password":"пароль",
+  "Reset Password":"Сброс пароля",
+  "Login":"Авторизоваться",
+  "Cancel":"отменить",
+
+  "COMMENT_6": "/****************************** TRANSLATIONS FOR THE RESET PASSWORD PAGE IS GIVEN BELOW*********(Username,Password,Reset Password)***************************/",
+
+  "Email":"Эл. адрес",
+  
+  "COMMENT_7": "/****************************** TRANSLATIONS FOR THE SIGN UP PAGE IS GIVEN BELOW*********(title,Sign up,Email,Organization,Username,Password,Terms of Use,and,Privacy Policy,Cancel)***************************/",
+
+  "Name":"название",
+  "Re-enter Password":"Повторно введите пароль",
+  "Organization Postal Address":"Почтовый адрес организации",
+  "Sign Up":"Подписаться",
+  "Sign Up_content_1":"Мое имя и адрес электронной почты могут быть опубликованы на странице соответствия веб-сайта OpenChain",
+  "Sign Up_content_2":"Я согласен с Linux Foundation",
+  "Sign Up_content_2_T&C" : "Условия эксплуатации",
+
+  "COMMENT_8": "/****************************** TRANSLATIONS FOR THE UPDATE PROFILE PAGE IS GIVEN BELOW*********(Username,Password,Name,Re-enter Password,Organization,Email,Organization Postal Address,Sign Up_content_1)***************************/",
+ 
+  "Update Profile":"Обновить профиль",
+  "Save Changes":"Сохранить изменения",
+  "success":"Профиль успешно обновлен",
+  "Updated":"обновленный",
+  "ok":"Хорошо",
+
+  "COMMENT_9": "/****************************** TRANSLATIONS FOR THE ADMIN PAGE IS GIVEN BELOW*********(Specification Version,Username,Organization,Email)***************************/",
+
+  "Admin_title":"Управление самостоятельной сертификации открытой цепочки",
+  "Site Status":"Статус сайта",
+  "Site Software Version: ":"Версия программного обеспечения сайта: ",
+  "Edit Conformance Questions":"Редактировать вопросы соответствия",
+  "Git Tag" : "День Git",
+  "Git Commit" : "Git совершить",
+  "Update Survey Questions":"Обновить вопросы опроса",
+  "Submission Status":"Статус отправки",
+  "Submitted Awaiting Approval":"В ожидании подтверждения",
+  "Approve Selected":"Подтвердить выбранное",
+  "Reject Selected":"Отклонить выбранное",
+  "Submitted Rejected":"Отклонено",
+  "UnReject Selected":"Отклонить выбранное",
+  "Approved":"Одобренный",
+  "UnApprove Selected":"Отменить выбор",
+  "Incomplete":"незавершенный",
+  "User Name" : "Имя пользователя",
+  "% Complete":"% полный",
+  "Score":"Гол",
+  "Update Survey" : "Обновить опрос",
+  "Summary" : "Резюме",
+  "Updates" : "Обновления",
+  "Added" : "добавленной",
+  "Update" : "Обновить",
+  "Summary-history-update" : "версия опроса / языки будут обновлены", 
+  "Summary-history-add" : "версия опроса / языки будут добавлены",
+  "no-update" :"Ни один опрос / версии не были обновлены",
+  "no-new-add" : "Нет опроса / версии были добавлены",
+  "answered out of" : "ответил из",
+  "Warning" : "Предупреждение",
+  "survey-updated" : "версия опроса / языки были обновлены",
+  "survey-added" : "версия опроса / языки были добавлены",
+  "survey-warning" : "со следующими предупреждениями",
+  "Site Software Version" : "Версия программного обеспечения сайта",
+
+  "COMMENT_10": "/****************************** TRANSLATIONS FOR THE QUSETIONNAIRE PAGE IS GIVEN BELOW*********(title,Specification Version )***************************/",
+
+  "Survey_title":"Анкета самооценки OpenChain",
+  "Questionnaire Revision":"Пересмотр вопросника",
+  "Save Answers":"Сохранить ответы",
+  "Save and Submit":"Сохранить и отправить",
+  "Unsubmit":"Отменить отправку",
+  "Download Answers":"Скачать ответы",
+  "Reset":"Сбросить анкету",
+  "Select Version":"Выберите версию",
+  "select_version_content":" Выберите версию спецификации.",
+  "Version":"Версия",
+  "reset_survey_content" : "Это удалит все ответы и начнет новый опрос с последней версией опроса. Вы уверены что хотите продолжить?",
+  "Yes" : "да",
+  "No" : "нет",
+  "Save-ans-dialog" : "Сохранено Успешно",
+  "Responses Unsubmitted" : "Ответы не отправлены",
+  "submission-notice" : "Спасибо - ваша информация была отправлена",
+  "confirm-submit-dialog" : "Нажав «отправить», вы подтверждаете:",
+  "confirm-submit-subdialog1" : "Ваши ответы на вопросник по самосертификации соответствия являются точными и проверяемыми.",
+  "confirm-submit-subdialog2" : "Ваши ответы отражают вашу приверженность спецификации OpenChain.",
+  "Ok":"Хорошо",
+  "Saved":"Сохраненный",
+  "Confirm Submit":"подтвердить отправку",
+  "Agree" : "Согласен",
+  "Reset Answers":"Сбросить ответы",
+  
+   "COMMENT_11": "/****************************** TRANSLATIONS FOR RESET PASSWORD PAGE IS GIVEN BELOW***********(Username,Password,Re-Enter Password,Reset Password)*************************/",
+
+   "Password Reset" :"Восстановление пароля",
+   
+   
+   "COMMENT_12": "/****************************** TRANSLATIONS FOR PASSWORD RESET INVALID PAGE IS GIVEN BELOW************************************/",
+   
+   "Password-reset-title":"Сброс пароля неверен",
+   "Password-reset-invalid-content":"Ссылка для сброса пароля недействительна или устарела. Вы можете попробовать сбросить пароль еще раз или обратиться за помощью к команде OpenChain.",
+   
+   
+   "COMMENT_13": "/****************************** TRANSLATIONS FOR PASSWORD RESET REQUEST PAGE IS GIVEN BELOW************************************/",
+   
+   "Password-reset-request-title": "Запрос сброса пароля",
+   "Password-reset-request-content": "Письмо со ссылкой для сброса пароля было отправлено. Если вы не видите письмо, проверьте папку с нежелательной почтой. Срок действия ссылки истекает через 24 часа.",
+   
+   
+   "COMMENT_14": "/****************************** TRANSLATIONS FOR PASSWORD RESET SUCCESS PAGE IS GIVEN BELOW************************************/",
+   
+   "Password-reset-success-title": "Запрос сброса пароля",
+   "Password-reset-success-content": "Письмо со ссылкой для сброса пароля было отправлено. Если вы не видите письмо, проверьте папку с нежелательной почтой. Срок действия ссылки истекает через 24 часа.",
+   
+   "COMMENT_15": "/****************************** TRANSLATIONS FOR REGISTRATION SUCCESS PAGE IS GIVEN BELOW************************************/",
+   
+   "Reg-success-title" : "Регистрация прошла успешно",
+   "Reg-success-content" :"Вы успешно зарегистрированы. Пожалуйста, войдите в систему, используя меню выше, чтобы продолжить самосертификацию.",
+   
+   "COMMENT_16": "/****************************** TRANSLATIONS FOR REGISTRATION FAILED PAGE IS GIVEN BELOW************************************/",
+   
+   "Reg-failed-title" : "Регистрация не удалась",
+   "Reg-failed-content" :"Кажется, что-то пошло не так при регистрации. Срок регистрации истек. Пожалуйста, свяжитесь с командой OpenChain для дополнительной помощи.",
+   
+   
+   "COMMENT_17": "/****************************** TRANSLATIONS FOR SIGNUP SUCCESS PAGE IS GIVEN BELOW************************************/",
+   
+   "signup-success-title":"Самостоятельная сертификация открытой цепочки",
+   "Verification Email" : "Письмо с подтверждением",
+   "signup-success-content" : "Вы должны получить электронное письмо от no-reply@conformance.openchainproject.org, отправленное на адрес электронной почты, указанный в форме регистрации. Нажмите на ссылку, чтобы завершить процесс регистрации. Если вы не получили письмо, проверьте папку со спамом и добавьте no-reply@conformance.openchainproject.org в список доверенных адресов электронной почты."
+   
 
   
 }
