@@ -424,7 +424,8 @@ function downloadAnswers() {
 }
 $(document).ready( function() {
 	$("#btSaveAnswers").button();
-	$("#btSaveAnswers").click(function(event) {
+	$("#btSaveAnswers").click(function(event)
+	{
       event.preventDefault();
       saveAll( true );
     });
@@ -660,8 +661,11 @@ $(document).ready( function() {
 	    	}]
 	    
 	});
+	
 	getSurvey();
 });
+
+
 
 
 

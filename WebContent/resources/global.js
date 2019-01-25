@@ -1,21 +1,21 @@
 
-		var defaultLang ='en';
+	
 
 /**************** For initializing the i18next framework ***********************/
+ 	
+				     var language = (url('?locale') || 'en');		
+					 i18next.use(i18nextXHRBackend);
+				    	jqueryI18next.init(i18next, $);
+						i18next.init({
+					   fallbackLng: language,
+						 backend: {
+				          loadPath: 'resources/locales/{{lng}}/translation.json'
+				      		},
 
-    	i18next.use(i18nextXHRBackend);
-    	jqueryI18next.init(i18next, $);
-		i18next.init({
-		fallbackLng: 'en',
-		 backend: {
-          loadPath: 'resources/locales/{{lng}}/translation.json'
-      		},
-
-		}, function(err, t) {
-		i18next.changeLanguage(url('?locale') || defaultLang);
-		});
-
-
+						}, function(err, t) {
+						i18next.changeLanguage(language);
+						});
+						
 /****************When Language is changed from navbar dropdown ***********************/
 
 		function changeLng(lng) 
@@ -35,14 +35,14 @@
 	
 /*******************TO get the language of a previous page ***********************/
 
-		$(document).ready(function () 
-				{
-					 $(document).delegate('.append','click', function($this){ 
-						 event.preventDefault();
-						 window.location.href = $(this).attr('href')+'?locale='+(url('?locale') || defaultLang);
-					 });
-				});
-
+		
+		$(document).delegate('.append','click', function($this){ 
+			 event.preventDefault();
+			 window.location.href = $(this).attr('href')+'?locale='+(url('?locale') || language);
+		 });
+		
+		
+		
 /*****************Function to translate the HTML content***************************/
 	
 		i18next.on('languageChanged', () => {

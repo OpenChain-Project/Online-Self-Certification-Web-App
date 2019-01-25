@@ -25,7 +25,7 @@ function loadCertifiedTable() {
 
 function fillCertifiedTable(submissions) {
 	$("#certified-table").empty();
-	var html = '<thead><tr><th class="cert-table-cell all translate" data-i18n="Organization" >Organization</th><th class="cert-table-cell none translate" data-i18n="Specification Version">Specification Version</th><th class="cert-table-cell none translate" data-i18n="Contact Email">Contact Email</th><th class="cert-table-cell none translate" data-i18n="Contact Name">Contact Name</th></tr></thead>\n<tbody>';
+	var html = '<thead><tr><th class="cert-table-cell all translate" data-i18n="" >Organization</th><th class="cert-table-cell none translate" data-i18n="Specification Version">Specification Version</th><th class="cert-table-cell none translate" data-i18n="Contact Email">Contact Email</th><th class="cert-table-cell none translate" data-i18n="Contact Name">Contact Name</th></tr></thead>\n<tbody>';
 	for (var i = 0; i < submissions.length; i++) {
 
 		if (submissions[i].approved) {
@@ -61,21 +61,23 @@ function fillCertifiedTable(submissions) {
 	
 	
 	$("#certified-table").html(html);
+	$('.translate').localize();
 	
 	//******************** 001 starts here *******************//
 	$('#certified-table').DataTable({
 		"sDom": '<"top"f>rt<"bottom"lpi><"clear">',
 		"language": {
 			"url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
-        }
-	
-		
+        }	
 	});
 	//******************** 001 ends here *******************//
+	
 
 	$( ".bottom" ).addClass( "row" );            
 	$( "#certified-table_length").addClass( "col-md-3 custom-col");
 	$( "#certified-table_paginate").addClass( "col-md-9 custom-col pad-zero");
+	
+
 }
 
 $(document).ready( function() {
