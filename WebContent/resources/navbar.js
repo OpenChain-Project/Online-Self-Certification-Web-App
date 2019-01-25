@@ -40,6 +40,7 @@ function checkRegexp( o, regexp, n ) {
       updateTips( n );
       return false;
     } else {
+  
       return true;
     }
   }
@@ -47,7 +48,7 @@ function checkLength( o, n, min, max ) {
     if ( o.val().length > max || o.val().length < min ) {
       o.addClass( "ui-state-error" );
       updateTips( "Length of " + n + " must be between " +
-        min + " and " + max + "." );
+        min + " and " + max );
       return false;
     } else {
       return true;
@@ -59,9 +60,10 @@ function checkChecked( o, lbl ) {
 	if (!isChecked) {
 		o.addClass( "ui-state-error" );
 		lbl.addClass( "ui-state-error" );
-		updateTips( '"' + lbl.text() + '" must be checked.' );
+		updateTips( '"' + lbl.text() + '" must be checked' );
 		return false;
 	} else {
+		
 		return true;
 	}
 }
@@ -70,7 +72,7 @@ function checkEquals(a, b, n) {
 	if (a.val() != b.val()) {
 		a.addClass( "ui-state-error" );
 		b.addClass( "ui-state-error" );
-		updateTips(n + " do not match."); 
+		updateTips(n + " do not match"); 
 		return false;
 	} else {
 		return true;
@@ -78,8 +80,9 @@ function checkEquals(a, b, n) {
 }
 function updateTips( t ) {
     tips
-      .text( t )
+      .html('<p class="translate" data-i18n="'+t+'"> Error in Log In</p>')
       .addClass( "ui-state-highlight" );
+    $('.translate').localize();
     setTimeout(function() {
       tips.removeClass( "ui-state-highlight", 1500 );
     }, 500 );
@@ -146,7 +149,7 @@ function loginUser() {
 	password.removeClass("ui-state-error");
 	valid = valid && checkLength( username, "username", 3, 40 );
 	valid = valid && checkLength( password, "password", 8, 60 );
-	valid = valid && checkRegexp( username, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter." );
+	valid = valid && checkRegexp( username, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter" );
 	if (valid) {
 		$.ajax({
 		    url: "CertificationServlet",
@@ -168,7 +171,8 @@ function loginUser() {
 		    		} else {
 		    			window.location = "survey.html"+'?locale='+(url('?locale') || 'en');
 		    		}
-		    	} else if (json.status == "NOT_VERIFIED") {
+		    	} else if (json.status == "NOT_VERIFIED") 
+		    	{
 		    		openResendVerificationDialog(username, password);
 		    	} else {
 		    		password.val('');
@@ -228,8 +232,7 @@ function handleError(xhr, status, errorThrown, msg) {
 		displayError( msg );
         console.log( "Error: " + xhr.responseText );
         console.log( "Status: " + status );
-        console.dir( xhr );
-        
+        console.dir( xhr );       
 	}	
 }
 
@@ -520,17 +523,17 @@ function createNavMenu() {
 	    dataType : "json",
 	    success: function( json ) {
 	    	userHtml = '';
-	    	if (json.loggedIn) {
+	    	if (json.loggedIn) 
+	    	{
 	    		userHtml += '<li class="nav-item active"><div class="dropdown"><span class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true">&nbsp;</i><span class="translate" data-i18n="Account"> Account </span></span><div class="dropdown-menu dropdown-menu-right"><ul class="language-setup-dropdown"><li class="nav-item active" data-toggle="modal" data-target="#updateprofileModal" id="user-dropdown_updateprofile"><a class=" dropdown-item" ><i class="fa fa-refresh"></i>&nbsp;<span class="translate" data-i18n="Update profile">Update profile</span></a></li>';
 
-	    		userHtml += '<li class="nav-item active" id="user-dropdown_signout"><a class=" dropdown-item append" ><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign out">Sign out</span></a></li></ul></div></div>\n';
-
+	    		userHtml += '<li class="nav-item active" id="user-dropdown_signout"><a class="dropdown-item" ><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign out">Sign out</span></a></li></ul></div></div>\n';
 
 	    	
 	    	} else {
-	    	
-	    		userHtml += '<li class="nav-item active signin" ><a class="user-nav append" href="login.html" ><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign in">Sign in</span></a></li>\n';
-	    		userHtml += '<li class="nav-item active signin mb-0" ><a class="user-nav append" href="signup.html" ><i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign up">Sign up</span></a></li>\n';
+	    		
+	    		userHtml += '<li class="nav-item active signin" ><a class="user-nav append" href="login.html" ><i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign in">Sign in</span></a></li>\n';
+	    		userHtml += '<li class="nav-item active signin mb-0" ><a class="user-nav append" href="signup.html" ><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign up">Sign up</span></a></li>\n';
 	    	}
 	    	$("#user-dropdown_menu").html(userHtml);	    	
 	    	languageHtml = '';
@@ -663,6 +666,8 @@ $(document).ready( function() {
 	
 	$('#dwnquestionnaire').click(function(e) 
 	{
+		
+		
 		var result = FileExist("https://openchain-project.github.io/conformance-questionnaire/questionnaire-"+(url('?locale'))+'.pdf');
 		 
 		if (result == true) 
@@ -675,6 +680,13 @@ $(document).ready( function() {
 		}
 		
 	});
+	
+	$('#dwnquestionnaire').hover(function() {
+        $(this).css('cursor','pointer');
+        $(this).css('text-decoration', 'underline');
+    });
+	
+
 });
 
 

@@ -57,13 +57,13 @@ function updateSurvey() {
 	    	}
     		summaryHtml += "<p> ";
     		summaryHtml += json.versionsUpdated.length.toString();
-    		summaryHtml += "<span class='translate' data-i18n='Summary-history-update'> survey version/languages will be updated</p>\n";
+    		summaryHtml += "<span class='translate' data-i18n='Summary-history-update'> questionnaire version/languages will be updated</p>\n";
     		summaryHtml += json.versionsAdded.length.toString();
-    		summaryHtml += "<span class='translate' data-i18n='Summary-history-add'> survey version/languages will be added</p>\n";
+    		summaryHtml += "<span class='translate' data-i18n='Summary-history-add'> questionnaire version/languages will be added</p>\n";
 	    	$("#confirm-update-tab-summary").html(summaryHtml);
 	    	var updatedHtml = "";
 	    	if ( json.versionsUpdated.length == 0 ) {
-	    		updatedHtml = "<span class='translate' data-i18n='no-update'>No survey/versions were updated</span>";
+	    		updatedHtml = "<span class='translate' data-i18n='no-update'>No questionnaire/versions were updated</span>";
 	    	} else {
 	    		for ( i in json.versionsUpdated ) {
 	    			updatedHtml += "<p>";
@@ -74,7 +74,7 @@ function updateSurvey() {
 	    	$( "#confirm-update-tab-updates" ).html( updatedHtml );
 	    	var addedHtml = "";
 	    	if ( json.versionsAdded.length == 0 ) {
-	    		addedHtml = "<span class='translate' data-i18n='no-new-add'> No survey/versions were added </span>";
+	    		addedHtml = "<span class='translate' data-i18n='no-new-add'> No questionnaire/versions were added </span>";
 	    	} else {
 	    		for ( i in json.versionsAdded ) {
 	    			addedHtml += "<p>";
@@ -112,11 +112,11 @@ function updateSurveyForReal( commit ) {
 	    	$( "#btUpdateSurvey" ).button( "enable" );
 	    	if ( json.status == "OK" ) {
 	    		var dialogText = json.surveyUpdateResult.versionsUpdated.length.toString();
-	    		dialogText += "<p class='translate' data-18n='survey-updated'>survey version/languages were updated</p>; ";
+	    		dialogText += "<p class='translate' data-18n='questionnaire-updated'>questionnaire version/languages were updated</p>; ";
 	    		dialogText += json.surveyUpdateResult.versionsAdded.length.toString();
-	    		dialogText += "<p class='translate' data-18n='survey-added'>survey version/languages were added </p>";
+	    		dialogText += "<p class='translate' data-18n='questionnaire-added'>questionnaire version/languages were added </p>";
 	    		if ( json.surveyUpdateResult.warnings.length > 0 ) {
-	    			dialogText += "<p class='translate' data-18n='survey-warning'> with the following warnings <span>:</span></p>";
+	    			dialogText += "<p class='translate' data-18n='questionnaire-warning'> with the following warnings <span>:</span></p>";
 	    			for ( i in json.surveyUpdateResult.warnings ) {
 	    				dialogText += " '";
 	    				dialogText += json.surveyUpdateResult.warnings[i];
@@ -152,7 +152,7 @@ function fillSubmissionStatusTable(submissions) {
 	$("#submitted-approved").empty();
 	$("#submitted-rejected").empty();
 	$("#not-submitted").empty();
-	$(".status-button").button("disable");
+	$(".status-button").attr("disbled",true);
 	var submittedAwaitingApprovalHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
 	var submittedRejectedHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
 	var notSubmittedHtml = '<thead><tr><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
@@ -258,7 +258,7 @@ function addCheckboxButtonEnablers(context, buttons) {
 	var selector = $('td input:checkbox',context);
 	selector.change(function() {
 		if($(this).prop('checked')) {
-			buttons.button("enable");
+			buttons.removeAttr("disabled");
 		} else {
 			var somethingChecked = false;
 			selector.each(function() {
@@ -267,7 +267,8 @@ function addCheckboxButtonEnablers(context, buttons) {
 				}
 			});
 			if (!somethingChecked) {
-				buttons.button("disable");
+				
+				buttons.attr("disabled",true);
 			}
 		}
 	});
@@ -333,7 +334,7 @@ function reloadSubmissionStatus() {
 	$("#submitted-approved").empty();
 	$("#submitted-rejected").empty();
 	$("#not-submitted").empty();
-	$(".status-button").button("disable");
+	$(".status-button").attr("disabled",true);
 	$("#submission-status-loading").show();
 	$.ajax({
 	    url: "CertificationServlet",
@@ -398,7 +399,8 @@ $(document).ready( function() {
 	      updateSurveyForReal( lastUpdateCommit );
 	      $( this ).dialog( "close" );
 	    },
-	    Cancel: function() {
+	    Cancel: function() 
+	    {
 	      $( "#btUpdateSurvey" ).button( "enable" );
 	      $( this ).dialog( "close" );
 	    }
