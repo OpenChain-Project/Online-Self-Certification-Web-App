@@ -205,6 +205,7 @@ function fillSubmissionStatusTable(submissions) {
 	addCheckboxButtonEnablers(submittedRejected, $(".submitted-rejected-button"));
 	addCheckboxButtonEnablers(submittedApproved, $(".submitted-approved-button"));
 	
+	
 	/*************001 starts  here	************/
 	
 	if(!$.fn.dataTable.isDataTable("#submitted-awaiting-approval")){
@@ -215,8 +216,12 @@ function fillSubmissionStatusTable(submissions) {
 		       "pageLength": 5,
 		       "language": {					
 		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
-		        }
+		        },
+		        "fnDrawCallback": function (oSettings) {
+					$('.translate').localize();
+					}
 		} );
+		
 	}
 	if(!$.fn.dataTable.isDataTable("#submitted-approved")){
 		$('#submitted-approved').DataTable( {
@@ -226,7 +231,10 @@ function fillSubmissionStatusTable(submissions) {
 		       "pageLength": 5,
 		       "language": {					
 		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
-		        }
+		        },
+		        "fnDrawCallback": function (oSettings) {
+					$('.translate').localize();
+					}
 		} );
 	}
 	if(!$.fn.dataTable.isDataTable("#submitted-rejected")){
@@ -237,7 +245,10 @@ function fillSubmissionStatusTable(submissions) {
 		       "pageLength": 5,
 		       "language": {					
 		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
-		        }
+		        },
+		        "fnDrawCallback": function (oSettings) {
+					$('.translate').localize();
+					}
 		} );
 	}
 	if(!$.fn.dataTable.isDataTable("#not-submitted")){
@@ -248,10 +259,14 @@ function fillSubmissionStatusTable(submissions) {
 		       "pageLength": 5,
 		       "language": {					
 		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
-		        }
+		        },
+		        "fnDrawCallback": function (oSettings) {
+					$('.translate').localize();
+					}
 		});
 	}
 	/*************001 ends  here************/
+
 }
 
 function addCheckboxButtonEnablers(context, buttons) {
@@ -457,7 +472,5 @@ $(document).ready( function() {
 	});
 	
 	reloadSubmissionStatus();
-	
-	
-	
+		
 });

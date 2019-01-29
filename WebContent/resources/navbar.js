@@ -80,7 +80,7 @@ function checkEquals(a, b, n) {
 }
 function updateTips( t ) {
     tips
-      .html('<p class="translate" data-i18n="'+t+'"> Error in Log In</p>')
+      .html('<p class="translate" data-i18n="'+t+'">Error!!</p>')
       .addClass( "ui-state-highlight" );
     $('.translate').localize();
     setTimeout(function() {
@@ -522,20 +522,20 @@ function createNavMenu() {
 	    type: "GET",
 	    dataType : "json",
 	    success: function( json ) {
+	    	
 	    	userHtml = '';
 	    	if (json.loggedIn) 
 	    	{
 	    		userHtml += '<li class="nav-item active"><div class="dropdown"><span class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true">&nbsp;</i><span class="translate" data-i18n="Account"> Account </span></span><div class="dropdown-menu dropdown-menu-right"><ul class="language-setup-dropdown"><li class="nav-item active" data-toggle="modal" data-target="#updateprofileModal" id="user-dropdown_updateprofile"><a class=" dropdown-item" ><i class="fa fa-refresh"></i>&nbsp;<span class="translate" data-i18n="Update profile">Update profile</span></a></li>';
-
 	    		userHtml += '<li class="nav-item active" id="user-dropdown_signout"><a class="dropdown-item" ><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign out">Sign out</span></a></li></ul></div></div>\n';
-
 	    	
 	    	} else {
 	    		
 	    		userHtml += '<li class="nav-item active signin" ><a class="user-nav append" href="login.html" ><i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign in">Sign in</span></a></li>\n';
 	    		userHtml += '<li class="nav-item active signin mb-0" ><a class="user-nav append" href="signup.html" ><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign up">Sign up</span></a></li>\n';
 	    	}
-	    	$("#user-dropdown_menu").html(userHtml);	    	
+	    	$("#user-dropdown_menu").html(userHtml);
+	    	
 	    	languageHtml = '';
 	    	for (var language in LANGUAGES) {
 	    		languageHtml += '<li id="language-dropdown_';
@@ -564,11 +564,17 @@ function createNavMenu() {
 	    	} else {
 	    		$("#adminlink").html('');
 	    	}
+	    	$('.translate').localize();
+	    	
+	    	
 	    },
 	    error: function( xhr, status, errorThrown ) {
 	    	handleError( xhr, status, errorThrown);
 	    }
+	   
 	});
+	
+	
 }
 
 function requestPasswordReset() {
@@ -686,7 +692,7 @@ $(document).ready( function() {
         $(this).css('text-decoration', 'underline');
     });
 	
-
+	
 });
 
 

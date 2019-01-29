@@ -1,9 +1,5 @@
 
-<script src="resources/lib/url/url.min.js"></script>  
-<script src="resources/i18next.min.js" ></script>
-<script src="resources/jquery-i18next.min.js" ></script>
-<script src="resources/i18nextXHRBackend.js"></script>
-<script src="resources/global.js"></script>    
+   
 <link rel="icon" type="image/png"  href="images/favicon_openchain.png" />
 <link rel="shortcut icon" href="images/favicon_openchain.png" type="image/png"/>
 
@@ -80,7 +76,7 @@
 			    <textarea rows="3" name="update-address" id="update-address" class="form-control custom-input" form="profile-form" required></textarea>
 			    <label class= "custom-label translate" data-i18n="Organization Postal Address" for="update-address">Organization Postal Address</label>
 			</div>
-			<div class="row ">
+			<div class="row">
 			    <div class="form-check">
 					<input type="checkbox"  name="update-use-name-email" id="update-use-name-email" class="form-check-input update-check-box" >
 				    <label class="form-check-label  checkbox-label update-label translate" data-i18n="Sign Up_content_1" for="update-use-name-email">My name and email may be shared on conformance page of the OpenChain website</label>
@@ -112,7 +108,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form name="reset-pw-form" id="reset-pw-form">
+        <form name="reset-pw-form" id="reset-pw-form" onsubmit="return false">
             <p class="validateTips"></p>
             <div class="row">
             	<input type="text" class="form-control custom-input update-input" name="reset-username" id="reset-username"  required>
@@ -133,6 +129,10 @@
     </div>
   </div>
 </div>
-
+<script src="resources/lib/url/url.min.js"></script>  
+<script src="resources/i18next.min.js" ></script>
+<script src="resources/jquery-i18next.min.js" ></script>
+<script src="resources/i18nextXHRBackend.js"></script>
+<script src="resources/global.js"></script>
 
  

@@ -46,9 +46,8 @@
 /*****************Function to translate the HTML content***************************/
 	
 		i18next.on('languageChanged', () => {
-		$('.translate').localize();
+			$('.translate').localize();
 		});
 
 /*************************************************************************************/
-
-
+		
