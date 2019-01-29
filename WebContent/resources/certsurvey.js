@@ -151,6 +151,7 @@ function getSurvey() {
 	    		html += getQuestionFormHtml(sections[i].questions);
 	    		html += '</div>\n';
 	    	}
+	    	$('.translate').localize();
 	    	certForm.html(html);
 	    	certForm.accordion({heightStyle:"content",collapsible: true,active: false});
 	    	// For each section, set any answers, tally the num answered, and 
