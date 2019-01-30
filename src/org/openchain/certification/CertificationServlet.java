@@ -382,6 +382,7 @@ public class CertificationServlet extends HttpServlet {
         		if (newUser.login()) {
         			session.setAttribute(SESSION_ATTRIBUTE_USER, newUser);
         			postResponse.setAdmin(newUser.isAdmin());
+        			postResponse.setLanguage(newUser.getLanguage());
         		} else if (newUser.isValidPasswordAndNotVerified()) {
         			postResponse.setStatus(Status.NOT_VERIFIED);
         			postResponse.setError(I18N.getMessage("CertificationServlet.18",language)); //$NON-NLS-1$

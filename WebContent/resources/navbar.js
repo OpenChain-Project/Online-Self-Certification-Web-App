@@ -165,8 +165,10 @@ function loginUser() {
 		    success: function( json ) {
 		    	password.val('');
 		    	if ( json.status == "OK" ) {
+		    		if (json.language) {
+		    			setLanguage(json.language, LANGUAGES[json.language]);
+		    		}
 		    		if (json.admin) {
-		    			
 		    			window.location = "admin.html"+'?locale='+(url('?locale') || 'en');
 		    		} else {
 		    			window.location = "survey.html"+'?locale='+(url('?locale') || 'en');
@@ -475,7 +477,10 @@ function openProfileDialog() {
  * @param language
  * @param display
  */
-function setLanguage(language, display) {
+function setLanguage(language) {
+	//TODO Validate the language - if the language is not supported, display an error
+	//TODO Get the display value based on the language
+	display = language;
 	$( '#language-dropdown_launcher' ).text( display );
 	currentLanguage = language;
 	//TODO Invoke whatever HTML/JavaScript framework is used
@@ -484,10 +489,11 @@ function setLanguage(language, display) {
 /**
  * @param language tag in IETF RFC 5646 format
  */
-function changeLanguage(language, display) {
+function changeLanguage(language) {
 	if (currentLanguage == language) {
 		return;	// Already using this language
 	}
+	//TODO Validate the language - if the language is not supported, display an error
 	// update the back-end
 	$.ajax({
 		url: "CertificationServlet",
@@ -502,7 +508,7 @@ function changeLanguage(language, display) {
 	    success: function( json ) {
 	    	if ( json.status == "OK" ) {
 	    		// Change the text on the language dropdown
-	    		setLanguage(language, display);
+	    		setLanguage(language);
 	    		//TODO  Refresh the page or reload the data
 	    	} else {
 	    		displayError( json.error );
