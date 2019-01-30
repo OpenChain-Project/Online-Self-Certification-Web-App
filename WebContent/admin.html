@@ -142,25 +142,25 @@ Author(s): ViSolve 03/01/2019
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title translate" id="exampleModalLabel" data-i18n="Update Questionnaire">Updated Questionnaire</h5>
+        <h5 class="modal-title translate" id="updatesurveyModalLabel" data-i18n="Update Questionnaire">Updated Questionnaire</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <nav>
+       <nav>
 			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
-			    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#confirm-update-tab-summary" role="tab" aria-controls="nav-home" aria-selected="true"><span class="translate" data-i18n="Summary">Summary</span></a>
-			    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#confirm-update-tab-updates" role="tab" aria-controls="nav-profile" aria-selected="false"><span class="translate" data-i18n="Updates">Updates</span></a>
-			    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#confirm-update-tab-added" role="tab" aria-controls="nav-contact" aria-selected="false"><span class="translate" data-i18n="Added">Added</span></a>
+			    <a class="nav-item nav-link active"  data-toggle="tab" href="#confirm-update-tab-summary" role="tab" aria-controls="nav-summary" aria-selected="true"><span class="translate" data-i18n="Summary">Summary</span></a>
+			    <a class="nav-item nav-link"  data-toggle="tab" href="#confirm-update-tab-updates" role="tab" aria-controls="nav-update" aria-selected="false"><span class="translate" data-i18n="Updates">Updates</span></a>
+			    <a class="nav-item nav-link"  data-toggle="tab" href="#confirm-update-tab-added" role="tab" aria-controls="nav-added" aria-selected="false"><span class="translate" data-i18n="Added">Added</span></a>
 			  </div>
 		</nav>
 		<div class="tab-content" id="nav-tabContent">
-			  <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="nav-home-tab"><div id="confirm-update-tab-summary"></div></div>
-			  <div class="tab-pane fade" id="confirm-update-tab-updates" role="tabpanel" aria-labelledby="nav-profile-tab"><div id="confirm-update-tab-updates"></div></div>
-			  <div class="tab-pane fade" id="confirm-update-tab-added" role="tabpanel" aria-labelledby="nav-contact-tab"><div id="confirm-update-tab-added"></div></div>
-		</div>
-          
+			  <div class="tab-pane fade show active" role="tabpanel" id="confirm-update-tab-summary" aria-labelledby="nav-Summary-tab"><div id="confirm-update-tab-summary"></div></div>
+			  <div class="tab-pane fade" id="confirm-update-tab-updates" role="tabpanel" aria-labelledby="nav-update-tab"><div id="confirm-update-tab-updates"></div></div>
+			  <div class="tab-pane fade" id="confirm-update-tab-added" role="tabpanel" aria-labelledby="nav-added-tab"><div id="confirm-update-tab-added"></div></div>
+		</div> 
+		          
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-cancel translate" data-dismiss="modal" data-i18n="Cancel">Cancel</button>
