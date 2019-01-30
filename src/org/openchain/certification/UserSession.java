@@ -915,6 +915,7 @@ public class UserSession {
 					this.email = newEmail;
 					this.name = newName;
 					this.organization = newOrganization;
+					this.language = preferredLanguage;
 					try {
 						EmailUtility.emailProfileUpdate(username, this.email, config, language);
 					}catch (EmailUtilException e) {

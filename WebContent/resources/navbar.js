@@ -266,7 +266,6 @@ function signout() {
 }
 
 function updateUserProfile() {
-	//TODO add preferred language
 	username = $("#update-username");
 	var password = $("#update-password");
 	var passwordVerify = $("#update-passwordverify");
@@ -275,6 +274,7 @@ function updateUserProfile() {
 	var email = $("#update-email");
 	var address = $("#update-address");
 	var okUseNameEmail = $("#update-use-name-email");
+	var preferredLanguage = $("#update-language");
 	tips = $(".validateTips");
 	tips.text('');
 	var valid = true;
@@ -301,12 +301,13 @@ function updateUserProfile() {
 	valid = valid && checkRegexp( email, emailRegex, "e.g. user@linux-foundation.org");
 	if (valid) {
 		updateUser(username.val(), pw, name.val(), address.val(), 
-				organization.val(), email.val(), okUseNameEmail.is(':checked'));
+				organization.val(), email.val(), okUseNameEmail.is(':checked'), 
+				preferredLanguage.val());
 	}
 }
 
-function updateUser(username, password, name, address, organization, email, okUseNameEmail) {
-	//TODO Add preferred language
+function updateUser(username, password, name, address, organization, email, 
+		okUseNameEmail, preferredLanguage) {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data:JSON.stringify({
@@ -318,7 +319,8 @@ function updateUser(username, password, name, address, organization, email, okUs
 	        organization: organization,
 	        email: email,
 	        namePermission: okUseNameEmail,
-	        emailPermission: okUseNameEmail
+	        emailPermission: okUseNameEmail,
+	        language: preferredLanguage
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -326,6 +328,9 @@ function updateUser(username, password, name, address, organization, email, okUs
 	    async: false, 
 	    success: function( json ) {
 	    	if ( json.status == "OK" ) {
+	    			if ( preferredLanguage != currentLanguage ) {
+	    				setLanguage( preferredLanguage, LANGUAGES[preferredLanguage] );
+	    			}
 	    			$( "#status" ).dialog({
 	    			title: "Updated",
 	    			resizable: false,
@@ -360,11 +365,11 @@ function signupUser() {
 	var organization = $("#signup-organization");
 	var email = $("#signup-email");
 	var address = $("#signup-address");
+	var preferredLanguage = $("#signup-language");
 	var checkApproveEmail = $("#approval-use-name-email");
 	var checkApproveEmailLbl = $("label[for='approval-use-name-email']");
 	var checkApproveTerms = $("#read-terms");
 	var checkApproveTermsLbl = $("label[for='read-terms']");
-	//TODO Add preferred language
 	tips = $(".validateTips");
 	tips.text('');
 	var valid = true;
@@ -392,12 +397,12 @@ function signupUser() {
 	valid = valid && checkChecked( checkApproveTerms, checkApproveTermsLbl );
 	if (valid) {
 		signup(username.val(), password.val(), name.val(), address.val(), organization.val(), 
-				email.val(), checkApproveEmail.is(':checked'));
+				email.val(), checkApproveEmail.is(':checked'), preferredLanguage.val());
 	}
 }
 
-function signup(username, password, name, address, organization, email, approveUseNameEmail) {
-	//TODO Add preferred language
+function signup(username, password, name, address, organization, email, 
+		approveUseNameEmail, preferredLanguage) {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data:JSON.stringify({
@@ -409,7 +414,8 @@ function signup(username, password, name, address, organization, email, approveU
 	        organization: organization,
 	        email: email,
 	        emailPermission: approveUseNameEmail,
-	        namePermission: approveUseNameEmail
+	        namePermission: approveUseNameEmail,
+	        language: preferredLanguage
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -454,6 +460,7 @@ function openProfileDialog() {
 	    	$("#update-email").val(json.email);
 	    	$("#update-address").val(json.address);
 	    	$("#update-use-name-email").prop('checked', json.emailPermission);
+	    	$("#update-language").val(json.language);
 	    	
 	    	$("#user-profile").dialog("open");
 	    },
@@ -478,7 +485,6 @@ function setLanguage(language, display) {
  * @param language tag in IETF RFC 5646 format
  */
 function changeLanguage(language, display) {
-	//TODO Implement
 	if (currentLanguage == language) {
 		return;	// Already using this language
 	}
