@@ -18,16 +18,7 @@
  * This is a common JavaScript file to be included on all pages for this app.
  * It depends on the div ID's error, status, login, and signup
  */
-/**
- * List of all supported language keyed by 2 or 3 character ISO language
- */
-var LANGUAGES = {"en":"English", 
-                 "de":"German",
-                 "fr":"French"};
 
-var DEFAULT_LANGUAGE = "eng";
-
-var currentLanguage = DEFAULT_LANGUAGE;
 
 //TODO: Update the languages with the officially supported list
 var NOPASSWORD = "***********";
@@ -166,7 +157,7 @@ function loginUser() {
 		    	password.val('');
 		    	if ( json.status == "OK" ) {
 		    		if (json.language) {
-		    			setLanguage(json.language, LANGUAGES[json.language]);
+		    			updateLanguageUI(json.language);	//NOTE: the backend should have already been updated during login
 		    		}
 		    		if (json.admin) {
 		    			window.location = "admin.html"+'?locale='+(json.language ? json.language : (url('?locale') || 'en'));
@@ -186,56 +177,6 @@ function loginUser() {
 		    }
 		});
 	}
-}
-
-function displayError( error ) {
-	
-	event.preventDefault();
-    $( "#errors" ).dialog().data( "uiDialog" )._title = function(title) {
-  	    title.html( this.options.title );
-  	};	
-  	
-  	
-	$( "#errors" ).dialog({
-		title: '<span class="translate" data-i18n="Error">Error</span>',
-		resizable: false,
-	    height: 250,
-	    width: 300,
-	    dialogClass: 'success-dialog translate',
-	    modal: true,
-	    buttons: [{
-	    	text: "Ok",
-    		"data-i18n": "Ok",
-    		 click: function () { 
-	            $( this ).dialog( "close" );
-	        }
-	    }]
-	}).text( error ).parent().addClass( "ui-state-error" );
-	$('.translate').localize();
-}
-
-function handleError(xhr, status, errorThrown, msg) {
-	if ( msg === undefined ) {
-		var responseType = xhr.getResponseHeader("content-type") || "";
-		if ( responseType.indexOf('text') > 1 && xhr.responseText != null && xhr.responseText!= "" ) {
-			msg = "Sorry - there was a problem loading data:" + xhr.responseText;
-		} else if ( responseType.indexOf('json') > 1 && xhr.responseText != null && xhr.responseText!= "" ) {
-			response = JSON.parse(xhr.responseText);
-			msg = response.error;		
-		} else {
-			msg = "Sorry - there was a problem loading data: " + errorThrown;
-			
-		}
-	}
-	if ( xhr.status == 401 ) {
-		// Redirect to login page
-		window.location="login.html"+'?locale='+(url('?locale') || 'en');
-	} else {
-		displayError( msg );
-        console.log( "Error: " + xhr.responseText );
-        console.log( "Status: " + status );
-        console.dir( xhr );       
-	}	
 }
 
 function signout() {
@@ -330,23 +271,21 @@ function updateUser(username, password, name, address, organization, email,
 	    async: false, 
 	    success: function( json ) {
 	    	if ( json.status == "OK" ) {
-	    			if ( preferredLanguage != currentLanguage ) {
-	    				setLanguage( preferredLanguage, LANGUAGES[preferredLanguage] );
-	    			}
-	    			$( "#status" ).dialog({
-	    			title: "Updated",
-	    			resizable: false,
-	    			height: 200,
-	    			width: 200,
-	    			modal: true,
-	    			dialogClass: 'success-dialog translate update-success-dialog',
-	    			buttons: {
-	    			    "Ok" : function () {
-	    			        $( this ).dialog( "close" );
-	    			        $('#updateprofileModal').modal('hide');
-	    			        changeLanguage(json.language);
-	    				      }
-	    		   }
+	    		updateLanguageUI( preferredLanguage );
+    			$( "#status" ).dialog({
+    			title: "Updated",
+    			resizable: false,
+    			height: 200,
+    			width: 200,
+    			modal: true,
+    			dialogClass: 'success-dialog translate update-success-dialog',
+    			buttons: {
+    			    "Ok" : function () {
+    			        $( this ).dialog( "close" );
+    			        $('#updateprofileModal').modal('hide');
+    			        updateLanguageUI(json.language);
+    				      }
+    		   }
 
 	    	  }).html( " <span class='translate' data-i18n='profile-notification'>Profile updated successfully" );		 
 	    	} else {
@@ -466,69 +405,6 @@ function openProfileDialog() {
 }
 
 /**
- * Set the language for the JavaScript display
- * @param language
- * @param display
- */
-function setLanguage(language) {
-	//TODO Validate the language - if the language is not supported, display an error
-	//TODO Get the display value based on the language
-	display = language;
-	$( '#language-dropdown_launcher' ).text( display );
-	currentLanguage = language;
-	//TODO Invoke whatever HTML/JavaScript framework is used
-}
-
-/**
- * @param language tag in IETF RFC 5646 format
- */
-function changeLanguage(language) {
-	
-//	if (currentLanguage == language) {
-//		return;	// Already using this language
-//	}
-	
-	//TODO Validate the language - if the language is not supported, display an error
-	// update the back-end
-	$.ajax({
-		url: "CertificationServlet",
-		data: JSON.stringify({
-	        request:  "setlanguage",
-	        language: language
-	    }),
-	    type: "POST",
-	    dataType : "json",
-	    contentType: "json",
-	    async: false, 
-	    success: function( json ) {
-	    	if ( json.status == "OK" ) {
-	    		// Change the text on the language dropdown
-	    		setLanguage(language);
-	    		//TODO  Refresh the page or reload the data
-	    		var u = new URL(window.location.href);
-	    		if(u.searchParams.has("locale"))
-	    		{
-	    		u.searchParams.set("locale",language ? language : (url('?locale') || 'en'));
-	    		}
-	    		else
-	    		{
-	    		u.searchParams.append("locale",language ? language : (url('?locale') || 'en'));
-	    		}
-	    	window.location.href=u;
-	    	i18next.changeLanguage(language ? language : (url('?locale') || 'en'));
-	    	} else {
-	    		displayError( json.error );
-	    	} 	
-	    },
-	    error: function( xhr, status, errorThrown ) {
-	    	handleError( xhr, status, errorThrown );
-	    }
-	});
-	// Refresh the page or reload the data
-	// Invoke whatever HTML/JavaScript framework is used
-}
-
-/**
  * Create a navigation menu based on whether the user is logged in
  */
 function createNavMenu() {
@@ -552,23 +428,8 @@ function createNavMenu() {
 	    	}
 	    	$("#user-dropdown_menu").html(userHtml);
 	    	
-	    	languageHtml = '';
-	    	for (var language in LANGUAGES) {
-	    		languageHtml += '<li id="language-dropdown_';
-	    		languageHtml += language;
-	    		languageHtml += '"><a href="javascript:void(0);"><span class="ui-icon-closethick">&nbsp;';
-	    		languageHtml += LANGUAGES[language];
-	    		languageHtml += '</span></a></li>\n';
-	    	}
+	    	var languageHtml = getLanguageHtml();
 	    	$("#language-dropdown_menu").html(languageHtml);
-	    	if (json.language != null) {
-	    		display = LANGUAGES[json.language];
-	    		if (language != null) {
-	    			setLanguage(json.language, display);
-	    		}
-	    	} else {
-	    		$( '#language-dropdown_launcher' ).text( LANGUAGES[DEFAULT_LANGUAGE] );
-	    	}
 	    	if (json.loggedIn) {
 	    		$("#surveylink").html('<li><a class="append" href="survey.html" id="toggle"><i class="fa fa-pencil"></i>&nbsp; <span class="translate" data-i18n="Online Self-Certification">Online Self-Certification</span>&nbsp;&nbsp;&nbsp;</a></li>');
 	    	} else {
@@ -646,17 +507,15 @@ function FileExist(urlToFile)
 
 
 $(document).ready( function() {
-	// Added by ViSolve 
 	
-
+	// Add languages dropdown for user profile
+	$("#update-language").html(getLanguageSelectionHtml());
 	
 	// Function Call for Signout
 	$(document).on('click', '#user-dropdown_signout', function(){signout();});
 	
 	// Function Call for Update profile
 	$(document).on('click', '#user-dropdown_updateprofile', function(){openProfileDialog();});
-	
-	
 	
 	// Function Call for Login
 	$(document).on('click', '#login-button', function(){loginUser();});
@@ -674,14 +533,11 @@ $(document).ready( function() {
 	
 	// redirect to the index page
 	$("#index-home").click(function () {
-	window.location = "index.html"+'?locale='+(url('?locale') || 'en');
+		window.location = "index.html"+'?locale='+(url('?locale') || 'en');
 	});
 	$("#topnav").load("topnav.html");
 	$("#footer-outer").load('footer.html');
 	createNavMenu();
-	
-	
-	
 	
 	$('#dwnquestionnaire').click(function(e) 
 	{
@@ -707,6 +563,3 @@ $(document).ready( function() {
 	
 	
 });
-
-
-         

@@ -12,6 +12,11 @@ The front end Internationalization uses the I18Next Framework. The JSON File for
 
 The back end Internationalization uses Java's built in support for localization.  The message resource files are located in the resources directory.  The messages_xx.properties files contain there translations where xx is the language for the translation.
 
+To add a language:
+1. Add a new translation JSON file in the `WebContent/resources/locales/[lang]/translation` directory where `[lang]` is the IETF RFC 5646 language tag
+2. Add a new translation `messages_[lang].properties` file in the resource directory where `[lang]` is the IETF RFC 5646 language tag
+3. Add the language to the JavaScript file ...
+
 Please feel free to test this code, submit issues, and help make Self-Certification
 around the OpenChain Specification easier for everyone.
 
