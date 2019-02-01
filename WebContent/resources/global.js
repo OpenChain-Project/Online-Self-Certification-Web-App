@@ -2,7 +2,6 @@
 	
 
 /**************** For initializing the i18next framework ***********************/
- 	
 				     var language = (url('?locale') || 'en');		
 					 i18next.use(i18nextXHRBackend);
 				    	jqueryI18next.init(i18next, $);

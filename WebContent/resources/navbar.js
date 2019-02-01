@@ -169,9 +169,9 @@ function loginUser() {
 		    			setLanguage(json.language, LANGUAGES[json.language]);
 		    		}
 		    		if (json.admin) {
-		    			window.location = "admin.html"+'?locale='+(url('?locale') || 'en');
+		    			window.location = "admin.html"+'?locale='+(json.language ? json.language : (url('?locale') || 'en'));
 		    		} else {
-		    			window.location = "survey.html"+'?locale='+(url('?locale') || 'en');
+		    			window.location = "survey.html"+'?locale='+(json.language ? json.language : (url('?locale') || 'en'));
 		    		}
 		    	} else if (json.status == "NOT_VERIFIED") 
 		    	{
@@ -344,11 +344,11 @@ function updateUser(username, password, name, address, organization, email,
 	    			    "Ok" : function () {
 	    			        $( this ).dialog( "close" );
 	    			        $('#updateprofileModal').modal('hide');
+	    			        changeLanguage(json.language);
 	    				      }
 	    		   }
 
-	    	  }).html( " <span class='translate' data-i18n='profile-notification'>Profile updated successfully" );
-
+	    	  }).html( " <span class='translate' data-i18n='profile-notification'>Profile updated successfully" );		 
 	    	} else {
 	    		displayError( json.error );
 	    	} 	
@@ -356,7 +356,7 @@ function updateUser(username, password, name, address, organization, email,
 	    error: function( xhr, status, errorThrown ) {
 	    	handleError(xhr, status, errorThrown);
 	    }
-	});
+	});	
 }
 
 function signupUser() {
@@ -437,13 +437,6 @@ function signup(username, password, name, address, organization, email,
 	});
 }
 
-function openSignupDialog() {
-	$("#signup").dialog("open");
-}
-
-function openSignInDialog() {
-	$("#login").dialog("open");
-}
 
 function openProfileDialog() {
 	$.ajax({
@@ -490,9 +483,11 @@ function setLanguage(language) {
  * @param language tag in IETF RFC 5646 format
  */
 function changeLanguage(language) {
-	if (currentLanguage == language) {
-		return;	// Already using this language
-	}
+	
+//	if (currentLanguage == language) {
+//		return;	// Already using this language
+//	}
+	
 	//TODO Validate the language - if the language is not supported, display an error
 	// update the back-end
 	$.ajax({
@@ -510,6 +505,17 @@ function changeLanguage(language) {
 	    		// Change the text on the language dropdown
 	    		setLanguage(language);
 	    		//TODO  Refresh the page or reload the data
+	    		var u = new URL(window.location.href);
+	    		if(u.searchParams.has("locale"))
+	    		{
+	    		u.searchParams.set("locale",language ? language : (url('?locale') || 'en'));
+	    		}
+	    		else
+	    		{
+	    		u.searchParams.append("locale",language ? language : (url('?locale') || 'en'));
+	    		}
+	    	window.location.href=u;
+	    	i18next.changeLanguage(language ? language : (url('?locale') || 'en'));
 	    	} else {
 	    		displayError( json.error );
 	    	} 	
@@ -540,9 +546,7 @@ function createNavMenu() {
 	    	{
 	    		userHtml += '<li class="nav-item active"><div class="dropdown"><span class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true">&nbsp;</i><span class="translate" data-i18n="Account"> Account </span></span><div class="dropdown-menu dropdown-menu-right"><ul class="language-setup-dropdown"><li class="nav-item active" data-toggle="modal" data-target="#updateprofileModal" id="user-dropdown_updateprofile"><a class=" dropdown-item" ><i class="fa fa-refresh"></i>&nbsp;<span class="translate" data-i18n="Update profile">Update profile</span></a></li>';
 	    		userHtml += '<li class="nav-item active" id="user-dropdown_signout"><a class="dropdown-item" ><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign out">Sign out</span></a></li></ul></div></div>\n';
-	    	
-	    	} else {
-	    		
+	    	} else {	    		
 	    		userHtml += '<li class="nav-item active signin" ><a class="user-nav append" href="login.html" ><i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign in">Sign in</span></a></li>\n';
 	    		userHtml += '<li class="nav-item active signin mb-0" ><a class="user-nav append" href="signup.html" ><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign up">Sign up</span></a></li>\n';
 	    	}
@@ -577,8 +581,6 @@ function createNavMenu() {
 	    		$("#adminlink").html('');
 	    	}
 	    	$('.translate').localize();
-	    	
-	    	
 	    },
 	    error: function( xhr, status, errorThrown ) {
 	    	handleError( xhr, status, errorThrown);
