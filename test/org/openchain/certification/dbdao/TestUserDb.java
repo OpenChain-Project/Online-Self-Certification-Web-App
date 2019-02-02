@@ -59,7 +59,7 @@ public class TestUserDb {
 		user.setNamePermission(namePermission);
 		user.setEmailPermission(emailPermission);
 		String language = "deu";
-		user.setLanguage(language);
+		user.setLanguagePreference(language);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);	
 		User result = UserDb.getUserDb(TestHelper.getTestServletConfig()).getUser(username);
 		assertEquals(address, result.getAddress());
@@ -75,7 +75,7 @@ public class TestUserDb {
 		assertEquals(verified, result.isVerified());
 		assertEquals(namePermission, result.hasNamePermission());
 		assertEquals(emailPermission, result.hasEmailPermission());
-		assertEquals(language, result.getLanguage());
+		assertEquals(language, result.getLanguagePreference());
 	}
 
 	@Test
@@ -145,7 +145,7 @@ public class TestUserDb {
 		user.setNamePermission(namePermission);
 		user.setEmailPermission(emailPermission);
 		String language = "ras";
-		user.setLanguage(language);
+		user.setLanguagePreference(language);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);	
 		User result = UserDb.getUserDb(TestHelper.getTestServletConfig()).getUser(username);
 		assertEquals(address, result.getAddress());
@@ -161,7 +161,7 @@ public class TestUserDb {
 		assertEquals(verified, result.isVerified());
 		assertEquals(namePermission, result.hasNamePermission());
 		assertEquals(emailPermission, result.hasEmailPermission());
-		assertEquals(language, result.getLanguage());
+		assertEquals(language, result.getLanguagePreference());
 		
 		String address2 = "Address2";
 		user.setAddress(address2);
@@ -188,7 +188,7 @@ public class TestUserDb {
 		user.setNamePermission(namePermission2);
 		user.setEmailPermission(emailPermission2);
 		String language2 = "aaa";
-		user.setLanguage(language2);
+		user.setLanguagePreference(language2);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).updateUser(user);
 		
 		result = UserDb.getUserDb(TestHelper.getTestServletConfig()).getUser(username);
@@ -205,7 +205,7 @@ public class TestUserDb {
 		assertEquals(verified2, result.isVerified());
 		assertEquals(namePermission2, result.hasNamePermission());
 		assertEquals(emailPermission2, result.hasEmailPermission());
-		assertEquals(language2, result.getLanguage());
+		assertEquals(language2, result.getLanguagePreference());
 		
 	}
 	@Test
@@ -238,7 +238,7 @@ public class TestUserDb {
 		user.setNamePermission(namePermission);
 		user.setEmailPermission(emailPermission);
 		String language = "deu";
-		user.setLanguage(language);
+		user.setLanguagePreference(language);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);	
 		assertTrue(UserDb.getUserDb(TestHelper.getTestServletConfig()).userExists(user.getUsername()));
 		assertFalse(UserDb.getUserDb(TestHelper.getTestServletConfig()).userExists("this ain't no user"));
@@ -273,22 +273,22 @@ public class TestUserDb {
 		boolean emailPermission = false;
 		user.setNamePermission(namePermission);
 		user.setEmailPermission(emailPermission);
-		user.setLanguage(null);
+		user.setLanguagePreference(null);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);
 		
 		User result = UserDb.getUserDb(TestHelper.getTestServletConfig()).getUser(username);
-		assertTrue(result.getLanguage() == null);
+		assertTrue(result.getLanguagePreference() == null);
 		
 		String language = "abc";
-		user.setLanguage(language);
+		user.setLanguagePreference(language);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).updateUser(user);
 		result = UserDb.getUserDb(TestHelper.getTestServletConfig()).getUser(username);
-		assertEquals(language, result.getLanguage());
+		assertEquals(language, result.getLanguagePreference());
 		
-		user.setLanguage(null);
+		user.setLanguagePreference(null);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).updateUser(user);
 		result = UserDb.getUserDb(TestHelper.getTestServletConfig()).getUser(username);
-		assertTrue(result.getLanguage() == null);
+		assertTrue(result.getLanguagePreference() == null);
 	}
 	
 }

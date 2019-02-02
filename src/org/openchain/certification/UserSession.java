@@ -70,7 +70,10 @@ public class UserSession {
 	private transient String password;
 	private String lastError;
 	private transient ServletConfig config;
-	private String language = User.DEFAULT_LANGUAGE;
+	/**
+	 * This is the preferred language used by the user
+	 */
+	private String languagePreference = User.DEFAULT_LANGUAGE;
 	
 	/**
 	 * List of all survey responses for this user
@@ -118,7 +121,7 @@ public class UserSession {
 		this.organization = null;
 		this.namePermission = false;
 		this.emailPermission = false;
-		this.language = User.DEFAULT_LANGUAGE;
+		this.languagePreference = User.DEFAULT_LANGUAGE;
 	}
 	
 	static final int HOURS_FOR_VERIFICATION_EMAIL_EXPIRATION = 24;
@@ -205,13 +208,13 @@ public class UserSession {
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
 		} catch (SQLException e) {
-			this.lastError = I18N.getMessage("UserSession.11",language,e.getMessage()); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.11",languagePreference,e.getMessage()); //$NON-NLS-1$
 			logger.error("SQL Exception logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
 		if (user == null) {
 			// UserSession.16=User {0} does not exist.  Please review the username or sign up as a new user.
-			this.lastError = I18N.getMessage("UserSession.16",language,username); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.16",languagePreference,username); //$NON-NLS-1$
 			return false;
 		}
 		if (user.isVerified()) {
@@ -219,15 +222,15 @@ public class UserSession {
 		}
 		try {
 			if (!PasswordUtil.validate(password, user.getPasswordToken())) {
-				this.lastError = I18N.getMessage("UserSession.17",language); //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.17",languagePreference); //$NON-NLS-1$
 				return false;
 			}
 		} catch (NoSuchAlgorithmException e) {
 			logger.error("Unexpected No Such Algorithm error logging in user",e);  //$NON-NLS-1$
-			this.lastError = I18N.getMessage("UserSession.18",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.18",languagePreference); //$NON-NLS-1$
 			return false;
 		} catch (InvalidKeySpecException e) {
-			this.lastError = I18N.getMessage("UserSession.19",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.19",languagePreference); //$NON-NLS-1$
 			logger.error("Unexpected Invalid Key Spec error logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
@@ -245,34 +248,34 @@ public class UserSession {
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
 		} catch (SQLException e) {
-			this.lastError = I18N.getMessage("UserSession.11",language,e.getMessage()); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.11",languagePreference,e.getMessage()); //$NON-NLS-1$
 			logger.error("SQL Exception logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
 		if (user == null) {
 			// UserSession.16=User {0} does not exist.  Please review the username or sign up as a new user.
-			this.lastError = I18N.getMessage("UserSession.16",language,username); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.16",languagePreference,username); //$NON-NLS-1$
 			return false;
 		}
 		if (!user.isVerified()) {
-			this.lastError = I18N.getMessage("UserSession.26",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.26",languagePreference); //$NON-NLS-1$
 			return false;
 		}
 		if (user.isPasswordReset()) {
-			this.lastError = I18N.getMessage("UserSession.27",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.27",languagePreference); //$NON-NLS-1$
 			return false;
 		}
 		try {
 			if (!PasswordUtil.validate(password, user.getPasswordToken())) {
-				this.lastError = I18N.getMessage("UserSession.17",language); //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.17",languagePreference); //$NON-NLS-1$
 				return false;
 			}
 		} catch (NoSuchAlgorithmException e) {
 			logger.error("Unexpected No Such Algorithm error logging in user",e);  //$NON-NLS-1$
-			this.lastError = I18N.getMessage("UserSession.18",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.18",languagePreference); //$NON-NLS-1$
 			return false;
 		} catch (InvalidKeySpecException e) {
-			this.lastError = I18N.getMessage("UserSession.19",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.19",languagePreference); //$NON-NLS-1$
 			logger.error("Unexpected Invalid Key Spec error logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
@@ -284,9 +287,9 @@ public class UserSession {
 		this.organization = user.getOrganization();
 		this.namePermission = user.hasNamePermission();
 		this.emailPermission = user.hasEmailPermission();
-		this.language = user.getLanguage();
-		if (this.language == null) {
-			this.language = User.DEFAULT_LANGUAGE;
+		this.languagePreference = user.getLanguagePreference();
+		if (this.languagePreference == null) {
+			this.languagePreference = User.DEFAULT_LANGUAGE;
 		}
 		return true;
 	}
@@ -313,7 +316,7 @@ public class UserSession {
 			user = UserDb.getUserDb(config).getUser(username);
 			if (user != null) {
 				// UserSession.34=User {0} already exist.  Please select a different unique username.
-				this.lastError = I18N.getMessage("UserSession.34",language,username); //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.34",languagePreference,username); //$NON-NLS-1$
 				return false;
 			}
 			user = new User();
@@ -329,34 +332,34 @@ public class UserSession {
 			user.setNamePermission(namePermission);
 			user.setEmailPermission(emailPermission);
 			user.setVerificationExpirationDate(generateVerificationExpirationDate());
-			user.setLanguage(preferredLanguage);
+			user.setLanguagePreference(preferredLanguage);
 			UUID uuid = UUID.randomUUID();
 			String hashedUuid = PasswordUtil.getToken(uuid.toString());
 			user.setUuid(hashedUuid);
 			UserDb.getUserDb(config).addUser(user);
-			EmailUtility.emailVerification(name, email, uuid, username, responseServletUrl, config, language);
+			EmailUtility.emailVerification(name, email, uuid, username, responseServletUrl, config, languagePreference);
 	        return true;
 		} catch (SQLException e) {
-			this.lastError = I18N.getMessage("UserSession.35",language,e.getMessage());  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.35",languagePreference,e.getMessage());  //$NON-NLS-1$
 			logger.error("SQL Exception signing up user",e);  //$NON-NLS-1$
 			return false;
 		} catch (NoSuchAlgorithmException e) {
 			logger.error("Unexpected No Such Algorithm error signing up user",e);  //$NON-NLS-1$
-			this.lastError = I18N.getMessage("UserSession.18",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.18",languagePreference); //$NON-NLS-1$
 			return false;
 		} catch (InvalidKeySpecException e) {
 			logger.error("Unexpected Invalid Key Spec error signing up user",e);  //$NON-NLS-1$
-			this.lastError = I18N.getMessage("UserSession.19",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.19",languagePreference); //$NON-NLS-1$
 			return false;
 		} catch (EmailUtilException e) {
 			logger.error("Error emailing invitation",e);  //$NON-NLS-1$
 			// UserSession.39=Unable to email the invitation: {0}
-			this.lastError = I18N.getMessage("UserSession.39",language,e.getMessage()); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.39",languagePreference,e.getMessage()); //$NON-NLS-1$
 			return false;
 		} catch (InvalidUserException e) {
 			logger.error("Invalid user specified in add user request",e);  //$NON-NLS-1$
 			// UserSession.41=Error adding user: {0}
-			this.lastError = I18N.getMessage("UserSession.41",language,e.getMessage()); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.41",languagePreference,e.getMessage()); //$NON-NLS-1$
 			return false;
 		}
 	}
@@ -433,7 +436,7 @@ public class UserSession {
 		}
 		if (retval.isEmpty()) {
 			// UserSession.45=Could not find a full spec version for major version {0}
-			throw new SurveyResponseException(I18N.getMessage("UserSession.45",language,majorVersion)); //$NON-NLS-1$
+			throw new SurveyResponseException(I18N.getMessage("UserSession.45",languagePreference,majorVersion)); //$NON-NLS-1$
 		}
 		return retval;
 	}
@@ -461,16 +464,16 @@ public class UserSession {
 		Connection con = SurveyDatabase.createConnection(config);
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
-			surveyResponses = dao.getSurveyResponses(this.username, language);
+			surveyResponses = dao.getSurveyResponses(this.username, languagePreference);
 			if (this.surveyResponses.size() == 0) {
 				// Create one
-				currentSurveyResponse = new SurveyResponse(dao.getLatestSpecVersion(), language);
+				currentSurveyResponse = new SurveyResponse(dao.getLatestSpecVersion(), languagePreference);
 				User user = UserDb.getUserDb(config).getUser(username);
 				currentSurveyResponse.setResponder(user);
 				currentSurveyResponse.setResponses(new HashMap<String, Answer>());
-				currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion(), language));
+				currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion(), languagePreference));
 				con.commit();
-				dao.addSurveyResponse(currentSurveyResponse, language);
+				dao.addSurveyResponse(currentSurveyResponse, languagePreference);
 				surveyResponses.add(currentSurveyResponse);
 			} else {
 				// set the current version to the latest
@@ -517,28 +520,28 @@ public class UserSession {
 		if (!found) {
 			if (!create) {
 				// UserSession.47=No survey response was found matching version {0}
-				throw new SurveyResponseException(I18N.getMessage("UserSession.47",language,specVersion)); //$NON-NLS-1$
+				throw new SurveyResponseException(I18N.getMessage("UserSession.47",languagePreference,specVersion)); //$NON-NLS-1$
 			}
 			Connection con;
 			try {
 				con = SurveyDatabase.createConnection(config);
 			} catch (SQLException e) {
 				logger.error("Unable to get connection for creating answers",e); //$NON-NLS-1$
-				throw new SurveyResponseException(I18N.getMessage("UserSession.49",language),e); //$NON-NLS-1$
+				throw new SurveyResponseException(I18N.getMessage("UserSession.49",languagePreference),e); //$NON-NLS-1$
 			}
 			try {
 				SurveyResponseDao dao = new SurveyResponseDao(con);
 				User saveUser = currentSurveyResponse.getResponder(); 
-				currentSurveyResponse = new SurveyResponse(getLatestMinorVersion(specVersion), language);
+				currentSurveyResponse = new SurveyResponse(getLatestMinorVersion(specVersion), languagePreference);
 				currentSurveyResponse.setResponder(saveUser);
 				currentSurveyResponse.setResponses(new HashMap<String, Answer>());
-				currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion(), language));
+				currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion(), languagePreference));
 				con.commit();
-				dao.addSurveyResponse(currentSurveyResponse, language);
+				dao.addSurveyResponse(currentSurveyResponse, languagePreference);
 				surveyResponses.add(currentSurveyResponse);
 			} catch (SQLException e) {
 				logger.error("SQL Exception adding answers",e);  //$NON-NLS-1$
-				throw new SurveyResponseException(I18N.getMessage("UserSession.50",language),e); //$NON-NLS-1$
+				throw new SurveyResponseException(I18N.getMessage("UserSession.50",languagePreference),e); //$NON-NLS-1$
 			} finally {
 				try {
 					con.close();
@@ -551,7 +554,7 @@ public class UserSession {
 	
 	private void checkLoggedIn() throws SurveyResponseException {
 		if (!this.isLoggedIn()) {
-			throw new SurveyResponseException(I18N.getMessage("UserSession.52",language)); //$NON-NLS-1$
+			throw new SurveyResponseException(I18N.getMessage("UserSession.52",languagePreference)); //$NON-NLS-1$
 		}
 	}
 	/**
@@ -579,7 +582,7 @@ public class UserSession {
 				if (question instanceof YesNoQuestion) {
 					if (response.getValue() == null) {
 						logger.error("No answer provided for a yes/no question"); //$NON-NLS-1$
-						throw(new QuestionTypeException(I18N.getMessage("UserSession.54",language))); //$NON-NLS-1$
+						throw(new QuestionTypeException(I18N.getMessage("UserSession.54",languagePreference))); //$NON-NLS-1$
 					}
 					if (response.getValue().toUpperCase().trim().equals("YES")) {  //$NON-NLS-1$
 						ynAnswer = YesNo.Yes;
@@ -590,27 +593,27 @@ public class UserSession {
 					} else {
 						logger.error("Invalid yes no value: "+response.getValue()); //$NON-NLS-1$
 						// UserSession.56=Invalid yes/no value: {0}
-						throw(new QuestionTypeException(I18N.getMessage("UserSession.56",language,response.getValue()))); //$NON-NLS-1$
+						throw(new QuestionTypeException(I18N.getMessage("UserSession.56",languagePreference,response.getValue()))); //$NON-NLS-1$
 					}
 				}
 
 				Answer answer;
 				if (question instanceof YesNoQuestionWithEvidence) {
-					answer = new YesNoAnswerWithEvidence(language, ynAnswer, response.getEvidence());
+					answer = new YesNoAnswerWithEvidence(languagePreference, ynAnswer, response.getEvidence());
 				} else if (question instanceof YesNoQuestion) {
-					answer = new YesNoAnswer(language, ynAnswer);
+					answer = new YesNoAnswer(languagePreference, ynAnswer);
 				} else if (question instanceof SubQuestion) {
-					answer = new SubQuestionAnswers(language);
+					answer = new SubQuestionAnswers(languagePreference);
 				} else {
 					logger.error("Invalid answer type for question "+response.getQuestionNumber());  //$NON-NLS-1$
 					// UserSession.58=Invalid answer type for question {0}
-					throw(new QuestionTypeException(I18N.getMessage("UserSession.58",language,response.getQuestionNumber()))); //$NON-NLS-1$
+					throw(new QuestionTypeException(I18N.getMessage("UserSession.58",languagePreference,response.getQuestionNumber()))); //$NON-NLS-1$
 				}
 				currentResponses.put(response.getQuestionNumber(), answer);
 				if (question.getSubQuestionOfNumber() != null) {
 					SubQuestionAnswers subQuestionAnswer = (SubQuestionAnswers)currentResponses.get(question.getSubQuestionOfNumber());
 					if (subQuestionAnswer == null) {
-						subQuestionAnswer = new SubQuestionAnswers(language);
+						subQuestionAnswer = new SubQuestionAnswers(languagePreference);
 						currentResponses.put(question.getSubQuestionOfNumber(), subQuestionAnswer);
 					}
 					subQuestionAnswer.addSubAnswer(question.getNumber(), answer);
@@ -622,7 +625,7 @@ public class UserSession {
 		Connection con = SurveyDatabase.createConnection(config);
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
-			dao.updateSurveyResponseAnswers(currentSurveyResponse, language);
+			dao.updateSurveyResponseAnswers(currentSurveyResponse, languagePreference);
 		} finally {
 			con.close();
 		}
@@ -643,7 +646,7 @@ public class UserSession {
 		}
 		List<Question> invalidQuestions = currentSurveyResponse.invalidAnswers();
 		if (invalidQuestions.size() > 0) {
-			StringBuilder er = new StringBuilder(I18N.getMessage("UserSession.60",language)+" "); //$NON-NLS-1$ //$NON-NLS-2$
+			StringBuilder er = new StringBuilder(I18N.getMessage("UserSession.60",languagePreference)+" "); //$NON-NLS-1$ //$NON-NLS-2$
 			er.append(invalidQuestions.get(0).getNumber());
 			for (int i = 1; i < invalidQuestions.size(); i++) {
 				er.append(", "); //$NON-NLS-1$
@@ -667,7 +670,7 @@ public class UserSession {
 		EmailUtility.emailCompleteSubmission(this.username,
 				currentSurveyResponse.getResponder().getName(),
 				currentSurveyResponse.getResponder().getEmail(),
-				currentSurveyResponse.getSpecVersion(), config, language);
+				currentSurveyResponse.getSpecVersion(), config, languagePreference);
 		return true;
 	}
 	public boolean isAdmin() {
@@ -690,13 +693,13 @@ public class UserSession {
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
 		} catch (SQLException e) {
-			this.lastError = I18N.getMessage("UserSession.35",language,e.getMessage());  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.35",languagePreference,e.getMessage());  //$NON-NLS-1$
 			logger.error("SQL Exception logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
 		if (user == null) {
 			// UserSession.16=User {0} does not exist.  Please review the username or sign up as a new user.
-			this.lastError = I18N.getMessage("UserSession.16",language,username); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.16",languagePreference,username); //$NON-NLS-1$
 			return false;
 		}
 		if (user.isVerified()) {
@@ -704,15 +707,15 @@ public class UserSession {
 		}
 		try {
 			if (!PasswordUtil.validate(password, user.getPasswordToken())) {
-				this.lastError = I18N.getMessage("UserSession.17",language); //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.17",languagePreference); //$NON-NLS-1$
 				return false;
 			}
 		} catch (NoSuchAlgorithmException e) {
 			logger.error("Unexpected No Such Algorithm error logging in user",e);  //$NON-NLS-1$
-			this.lastError = I18N.getMessage("UserSession.18",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.18",languagePreference); //$NON-NLS-1$
 			return false;
 		} catch (InvalidKeySpecException e) {
-			this.lastError = I18N.getMessage("UserSession.19",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.19",languagePreference); //$NON-NLS-1$
 			logger.error("Unexpected Invalid Key Spec error logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
@@ -722,10 +725,10 @@ public class UserSession {
 			hashedUuid = PasswordUtil.getToken(uuid.toString());
 		} catch (NoSuchAlgorithmException e) {
 			logger.error("Unexpected No Such Algorithm error logging in user",e);  //$NON-NLS-1$
-			this.lastError = I18N.getMessage("UserSession.18",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.18",languagePreference); //$NON-NLS-1$
 			return false;
 		} catch (InvalidKeySpecException e) {
-			this.lastError = I18N.getMessage("UserSession.19",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.19",languagePreference); //$NON-NLS-1$
 			logger.error("Unexpected Invalid Key Spec error logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
@@ -734,21 +737,21 @@ public class UserSession {
 		try {
 			UserDb.getUserDb(config).updateUser(user);
 		} catch (SQLException e) {
-			this.lastError = I18N.getMessage("UserSession.35",language,e.getMessage());  //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.35",languagePreference,e.getMessage());  //$NON-NLS-1$
 			logger.error("SQL Exception updating user during re-verification",e);  //$NON-NLS-1$
 			return false;
 		} catch (InvalidUserException e) {
 			// UserSession.75=Unexpected invalid user error.  Please report this error to the OpenChain team: {0}
-			this.lastError = I18N.getMessage("UserSession.75",language,e.getMessage()); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.75",languagePreference,e.getMessage()); //$NON-NLS-1$
 			logger.error("Invalid user error in resending verification",e);  //$NON-NLS-1$
 		}
 		try {
 			EmailUtility.emailVerification(user.getName(), user.getEmail(), 
-					uuid, username, responseServletUrl, config, language);
+					uuid, username, responseServletUrl, config, languagePreference);
 		} catch (EmailUtilException e) {
 			logger.error("Error emailing invitation",e);  //$NON-NLS-1$
 			// UserSession.77=Unable to re-email the invitation: {0}
-			this.lastError = I18N.getMessage("UserSession.77",language,e.getMessage()); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.77",languagePreference,e.getMessage()); //$NON-NLS-1$
 			return false;
 		}
 		return true;
@@ -766,23 +769,23 @@ public class UserSession {
 			con = SurveyDatabase.createConnection(config);
 		} catch (SQLException e) {
 			logger.error("Unable to get connection for resetting answers",e);  //$NON-NLS-1$
-			throw new SurveyResponseException(I18N.getMessage("UserSession.79",language),e); //$NON-NLS-1$
+			throw new SurveyResponseException(I18N.getMessage("UserSession.79",languagePreference),e); //$NON-NLS-1$
 		}
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
 			User saveUser = currentSurveyResponse.getResponder(); 
 			dao.deleteSurveyResponseAnswers(currentSurveyResponse);
 			surveyResponses.remove(currentSurveyResponse);
-			currentSurveyResponse = new SurveyResponse(getLatestMinorVersion(specVersion), language);
+			currentSurveyResponse = new SurveyResponse(getLatestMinorVersion(specVersion), languagePreference);
 			currentSurveyResponse.setResponder(saveUser);
 			currentSurveyResponse.setResponses(new HashMap<String, Answer>());
-			currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion(), language));
-			dao.addSurveyResponse(currentSurveyResponse, language);
+			currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion(), languagePreference));
+			dao.addSurveyResponse(currentSurveyResponse, languagePreference);
 			con.commit();
 			surveyResponses.add(currentSurveyResponse);
 		} catch (SQLException e) {
 			logger.error("SQL Exception resetting answers",e);  //$NON-NLS-1$
-			throw new SurveyResponseException(I18N.getMessage("UserSession.80",language),e); //$NON-NLS-1$
+			throw new SurveyResponseException(I18N.getMessage("UserSession.80",languagePreference),e); //$NON-NLS-1$
 		} finally {
 			try {
 				con.close();
@@ -856,7 +859,7 @@ public class UserSession {
 			String newAddress, String newPassword, boolean newNamePermission,
 			boolean newEmailPermission, String preferredLanguage) throws InvalidUserException, SQLException, NoSuchAlgorithmException, InvalidKeySpecException, EmailUtilException, QuestionException, SurveyResponseException {
 		if (!loggedIn) {
-			this.lastError = I18N.getMessage("UserSession.81",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.81",languagePreference); //$NON-NLS-1$
 			throw new InvalidUserException(this.lastError);
 		}
 			User user = null;
@@ -864,7 +867,7 @@ public class UserSession {
 				user = UserDb.getUserDb(config).getUser(username);
 				if (user == null) {
 					// UserSession.85=User {0} no longer exist.  Please report this error to the open chain team.
-					this.lastError = I18N.getMessage("UserSession.85",language,username); //$NON-NLS-1$
+					this.lastError = I18N.getMessage("UserSession.85",languagePreference,username); //$NON-NLS-1$
 					throw new InvalidUserException(this.lastError);
 				}
 				boolean needUpdate = false;
@@ -903,9 +906,9 @@ public class UserSession {
 					user.setNamePermission(newNamePermission);
 					needUpdate = true;
 				}
-				if (user.getLanguage() != preferredLanguage) {
-					this.setLanguage(preferredLanguage);	// Can not set directly since we need to refresh the survey responses
-					user.setLanguage(preferredLanguage);
+				if (user.getLanguagePreference() != preferredLanguage) {
+					this.setLanguagePreference(preferredLanguage);	// Can not set directly since we need to refresh the survey responses
+					user.setLanguagePreference(preferredLanguage);
 					needUpdate = true;
 				}
 				if (needUpdate) {
@@ -917,23 +920,23 @@ public class UserSession {
 					this.organization = newOrganization;
 					this.language = preferredLanguage;
 					try {
-						EmailUtility.emailProfileUpdate(username, this.email, config, language);
+						EmailUtility.emailProfileUpdate(username, this.email, config, languagePreference);
 					}catch (EmailUtilException e) {
 						logger.warn("Error emailing profile update notice",e);  //$NON-NLS-1$
-						this.lastError = I18N.getMessage("UserSession.86",language,e.getMessage()); //$NON-NLS-1$
+						this.lastError = I18N.getMessage("UserSession.86",languagePreference,e.getMessage()); //$NON-NLS-1$
 					}
 				}
 			} catch (SQLException e) {
-				this.lastError = I18N.getMessage("UserSession.11",language,e.getMessage()); //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.11",languagePreference,e.getMessage()); //$NON-NLS-1$
 				logger.error("SQL Exception signing up user",e);  //$NON-NLS-1$
 				throw e;
 			} catch (NoSuchAlgorithmException e) {
 				logger.error("Unexpected No Such Algorithm error signing up user",e);  //$NON-NLS-1$
-				this.lastError = I18N.getMessage("UserSession.18",language); //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.18",languagePreference); //$NON-NLS-1$
 				throw e;
 			} catch (InvalidKeySpecException e) {
 				logger.error("Unexpected Invalid Key Spec error signing up user",e);  //$NON-NLS-1$
-				this.lastError = I18N.getMessage("UserSession.19",language); //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.19",languagePreference); //$NON-NLS-1$
 				throw e;
 			} 
 	}
@@ -950,32 +953,32 @@ public class UserSession {
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
 			if (!user.isPasswordReset()) {
-				this.lastError = I18N.getMessage("UserSession.92",language); //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.92",languagePreference); //$NON-NLS-1$
 				return false;
 			}
 			if (!PasswordUtil.validate(uuid.toString(), user.getUuid())) {
 				logger.error("Password reset tokens do not match for user "+username+".  Supplied = "+uuid+", expected = "+user.getUuid());  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				this.lastError = I18N.getMessage("UserSession.95",language); //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.95",languagePreference); //$NON-NLS-1$
 				return false;
 			}
 			if (!isValidExpirationDate(user.getVerificationExpirationDate())) {
 				logger.error("Expiration date for verification has passed for user "+username);  //$NON-NLS-1$
-				this.lastError = I18N.getMessage("UserSession.4",language); //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.4",languagePreference); //$NON-NLS-1$
 				return false;
 			}
 			this.passwordReset  = true;
 			return true;
 		} catch (SQLException e) {
 			logger.error("SQL Exception setting password reset",e);  //$NON-NLS-1$
-			this.lastError = I18N.getMessage("UserSession.11",language,e.getMessage()); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.11",languagePreference,e.getMessage()); //$NON-NLS-1$
 			throw(e);
 		} catch (NoSuchAlgorithmException e) {
 			logger.error("Unexpected No Such Algorithm error signing up user",e);  //$NON-NLS-1$
-			this.lastError = I18N.getMessage("UserSession.18",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.18",languagePreference); //$NON-NLS-1$
 			throw e;
 		} catch (InvalidKeySpecException e) {
 			logger.error("Unexpected Invalid Key Spec error signing up user",e);  //$NON-NLS-1$
-			this.lastError = I18N.getMessage("UserSession.19",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.19",languagePreference); //$NON-NLS-1$
 			throw e;
 		} 
 	}
@@ -984,14 +987,14 @@ public class UserSession {
 	}
 	public synchronized boolean setPassword(String username, String password) {
 		if (!Objects.equals(username, this.username)) {
-			this.lastError = I18N.getMessage("UserSession.101",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.101",languagePreference); //$NON-NLS-1$
 			return false;
 		}
 		User user = null;
 		try {
 			user = UserDb.getUserDb(config).getUser(username);
 			if (!user.isPasswordReset()) {
-				this.lastError = I18N.getMessage("UserSession.92",language); //$NON-NLS-1$
+				this.lastError = I18N.getMessage("UserSession.92",languagePreference); //$NON-NLS-1$
 				return false;
 			}
 			user.setPasswordReset(false);
@@ -1002,19 +1005,19 @@ public class UserSession {
 			return true;
 		} catch (SQLException e) {
 			logger.error("SQL Exception setting password reset",e);  //$NON-NLS-1$
-			this.lastError = I18N.getMessage("UserSession.11",language,e.getMessage()); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.11",languagePreference,e.getMessage()); //$NON-NLS-1$
 			return false;
 		} catch (NoSuchAlgorithmException e) {
 			logger.error("Unexpected No Such Algorithm error signing up user",e);  //$NON-NLS-1$
-			this.lastError = I18N.getMessage("UserSession.18",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.18",languagePreference); //$NON-NLS-1$
 			return false;
 		} catch (InvalidKeySpecException e) {
 			logger.error("Unexpected Invalid Key Spec error signing up user",e);  //$NON-NLS-1$
-			this.lastError = I18N.getMessage("UserSession.19",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.19",languagePreference); //$NON-NLS-1$
 			return false;
 		} catch (InvalidUserException e) {
 			logger.error("Unexpected Invalid User error signing up user",e);  //$NON-NLS-1$
-			this.lastError = I18N.getMessage("UserSession.107",language); //$NON-NLS-1$
+			this.lastError = I18N.getMessage("UserSession.107",languagePreference); //$NON-NLS-1$
 			return false;
 		} 
 	}
@@ -1054,8 +1057,8 @@ public class UserSession {
 	/**
 	 * @return the language
 	 */
-	public synchronized String getLanguage() {
-		return language;
+	public synchronized String getLanguagePreference() {
+		return languagePreference;
 	}
 	/**
 	 * @param language the language to set
@@ -1063,11 +1066,11 @@ public class UserSession {
 	 * @throws QuestionException 
 	 * @throws SQLException 
 	 */
-	public synchronized void setLanguage(String language) throws SurveyResponseException, SQLException, QuestionException {
-		if (this.language == language) {
+	public synchronized void setLanguagePreference(String language) throws SurveyResponseException, SQLException, QuestionException {
+		if (this.languagePreference == language) {
 			return;
 		}
-		this.language = language;
+		this.languagePreference = language;
 		if (this.surveyResponses != null && this.loggedIn) {
 			// Change the language for all the surveys in the survey response
 			Connection con = SurveyDatabase.createConnection(config);
