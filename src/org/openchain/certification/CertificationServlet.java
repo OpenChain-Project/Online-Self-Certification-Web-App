@@ -192,7 +192,7 @@ public class CertificationServlet extends HttpServlet {
 	            } else if (requestParam.equals(GET_USER)) {
 	            	if (user == null) {
 	            		user = new UserSession(getServletConfig());	// creates a new user that is not logged in and a null username
-	            		user.setLanguage(language);	// Set the language to the session language
+	            		user.setLanguagePreference(language);	// Set the language to the session language
 	            	}
             		gson.toJson(user, out);
 	            } else if (requestParam.equals(GET_SUPPORTED_SPEC_VERSIONS)) {
@@ -366,8 +366,8 @@ public class CertificationServlet extends HttpServlet {
         if (rj != null && rj.getLanguage() != null && !rj.getLanguage().isEmpty()) {
         	language = rj.getLanguage();
         }
-        if (user != null && user.getLanguage() != null && !user.getLanguage().isEmpty() && User.DEFAULT_LANGUAGE.equals(language)) {
-        	language = user.getLanguage();
+        if (user != null && user.getLanguagePreference() != null && !user.getLanguagePreference().isEmpty() && User.DEFAULT_LANGUAGE.equals(language)) {
+        	language = user.getLanguagePreference();
         }
         try {
         	if (rj.getRequest() == null) {
@@ -431,7 +431,7 @@ public class CertificationServlet extends HttpServlet {
         		}
         	}else if (rj.getRequest().equals(SET_LANGUAGE_REQUEST)) {
         		if (user != null) {
-        			user.setLanguage(rj.getLanguage());
+        			user.setLanguagePreference(rj.getLanguage());
         		}
         		session.setAttribute(LANGUAGE_ATTRIBUTE, rj.getLanguage());
         	} else if (user == null || !user.isLoggedIn()) {
@@ -601,7 +601,7 @@ public class CertificationServlet extends HttpServlet {
 			user.setUuid(hashedUuid);
 			user.setPasswordReset(true);
 			UserDb.getUserDb(config).updateUser(user);
-			EmailUtility.emailPasswordReset(user.getName(), email, uuid, username, responseServletUrl, config, user.getLanguage());
+			EmailUtility.emailPasswordReset(user.getName(), email, uuid, username, responseServletUrl, config, user.getLanguagePreference());
 	        return true;
 		} catch (SQLException e) {
 			logger.error("SQL Exception signing up user",e);  //$NON-NLS-1$
