@@ -40,7 +40,8 @@ function updateSurvey() {
 	    data: {
 	        request: "getUpdateSurveyResults",
 	        tag: tag,
-	        commit: commit
+	        commit: commit,
+	        locale: getCurrentLanguage()
 	    },
 	    type: "GET",
 	    dataType : "json",
@@ -103,7 +104,8 @@ function updateSurveyForReal( commit ) {
 	    data:JSON.stringify({
 	        request: "updatesurvey",
 	        tag: null,
-	        commit: lastUpdateCommit
+	        commit: lastUpdateCommit,
+	        locale: getCurrentLanguage()
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -300,7 +302,8 @@ function requestStatusChange(request, ids) {
 	    url: "CertificationServlet",
 	    data:JSON.stringify({
 	        request: request,
-	        ids: ids
+	        ids: ids,
+	        locale: getCurrentLanguage()
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -354,7 +357,8 @@ function reloadSubmissionStatus() {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
-	        request: "getsubmissions"
+	        request: "getsubmissions",
+	        locale: getCurrentLanguage()
 	    },
 	    type: "GET",
 	    dataType : "json",
@@ -377,7 +381,8 @@ function getTags() {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
-	        request: "getGitTags"
+	        request: "getGitTags",
+	        locale: getCurrentLanguage()
 	    },
 	    type: "GET",
 	    dataType : "json",
@@ -459,7 +464,8 @@ $(document).ready( function() {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
-	        request: "version"
+	        request: "version",
+	        locale: getCurrentLanguage()
 	    },
 	    type: "GET",
 	    dataType : "json",

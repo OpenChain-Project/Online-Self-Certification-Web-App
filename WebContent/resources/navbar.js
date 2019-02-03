@@ -19,8 +19,6 @@
  * It depends on the div ID's error, status, login, and signup
  */
 
-
-//TODO: Update the languages with the officially supported list
 var NOPASSWORD = "***********";
 // From http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#e-mail-state-%28type=email%29
 var emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -102,7 +100,8 @@ function openResendVerificationDialog(username, password) {
 	    			    data:JSON.stringify({
 	    			        request:  "resendverify",
 	    			        username: username.val(),
-	    			        password: password.val()
+	    			        password: password.val(),
+	    			        locale: getCurrentLanguage()
 	    			    }),
 	    			    type: "POST",
 	    			    dataType : "json",
@@ -142,27 +141,29 @@ function loginUser() {
 	valid = valid && checkLength( password, "password", 8, 60 );
 	valid = valid && checkRegexp( username, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter" );
 	if (valid) {
+		var data = JSON.stringify({
+	        request:  "login",
+	        username: username.val(),
+	        password: password.val(),
+	        locale: getCurrentLanguage()
+	    });
 		$.ajax({
 		    url: "CertificationServlet",
-		    data:JSON.stringify({
-		        request:  "login",
-		        username: username.val(),
-		        password: password.val()
-		    }),
+		    data: data,
 		    type: "POST",
 		    dataType : "json",
-		    contentType: "json",
+		    contentType: 'application/json; charset=utf-8',
 		    async: false, 
 		    success: function( json ) {
 		    	password.val('');
 		    	if ( json.status == "OK" ) {
-		    		if (json.language) {
-		    			updateLanguageUI(json.language);	//NOTE: the backend should have already been updated during login
+		    		if (json.languagePreference) {
+		    			changeLng(json.languagePreference);
 		    		}
 		    		if (json.admin) {
-		    			window.location = "admin.html"+'?locale='+(json.language ? json.language : (url('?locale') || 'en'));
+		    			window.location = "admin.html"+'?locale='+(json.languagePreference ? json.languagePreference : (url('?locale') || 'en'));
 		    		} else {
-		    			window.location = "survey.html"+'?locale='+(json.language ? json.language : (url('?locale') || 'en'));
+		    			window.location = "survey.html"+'?locale='+(json.languagePreference ? json.languagePreference : (url('?locale') || 'en'));
 		    		}
 		    	} else if (json.status == "NOT_VERIFIED") 
 		    	{
@@ -183,7 +184,8 @@ function signout() {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data:JSON.stringify({
-	        request:  "logout"
+	        request:  "logout",
+	        locale: getCurrentLanguage()
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -263,7 +265,8 @@ function updateUser(username, password, name, address, organization, email,
 	        email: email,
 	        namePermission: okUseNameEmail,
 	        emailPermission: okUseNameEmail,
-	        language: preferredLanguage
+	        language: preferredLanguage,
+	        locale: getCurrentLanguage()
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -271,7 +274,7 @@ function updateUser(username, password, name, address, organization, email,
 	    async: false, 
 	    success: function( json ) {
 	    	if ( json.status == "OK" ) {
-	    		updateLanguageUI( preferredLanguage );
+	    		changeLng( preferredLanguage );
     			$( "#status" ).dialog({
     			title: "Updated",
     			resizable: false,
@@ -283,7 +286,6 @@ function updateUser(username, password, name, address, organization, email,
     			    "Ok" : function () {
     			        $( this ).dialog( "close" );
     			        $('#updateprofileModal').modal('hide');
-    			        updateLanguageUI(json.language);
     				      }
     		   }
 
@@ -356,7 +358,8 @@ function signup(username, password, name, address, organization, email,
 	        email: email,
 	        emailPermission: approveUseNameEmail,
 	        namePermission: approveUseNameEmail,
-	        language: preferredLanguage
+	        language: preferredLanguage,
+	        locale: getCurrentLanguage()
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -381,7 +384,8 @@ function openProfileDialog() {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
-	        request: "getuser"
+	        request: "getuser",
+	        locale: getCurrentLanguage()
 	    },
 	    type: "GET",
 	    dataType : "json",
@@ -394,7 +398,7 @@ function openProfileDialog() {
 	    	$("#update-email").val(json.email);
 	    	$("#update-address").val(json.address);
 	    	$("#update-use-name-email").prop('checked', json.emailPermission);
-	    	$("#update-language").val(json.language);
+	    	$("#update-language").val(json.preferredLanguage);
 	    	
 	    	$("#user-profile").dialog("open");
 	    },
@@ -411,7 +415,8 @@ function createNavMenu() {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
-	        request: "getuser"
+	        request: "getuser",
+	        locale: getCurrentLanguage()
 	    },
 	    type: "GET",
 	    dataType : "json",
@@ -469,7 +474,8 @@ function requestPasswordReset() {
 		    data:JSON.stringify({
 		        request:  "requestResetPassword",
 		        username: username.val(),
-		        email: email.val()
+		        email: email.val(),
+		        locale: getCurrentLanguage()
 		    }),
 		    type: "POST",
 		    dataType : "json",

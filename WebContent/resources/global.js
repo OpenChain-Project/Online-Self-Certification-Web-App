@@ -19,7 +19,7 @@
  * This is a common JavaScript file containing the code to support internationalization
  */
 /**
- * List of all supported language keyed by 2 or 3 character ISO language
+ * List of all supported language keyed by 2 or 3 character ISO language.  The value is the display for the language
  */
 var LANGUAGES = {"en":"English", 
                  "ru":"Russian"};
@@ -110,7 +110,8 @@ var LANGUAGES = {"en":"English",
 				url: "CertificationServlet",
 				data: JSON.stringify({
 			        request:  "setlanguage",
-			        language: lng
+			        language: lng,
+			        locale: lng
 			    }),
 			    type: "POST",
 			    dataType : "json",

@@ -19,7 +19,8 @@ function resetPassword() {
 		    data:JSON.stringify({
 		        request:  "changePassword",
 		        username: username.val(),
-		        password: password.val()
+		        password: password.val(),
+		        locale: getCurrentLanguage()
 		    }),
 		    type: "POST",
 		    dataType : "json",

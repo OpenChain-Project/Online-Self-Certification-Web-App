@@ -15,7 +15,7 @@ The back end Internationalization uses Java's built in support for localization.
 To add a language:
 1. Add a new translation JSON file in the `WebContent/resources/locales/[lang]/translation` directory where `[lang]` is the IETF RFC 5646 language tag
 2. Add a new translation `messages_[lang].properties` file in the resource directory where `[lang]` is the IETF RFC 5646 language tag
-3. Add the language to the JavaScript file ...
+3. Add the language to the LANGUAGES array in the WebContent/resources/global.js JavaScript file
 
 Please feel free to test this code, submit issues, and help make Self-Certification
 around the OpenChain Specification easier for everyone.
