@@ -199,7 +199,7 @@ public class TestUserSession {
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
 		assertFalse(userSession.isLoggedIn());
-		assertTrue(userSession.login());
+		assertTrue(userSession.login(language));
 		assertTrue(userSession.isLoggedIn());
 		assertEquals(user.hasEmailPermission(), userSession.hasEmailPermission());
 		assertEquals(user.hasNamePermission(), userSession.hasNamePermission());
@@ -208,7 +208,7 @@ public class TestUserSession {
 		UserSession badUserSession = new UserSession(
 				user.getUsername(), "wrongpass", TestHelper.getTestServletConfig());
 		assertFalse(badUserSession.isLoggedIn());
-		assertFalse(badUserSession.login());
+		assertFalse(badUserSession.login(language));
 		assertTrue(badUserSession.getLastError().contains("assword"));
 	}
 
@@ -230,9 +230,9 @@ public class TestUserSession {
 		
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		assertTrue(userSession.login());
+		assertTrue(userSession.login(language));
 		
-		SurveyResponse result = userSession.getSurveyResponse();
+		SurveyResponse result = userSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion, result.getSurvey().getSpecVersion());
 		Map<String, Answer> resultResponses = result.getResponses();
@@ -249,9 +249,9 @@ public class TestUserSession {
 		answerUpdates.add(new ResponseAnswer(s2q2Number, "NO", true, "Evidence"));
 		// The following should not be added since it is not checkd
 		answerUpdates.add(new ResponseAnswer(s2q3Number, "NA", false, null));
-		userSession.updateAnswers(answerUpdates);
+		userSession.updateAnswers(answerUpdates, language);
 		
-		result = userSession.getSurveyResponse();
+		result = userSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion, result.getSurvey().getSpecVersion());
 		resultResponses = result.getResponses();
@@ -271,7 +271,7 @@ public class TestUserSession {
 		
 		userSession.logout();
 		try {
-			result = userSession.getSurveyResponse();
+			result = userSession.getSurveyResponse(language);
 			fail("This should have failed since the user is not logged in");
 		} catch(Exception ex) {
 			assertTrue(ex.getMessage().contains("ogged"));
@@ -280,8 +280,8 @@ public class TestUserSession {
 		// Check to make sure it persists
 		UserSession newUserSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		newUserSession.login();
-		result = newUserSession.getSurveyResponse();
+		newUserSession.login(language);
+		result = newUserSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion, result.getSurvey().getSpecVersion());
 		resultResponses = result.getResponses();
@@ -304,7 +304,7 @@ public class TestUserSession {
 	public void testUpdateUser() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidUserException, QuestionException, SurveyResponseException, SQLException, EmailUtilException {
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		assertTrue(userSession.login());
+		assertTrue(userSession.login(language));
 		assertTrue(userSession.isLoggedIn());
 		assertEquals(user.getAddress(), userSession.getAddress());
 		assertEquals(user.getEmail(), userSession.getEmail());
@@ -324,7 +324,7 @@ public class TestUserSession {
 		boolean newNamePermission = !user.hasNamePermission();
 		boolean newEmailPermission = !user.hasEmailPermission();
 		userSession.updateUser(newName, newEmail, newOrganization, newAddress, 
-				newPassword, newNamePermission, newEmailPermission, newLanguage);
+				newPassword, newNamePermission, newEmailPermission, newLanguage, language);
 		assertEquals(newAddress, userSession.getAddress());
 		assertEquals(newEmail, userSession.getEmail());
 		assertEquals(newName, userSession.getName());
@@ -335,7 +335,7 @@ public class TestUserSession {
 		assertEquals(newLanguage, userSession.getLanguagePreference());
 		UserSession newUserSession = new UserSession(
 				user.getUsername(), newPassword, TestHelper.getTestServletConfig());
-		newUserSession.login();
+		newUserSession.login(language);
 		assertEquals(newAddress, newUserSession.getAddress());
 		assertEquals(newEmail, newUserSession.getEmail());
 		assertEquals(newName, newUserSession.getName());
@@ -364,9 +364,9 @@ public class TestUserSession {
 		
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		assertTrue(userSession.login());
+		assertTrue(userSession.login(language));
 		
-		SurveyResponse result = userSession.getSurveyResponse();
+		SurveyResponse result = userSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion, result.getSurvey().getSpecVersion());
 		Map<String, Answer> resultResponses = result.getResponses();
@@ -378,15 +378,15 @@ public class TestUserSession {
 		assertTrue(resultAnswer2 instanceof YesNoAnswer);
 		assertEquals(s1q2answer.getAnswer(), ((YesNoAnswer)resultAnswer2).getAnswer());
 		
-		userSession.resetAnswers(primarySpecVersion);
-		result = userSession.getSurveyResponse();
+		userSession.resetAnswers(primarySpecVersion, language);
+		result = userSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion, result.getSurvey().getSpecVersion());
 		resultResponses = result.getResponses();
 		assertEquals(0, resultResponses.size());
 		
-		userSession.resetAnswers(primarySpecVersion2);
-		result = userSession.getSurveyResponse();
+		userSession.resetAnswers(primarySpecVersion2, language);
+		result = userSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion2, result.getSurvey().getSpecVersion());
 		resultResponses = result.getResponses();
@@ -397,12 +397,12 @@ public class TestUserSession {
 		// Check to make sure it persists
 		UserSession newUserSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		newUserSession.login();
+		newUserSession.login(language);
 		assertTrue(newUserSession.isLoggedIn());
-		result = newUserSession.getSurveyResponse();
+		result = newUserSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
-		newUserSession.resetAnswers(primarySpecVersion2);
-		result = newUserSession.getSurveyResponse();
+		newUserSession.resetAnswers(primarySpecVersion2, language);
+		result = newUserSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion2, result.getSurvey().getSpecVersion());
 		resultResponses = result.getResponses();
@@ -440,14 +440,14 @@ public class TestUserSession {
 		
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		assertTrue(userSession.login());
+		assertTrue(userSession.login(language));
 		assertTrue(userSession.isLoggedIn());
-		List<String> result = userSession.getSurveyResponseSpecVersions();
+		List<String> result = userSession.getSurveyResponseSpecVersions(language);
 		assertEquals(2, result.size());
 		assertEquals(primarySpecVersion, result.get(0));
 		assertEquals(primarySpecVersion2, result.get(1));
 		// the current spec version should default to the largest value
-		assertEquals(specVersion2, userSession.getSurveyResponse().getSpecVersion());
+		assertEquals(specVersion2, userSession.getSurveyResponse(language).getSpecVersion());
 		userSession.logout();
 	}
 	
@@ -466,17 +466,17 @@ public class TestUserSession {
 		
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		assertTrue(userSession.login());
+		assertTrue(userSession.login(language));
 		assertTrue(userSession.isLoggedIn());
-		SurveyResponse result = userSession.getSurveyResponse();
+		SurveyResponse result = userSession.getSurveyResponse(language);
 		assertEquals(specVersion, result.getSpecVersion());
 		
-		userSession.setCurrentSurveyResponse(primarySpecVersion2, true);
-		result = userSession.getSurveyResponse();
+		userSession.setCurrentSurveyResponse(primarySpecVersion2, true, language);
+		result = userSession.getSurveyResponse(language);
 		assertEquals(specVersion2, result.getSpecVersion());
 		
-		userSession.setCurrentSurveyResponse(primarySpecVersion, false);
-		result = userSession.getSurveyResponse();
+		userSession.setCurrentSurveyResponse(primarySpecVersion, false, language);
+		result = userSession.getSurveyResponse(language);
 		assertEquals(specVersion, result.getSpecVersion());
 		assertEquals(1,result.getResponses().size());
 		assertEquals(s1q1answer, result.getResponses().get(s1q1Number));
@@ -499,9 +499,9 @@ public class TestUserSession {
 		
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		assertTrue(userSession.login());
+		assertTrue(userSession.login(language));
 		assertTrue(userSession.isLoggedIn());
-		userSession.setCurrentSurveyResponse(primarySpecVersion2, true);
+		userSession.setCurrentSurveyResponse(primarySpecVersion2, true, language);
 		List<SurveyResponse> result = userSession.getAllResponses();
 		assertEquals(2, result.size());
 		for (SurveyResponse res:result) {
