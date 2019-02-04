@@ -8,7 +8,8 @@ function loadCertifiedTable() {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
-	        request: "getcertified"
+	        request: "getcertified",
+	        locale: getCurrentLanguage()
 	    },
 	    type: "GET",
 	    dataType : "json",

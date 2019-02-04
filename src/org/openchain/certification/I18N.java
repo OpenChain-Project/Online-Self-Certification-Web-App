@@ -54,7 +54,8 @@ public final class I18N {
 				throw(new RuntimeException("No local for the default language")); //$NON-NLS-1$
 			}
 		}
-		ResourceBundle bundle = ResourceBundle.getBundle(BASE_RESOURCE_NAME, locale);
+		ResourceBundle.Control utf8Control = new Utf8ResourceBundleControl();
+		ResourceBundle bundle = ResourceBundle.getBundle(BASE_RESOURCE_NAME, locale, utf8Control);
 		String template = bundle.getString(key);
 		MessageFormat mf = new MessageFormat(template, locale);
 		

@@ -46,6 +46,7 @@ public class RequestJson {
 	private Survey survey;
 	private String tag;
 	private String commit;
+	private String locale;
 	
 	/**
 	 * @return the create
@@ -271,5 +272,19 @@ public class RequestJson {
 	public void setCommit(String commit) {
 		this.commit = commit;
 	}
+	/**
+	 * @return the locale
+	 */
+	public String getLocale() {
+		return locale;
+	}
+	/**
+	 * @param locale the locale to set
+	 */
+	public void setLocale(String locale) {
+		this.locale = locale;
+	}
+	
+	
 	
 }
