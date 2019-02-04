@@ -140,7 +140,7 @@ public class UserDb {
 			retval.setOrganization(result.getString("organization")); //$NON-NLS-1$
 			retval.setNamePermission(result.getBoolean("name_permission")); //$NON-NLS-1$
 			retval.setEmailPermission(result.getBoolean("email_permission")); //$NON-NLS-1$
-			retval.setLanguage(result.getString("language")); //$NON-NLS-1$
+			retval.setLanguagePreference(result.getString("language")); //$NON-NLS-1$
 			return retval;
 		} finally {
 			if (result != null) {
@@ -174,7 +174,7 @@ public class UserDb {
 				user.setOrganization(result.getString("organization")); //$NON-NLS-1$
 				user.setNamePermission(result.getBoolean("name_permission")); //$NON-NLS-1$
 				user.setEmailPermission(result.getBoolean("email_permission")); //$NON-NLS-1$
-				user.setLanguage(result.getString("language")); //$NON-NLS-1$
+				user.setLanguagePreference(result.getString("language")); //$NON-NLS-1$
 				retval.add(user);
 			}
 			return retval;
@@ -214,8 +214,8 @@ public class UserDb {
 			this.addUserQuery.setString(11, user.getOrganization());
 			this.addUserQuery.setBoolean(12, user.hasNamePermission());
 			this.addUserQuery.setBoolean(13, user.hasEmailPermission());
-			if (user.getLanguage() != null) {
-				this.addUserQuery.setString(14, user.getLanguage());
+			if (user.getLanguagePreference() != null) {
+				this.addUserQuery.setString(14, user.getLanguagePreference());
 			} else {
 				this.addUserQuery.setNull(14, java.sql.Types.VARCHAR);
 			}
@@ -323,8 +323,8 @@ public class UserDb {
 			updateUserQuery.setString(10, user.getEmail());
 			updateUserQuery.setBoolean(11, user.hasNamePermission());
 			updateUserQuery.setBoolean(12, user.hasEmailPermission());
-			if (user.getLanguage() != null) {
-				updateUserQuery.setString(13, user.getLanguage());
+			if (user.getLanguagePreference() != null) {
+				updateUserQuery.setString(13, user.getLanguagePreference());
 			} else {
 				updateUserQuery.setNull(13, java.sql.Types.VARCHAR);
 			}
