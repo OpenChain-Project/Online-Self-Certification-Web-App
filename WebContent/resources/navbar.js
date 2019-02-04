@@ -210,7 +210,7 @@ function displayError( error ) {
 	            $( this ).dialog( "close" );
 	        }
 	    }]
-	}).text( error ).parent().addClass( "ui-state-error" );
+	}).html ( error ).parent().addClass( "ui-state-error" );
 	$('.translate').localize();
 }
 
@@ -218,12 +218,12 @@ function handleError(xhr, status, errorThrown, msg) {
 	if ( msg === undefined ) {
 		var responseType = xhr.getResponseHeader("content-type") || "";
 		if ( responseType.indexOf('text') > 1 && xhr.responseText != null && xhr.responseText!= "" ) {
-			msg = "Sorry - there was a problem loading data:" + xhr.responseText;
+			msg = '<span class="translate" data-i18n="error-msg">Sorry - there was a problem loading data: &nbsp; </span>' + xhr.responseText;
 		} else if ( responseType.indexOf('json') > 1 && xhr.responseText != null && xhr.responseText!= "" ) {
 			response = JSON.parse(xhr.responseText);
 			msg = response.error;		
 		} else {
-			msg = "Sorry - there was a problem loading data: " + errorThrown;
+			msg ='<span class="translate" data-i18n="error-msg">Sorry - there was a problem loading data: &nbsp;</span>' + errorThrown;
 			
 		}
 	}
@@ -642,8 +642,6 @@ function FileExist(urlToFile)
 		return true;
 	}
 }
-
-
 
 $(document).ready( function() {
 	// Added by ViSolve 

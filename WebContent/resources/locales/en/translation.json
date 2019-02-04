@@ -46,6 +46,7 @@
   "Chinese":"Chinese",
   "Resend Verification" : "Resend Verification",
   "Error" : "Error",
+  "error-msg" : "Sorry - there was a problem loading data:",
   "verify-username" : "You have not verified the username.  Would you like to resend a verify email to the email address you registered?",
   "profile-notification" : "Profile updated  successfully",
 
@@ -54,7 +55,7 @@
   "Please contact":"Please contact",
   "OpenChain Support":"OpenChain Support",
   "report":"to report any inaccuracies or issues.",
-  "footer_content":"Copyright 2016 The Linux Foundation. All rights reserved.The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our ",
+  "footer_content":"Copyright 2018 The Linux Foundation. All rights reserved.The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our ",
   "Trademark Usage":"Trademark Usage",
   "page":"page.",
   "linux":"Linux is a registered trademark of Linus Torvalds.",
