@@ -30,7 +30,7 @@ public class PostResponse {
 	private String error;
 	private boolean admin;
 	private SurveyUpdateResult surveyUpdateResult;
-	private String language;
+	private String languagePreference;
 
 	public PostResponse(Status status) {
 		this.status = status;
@@ -94,11 +94,11 @@ public class PostResponse {
 		return this.surveyUpdateResult;
 	}
 
-	public void setLanguage(String language) {
-		this.language = language;
+	public void setLanguagePreference(String language) {
+		this.languagePreference = language;
 	}
 	
-	public String getLanguage() {
-		return this.language;
+	public String getLanguagePreference() {
+		return this.languagePreference;
 	}
 }

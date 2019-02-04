@@ -398,7 +398,7 @@ function openProfileDialog() {
 	    	$("#update-email").val(json.email);
 	    	$("#update-address").val(json.address);
 	    	$("#update-use-name-email").prop('checked', json.emailPermission);
-	    	$("#update-language").val(json.preferredLanguage);
+	    	$("#update-language").val(json.languagePreference);
 	    	
 	    	$("#user-profile").dialog("open");
 	    },
