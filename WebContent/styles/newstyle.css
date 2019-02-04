@@ -13,7 +13,7 @@
 /* Logo */
 
 .openchain-logo{
-	width:230px;
+	width:290px;
 	}
 
 /*Header Icons */	
@@ -161,6 +161,10 @@
 	margin-top: 9px !important;
     font-size: 15px;
 	}
+
+.custom-col > select:focus, #update-language:focus {
+	    box-shadow: none;
+}
 /**************************** Header CSS ******************************/
 
 
@@ -298,7 +302,7 @@ input:focus, textarea:focus{
 	}
 
 input:valid ~ label, /*detects if input has valid input*/
-textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label{ 
+textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label, .select-label{ 
 	  top: -30px;
 	  color: #009688;
 	}

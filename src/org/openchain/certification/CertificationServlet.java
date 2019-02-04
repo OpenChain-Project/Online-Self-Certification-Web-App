@@ -84,6 +84,7 @@ public class CertificationServlet extends HttpServlet {
 	static final String SESSION_ATTRIBUTE_USER = "user";  //$NON-NLS-1$
 	static final String LANGUAGE_ATTRIBUTE = "lang";  //$NON-NLS-1$
 	public static final String PARAMETER_REQUEST = "request";  //$NON-NLS-1$
+	public static final String PARAMETER_LOCALE = "locale";  //$NON-NLS-1$
 	public static final String PARAMETER_USERNAME = "username";  //$NON-NLS-1$
 	public static final String PARAMETER_UUID = "uuid";  //$NON-NLS-1$
 	public static final String PARAMETER_SPEC_VERSION = "specVersion";  //$NON-NLS-1$
@@ -141,21 +142,24 @@ public class CertificationServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setHeader("Cache-Control", "no-cache, must-revalidate");  //$NON-NLS-1$  //$NON-NLS-2$
 		String requestParam = request.getParameter(PARAMETER_REQUEST);
-		String language = User.DEFAULT_LANGUAGE;
+		String locale = User.DEFAULT_LANGUAGE;
 		if (requestParam != null) {
 			PrintWriter out = response.getWriter();
 			try {
 				HttpSession session = request.getSession(true);
 				UserSession user = (UserSession)session.getAttribute(SESSION_ATTRIBUTE_USER);
-				language = (String)session.getAttribute(LANGUAGE_ATTRIBUTE);
-				if (language == null) {
-					language = User.DEFAULT_LANGUAGE;
+				locale = request.getParameter(PARAMETER_LOCALE);
+				if (locale == null) {
+					locale = (String)session.getAttribute(LANGUAGE_ATTRIBUTE);
+				}
+				if (locale == null) {
+					locale = User.DEFAULT_LANGUAGE;
 				}
 	            response.setContentType("application/json");   //$NON-NLS-1$
 	            if (requestParam.equals(GET_SOFTWARE_VERSION_REQUEST)) {
 	            	gson.toJson(version, out);
 	            } else if (requestParam.equals(GET_CERTIFIED_REQUEST)) {
-	            	List<Submission> submissions = getSubmissions(language);
+	            	List<Submission> submissions = getSubmissions(locale);
 	            	List<Submission> certifiedSubmissions = new ArrayList<Submission>();
 	            	for (Submission submission:submissions) {
 	            		if (submission.isApproved()) {
@@ -171,10 +175,10 @@ public class CertificationServlet extends HttpServlet {
 	            	String username = request.getParameter(PARAMETER_USERNAME);
 	            	String uuid = request.getParameter(PARAMETER_UUID);
 	            	try {
-	            		UserSession.completeEmailVerification(username, uuid, getServletConfig(),language);
-	            		response.sendRedirect("regcomplete.html"); //$NON-NLS-1$
+	            		UserSession.completeEmailVerification(username, uuid, getServletConfig(),locale);
+	            		response.sendRedirect("regcomplete.html?locale="+locale); //$NON-NLS-1$
 	            	} catch (Exception ex) {
-	            		response.sendRedirect("regfailed.html"); //$NON-NLS-1$
+	            		response.sendRedirect("regfailed.html?locale="+locale); //$NON-NLS-1$
 	            	}	            	
 	            } else if (requestParam.equals(COMPLETE_PASSWORD_RESET)) {	// result from clicking email link on reset password
 	            	String username = request.getParameter(PARAMETER_USERNAME);
@@ -184,22 +188,22 @@ public class CertificationServlet extends HttpServlet {
 	            	}
 	            	user = new UserSession(username, "TEMP", getServletConfig()); //$NON-NLS-1$
 	            	session.setAttribute(SESSION_ATTRIBUTE_USER, user);
-	            	if (user.verifyPasswordReset(uuid)) {
-	            		response.sendRedirect("pwreset.html"); //$NON-NLS-1$
+	            	if (user.verifyPasswordReset(uuid, locale)) {
+	            		response.sendRedirect("pwreset.html?locale="+locale); //$NON-NLS-1$
 	            	} else {
-	            		response.sendRedirect("pwresetinvalid.html"); //$NON-NLS-1$
+	            		response.sendRedirect("pwresetinvalid.html?locale="+locale); //$NON-NLS-1$
 	            	}
 	            } else if (requestParam.equals(GET_USER)) {
 	            	if (user == null) {
 	            		user = new UserSession(getServletConfig());	// creates a new user that is not logged in and a null username
-	            		user.setLanguage(language);	// Set the language to the session language
+	            		user.setLanguagePreference(locale);	// Set the language to the session language
 	            	}
             		gson.toJson(user, out);
 	            } else if (requestParam.equals(GET_SUPPORTED_SPEC_VERSIONS)) {
 	            	List<String> supportedSpecVersions = getSupportedSpecVersions(getServletConfig());
 	            	gson.toJson(supportedSpecVersions, out);
 	            } else if (requestParam.equals(GET_GIT_TAGS_REQUEST)) {
-	            	String[] tags = QuestionnaireGitRepo.getQuestionnaireGitRepo(language).getTags(language);
+	            	String[] tags = QuestionnaireGitRepo.getQuestionnaireGitRepo(locale).getTags(locale);
 	            	gson.toJson(tags, out);
 	            } else if (user == null) {
         			// Not logged in - set the status to unauthorized
@@ -209,26 +213,26 @@ public class CertificationServlet extends HttpServlet {
 	            	Survey survey;
 	            	try {
 	            		SurveyDbDao dao = new SurveyDbDao(con);
-	            		survey = dao.getSurvey(null, language);
+	            		survey = dao.getSurvey(null, locale);
 	            	} finally {
 	            		con.close();
 	            	}
 	            	gson.toJson(survey, out);
 	            } else if (requestParam.equals(GET_SURVEY_RESPONSE)) {
-	            	gson.toJson(user.getSurveyResponse(), out);
+	            	gson.toJson(user.getSurveyResponse(locale), out);
 	            } else if (requestParam.equals(GET_SURVEY_VERSIONS)) {
-	            	gson.toJson(user.getSurveyResponseSpecVersions(), out);
+	            	gson.toJson(user.getSurveyResponseSpecVersions(locale), out);
 	            } else if (requestParam.equals(GET_SUBMISSIONS)) {
 	            	if (!user.isAdmin()) {
 	            		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 	            	} else {
-		            	List<Submission> submissions = getSubmissions(language);
+		            	List<Submission> submissions = getSubmissions(locale);
 		            	gson.toJson(submissions, out);
 	            	}
 	            } else if (requestParam.equals(DOWNLOAD_ANSWERS)) {
 	            	response.setContentType("text/csv");  //$NON-NLS-1$
 	                response.setHeader("Content-Disposition", "attachment;filename=\"openchain-answers.csv\"");  //$NON-NLS-1$  //$NON-NLS-2$
-	            	printAnswers(user, out);
+	            	printAnswers(user, out, locale);
 	            } else if (requestParam.equals(DOWNLOAD_SURVEY)) {
 	            	if (!user.isAdmin()) {
 	            		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -236,7 +240,7 @@ public class CertificationServlet extends HttpServlet {
 		            	String specVersion = request.getParameter(PARAMETER_SPEC_VERSION);
 		                response.setContentType("text/json");  //$NON-NLS-1$
 		                response.setHeader("Content-Disposition", "attachment;filename=\"openchain-survey-version-"+specVersion+".json\"");  //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
-		            	printSurvey(specVersion, language, out);
+		            	printSurvey(specVersion, locale, out);
 	            	}
 	            } else if (requestParam.equals(GET_UPDATE_SURVEY_RESULTS)) {
 	            	if (!user.isAdmin()) {
@@ -244,34 +248,34 @@ public class CertificationServlet extends HttpServlet {
 	            	} else {
 	            		String tag = request.getParameter(PARAMETER_GIT_TAG);
 	            		String commit = request.getParameter(PARAMETER_GIT_COMMIT);
-	            		gson.toJson(updateSurvey(tag, commit, language, false), out);
+	            		gson.toJson(updateSurvey(tag, commit, locale, false), out);
 	            	}
 	            } else {
 	            	logger.error("Unknown get request: "+requestParam);  //$NON-NLS-1$
 	            	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 	            	response.setContentType("text");  //$NON-NLS-1$
-					out.print(I18N.getMessage("CertificationServlet.7",language,requestParam)); //$NON-NLS-1$
+					out.print(I18N.getMessage("CertificationServlet.7",locale,requestParam)); //$NON-NLS-1$
 	            }
 			} catch (SurveyResponseException e) {
 				logger.error("Survey response error in servlet"+".  Request="+request,e);  //$NON-NLS-1$ //$NON-NLS-2$
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.setContentType("text");  //$NON-NLS-1$ 
-				out.print(I18N.getMessage("CertificationServlet.9",language,e.getMessage())); //$NON-NLS-1$
+				out.print(I18N.getMessage("CertificationServlet.9",locale,e.getMessage())); //$NON-NLS-1$
 			} catch (SQLException e) {
 				logger.error("SQL error in servlet"+".  Request="+request,e);  //$NON-NLS-1$ //$NON-NLS-2$
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.setContentType("text");   //$NON-NLS-1$
-				out.print(I18N.getMessage("CertificationServlet.11",language,e.getMessage())); //$NON-NLS-1$
+				out.print(I18N.getMessage("CertificationServlet.11",locale,e.getMessage())); //$NON-NLS-1$
 			} catch (QuestionException e) {
 				logger.error("Question error in servlet"+".  Request="+request,e);  //$NON-NLS-1$ //$NON-NLS-2$
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.setContentType("text");  //$NON-NLS-1$ 
-				out.print(I18N.getMessage("CertificationServlet.13",language,e.getMessage())); //$NON-NLS-1$
+				out.print(I18N.getMessage("CertificationServlet.13",locale,e.getMessage())); //$NON-NLS-1$
 			} catch (Exception e) {
 				logger.error("Uncaught exception",e);  //$NON-NLS-1$
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.setContentType("text");   //$NON-NLS-1$
-				out.print(I18N.getMessage("CertificationServlet.14",language,e.getMessage())); //$NON-NLS-1$
+				out.print(I18N.getMessage("CertificationServlet.14",locale,e.getMessage())); //$NON-NLS-1$
 			} finally {
 				out.close();
 			}
@@ -343,59 +347,63 @@ public class CertificationServlet extends HttpServlet {
 	/**
 	 * Print answers to the user survey in a CSV format
 	 * @param out
+	 * @param locale The local language of the current user
 	 * @throws SurveyResponseException 
 	 * @throws QuestionException 
 	 * @throws SQLException 
 	 * @throws IOException 
 	 */
-	private void printAnswers(UserSession session, PrintWriter out) throws SQLException, QuestionException, SurveyResponseException, IOException {
-		session.getSurveyResponse().printCsv(out);
+	private void printAnswers(UserSession session, PrintWriter out, String locale) throws SQLException, QuestionException, SurveyResponseException, IOException {
+		session.getSurveyResponse(locale).printCsv(out);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");  //$NON-NLS-1$
 		response.setContentType("application/json"); //$NON-NLS-1$
+		response.setCharacterEncoding("UTF-8");  //$NON-NLS-1$
 		HttpSession session = request.getSession(true);
 		UserSession user = (UserSession)session.getAttribute(SESSION_ATTRIBUTE_USER);
-		RequestJson rj = gson.fromJson(new JsonReader(new InputStreamReader(request.getInputStream())), RequestJson.class);
+		RequestJson rj = gson.fromJson(new JsonReader(new InputStreamReader(request.getInputStream(), "UTF-8")), RequestJson.class);
         PrintWriter out = response.getWriter();
         PostResponse postResponse = new PostResponse(Status.OK);
-        String language = User.DEFAULT_LANGUAGE;
-        if (rj != null && rj.getLanguage() != null && !rj.getLanguage().isEmpty()) {
-        	language = rj.getLanguage();
+        String locale = rj.getLocale();
+        if (locale == null) {
+        	locale = (String)session.getAttribute(LANGUAGE_ATTRIBUTE);
         }
-        if (user != null && user.getLanguage() != null && !user.getLanguage().isEmpty() && User.DEFAULT_LANGUAGE.equals(language)) {
-        	language = user.getLanguage();
-        }
+		if (locale == null) {
+			locale = User.DEFAULT_LANGUAGE;
+		}
         try {
         	if (rj.getRequest() == null) {
         		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     			response.setContentType("text");  //$NON-NLS-1$
-    			out.println(I18N.getMessage("CertificationServlet.17",language)); //$NON-NLS-1$
+    			out.println(I18N.getMessage("CertificationServlet.17",locale)); //$NON-NLS-1$
         	} else if (rj.getRequest().equals(LOGIN_REQUEST)) {
         		if (user != null) {
         			user.logout();
         		}
         		UserSession newUser = new UserSession(rj.getUsername(),rj.getPassword(), getServletConfig());
-        		if (newUser.login()) {
+        		if (newUser.login(locale)) {
         			session.setAttribute(SESSION_ATTRIBUTE_USER, newUser);
         			postResponse.setAdmin(newUser.isAdmin());
-        		} else if (newUser.isValidPasswordAndNotVerified()) {
+        			postResponse.setLanguage(newUser.getLanguagePreference());
+        		} else if (newUser.isValidPasswordAndNotVerified(locale)) {
         			postResponse.setStatus(Status.NOT_VERIFIED);
-        			postResponse.setError(I18N.getMessage("CertificationServlet.18",language)); //$NON-NLS-1$
+        			postResponse.setError(I18N.getMessage("CertificationServlet.18",locale)); //$NON-NLS-1$
         		} else {
         			postResponse.setStatus(Status.ERROR);
-        			postResponse.setError(I18N.getMessage("CertificationServlet.19",language,newUser.getLastError())); //$NON-NLS-1$
+        			postResponse.setError(I18N.getMessage("CertificationServlet.19",locale,newUser.getLastError())); //$NON-NLS-1$
         		}
         	} else if (rj.getRequest().equals(PASSWORD_CHANGE_REQUEST)) {	// request from the pwreset.html form
         		if (user == null || !user.isPasswordReset()) {
         			postResponse.setStatus(Status.ERROR);
         			logger.error("Invalid state for password reset for user "+ rj.getUsername());  //$NON-NLS-1$
-        			postResponse.setError(I18N.getMessage("CertificationServlet.20",language)); //$NON-NLS-1$
+        			postResponse.setError(I18N.getMessage("CertificationServlet.20",locale)); //$NON-NLS-1$
         		} else {
-        			if (!user.setPassword(rj.getUsername(), rj.getPassword())) {
+        			if (!user.setPassword(rj.getUsername(), rj.getPassword(), locale)) {
         				postResponse.setStatus(Status.ERROR);
         				logger.error("Unable to set password for user "+rj.getUsername());  //$NON-NLS-1$
         				postResponse.setError(user.getLastError());
@@ -404,13 +412,13 @@ public class CertificationServlet extends HttpServlet {
         	} else if (rj.getRequest().equals(RESEND_VERIFICATION)) {
         		if (user != null && user.isLoggedIn()) {
         			postResponse.setStatus(Status.ERROR);
-        			postResponse.setError(I18N.getMessage("CertificationServlet.21",language)); //$NON-NLS-1$
+        			postResponse.setError(I18N.getMessage("CertificationServlet.21",locale)); //$NON-NLS-1$
         		} else {
             		UserSession newUser = new UserSession(rj.getUsername(),rj.getPassword(), getServletConfig());
             		String verificationUrl = request.getRequestURL().toString();
-            		if (!newUser.resendVerification(rj.getUsername(), rj.getPassword(), verificationUrl)) {
+            		if (!newUser.resendVerification(rj.getUsername(), rj.getPassword(), verificationUrl, locale)) {
             			postResponse.setStatus(Status.ERROR);
-            			postResponse.setError(I18N.getMessage("CertificationServlet.22",language,newUser.getLastError())); //$NON-NLS-1$
+            			postResponse.setError(I18N.getMessage("CertificationServlet.22",locale,newUser.getLastError())); //$NON-NLS-1$
             		}
         		}
         	} else if (rj.getRequest().equals(SIGNUP_REQUEST)) {
@@ -420,56 +428,55 @@ public class CertificationServlet extends HttpServlet {
         		UserSession newUser = new UserSession(rj.getUsername(), rj.getPassword(), getServletConfig());
         		String verificationUrl = request.getRequestURL().toString();
         		if (!newUser.signUp(rj.getName(), rj.getAddress(), rj.getOrganization(), 
-        				rj.getEmail(), verificationUrl, rj.getNamePermission(), rj.getEmailPermission(), rj.getLanguage())) {
+        				rj.getEmail(), verificationUrl, rj.getNamePermission(), rj.getEmailPermission(), 
+        				rj.getLanguage(), locale)) {
         			postResponse.setStatus(Status.ERROR);
-        			postResponse.setError(I18N.getMessage("CertificationServlet.22",language,newUser.getLastError())); //$NON-NLS-1$
+        			postResponse.setError(I18N.getMessage("CertificationServlet.22",locale,newUser.getLastError())); //$NON-NLS-1$
         		}
         	} else if (rj.getRequest().equals(REQUEST_RESET_PASSWORD)) {
         		if (!resetPassword(rj.getUsername(), rj.getEmail(), getServletConfig(), request.getRequestURL().toString())) {
 	        		postResponse.setStatus(Status.ERROR);
-	        		postResponse.setError(I18N.getMessage("CertificationServlet.24",language)); //$NON-NLS-1$
+	        		postResponse.setError(I18N.getMessage("CertificationServlet.24",locale)); //$NON-NLS-1$
         		}
         	}else if (rj.getRequest().equals(SET_LANGUAGE_REQUEST)) {
-        		if (user != null) {
-        			user.setLanguage(rj.getLanguage());
-        		}
         		session.setAttribute(LANGUAGE_ATTRIBUTE, rj.getLanguage());
         	} else if (user == null || !user.isLoggedIn()) {
         		if (!rj.getRequest().equals(LOGOUT_REQUEST)) {	// Ignore the logout request if not logged in
             		// Not logged in - set the status to unauthorized
             		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             		postResponse.setStatus(Status.ERROR);
-            		postResponse.setError(I18N.getMessage("CertificationServlet.25",language)); //$NON-NLS-1$
+            		postResponse.setError(I18N.getMessage("CertificationServlet.25",locale)); //$NON-NLS-1$
         		}
         	} else if (rj.getRequest().equals(UPDATE_PROFILE_REQUEST)) {
         		user.updateUser(rj.getName(), rj.getEmail(), rj.getOrganization(), 
-        				rj.getAddress(), rj.getPassword(), rj.getNamePermission(), rj.getEmailPermission(), rj.getLanguage());
+        				rj.getAddress(), rj.getPassword(), rj.getNamePermission(), 
+        				rj.getEmailPermission(), rj.getLanguage(), locale);
         	} else if (rj.getRequest().equals(UPDATE_ANSWERS_REQUEST)) {
         		if (rj.getAnswers() != null && rj.getAnswers().size() > 0) {
-            		user.updateAnswers(rj.getAnswers());
+            		user.updateAnswers(rj.getAnswers(), locale);
         		}
         	} else if (rj.getRequest().equals(FINAL_SUBMISSION_REQUEST)) {
         		if (rj.getAnswers() != null && rj.getAnswers().size() > 0) {
-            		user.updateAnswers(rj.getAnswers());
+            		user.updateAnswers(rj.getAnswers(), locale);
         		}
-        		if (!user.finalSubmission()) {
+        		if (!user.finalSubmission(locale)) {
         			postResponse.setStatus(Status.ERROR);
         			postResponse.setError(user.getLastError());
         		}
         	} else if (rj.getRequest().equals(RESET_ANSWERS_REQUEST)) {
-        		user.resetAnswers(rj.getSpecVersion());
+        		user.resetAnswers(rj.getSpecVersion(), locale);
         	} else if (rj.getRequest().equals(SET_CURRENT_SURVEY_RESPONSE)) {
-        		user.setCurrentSurveyResponse(rj.getSpecVersion(), rj.isCreate());
+        		user.setCurrentSurveyResponse(rj.getSpecVersion(), rj.isCreate(), locale);
         	} else if (rj.getRequest().equals(REQUEST_UNSUBMIT)) {
-        		user.unsubmit();
+        		user.unsubmit(locale);
         	} else if (rj.getRequest().equals(UPDATE_SURVEY_REQUEST)) {
         		if (user.isAdmin()) {
-					SurveyUpdateResult result = updateSurvey(rj.getTag(), rj.getCommit(), language, true);
+					SurveyUpdateResult result = updateSurvey(rj.getTag(), rj.getCommit(), locale, true);
 					postResponse.setSurveyUpdateResult(result);
         		} else {
         			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         			postResponse.setStatus(Status.ERROR);
-	        		postResponse.setError(I18N.getMessage("CertificationServlet.29",language)); //$NON-NLS-1$
+	        		postResponse.setError(I18N.getMessage("CertificationServlet.29",locale)); //$NON-NLS-1$
         		}
         		
         	} else if (rj.getRequest().equals(SET_APPROVED)) {
@@ -484,7 +491,7 @@ public class CertificationServlet extends HttpServlet {
         		} else {
         			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         			postResponse.setStatus(Status.ERROR);
-	        		postResponse.setError(I18N.getMessage("CertificationServlet.32",language)); //$NON-NLS-1$
+	        		postResponse.setError(I18N.getMessage("CertificationServlet.32",locale)); //$NON-NLS-1$
         		}
         	} else if (rj.getRequest().equals(RESET_APPROVED)) {
         		if (user.isAdmin()) {
@@ -498,7 +505,7 @@ public class CertificationServlet extends HttpServlet {
         		} else {
         			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         			postResponse.setStatus(Status.ERROR);
-	        		postResponse.setError(I18N.getMessage("CertificationServlet.32",language)); //$NON-NLS-1$
+	        		postResponse.setError(I18N.getMessage("CertificationServlet.32",locale)); //$NON-NLS-1$
         		}
         	} else if (rj.getRequest().equals(SET_REJECTED)) {
         		if (user.isAdmin()) {
@@ -512,7 +519,7 @@ public class CertificationServlet extends HttpServlet {
         		} else {
         			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         			postResponse.setStatus(Status.ERROR);
-	        		postResponse.setError(I18N.getMessage("CertificationServlet.32",language)); //$NON-NLS-1$
+	        		postResponse.setError(I18N.getMessage("CertificationServlet.32",locale)); //$NON-NLS-1$
         		}
         	} else if (rj.getRequest().equals(RESET_REJECTED)) {
         		if (user.isAdmin()) {
@@ -526,7 +533,7 @@ public class CertificationServlet extends HttpServlet {
         		} else {
         			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         			postResponse.setStatus(Status.ERROR);
-	        		postResponse.setError(I18N.getMessage("CertificationServlet.32",language)); //$NON-NLS-1$
+	        		postResponse.setError(I18N.getMessage("CertificationServlet.32",locale)); //$NON-NLS-1$
         		}
         	} else if (rj.getRequest().equals(LOGOUT_REQUEST)) {
         		user.logout();
@@ -534,44 +541,44 @@ public class CertificationServlet extends HttpServlet {
         		logger.error("Unknown post request: "+rj.getRequest());  //$NON-NLS-1$
     			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     			postResponse.setStatus(Status.ERROR);
-    			postResponse.setError(I18N.getMessage("CertificationServlet.36",language,rj.getRequest())); //$NON-NLS-1$
+    			postResponse.setError(I18N.getMessage("CertificationServlet.36",locale,rj.getRequest())); //$NON-NLS-1$
         	}
         	gson.toJson(postResponse, out);
         } catch (SQLException e) {
         	logger.error("SQL Error in post"+".  Request="+rj.getRequest(),e);  //$NON-NLS-1$ //$NON-NLS-2$
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			postResponse.setStatus(Status.ERROR);
-			postResponse.setError(I18N.getMessage("CertificationServlet.11",language,e.getMessage())); //$NON-NLS-1$
+			postResponse.setError(I18N.getMessage("CertificationServlet.11",locale,e.getMessage())); //$NON-NLS-1$
 			gson.toJson(postResponse, out);
 		} catch (QuestionException e) {
         	logger.error("Question Error in post"+".  Request="+rj.getRequest(),e);  //$NON-NLS-1$ //$NON-NLS-2$
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			postResponse.setStatus(Status.ERROR);
-			postResponse.setError(I18N.getMessage("CertificationServlet.41",language,e.getMessage())); //$NON-NLS-1$
+			postResponse.setError(I18N.getMessage("CertificationServlet.41",locale,e.getMessage())); //$NON-NLS-1$
 			gson.toJson(postResponse, out);
 		} catch (SurveyResponseException e) {
         	logger.error("Survey Response error in post"+".  Request="+rj.getRequest(),e);  //$NON-NLS-1$ //$NON-NLS-2$
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			postResponse.setStatus(Status.ERROR);
-			postResponse.setError(I18N.getMessage("CertificationServlet.9",language,e.getMessage())); //$NON-NLS-1$
+			postResponse.setError(I18N.getMessage("CertificationServlet.9",locale,e.getMessage())); //$NON-NLS-1$
 			gson.toJson(postResponse, out);
 		} catch (EmailUtilException e) {
         	logger.error("Error sending email in post"+".  Request="+rj.getRequest(),e);  //$NON-NLS-1$ //$NON-NLS-2$
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			postResponse.setStatus(Status.ERROR);
-			postResponse.setError(I18N.getMessage("CertificationServlet.45",language,e.getMessage())); //$NON-NLS-1$
+			postResponse.setError(I18N.getMessage("CertificationServlet.45",locale,e.getMessage())); //$NON-NLS-1$
 			gson.toJson(postResponse, out);
 		} catch(GitRepoException e) {
         	logger.error("GIT Repository exception.  Request="+rj.getRequest(),e);  //$NON-NLS-1$ //$NON-NLS-2$
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			postResponse.setStatus(Status.ERROR);
-			postResponse.setError(I18N.getMessage("CertificationServlet.1",language)); //$NON-NLS-1$
+			postResponse.setError(I18N.getMessage("CertificationServlet.1",locale)); //$NON-NLS-1$
 			gson.toJson(postResponse, out);
 		} catch (Exception e) {
         	logger.error("Uncaught exception",e);  //$NON-NLS-1$
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			postResponse.setStatus(Status.ERROR);
-			postResponse.setError(I18N.getMessage("CertificationServlet.14",language,e.getMessage())); //$NON-NLS-1$
+			postResponse.setError(I18N.getMessage("CertificationServlet.14",locale,e.getMessage())); //$NON-NLS-1$
 			gson.toJson(postResponse, out);
 		} finally {
         	out.close();
@@ -601,7 +608,7 @@ public class CertificationServlet extends HttpServlet {
 			user.setUuid(hashedUuid);
 			user.setPasswordReset(true);
 			UserDb.getUserDb(config).updateUser(user);
-			EmailUtility.emailPasswordReset(user.getName(), email, uuid, username, responseServletUrl, config, user.getLanguage());
+			EmailUtility.emailPasswordReset(user.getName(), email, uuid, username, responseServletUrl, config, user.getLanguagePreference());
 	        return true;
 		} catch (SQLException e) {
 			logger.error("SQL Exception signing up user",e);  //$NON-NLS-1$

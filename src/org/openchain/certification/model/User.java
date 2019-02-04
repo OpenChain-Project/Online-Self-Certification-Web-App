@@ -36,7 +36,7 @@ public class User {
 	private boolean admin;	// admin privileges
 	private Date verificationExpirationDate;
 	private String organization;
-	private String language;
+	private String languagePreference;
 	
 	/**
 	 * This is a hashed version of the uuid used for the email verification
@@ -61,15 +61,15 @@ public class User {
 		retval.setOrganization(user.getOrganization());
 		retval.setNamePermission(user.hasNamePermission());
 		retval.setEmailPermission(user.hasEmailPermission());
-		retval.setLanguage(user.getLanguage());
+		retval.setLanguagePreference(user.getLanguagePreference());
 		return retval;
 	}
 	
 	/**
 	 * @return the preferred language
 	 */
-	public String getLanguage() {
-		return language;
+	public String getLanguagePreference() {
+		return languagePreference;
 	}
 
 
@@ -77,8 +77,8 @@ public class User {
 	/**
 	 * @param language the preferred language to set
 	 */
-	public void setLanguage(String language) {
-		this.language = language;
+	public void setLanguagePreference(String language) {
+		this.languagePreference = language;
 	}
 
 	/**

@@ -123,7 +123,8 @@ function getSurvey() {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
-	        request: "getsurveyResponse"
+	        request: "getsurveyResponse",
+	        locale: getCurrentLanguage()
 	    },
 	    type: "GET",
 	    dataType : "json",
@@ -275,7 +276,8 @@ function saveAll( showDialog ) {
 		}
 	});
 	
-	var data = JSON.stringify({request: "updateAnswers", 'answers': answers});
+	var data = JSON.stringify({request: "updateAnswers", 'answers': answers,
+        locale: getCurrentLanguage()});
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: data,
@@ -327,7 +329,8 @@ function saveAll( showDialog ) {
 
 function unsubmit() {
 	$("#btUnSubmit").button("disable");
-	var data = JSON.stringify({request: "unsubmit"});
+	var data = JSON.stringify({request: "unsubmit",
+        locale: getCurrentLanguage()});
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: data,
@@ -379,7 +382,8 @@ function finalSubmission() {
 		}
 	});
 	
-	var data = JSON.stringify({request: "finalSubmission", 'answers': answers});
+	var data = JSON.stringify({request: "finalSubmission", 'answers': answers,
+        locale: getCurrentLanguage()});
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: data,
@@ -482,7 +486,8 @@ $(document).ready( function() {
 	    $.ajax({
 		    url: "CertificationServlet",
 		    data: {
-		        request: "getSurveyVersions"
+		        request: "getSurveyVersions",
+		        locale: getCurrentLanguage()
 		    },
 		    type: "GET",
 		    dataType : "json",
@@ -539,7 +544,8 @@ $(document).ready( function() {
 	    			    url: "CertificationServlet",
 	    			    data:JSON.stringify({
 	    			        request:  "resetanswers",
-	    			        specVersion: $( "#resetVersionSelect" ).val()
+	    			        specVersion: $( "#resetVersionSelect" ).val(),
+	    			        locale: getCurrentLanguage()
 	    			    }),
 	    			    type: "POST",
 	    			    dataType : "json",
@@ -576,7 +582,8 @@ $(document).ready( function() {
 	    $.ajax({
 		    url: "CertificationServlet",
 		    data: {
-		        request: "getSupportedSpecVersions"
+		        request: "getSupportedSpecVersions",
+		        locale: getCurrentLanguage()
 		    },
 		    type: "GET",
 		    dataType : "json",
@@ -632,7 +639,8 @@ $(document).ready( function() {
 	    			    data:JSON.stringify({
 	    			        request:  "setCurrentSurveyResponse",
 	    			        specVersion: $( "#versionSelect" ).val(),
-	    			        create: true
+	    			        create: true,
+	    			        locale: getCurrentLanguage()
 	    			    }),
 	    			    type: "POST",
 	    			    dataType : "json",

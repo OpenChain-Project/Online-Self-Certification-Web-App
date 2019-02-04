@@ -18,18 +18,7 @@
  * This is a common JavaScript file to be included on all pages for this app.
  * It depends on the div ID's error, status, login, and signup
  */
-/**
- * List of all supported language keyed by 2 or 3 character ISO language
- */
-var LANGUAGES = {"en":"English", 
-                 "de":"German",
-                 "fr":"French"};
 
-var DEFAULT_LANGUAGE = "eng";
-
-var currentLanguage = DEFAULT_LANGUAGE;
-
-//TODO: Update the languages with the officially supported list
 var NOPASSWORD = "***********";
 // From http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#e-mail-state-%28type=email%29
 var emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -111,7 +100,8 @@ function openResendVerificationDialog(username, password) {
 	    			    data:JSON.stringify({
 	    			        request:  "resendverify",
 	    			        username: username.val(),
-	    			        password: password.val()
+	    			        password: password.val(),
+	    			        locale: getCurrentLanguage()
 	    			    }),
 	    			    type: "POST",
 	    			    dataType : "json",
@@ -151,25 +141,29 @@ function loginUser() {
 	valid = valid && checkLength( password, "password", 8, 60 );
 	valid = valid && checkRegexp( username, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter" );
 	if (valid) {
+		var data = JSON.stringify({
+	        request:  "login",
+	        username: username.val(),
+	        password: password.val(),
+	        locale: getCurrentLanguage()
+	    });
 		$.ajax({
 		    url: "CertificationServlet",
-		    data:JSON.stringify({
-		        request:  "login",
-		        username: username.val(),
-		        password: password.val()
-		    }),
+		    data: data,
 		    type: "POST",
 		    dataType : "json",
-		    contentType: "json",
+		    contentType: 'application/json; charset=utf-8',
 		    async: false, 
 		    success: function( json ) {
 		    	password.val('');
 		    	if ( json.status == "OK" ) {
+		    		if (json.languagePreference) {
+		    			changeLng(json.languagePreference);
+		    		}
 		    		if (json.admin) {
-		    			
-		    			window.location = "admin.html"+'?locale='+(url('?locale') || 'en');
+		    			window.location = "admin.html"+'?locale='+(json.languagePreference ? json.languagePreference : (url('?locale') || 'en'));
 		    		} else {
-		    			window.location = "survey.html"+'?locale='+(url('?locale') || 'en');
+		    			window.location = "survey.html"+'?locale='+(json.languagePreference ? json.languagePreference : (url('?locale') || 'en'));
 		    		}
 		    	} else if (json.status == "NOT_VERIFIED") 
 		    	{
@@ -186,61 +180,12 @@ function loginUser() {
 	}
 }
 
-function displayError( error ) {
-	
-	event.preventDefault();
-    $( "#errors" ).dialog().data( "uiDialog" )._title = function(title) {
-  	    title.html( this.options.title );
-  	};	
-  	
-  	
-	$( "#errors" ).dialog({
-		title: '<span class="translate" data-i18n="Error">Error</span>',
-		resizable: false,
-	    height: 250,
-	    width: 300,
-	    dialogClass: 'success-dialog translate',
-	    modal: true,
-	    buttons: [{
-	    	text: "Ok",
-    		"data-i18n": "Ok",
-    		 click: function () { 
-	            $( this ).dialog( "close" );
-	        }
-	    }]
-	}).text( error ).parent().addClass( "ui-state-error" );
-	$('.translate').localize();
-}
-
-function handleError(xhr, status, errorThrown, msg) {
-	if ( msg === undefined ) {
-		var responseType = xhr.getResponseHeader("content-type") || "";
-		if ( responseType.indexOf('text') > 1 && xhr.responseText != null && xhr.responseText!= "" ) {
-			msg = "Sorry - there was a problem loading data:" + xhr.responseText;
-		} else if ( responseType.indexOf('json') > 1 && xhr.responseText != null && xhr.responseText!= "" ) {
-			response = JSON.parse(xhr.responseText);
-			msg = response.error;		
-		} else {
-			msg = "Sorry - there was a problem loading data: " + errorThrown;
-			
-		}
-	}
-	if ( xhr.status == 401 ) {
-		// Redirect to login page
-		window.location="login.html"+'?locale='+(url('?locale') || 'en');
-	} else {
-		displayError( msg );
-        console.log( "Error: " + xhr.responseText );
-        console.log( "Status: " + status );
-        console.dir( xhr );       
-	}	
-}
-
 function signout() {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data:JSON.stringify({
-	        request:  "logout"
+	        request:  "logout",
+	        locale: getCurrentLanguage()
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -266,7 +211,6 @@ function signout() {
 }
 
 function updateUserProfile() {
-	//TODO add preferred language
 	username = $("#update-username");
 	var password = $("#update-password");
 	var passwordVerify = $("#update-passwordverify");
@@ -275,6 +219,7 @@ function updateUserProfile() {
 	var email = $("#update-email");
 	var address = $("#update-address");
 	var okUseNameEmail = $("#update-use-name-email");
+	var preferredLanguage = $("#update-language");
 	tips = $(".validateTips");
 	tips.text('');
 	var valid = true;
@@ -301,12 +246,13 @@ function updateUserProfile() {
 	valid = valid && checkRegexp( email, emailRegex, "e.g. user@linux-foundation.org");
 	if (valid) {
 		updateUser(username.val(), pw, name.val(), address.val(), 
-				organization.val(), email.val(), okUseNameEmail.is(':checked'));
+				organization.val(), email.val(), okUseNameEmail.is(':checked'), 
+				preferredLanguage.val());
 	}
 }
 
-function updateUser(username, password, name, address, organization, email, okUseNameEmail) {
-	//TODO Add preferred language
+function updateUser(username, password, name, address, organization, email, 
+		okUseNameEmail, preferredLanguage) {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data:JSON.stringify({
@@ -318,7 +264,9 @@ function updateUser(username, password, name, address, organization, email, okUs
 	        organization: organization,
 	        email: email,
 	        namePermission: okUseNameEmail,
-	        emailPermission: okUseNameEmail
+	        emailPermission: okUseNameEmail,
+	        language: preferredLanguage,
+	        locale: getCurrentLanguage()
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -326,22 +274,22 @@ function updateUser(username, password, name, address, organization, email, okUs
 	    async: false, 
 	    success: function( json ) {
 	    	if ( json.status == "OK" ) {
-	    			$( "#status" ).dialog({
-	    			title: "Updated",
-	    			resizable: false,
-	    			height: 200,
-	    			width: 200,
-	    			modal: true,
-	    			dialogClass: 'success-dialog translate update-success-dialog',
-	    			buttons: {
-	    			    "Ok" : function () {
-	    			        $( this ).dialog( "close" );
-	    			        $('#updateprofileModal').modal('hide');
-	    				      }
-	    		   }
+	    		changeLng( preferredLanguage );
+    			$( "#status" ).dialog({
+    			title: "Updated",
+    			resizable: false,
+    			height: 200,
+    			width: 200,
+    			modal: true,
+    			dialogClass: 'success-dialog translate update-success-dialog',
+    			buttons: {
+    			    "Ok" : function () {
+    			        $( this ).dialog( "close" );
+    			        $('#updateprofileModal').modal('hide');
+    				      }
+    		   }
 
-	    	  }).html( " <span class='translate' data-i18n='profile-notification'>Profile updated successfully" );
-
+	    	  }).html( " <span class='translate' data-i18n='profile-notification'>Profile updated successfully" );		 
 	    	} else {
 	    		displayError( json.error );
 	    	} 	
@@ -349,7 +297,7 @@ function updateUser(username, password, name, address, organization, email, okUs
 	    error: function( xhr, status, errorThrown ) {
 	    	handleError(xhr, status, errorThrown);
 	    }
-	});
+	});	
 }
 
 function signupUser() {
@@ -360,11 +308,11 @@ function signupUser() {
 	var organization = $("#signup-organization");
 	var email = $("#signup-email");
 	var address = $("#signup-address");
+	var preferredLanguage = $("#signup-language");
 	var checkApproveEmail = $("#approval-use-name-email");
 	var checkApproveEmailLbl = $("label[for='approval-use-name-email']");
 	var checkApproveTerms = $("#read-terms");
 	var checkApproveTermsLbl = $("label[for='read-terms']");
-	//TODO Add preferred language
 	tips = $(".validateTips");
 	tips.text('');
 	var valid = true;
@@ -392,12 +340,12 @@ function signupUser() {
 	valid = valid && checkChecked( checkApproveTerms, checkApproveTermsLbl );
 	if (valid) {
 		signup(username.val(), password.val(), name.val(), address.val(), organization.val(), 
-				email.val(), checkApproveEmail.is(':checked'));
+				email.val(), checkApproveEmail.is(':checked'), preferredLanguage.val());
 	}
 }
 
-function signup(username, password, name, address, organization, email, approveUseNameEmail) {
-	//TODO Add preferred language
+function signup(username, password, name, address, organization, email, 
+		approveUseNameEmail, preferredLanguage) {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data:JSON.stringify({
@@ -409,7 +357,9 @@ function signup(username, password, name, address, organization, email, approveU
 	        organization: organization,
 	        email: email,
 	        emailPermission: approveUseNameEmail,
-	        namePermission: approveUseNameEmail
+	        namePermission: approveUseNameEmail,
+	        language: preferredLanguage,
+	        locale: getCurrentLanguage()
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -429,19 +379,13 @@ function signup(username, password, name, address, organization, email, approveU
 	});
 }
 
-function openSignupDialog() {
-	$("#signup").dialog("open");
-}
-
-function openSignInDialog() {
-	$("#login").dialog("open");
-}
 
 function openProfileDialog() {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
-	        request: "getuser"
+	        request: "getuser",
+	        locale: getCurrentLanguage()
 	    },
 	    type: "GET",
 	    dataType : "json",
@@ -454,6 +398,7 @@ function openProfileDialog() {
 	    	$("#update-email").val(json.email);
 	    	$("#update-address").val(json.address);
 	    	$("#update-use-name-email").prop('checked', json.emailPermission);
+	    	$("#update-language").val(json.preferredLanguage);
 	    	
 	    	$("#user-profile").dialog("open");
 	    },
@@ -464,60 +409,14 @@ function openProfileDialog() {
 }
 
 /**
- * Set the language for the JavaScript display
- * @param language
- * @param display
- */
-function setLanguage(language, display) {
-	$( '#language-dropdown_launcher' ).text( display );
-	currentLanguage = language;
-	//TODO Invoke whatever HTML/JavaScript framework is used
-}
-
-/**
- * @param language tag in IETF RFC 5646 format
- */
-function changeLanguage(language, display) {
-	//TODO Implement
-	if (currentLanguage == language) {
-		return;	// Already using this language
-	}
-	// update the back-end
-	$.ajax({
-		url: "CertificationServlet",
-		data: JSON.stringify({
-	        request:  "setlanguage",
-	        language: language
-	    }),
-	    type: "POST",
-	    dataType : "json",
-	    contentType: "json",
-	    async: false, 
-	    success: function( json ) {
-	    	if ( json.status == "OK" ) {
-	    		// Change the text on the language dropdown
-	    		setLanguage(language, display);
-	    		//TODO  Refresh the page or reload the data
-	    	} else {
-	    		displayError( json.error );
-	    	} 	
-	    },
-	    error: function( xhr, status, errorThrown ) {
-	    	handleError( xhr, status, errorThrown );
-	    }
-	});
-	// Refresh the page or reload the data
-	// Invoke whatever HTML/JavaScript framework is used
-}
-
-/**
  * Create a navigation menu based on whether the user is logged in
  */
 function createNavMenu() {
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
-	        request: "getuser"
+	        request: "getuser",
+	        locale: getCurrentLanguage()
 	    },
 	    type: "GET",
 	    dataType : "json",
@@ -528,31 +427,14 @@ function createNavMenu() {
 	    	{
 	    		userHtml += '<li class="nav-item active"><div class="dropdown"><span class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true">&nbsp;</i><span class="translate" data-i18n="Account"> Account </span></span><div class="dropdown-menu dropdown-menu-right"><ul class="language-setup-dropdown"><li class="nav-item active" data-toggle="modal" data-target="#updateprofileModal" id="user-dropdown_updateprofile"><a class=" dropdown-item" ><i class="fa fa-refresh"></i>&nbsp;<span class="translate" data-i18n="Update profile">Update profile</span></a></li>';
 	    		userHtml += '<li class="nav-item active" id="user-dropdown_signout"><a class="dropdown-item" ><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign out">Sign out</span></a></li></ul></div></div>\n';
-	    	
-	    	} else {
-	    		
+	    	} else {	    		
 	    		userHtml += '<li class="nav-item active signin" ><a class="user-nav append" href="login.html" ><i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign in">Sign in</span></a></li>\n';
 	    		userHtml += '<li class="nav-item active signin mb-0" ><a class="user-nav append" href="signup.html" ><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Sign up">Sign up</span></a></li>\n';
 	    	}
 	    	$("#user-dropdown_menu").html(userHtml);
 	    	
-	    	languageHtml = '';
-	    	for (var language in LANGUAGES) {
-	    		languageHtml += '<li id="language-dropdown_';
-	    		languageHtml += language;
-	    		languageHtml += '"><a href="javascript:void(0);"><span class="ui-icon-closethick">&nbsp;';
-	    		languageHtml += LANGUAGES[language];
-	    		languageHtml += '</span></a></li>\n';
-	    	}
+	    	var languageHtml = getLanguageHtml();
 	    	$("#language-dropdown_menu").html(languageHtml);
-	    	if (json.language != null) {
-	    		display = LANGUAGES[json.language];
-	    		if (language != null) {
-	    			setLanguage(json.language, display);
-	    		}
-	    	} else {
-	    		$( '#language-dropdown_launcher' ).text( LANGUAGES[DEFAULT_LANGUAGE] );
-	    	}
 	    	if (json.loggedIn) {
 	    		$("#surveylink").html('<li><a class="append" href="survey.html" id="toggle"><i class="fa fa-pencil"></i>&nbsp; <span class="translate" data-i18n="Online Self-Certification">Online Self-Certification</span>&nbsp;&nbsp;&nbsp;</a></li>');
 	    	} else {
@@ -565,8 +447,6 @@ function createNavMenu() {
 	    		$("#adminlink").html('');
 	    	}
 	    	$('.translate').localize();
-	    	
-	    	
 	    },
 	    error: function( xhr, status, errorThrown ) {
 	    	handleError( xhr, status, errorThrown);
@@ -594,7 +474,8 @@ function requestPasswordReset() {
 		    data:JSON.stringify({
 		        request:  "requestResetPassword",
 		        username: username.val(),
-		        email: email.val()
+		        email: email.val(),
+		        locale: getCurrentLanguage()
 		    }),
 		    type: "POST",
 		    dataType : "json",
@@ -619,31 +500,26 @@ function requestPasswordReset() {
 
 function FileExist(urlToFile)
 {
-	    var xhr = new XMLHttpRequest();
-	    xhr.open('HEAD', urlToFile, false);
-	    xhr.send();
-	     
-	    if (xhr.status == "404") {
-	        return false;
-	    } else {
-	        return true;
-	    }
+	var xhr = new XMLHttpRequest();
+	xhr.open('HEAD', urlToFile, false);
+	xhr.send();
+	if (xhr.status == "404") {
+		return false;
+	} else {
+		return true;
 	}
-
-
+}
 
 $(document).ready( function() {
-	// Added by ViSolve 
 	
-
+	// Add languages dropdown for user profile
+	$("#update-language").html(getLanguageSelectionHtml());
 	
 	// Function Call for Signout
 	$(document).on('click', '#user-dropdown_signout', function(){signout();});
 	
 	// Function Call for Update profile
 	$(document).on('click', '#user-dropdown_updateprofile', function(){openProfileDialog();});
-	
-	
 	
 	// Function Call for Login
 	$(document).on('click', '#login-button', function(){loginUser();});
@@ -661,14 +537,11 @@ $(document).ready( function() {
 	
 	// redirect to the index page
 	$("#index-home").click(function () {
-	window.location = "index.html"+'?locale='+(url('?locale') || 'en');
+		window.location = "index.html"+'?locale='+(url('?locale') || 'en');
 	});
 	$("#topnav").load("topnav.html");
 	$("#footer-outer").load('footer.html');
 	createNavMenu();
-	
-	
-	
 	
 	$('#dwnquestionnaire').click(function(e) 
 	{
@@ -694,6 +567,3 @@ $(document).ready( function() {
 	
 	
 });
-
-
-         

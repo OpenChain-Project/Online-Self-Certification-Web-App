@@ -23,8 +23,19 @@ Description: A new Responsive Template to receive the user inputs during Signup.
     <script src="resources/jquery-ui/external/jquery/jquery.js"></script>
     <script src="resources/jquery-ui/jquery-ui.min.js"></script>
     <script src="resources/jquery.jui_dropdown.min.js"></script>
-    <script src="resources/navbar.js"></script>
     <script src="resources/bootstrap.min.js"></script>
+    <script src="resources/lib/url/url.min.js"></script>  
+    <script src="resources/i18next.min.js" ></script>
+    <script src="resources/jquery-i18next.min.js" ></script>
+    <script src="resources/i18nextXHRBackend.js"></script>
+    <script src="resources/global.js"></script>   
+    <script src="resources/navbar.js"></script>
+    <script>
+    // Simple script to setup the languages dropdown list
+    $(document).ready( function() {
+    	$("#signup-language").html(getLanguageSelectionHtml());
+    } );
+    </script>
   </head>
   <body>
      <!-- 001 Starts here -->
@@ -70,12 +81,20 @@ Description: A new Responsive Template to receive the user inputs during Signup.
 					    	<input type="password" name="signup-passwordverify" id="signup-passwordverify" class="form-control custom-input"   >
 				      		<label class= "custom-label translate" data-i18n="Re-enter Password" for="signup-passwordverify">Re-enter Password</label>
 					    </div>
-				    </div>
-				    
-				    
+				    </div>			
 				    <div class="row custom-row">
-				      <textarea rows="3" name="signup-address" id="signup-address" class="form-control custom-input" form="signup-form" ></textarea>
-				      <label class= "custom-label translate" data-i18n="Organization Postal Address" for="signup-address">Organization Postal Address</label>
+					    <div class="col-md-12 col-sm-12 custom-col">
+	                        <label class= "custom-label translate select-label" data-i18n="Language" for="signup-language">Language</label>
+	                        <select class="form-control custom-input" id="signup-language">
+						      <option selected class="translate" data-i18n="English" value="en">English (en)</option>
+						    </select>
+	                    </div>
+                    </div>
+				    <div class="row custom-row">
+				    	<div class="col-md-12 col-sm-12 custom-col">
+					      <textarea rows="3" name="signup-address" id="signup-address" class="form-control custom-input" form="signup-form" ></textarea>
+					      <label class= "custom-label translate" data-i18n="Organization Postal Address" for="signup-address">Organization Postal Address</label>
+					     </div>
 				    </div>
 				    <div class="row">
 					    <div class="form-check">

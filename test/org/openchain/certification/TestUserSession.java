@@ -185,7 +185,7 @@ public class TestUserSession {
 		user.setVerified(true);
 		user.setNamePermission(false);
 		user.setEmailPermission(true);
-		user.setLanguage(language);
+		user.setLanguagePreference(language);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);	
 	}
 
@@ -313,7 +313,7 @@ public class TestUserSession {
 		assertEquals(user.isAdmin(), userSession.isAdmin());
 		assertEquals(user.hasEmailPermission(), userSession.hasEmailPermission());
 		assertEquals(user.hasNamePermission(), userSession.hasNamePermission());
-		assertEquals(user.getLanguage(), userSession.getLanguage());
+		assertEquals(user.getLanguagePreference(), userSession.getLanguagePreference());
 		
 		String newName = "new Name";
 		String newEmail = "newemail@email.com";
@@ -332,7 +332,7 @@ public class TestUserSession {
 		assertEquals(user.isAdmin(), userSession.isAdmin());
 		assertEquals(newEmailPermission, userSession.hasEmailPermission());
 		assertEquals(newNamePermission, userSession.hasNamePermission());
-		assertEquals(newLanguage, userSession.getLanguage());
+		assertEquals(newLanguage, userSession.getLanguagePreference());
 		UserSession newUserSession = new UserSession(
 				user.getUsername(), newPassword, TestHelper.getTestServletConfig());
 		newUserSession.login();
@@ -343,7 +343,7 @@ public class TestUserSession {
 		assertEquals(user.isAdmin(), newUserSession.isAdmin());
 		assertEquals(newEmailPermission, newUserSession.hasEmailPermission());
 		assertEquals(newNamePermission, newUserSession.hasNamePermission());
-		assertEquals(newLanguage, newUserSession.getLanguage());
+		assertEquals(newLanguage, newUserSession.getLanguagePreference());
 	}
 
 	@Test
@@ -507,9 +507,9 @@ public class TestUserSession {
 		for (SurveyResponse res:result) {
 			assertEquals(language, res.getLanguage());
 		}
-		assertEquals(language, userSession.getLanguage());
+		assertEquals(language, userSession.getLanguagePreference());
 		
-		userSession.setLanguage(language2);
+		userSession.setLanguagePreference(language2);
 		result = userSession.getAllResponses();
 		assertEquals(2, result.size());
 		for (SurveyResponse res:result) {
