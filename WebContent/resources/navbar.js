@@ -510,8 +510,6 @@ function FileExist(urlToFile)
 	}
 }
 
-
-
 $(document).ready( function() {
 	
 	// Add languages dropdown for user profile
