@@ -189,7 +189,7 @@ var LANGUAGES = {"en":"English",
 		
 		$(document).delegate('.append','click', function($this){ 
 			 event.preventDefault();
-			 window.location.href = $(this).attr('href')+'?locale='+(url('?locale') || language);
+			 window.location.href = $(this).attr('href')+'?locale='+(url('?locale') || 'en');
 		 });
 		
 		
