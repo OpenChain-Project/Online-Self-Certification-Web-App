@@ -76,7 +76,7 @@ var LANGUAGES = {"en":"English",
 			function handleError(xhr, status, errorThrown, msg) {
 				if ( msg === undefined ) {
 					var responseType = xhr.getResponseHeader("content-type") || "";
-					if ( responseType.indexOf('text') > 1 && xhr.responseText != null && xhr.responseText!= "" ) {
+					if ( responseType.indexOf('text') > 0 && xhr.responseText != null && xhr.responseText!= "" ) {
 						msg = '<span class="translate" data-i18n="error-msg">Sorry - there was a problem loading data: &nbsp; </span>' + xhr.responseText;
 					} else if ( responseType.indexOf('json') > 1 && xhr.responseText != null && xhr.responseText!= "" ) {
 						response = JSON.parse(xhr.responseText);
