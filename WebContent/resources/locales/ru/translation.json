@@ -165,6 +165,7 @@
   "questionnaire-added" : "версия опроса / языки были добавлены",
   "questionnaire-warning" : "со следующими предупреждениями",
   "Site Software Version" : "Версия программного обеспечения сайта",
+  "update-warning" : "Выберите версию git",
 
   "COMMENT_10": "/****************************** TRANSLATIONS FOR THE QUSETIONNAIRE PAGE IS GIVEN BELOW*********(title,Specification Version )***************************/",
 
