@@ -291,7 +291,11 @@ input, textarea {
     top: -5px !important;
     left: 10px;
 }
-#dwnquestionnaire{color: #007bff;}
+#dwnquestionnaire{color: #007bff;cursor: pointer;}
+.anchor:hover {
+    color: #0056b3;
+    text-decoration: none;
+}
 .update-success-dialog
 {
 	z-index : 99999999 !important;

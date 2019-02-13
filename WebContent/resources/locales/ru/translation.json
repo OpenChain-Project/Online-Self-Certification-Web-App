@@ -14,14 +14,13 @@
   "welcome_content": "Спецификация OpenChain представляет собой основной набор требований, которым должна соответствовать качественная программа соответствия FOSS. Это способствует эффективному и действенному соблюдению лицензий с открытым исходным кодом по всей цепочке поставок. Благодаря самосертификации участники могут подтвердить, что они соответствуют требованиям Спецификации.",
   "Getting Started": "Начиная",
   "Getting Started_content": "Заявители подтверждают свое понимание Спецификации OpenChain и необходимость прохождения Самосертификации, чтобы стать Соответствующим OpenChain. Онлайн-сертификация требует от вас:",
-  "Getting Started_content_1": "Выполните все требования, изложенные в",
-  "Getting Started_content_1_sub": "Спецификация.",
+  "Getting Started_content_1": "Выполнить все требования, изложенные в &nbsp;<a class=\"anchor\" href=\"https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf\" target=\"_blank\">спецификации</a>",
   "Getting Started_content_2":"Создайте аккаунт, выбрав регистрацию в меню пользователя.Sozdayte akkaunt, vybrav registratsiyu v menyu pol'zovatelya.",
   "Getting Started_content_3":"Назовите контактное лицо для обработки запросов.Nazovite kontaktnoye litso dlya obrabotki zaprosov.",
   "Getting Started_content_4":"Попросите уполномоченного представителя выполнить онлайн-сертификацию через Интернет, ответив на все вопросы.Poprosite upolnomochennogo predstavitelya vypolnit' onlayn-sertifikatsiyu cherez Internet, otvetiv na vse voprosy.",
   "Getting Started_content_5":"Заполните форму заявки.",
   "Getting Started_content_6":"Архивировать справочную копию всех проверочных артефактов в качестве записи в поддержку онлайн-сертификации.",
-   "offline-conformance-pdf" : "Вы предпочитаете работать с распечатанным контрольным списком? Вы можете скачать руководство по автономному соответствиюVy predpochitayete rabotat' s raspechatannym kontrol'nym spiskom? Vy mozhete skachat' rukovodstvo po avtonomnomu sootvetstviyu",
+  "offline-conformance-pdf" : "Вы предпочитаете работать с печатным контрольным списком? Вы можете загрузить офлайновое руководство соответствия  &nbsp;<a class=\"anchor\" id=\"dwnquestionnaire\" target=\"_blank\">Вот</a>",
   "here" : "Вот",
 
 
@@ -52,21 +51,15 @@
 
   "COMMENT_3": "/****************************** TRANSLATIONS FOR FOOTER PAGE IS GIVEN BELOW************************************/",
 
-  "Please contact":"Пожалуйста, свяжитесь с",
+  "Please contact":"Пожалуйста, свяжитесь с <a class=\"anchor\" href=\"mailto:openchain-conformance@lists.linuxfoundation.org?Subject=OpenChain%20Certification%20Feedback\" target=\"_blank\"> Поддержка OpenChian</a> сообщать о любых неточностях или проблемах.",
   "OpenChain Support":"Поддержка открытой цепочки",
   "report":"сообщать о любых неточностях или проблемах.",
-  "footer_content":"Copyright 2018 Фонд Linux. Все права защищены. Linux Foundation зарегистрировал товарные знаки и использует товарные знаки. Список торговых марок The Linux Foundation приведен на нашем",
-  "Trademark Usage":"Использование торговой марки",
-  "page":"стр.",
-  "linux":"Linux является зарегистрированным товарным знаком Линуса Торвальдса.",
-  "Privacy Policy":"политика конфиденциальности",
-  "and":"а также",
-  "Terms of Use":"Условия эксплуатации",
-
+  "footer_content":"Copyright 2018 Фонд Linux. Все права защищены. Linux Foundation зарегистрировал товарные знаки и использует товарные знаки. Список торговых марок The Linux Foundation приведен на нашем <a class=\"anchor\" href=\"https://www.linuxfoundation.org/trademark-usage\" target=\"_blank\">Использование торговой марки</a> стр. Linux является зарегистрированным товарным знаком Линуса Торвальдса. <a class=\"anchor\" href=\"https://www.openchainproject.org/privacy\">политика конфиденциальности</a> а также <a class=\"anchor\" href=\"https://www.openchainproject.org/terms\">Условия эксплуатации</a>",
+  
   "COMMENT_4": "/********TRANSLATIONS FOR THE CONFIRMING PAGE IS GIVEN BELOW********* (Specification) ********************/",
 
   "Conforming Organizations":"Соответствующие организации",
-  "Conforming Organizations_content":"Следующие организации имеют сертифицированное соответствие Открытая цепь",
+  "Conforming Organizations_content":"Следующие организации имеют сертифицированное соответствие Открытая цепь <a class=\"anchor\" href=\"https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf\">Спецификация.</a>",
   "Organization":"организация",
   "Specification" : "Спецификация.",
   "Specification Version":"Версия спецификации",
@@ -115,8 +108,7 @@
   "Organization Postal Address":"Почтовый адрес организации",
   "Sign Up":"Подписаться",
   "Sign Up_content_1":"Мое имя и адрес электронной почты могут быть опубликованы на странице соответствия веб-сайта OpenChain",
-  "Sign Up_content_2":"Я согласен с Linux Foundation",
-  "Sign Up_content_2_T&C" : "Условия эксплуатации",
+  "Sign Up_content_2":"Я согласен с Linux Foundation &nbsp;<a class=\"anchor\" href=\"https://www.openchainproject.org/terms\" target=\"_blank\">Условия эксплуатации</a>&nbsp;а также&nbsp;<a class=\"anchor\" href=\"https://www.openchainproject.org/privacy\">политика конфиденциальности</a>",
   "Length of password must be between 8 and 60" : "Длина пароля должна быть от 8 до 60.",
   "Length of username must be between 3 and 40" : "Длина имени пользователя должна быть от 3 до 40.",
   "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter": "Имя пользователя может состоять из a-z, 0-9, подчеркивания, пробела и должно начинаться с буквы.",
@@ -165,7 +157,7 @@
   "questionnaire-added" : "версия опроса / языки были добавлены",
   "questionnaire-warning" : "со следующими предупреждениями",
   "Site Software Version" : "Версия программного обеспечения сайта",
-
+  
   "COMMENT_10": "/****************************** TRANSLATIONS FOR THE QUSETIONNAIRE PAGE IS GIVEN BELOW*********(title,Specification Version )***************************/",
 
   "Survey_title":"Анкета самооценки OpenChain",
