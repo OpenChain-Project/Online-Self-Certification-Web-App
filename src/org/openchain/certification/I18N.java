@@ -57,9 +57,13 @@ public final class I18N {
 		ResourceBundle.Control utf8Control = new Utf8ResourceBundleControl();
 		ResourceBundle bundle = ResourceBundle.getBundle(BASE_RESOURCE_NAME, locale, utf8Control);
 		String template = bundle.getString(key);
-		MessageFormat mf = new MessageFormat(template, locale);
-		
-		return mf.format(args, new StringBuffer(), null).toString();
+		try {
+			MessageFormat mf = new MessageFormat(template, locale);
+			return mf.format(args, new StringBuffer(), null).toString();
+		} catch(IllegalArgumentException ex) {
+			logger.error("Invalid argument for message template with key `"+key+"`: "+template, ex);
+			return template;
+		}
 	}
 
 }
