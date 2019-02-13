@@ -14,15 +14,14 @@
   "welcome_content": "The OpenChain Specification represents a core set of requirements a quality FOSS compliance program must satisfy. It fosters efficient and effective compliance of open source licenses across the supply chain. By self-certifying, participants are able to confirm they are in compliance with the Specification's requirements.",
   "Getting Started": "Getting Started",
   "Getting Started_content": "Applicants confirm their understanding of the OpenChain Specification and the need to complete Self-Certification to become OpenChain Conformant. The Online Self-Certification requires you to:",
-  "Getting Started_content_1": "Fulfill all requirements set forth in the ",
-  "Getting Started_content_1_sub": "Specification.",
+  "Getting Started_content_1": "Fulfill all requirements set forth in the <a class=\"anchor\" href=\"https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf\" target=\"_blank\">Specification</a>",
   "Getting Started_content_2":"Create an account by selecting sign-up in the user menu.",
   "Getting Started_content_3":"Name a contact person to handle inquiries.",
   "Getting Started_content_4":"Have an authorized representative complete the web-based Online Self-Certification by answering all the questions.",
   "Getting Started_content_5":"Fill out the submission form.",
   "Getting Started_content_6":"Archive a Reference Copy of all Verification Artifacts as a record in support of the Online Self-Certification.",
-  "offline-conformance-pdf" : "Do you prefer to work with a printed checklist? You can download the offline conformance handbook",
-  "here" : "here",
+  "offline-conformance-pdf" : "Do you prefer to work with a printed checklist? You can download the offline conformance handbook <a class=\"anchor\" id=\"dwnquestionnaire\" target=\"_blank\">here</a>",
+  
 
 
   "COMMENT_2": "/****************************** TRANSLATIONS FOR THE NAVIGATION PAGE IS GIVEN BELOW************************************/",
@@ -52,21 +51,13 @@
 
   "COMMENT_3": "/****************************** TRANSLATIONS FOR FOOTER PAGE IS GIVEN BELOW************************************/",
 
-  "Please contact":"Please contact",
-  "OpenChain Support":"OpenChain Support",
-  "report":"to report any inaccuracies or issues.",
-  "footer_content":"Copyright 2018 The Linux Foundation. All rights reserved.The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our ",
-  "Trademark Usage":"Trademark Usage",
-  "page":"page.",
-  "linux":"Linux is a registered trademark of Linus Torvalds.",
-  "Privacy Policy":"Privacy Policy",
-  "and":"and",
-  "Terms of Use":"Terms of Use",
-
+  "Please contact":"Please contact <a class=\"anchor\" href=\"mailto:openchain-conformance@lists.linuxfoundation.org?Subject=OpenChain%20Certification%20Feedback\" target=\"_blank\">OpenChain Support</a> to report any inaccuracies or issues.",
+  "footer_content":"Copyright 2018 The Linux Foundation. All rights reserved.The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our <a class=\"anchor\" href=\"https://www.linuxfoundation.org/trademark-usage\" target=\"_blank\">Trademark Usage</a> page. Linux is a registered trademark of Linus Torvalds. <a class=\"anchor\" href=\"https://www.openchainproject.org/privacy\">Privacy Policy</a> and <a class=\"anchor\" href=\"https://www.openchainproject.org/terms\">Terms of Use</a>",
+  
   "COMMENT_4": "/********TRANSLATIONS FOR THE CONFIRMING PAGE IS GIVEN BELOW********* (Specification) ********************/",
 
   "Conforming Organizations":"Conforming Organizations",
-  "Conforming Organizations_content":"The following organizations have self-certified conformance to the OpenChain ",
+  "Conforming Organizations_content":"The following organizations have self-certified conformance to the OpenChain <a class=\"anchor\" href=\"https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf\">Specification.</a>",
   "Organization":"Organization",
   "Specification" : "Specification.",
   "Specification Version":"Specification Version",
@@ -118,9 +109,8 @@
   "Organization Postal Address":"Organization Postal Address",
   "Sign Up":"Sign Up",
   "Sign Up_content_1":"My name and email may be shared on conformance page of the OpenChain website",
-  "Sign Up_content_2":"I agree to the Linux Foundation",
-  "Sign Up_content_2_T&C" : "Terms of Use",
-
+  "Sign Up_content_2":"I agree to the Linux Foundation&nbsp;<a class=\"anchor\" href=\"https://www.openchainproject.org/terms\" target=\"_blank\">Terms of Use</a>&nbsp;and&nbsp;<a class=\"anchor\" href=\"https://www.openchainproject.org/privacy\">Privacy Policy</a>",
+ 
   "COMMENT_8": "/****************************** TRANSLATIONS FOR THE UPDATE PROFILE PAGE IS GIVEN BELOW*********(Username,Password,Name,Re-enter Password,Organization,Email,Organization Postal Address,Sign Up_content_1)***************************/",
  
   "Update Profile":"Update Profile",
@@ -165,7 +155,6 @@
   "questionnaire-added" : "questionnaire version/languages were added",
   "questionnaire-warning" : "with the following warnings",
   "Site Software Version" : "Site Software Version",
-
 
   "COMMENT_10": "/****************************** TRANSLATIONS FOR THE QUSETIONNAIRE PAGE IS GIVEN BELOW*********(title,Specification Version )***************************/",
 

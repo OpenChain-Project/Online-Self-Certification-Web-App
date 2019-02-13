@@ -46,6 +46,7 @@ function updateSurvey() {
 	    type: "GET",
 	    dataType : "json",
 	    success: function( json ) {
+	    	
 	    	lastUpdateCommit = json.commit;
 	    	var summaryHtml = "";
 	    	if ( json.warnings.length > 0 ) {
@@ -114,11 +115,11 @@ function updateSurveyForReal( commit ) {
 	    	$( "#btUpdateSurvey" ).button( "enable" );
 	    	if ( json.status == "OK" ) {
 	    		var dialogText = json.surveyUpdateResult.versionsUpdated.length.toString();
-	    		dialogText += "<p class='translate' data-18n='questionnaire-updated'>questionnaire version/languages were updated</p>; ";
+	    		dialogText += "<p class='translate' data-i18n='questionnaire-updated'>questionnaire version/languages were updated</p>; ";
 	    		dialogText += json.surveyUpdateResult.versionsAdded.length.toString();
-	    		dialogText += "<p class='translate' data-18n='questionnaire-added'>questionnaire version/languages were added </p>";
+	    		dialogText += "<p class='translate' data-i18n='questionnaire-added'>questionnaire version/languages were added </p>";
 	    		if ( json.surveyUpdateResult.warnings.length > 0 ) {
-	    			dialogText += "<p class='translate' data-18n='questionnaire-warning'> with the following warnings <span>:</span></p>";
+	    			dialogText += "<p class='translate' data-i18n='questionnaire-warning'> with the following warnings <span>:</span></p>";
 	    			for ( i in json.surveyUpdateResult.warnings ) {
 	    				dialogText += " '";
 	    				dialogText += json.surveyUpdateResult.warnings[i];
@@ -427,15 +428,15 @@ $(document).ready( function() {
 	  }
 	});
 	
+	
+	
 	$( "#confirm-update-tabs" ).tabs();
-	
-	
 	
 	$("#btUpdateSurvey").button().button().click(function(event) {
 	      event.preventDefault();
 	      updateSurvey();
 	});
-	
+
 	$("#btApprove").button().button().click(function(event) {
 	      event.preventDefault();
 	      requestStatusChange("setApproved", getCheckedIds($("#submitted-awaiting-approval")));

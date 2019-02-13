@@ -543,7 +543,7 @@ $(document).ready( function() {
 	$("#footer-outer").load('footer.html');
 	createNavMenu();
 	
-	$('#dwnquestionnaire').click(function(e) 
+	$(document).delegate("#dwnquestionnaire","click",function() 
 	{
 		
 		

@@ -35,7 +35,8 @@ var LANGUAGES = {"en":"English",
 		  		},
 		
 			}, function(err, t) {
-				i18next.changeLanguage(getCurrentLanguage());
+				i18next.changeLanguage(getCurrentLanguage());		
+				
 			});
 
 
@@ -50,13 +51,19 @@ var LANGUAGES = {"en":"English",
 			function displayError( error ) {
 				
 				event.preventDefault();
-			    $( "#errors" ).dialog().data( "uiDialog" )._title = function(title) {
-			  	    title.html( this.options.title );
-			  	};	
+			   	$.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
+				    _title: function(title) {
+				        if (!this.options.title ) {
+				            title.html("&#160;");
+				        } else {
+				            title.html(this.options.title);
+				        }
+				    }
+				}));
 			  	
 			  	
 				$( "#errors" ).dialog({
-					title: '<span class="translate" data-i18n="Error">Error</span>',
+					title:'<span class="translate" data-i18n="Error">Error</span>',
 					resizable: false,
 				    height: 250,
 				    width: 300,
@@ -201,3 +208,4 @@ var LANGUAGES = {"en":"English",
 		});
 
 /*************************************************************************************/
+	
