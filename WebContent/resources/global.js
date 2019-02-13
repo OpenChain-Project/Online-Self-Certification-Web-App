@@ -29,16 +29,13 @@ var LANGUAGES = {"en":"English",
 		 i18next.use(i18nextXHRBackend);
 			jqueryI18next.init(i18next, $);
 			i18next.init({
-//				debug: true,
 		   fallbackLng: getCurrentLanguage(),
 			 backend: {
 		      loadPath: 'resources/locales/{{lng}}/translation.json'
 		  		},
 		
 			}, function(err, t) {
-				i18next.changeLanguage(getCurrentLanguage());
-				//document.getElementById('add').innerHTML = i18next.t('Getting Started_content_1_sub');
-				
+				i18next.changeLanguage(getCurrentLanguage());		
 				
 			});
 

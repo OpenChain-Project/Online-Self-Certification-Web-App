@@ -11,8 +11,6 @@
 
   "title": "OpenChain Self Certification",
   "welcome": "Welcome",
-  "key": "Fulfill all requirements set forth in the",
-  "key1": "{{what}} is {{how}}",
   "welcome_content": "The OpenChain Specification represents a core set of requirements a quality FOSS compliance program must satisfy. It fosters efficient and effective compliance of open source licenses across the supply chain. By self-certifying, participants are able to confirm they are in compliance with the Specification's requirements.",
   "Getting Started": "Getting Started",
   "Getting Started_content": "Applicants confirm their understanding of the OpenChain Specification and the need to complete Self-Certification to become OpenChain Conformant. The Online Self-Certification requires you to:",
@@ -112,8 +110,7 @@
   "Sign Up":"Sign Up",
   "Sign Up_content_1":"My name and email may be shared on conformance page of the OpenChain website",
   "Sign Up_content_2":"I agree to the Linux Foundation&nbsp;<a class=\"anchor\" href=\"https://www.openchainproject.org/terms\" target=\"_blank\">Terms of Use</a>&nbsp;and&nbsp;<a class=\"anchor\" href=\"https://www.openchainproject.org/privacy\">Privacy Policy</a>",
-  "Sign Up_content_2_T&C" : "Terms of Use",
-
+ 
   "COMMENT_8": "/****************************** TRANSLATIONS FOR THE UPDATE PROFILE PAGE IS GIVEN BELOW*********(Username,Password,Name,Re-enter Password,Organization,Email,Organization Postal Address,Sign Up_content_1)***************************/",
  
   "Update Profile":"Update Profile",
