@@ -20,7 +20,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -145,6 +144,8 @@ public class CertificationServlet extends HttpServlet {
 		response.setHeader("Cache-Control", "no-cache, must-revalidate");  //$NON-NLS-1$  //$NON-NLS-2$
 		String requestParam = request.getParameter(PARAMETER_REQUEST);
 		String locale = User.DEFAULT_LANGUAGE;
+		response.setContentType("application/json"); //$NON-NLS-1$
+		response.setCharacterEncoding("UTF-8");  //$NON-NLS-1$
 		if (requestParam != null) {
 			PrintWriter out = response.getWriter();
 			try {
