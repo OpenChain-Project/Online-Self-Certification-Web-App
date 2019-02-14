@@ -385,6 +385,17 @@ public class UserSession {
 		if (this.surveyResponses == null) {
 			_getSurveyResponses();
 		}
+		if (!Objects.equals(this.currentSurveyResponse.getLanguage(), locale)) {
+			if (!Objects.equals(this.currentSurveyResponse.getSurvey().getLanguage(), locale)) {
+				Connection con = SurveyDatabase.createConnection(config);
+				try {
+					this.currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion(), locale));
+				} finally {
+					con.close();
+				}
+				this.currentSurveyResponse.setLanguage(locale);
+			}
+		}
 		return this.currentSurveyResponse;
 	}
 	
