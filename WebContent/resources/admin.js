@@ -430,7 +430,7 @@ $(document).ready( function() {
 	$( "#reallyUpdateSurvey" ).button().button().click(function(event) {
 	      event.preventDefault();
 	      updateSurveyForReal( lastUpdateCommit );
-	      $( "#dialog-confirm-update" ).dialog.close();
+	      $( "#dialog-confirm-update" ).dialog( "close" );
 	});
 	
 	$( "#confirm-update-tabs" ).tabs();
