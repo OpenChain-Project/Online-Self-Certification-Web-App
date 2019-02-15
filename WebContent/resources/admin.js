@@ -59,9 +59,12 @@ function updateSurvey() {
 	    	}
     		summaryHtml += "<p> ";
     		summaryHtml += json.versionsUpdated.length.toString();
-    		summaryHtml += "<span class='translate' data-i18n='Summary-history-update'> questionnaire version/languages will be updated</p>\n";
+    		summaryHtml += "&nbsp;";
+    		summaryHtml += "<span class='translate' data-i18n='Summary-history-update'>questionnaire version/languages will be updated</span></p>\n";
+    		summaryHtml += "<p> ";
     		summaryHtml += json.versionsAdded.length.toString();
-    		summaryHtml += "<span class='translate' data-i18n='Summary-history-add'> questionnaire version/languages will be added</p>\n";
+    		summaryHtml += "&nbsp;";
+    		summaryHtml += "<span class='translate' data-i18n='Summary-history-add'>questionnaire version/languages will be added</span></p>\n";
 	    	$("#confirm-update-tab-summary").html(summaryHtml);
 	    	var updatedHtml = "";
 	    	if ( json.versionsUpdated.length == 0 ) {
@@ -86,7 +89,8 @@ function updateSurvey() {
 	    	}
 	    	$( "#confirm-update-tab-added" ).html( addedHtml );
 	    	$( "#confirm-update-tabs" ).tabs();
-	    	$( "#dialog-confirm-update" ).dialog( "open" );
+	    	
+	    	  $('.translate').localize();
 	    },
 	    error: function( xhr, status, errorThrown ) {
 	    	$( "#btUpdateSurvey" ).button( "enable" );
@@ -115,30 +119,48 @@ function updateSurveyForReal( commit ) {
 	    	$( "#btUpdateSurvey" ).button( "enable" );
 	    	if ( json.status == "OK" ) {
 	    		var dialogText = json.surveyUpdateResult.versionsUpdated.length.toString();
-	    		dialogText += "<p class='translate' data-i18n='questionnaire-updated'>questionnaire version/languages were updated</p>; ";
+	    		dialogText += "&nbsp;";
+	    		dialogText += "<span class='translate' data-i18n='questionnaire-updated'>questionnaire version/languages were updated</span>; ";
+	    		dialogText +="<p>";
 	    		dialogText += json.surveyUpdateResult.versionsAdded.length.toString();
-	    		dialogText += "<p class='translate' data-i18n='questionnaire-added'>questionnaire version/languages were added </p>";
+	    		dialogText += "&nbsp;";
+	    		dialogText += "<span class='translate' data-i18n='questionnaire-added'>questionnaire version/languages were added </span>";
+	    		dialogText +="<p>";
 	    		if ( json.surveyUpdateResult.warnings.length > 0 ) {
-	    			dialogText += "<p class='translate' data-i18n='questionnaire-warning'> with the following warnings <span>:</span></p>";
+	    			dialogText += "span class='translate' data-i18n='questionnaire-warning'> with the following warnings <span>:</span></span>";
 	    			for ( i in json.surveyUpdateResult.warnings ) {
 	    				dialogText += " '";
 	    				dialogText += json.surveyUpdateResult.warnings[i];
 	    				dialogText += "';";
 	    			}
 	    		}
+	    		$.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
+				    _title: function(title) {
+				        if (!this.options.title ) {
+				            title.html("&#160;");
+				        } else {
+				            title.html(this.options.title);
+				        }
+				    }
+				}));
 	    		$( "#status" ).dialog({
-	    			title: "Updated",
+	    			title: '<span class="translate" data-i18n="Updated">Updated</span',
 	    			resizable: false,
 	    		    height: 250,
 	    		    width: 250,
 	    		    modal: true,
 	    		    dialogClass: 'success-dialog translate',
-	    		    buttons: {
-	    		        "Ok" : function () {
+	    		    buttons: [{
+	    		    	text: "Ok",
+			    		"data-i18n": "Ok",
+			    		 click: function () { 
 	    		            $( this ).dialog( "close" );
+	    		            $('#UpdateSurveyModal').modal('hide');
 	    		        }
-	    		    }
-	    		}).text( dialogText );
+
+	    		    }]
+	    		}).html( dialogText );
+	    		$('.translate').localize();
 	    	} else {
 	    		displayError( json.error );
 	    	}
@@ -147,6 +169,7 @@ function updateSurveyForReal( commit ) {
 	    	$( "#btUpdateSurvey" ).button( "enable" );
 	    	handleError( xhr, status, errorThrown );
 	    }
+	  
 	});
 }
 
@@ -407,27 +430,12 @@ function getTags() {
 $(document).ready( function() {
 	
 	getTags();
-	$( "#dialog-confirm-update" ).dialog({
-	  title: "Confirm Survey Update",  
-	  autoOpen: false,
-	  resizable: true,
-	  height: 450,
-	  width: 400,
-	  modal: true,
-	  dialogClass: 'success-dialog translate',
-	  buttons: {
-	    "Update": function() {
-	      updateSurveyForReal( lastUpdateCommit );
-	      $( this ).dialog( "close" );
-	    },
-	    Cancel: function() 
-	    {
-	      $( "#btUpdateSurvey" ).button( "enable" );
-	      $( this ).dialog( "close" );
-	    }
-	  }
-	});
 	
+	$( "#reallyUpdateSurvey" ).button().button().click(function(event) {
+	      event.preventDefault();
+	      updateSurveyForReal( lastUpdateCommit );
+	      
+	});
 	
 	
 	$( "#confirm-update-tabs" ).tabs();
@@ -477,7 +485,6 @@ $(document).ready( function() {
 	    	handleError( xhr, status, errorThrown);
 	    }
 	});
-	
 	reloadSubmissionStatus();
 		
 });

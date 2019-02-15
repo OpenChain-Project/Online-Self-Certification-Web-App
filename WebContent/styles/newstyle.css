@@ -471,13 +471,13 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label, .select-lab
 .ui-dialog.success-dialog {
     background-color: white !important;
     animation : example 0.5s;
-    top:395.5px !important;
+    top:350px !important;
     }
 
 @keyframes example 
 {
   0%   {top:-245.5px;}
-  100% {top:395.5px;}
+  100% {top:350px;}
 }
 
 .ui-dialog.success-dialog .ui-dialog-content {
@@ -505,6 +505,9 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label, .select-lab
     padding: 0.1em .5em;
     position: relative;
     font-size: 1em;
+}
+.dg-unsubmit{
+	width:250px !important;
 }
 
 .ui-dialog.success-dialog .ui-dialog-titlebar-close{
