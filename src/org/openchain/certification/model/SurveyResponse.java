@@ -221,6 +221,10 @@ public class SurveyResponse {
 	 */
 	public void setLanguage(String language) {
 		this.language = language;
+		// set the language for any responses
+		for (Answer answer:this.responses.values()) {
+			answer.setLanguage(language);
+		}
 	}
 	
 	

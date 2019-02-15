@@ -18,11 +18,12 @@ package org.openchain.certification;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
@@ -143,6 +144,8 @@ public class CertificationServlet extends HttpServlet {
 		response.setHeader("Cache-Control", "no-cache, must-revalidate");  //$NON-NLS-1$  //$NON-NLS-2$
 		String requestParam = request.getParameter(PARAMETER_REQUEST);
 		String locale = User.DEFAULT_LANGUAGE;
+		response.setContentType("application/json"); //$NON-NLS-1$
+		response.setCharacterEncoding("UTF-8");  //$NON-NLS-1$
 		if (requestParam != null) {
 			PrintWriter out = response.getWriter();
 			try {
@@ -656,7 +659,7 @@ public class CertificationServlet extends HttpServlet {
 				File jsonFile = jsonFiles.next();
 				BufferedReader reader = null;
 				try {
-					reader = new BufferedReader(new FileReader(jsonFile));
+					reader = new BufferedReader(new InputStreamReader(new FileInputStream(jsonFile), "UTF8"));
 					Survey survey = gson.fromJson(reader, Survey.class);
 					survey.addInfoToSectionQuestions();
 					if (dao.surveyExists(survey.getSpecVersion(), survey.getLanguage(), false)) {
@@ -696,6 +699,9 @@ public class CertificationServlet extends HttpServlet {
 				} catch (FileNotFoundException e) {
 					logger.error("File not found while updating survey questions from GIT: "+jsonFile.getName()); //$NON-NLS-1$
 					result.addWarning(I18N.getMessage("CertificationServlet.27",language)); //$NON-NLS-1$
+				} catch (UnsupportedEncodingException e1) {
+					logger.error("Unsupported encoding exception found while updating survey questions from GIT: "+jsonFile.getName()); //$NON-NLS-1$
+					result.addWarning(I18N.getMessage("CertificationServlet.28",language)); //$NON-NLS-1$
 				} finally {
 					if (reader != null) {
 						try {
