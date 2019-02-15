@@ -57,7 +57,7 @@
   "COMMENT_4": "/********TRANSLATIONS FOR THE CONFIRMING PAGE IS GIVEN BELOW********* (Specification) ********************/",
 
   "Conforming Organizations":"Conforming Organizations",
-  "Conforming Organizations_content":"The following organizations have self-certified conformance to the OpenChain <a class=\"anchor\" href=\"https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf\">Specification.</a>",
+  "Conforming Organizations_content":"The following organizations have self-certified conformance to the OpenChain <a class=\"anchor\" href=\"https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf\" target=\"_blank\">Specification.</a>",
   "Organization":"Organization",
   "Specification" : "Specification.",
   "Specification Version":"Specification Version",
@@ -127,7 +127,8 @@
   "Edit Conformance Questions":"Edit Conformance Questions",
   "Git Tag" : "Git Tag",
   "Git Commit" : "Git Commit",
-  "Updated Questionnaire":"Updated Questionnaire",
+  "Update questionnaire" : "Update questionnaire",
+  "Confirm update":"Confirm Questionnaire Update",
   "Submission Status":"Submission Status",
   "Submitted Awaiting Approval":"Awaiting Approval",
   "Approve Selected":"Approve Selected",

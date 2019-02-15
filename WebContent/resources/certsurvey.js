@@ -342,19 +342,32 @@ function unsubmit() {
 	    	if (json.status == "OK") {
 		    	submitted = false;
 		    	updateButtons();
+		    	$.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
+				    _title: function(title) {
+				        if (!this.options.title ) {
+				            title.html("&#160;");
+				        } else {
+				            title.html(this.options.title);
+				        }
+				    }
+				}));
 	    		$( "#status" ).dialog({
-	    			title: "UnSubmitted",
+	    			title: '<span class="translate" data-i18n="Unsubmit">UnSubmitted</span>',
 	    			resizable: false,
 	    		    height: 200,
 	    		    width: 200,
 	    		    modal: true,
-	    		    dialogClass: 'success-dialog translate',
-	    		    buttons: {
-	    		        "Ok" : function () {
+	    		    dialogClass: 'success-dialog translate dg-unsubmit',
+	    		    buttons: [{
+	    		    	text: "Ok",
+			    		"data-i18n": "Ok",
+			    		 click: function () { 
 	    		            $( this ).dialog( "close" );
 	    		        }
-	    		    }
+
+	    		    }]
 	    		}).html( "<span class='translate' data-i18n='Responses Unsubmitted'>Responses Unsubmitted</span>" );
+	    		$('.translate').localize();
 	    	} else {
 	    		displayError(json.error);
 	    	}
@@ -396,19 +409,31 @@ function finalSubmission() {
 	    	if (json.status == "OK") {
 	    		submitted = true;
 	    		updateButtons();
+	    		$.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
+				    _title: function(title) {
+				        if (!this.options.title ) {
+				            title.html("&#160;");
+				        } else {
+				            title.html(this.options.title);
+				        }
+				    }
+				}));
 	    		$( "#status" ).dialog({
-	    			title: "Saved",
+	    			title: '<span class="translate" data-i18n="Saved">Saved</span>',
 	    			resizable: false,
 	    		    height: 200,
 	    		    width: 200,
 	    		    modal: true,
 	    		    dialogClass: 'success-dialog translate',
-	    		    buttons: {
-	    		        "Ok" : function () {
+	    		    buttons: [{
+	    		    	text: "ok",
+			    		"data-i18n": "Ok",
+			    		click: function () {	    		        
 	    		            $( this ).dialog( "close" );
 	    		        }
-	    		    } 
+	    		    }]
 	    		}).html( "<span class='translate' data-i18n='submission-notice' >Thank you - your information has been submitted</span>" );
+	    		$('.translate').localize();
 	    	} else {
 	    		$("#btSaveAndSubmit").button("enable");
 	    		$("#btSaveAnswers").button("enable");
@@ -437,9 +462,15 @@ $(document).ready( function() {
 	$("#btSaveAndSubmit").button();
 	$("#btSaveAndSubmit").click(function(event) {
 	      event.preventDefault();
-	      $( "#submitconfirm" ).dialog().data( "uiDialog" )._title = function(title) {
-	    	    title.html( this.options.title );
-	    	};
+	      $.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
+			    _title: function(title) {
+			        if (!this.options.title ) {
+			            title.html("&#160;");
+			        } else {
+			            title.html(this.options.title);
+			        }
+			    }
+			}));
 	      $( "#submitconfirm" ).dialog({
 				title: '<span class="translate" data-i18n="Confirm Submit">Confirm Submit</span>',
 				resizable: false,
@@ -561,6 +592,7 @@ $(document).ready( function() {
 	    			    error: function( xhr, status, errorThrown ) {
 	    			    	handleError(xhr, status, errorThrown);
 	    			    }
+	    			    
 	    			});
 	    			$( this ).dialog( "close" );
 	    		},
@@ -615,7 +647,6 @@ $(document).ready( function() {
 	  	    
 	 };
 	selectVersionDialog = $( "#selectversion" ).dialog({
-		//title: "Select Version",
 		title: '<span class="translate" data-i18n="Select Version">Select Version</span>',
 		autoOpen: false,
 		resizable: false,

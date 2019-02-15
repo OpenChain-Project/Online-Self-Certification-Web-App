@@ -80,8 +80,17 @@ var username;
 var tips;
 
 function openResendVerificationDialog(username, password) {
+	$.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
+	    _title: function(title) {
+	        if (!this.options.title ) {
+	            title.html("&#160;");
+	        } else {
+	            title.html(this.options.title);
+	        }
+	    }
+	}));
 	$( "#resendveify" ).dialog({
-		title: "Resend Verification",
+		title: '<span class="translate" data-i18n="Resend Verification">Resend Verification</span>',
 		resizable: false,
 	    height: 250,
 	    width: 250,
@@ -275,21 +284,33 @@ function updateUser(username, password, name, address, organization, email,
 	    success: function( json ) {
 	    	if ( json.status == "OK" ) {
 	    		changeLng( preferredLanguage );
+	    		$.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
+	    		    _title: function(title) {
+	    		        if (!this.options.title ) {
+	    		            title.html("&#160;");
+	    		        } else {
+	    		            title.html(this.options.title);
+	    		        }
+	    		    }
+	    		}));
     			$( "#status" ).dialog({
-    			title: "Updated",
+    			title: '<span class="translate" data-i18n="Updated">Updated</span>',
     			resizable: false,
     			height: 200,
     			width: 200,
     			modal: true,
     			dialogClass: 'success-dialog translate update-success-dialog',
-    			buttons: {
-    			    "Ok" : function () {
+    			buttons: [{
+    				text: "ok",
+		    		"data-i18n": "Ok",
+		    		click: function () {
     			        $( this ).dialog( "close" );
     			        $('#updateprofileModal').modal('hide');
     				      }
-    		   }
+    		   }]
 
-	    	  }).html( " <span class='translate' data-i18n='profile-notification'>Profile updated successfully" );		 
+	    	  }).html( " <span class='translate' data-i18n='profile-notification'>Profile updated successfully" );	
+    		$('.translate').localize();
 	    	} else {
 	    		displayError( json.error );
 	    	} 	
@@ -341,6 +362,9 @@ function signupUser() {
 	if (valid) {
 		signup(username.val(), password.val(), name.val(), address.val(), organization.val(), 
 				email.val(), checkApproveEmail.is(':checked'), preferredLanguage.val());
+	}
+	else {
+		window.scrollTo(0, 0);
 	}
 }
 

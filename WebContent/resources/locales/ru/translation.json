@@ -55,7 +55,7 @@
   "COMMENT_4": "/********TRANSLATIONS FOR THE CONFIRMING PAGE IS GIVEN BELOW********* (Specification) ********************/",
 
   "Conforming Organizations":"Соответствующие организации",
-  "Conforming Organizations_content":"Следующие организации имеют сертифицированное соответствие Открытая цепь <a class=\"anchor\" href=\"https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf\">Спецификация.</a>",
+  "Conforming Organizations_content":"Следующие организации имеют сертифицированное соответствие Открытая цепь <a class=\"anchor\" target=\"_blank\" href=\"https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf\">Спецификация.</a>",
   "Organization":"организация",
   "Specification" : "Спецификация.",
   "Specification Version":"Версия спецификации",
@@ -125,7 +125,8 @@
   "Edit Conformance Questions":"Редактировать вопросы соответствия",
   "Git Tag" : "День Git",
   "Git Commit" : "Git совершить",
-  "Updated Questionnaire":"Обновить вопросы опроса",
+  "Update questionnaire" : "Обновить анкету",
+  "Confirm update":"Подтвердите обновление анкеты",
   "Submission Status":"Статус отправки",
   "Submitted Awaiting Approval":"В ожидании подтверждения",
   "Approve Selected":"Подтвердить выбранное",
