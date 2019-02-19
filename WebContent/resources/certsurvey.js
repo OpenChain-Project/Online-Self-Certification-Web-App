@@ -66,19 +66,15 @@ function getQuestionFormHtml(questions) {
 				inSubQuestions = false;
 			}
 		} else 
-			{
-			
-			
+			{					
 			html += '<td class="answer_cell pad_cell"><div class="form-check custom-checkbox"><label class="form-check-label">';
-			
 			html += '<input type="radio" class="form-check-input custom-radiobtn" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"';
 			if (isSubQuestion && inSubQuestions) {
 				html += ' subquestion-of-';
 				html += questions[i].subQuestionNumber;
 			}
 			html += '"  value="yes" /><span class="translate" data-i18n="Yes">Yes</span>';
-			html += '</label></div>';
-			
+			html += '</label></div>';			
 			html += '<div class="form-check custom-checkbox"><label class="form-check-label">';		
 			html += '<input type="radio" class="form-check-input custom-radiobtn" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no"';
 			if (isSubQuestion && inSubQuestions) {
@@ -86,39 +82,33 @@ function getQuestionFormHtml(questions) {
 				html += questions[i].subQuestionNumber;
 			}
 			html += '" value="no" /><span class="translate" data-i18n="No">No</span>';
-			html += '</label></div></td>';
-			
+			html += '</label></div></td>';			
 			html += '<td class="answer_cell pad_cell"></td>';
 			if (!isSubQuestion) {
 				inSubQuestions = false;
 			}
 		}
 		if (isSubQuestion) {
-			html += '<td class="tablebullet answer_cell"> <p id="question-pad" class="table-bullet" >';
-			
-		} else {
+			html += '<td class="tablebullet answer_cell"> <p id="question-pad" class="table-bullet" >';			
+		} 
+		else {
 			html += '<td class="answer_cell pad_cell"><p id="question-pad">';
 		}
 		html+=questions[i].question +  '</p></td>\n';
-
 		html += '</tr>\n';
 	}
 	html += '</table>\n</div>';
-	
 	return html;
 }
 
-
 function getSurvey() {
-	var certForm = $("#CertForm");
-	
+	var certForm = $("#CertForm");	
 	if (!certForm.length ) {
 		return;
 	}
 	if (certForm.is(':ui-accordion')) {
 		certForm.accordion("destroy");
 	}
-
 	certForm.html('Loading <img src="resources/loading.gif" alt="Loading" class="loading" id="survey-loading">');
 	$.ajax({
 	    url: "CertificationServlet",
@@ -145,9 +135,7 @@ function getSurvey() {
 	    	var html = '';
 	    	for ( var i = 0; i < sections.length; i++ ) {
 	    		var divReference = 'section_' + sections[i].name;
-	    		//html += '<h3>' + sections[i].name + ': ' + sections[i].title + 
-	    		html += '<h3>' + sections[i].title + 
-	    		'<div  style="float:right" id="h_'+divReference+'">[NUM] answered out of [NUM]</div>'+'</h3>\n';
+	    		html += '<h3>' + sections[i].title + '<div  style="float:right" id="h_'+divReference+'">[NUM] answered out of [NUM]</div>'+'</h3>\n';
 	    		html += '<div id="' + divReference + '" class="no-ofquestion">\n';
 	    		html += getQuestionFormHtml(sections[i].questions);
 	    		html += '</div>\n';
@@ -168,9 +156,7 @@ function getSurvey() {
 		    				var a = $(this).parent().parent().parent().parent().children(":first").children(":first").children(":first");
 		    				// Fill in the existing value
 		    				if (myresponse.answer == 'Yes' && $(this).attr('value') == 'yes') {
-		    					$(this).prop('checked',true);
-		    					
-		    					
+		    					$(this).prop('checked',true);   				
 		    					a.addClass('fa-check-circle');
 		    				} else if (myresponse.answer == 'No' && $(this).attr('value') == 'no') {
 		    					$(this).prop('checked',true);
@@ -195,7 +181,6 @@ function getSurvey() {
 	    }
 	});
 }
-
 /**
  * Updates buttons based on the submission status
  */
@@ -253,12 +238,9 @@ function updateSectionQuestionCounts(section) {
 			numAnswered++;
 		}
 	});
-	updateSectionHtml(section,numQuestions,numAnswered);
-	
+	updateSectionHtml(section,numQuestions,numAnswered);	
 	if (numQuestions == numAnswered){
-		$("#"+$(section).attr('aria-labelledby')).addClass("all-answered");
-		
-		
+		$("#"+$(section).attr('aria-labelledby')).addClass("all-answered");			
 	}
 }
 
@@ -274,8 +256,7 @@ function saveAll( showDialog ) {
 			var questionNumber = id.substring(7,id.lastIndexOf('_'));
 			answers.push({'questionNumber':questionNumber, 'value':value, 'checked':checked});
 		}
-	});
-	
+	});	
 	var data = JSON.stringify({request: "updateAnswers", 'answers': answers,
         locale: getCurrentLanguage()});
 	$.ajax({
@@ -288,37 +269,32 @@ function saveAll( showDialog ) {
 	    	$("#btSaveAnswers").button("enable");
 	    	$("#btSaveAndSubmit").button("enable");
 	    	if (json.status == "OK") {
-	    		if ( showDialog ) {
-	    			
+	    		if ( showDialog ) {	    			
 	    			event.preventDefault();
 	    		      $( "#status" ).dialog().data( "uiDialog" )._title = function(title) {
 	    		    	    title.html( this.options.title );
-	    		    	};	    			
-   			
-	    			$( "#status" ).dialog({
-		    			title: '<span class="translate" data-i18n="Saved">Saved</span>',
-		    			resizable: false,
-		    		    height: 200,
-		    		    width: 200,
-		    		    dialogClass: 'success-dialog translate',
-		    		    modal: true,
-		    		    buttons: [{
-		    		    	text: "Ok",
-				    		"data-i18n": "Ok",
-				    		 click: function () { 
-		    		            $( this ).dialog( "close" );
-		    		        }
-
-		    		    }]
-		    		}).html( "<span class='translate' data-i18n='Save-ans-dialog'> Saved Successful </span>" );
-	    			$('.translate').localize();
-
-	    		}
-	    	} else {
-	    		displayError(json.error);
-	    	}
-	    	
-	    },
+	    		    	};
+	    		    	$( "#status" ).dialog({
+	    		    		title: '<span class="translate" data-i18n="Saved">Saved</span>',
+	    		    		resizable: false,
+	    		    		height: 200,
+	    		    		width: 200,
+	    		    		dialogClass: 'success-dialog translate',
+	    		    		modal: true,
+	    		    		buttons: [{
+	    		    			text: "Ok",
+	    		    			"data-i18n": "Ok",
+	    		    			click: function () { 
+	    		    				$( this ).dialog( "close" );
+	    		    			}
+	    		    		}]
+	    		    	}).html( "<span class='translate' data-i18n='Save-ans-dialog'> Saved Successful </span>" );
+	    		    	$('.translate').localize();
+	    			}
+	    		} else {
+	    			displayError(json.error);
+	    		}	    	
+	    	},
     error: function( xhr, status, errorThrown ) {
     	$("#btSaveAnswers").button("enable");
     	$("#btSaveAndSubmit").button("enable");
@@ -364,14 +340,12 @@ function unsubmit() {
 			    		 click: function () { 
 	    		            $( this ).dialog( "close" );
 	    		        }
-
 	    		    }]
 	    		}).html( "<span class='translate' data-i18n='Responses Unsubmitted'>Responses Unsubmitted</span>" );
 	    		$('.translate').localize();
 	    	} else {
 	    		displayError(json.error);
-	    	}
-	    	
+	    	}	    	
 	    },
     error: function( xhr, status, errorThrown ) {
     	$("#btUnSubmit").button("enable");
@@ -380,8 +354,7 @@ function unsubmit() {
   });
 }
 
-function finalSubmission() {
-	
+function finalSubmission() {	
 	$("#btSaveAndSubmit").button("disable");
 	$("#btSaveAnswers").button("disable");
 	var answers = [];
@@ -394,7 +367,6 @@ function finalSubmission() {
 			answers.push({'questionNumber':questionNumber, 'value':value, 'checked':checked});
 		}
 	});
-	
 	var data = JSON.stringify({request: "finalSubmission", 'answers': answers,
         locale: getCurrentLanguage()});
 	$.ajax({
@@ -438,8 +410,7 @@ function finalSubmission() {
 	    		$("#btSaveAndSubmit").button("enable");
 	    		$("#btSaveAnswers").button("enable");
 	    		displayError(json.error);
-	    	}
-	    	
+	    	}	    	
 	    },
     error: function( xhr, status, errorThrown ) {
     	$("#btSaveAndSubmit").button("enable");
@@ -484,8 +455,7 @@ $(document).ready( function() {
 			    		click: function () {
 			    			finalSubmission();
 			    			$( this ).dialog( "close" );
-			    		},
-			    		
+			    		},			    		
 			    	},
 			    	{
 			    		text: "Cancel",
@@ -494,11 +464,8 @@ $(document).ready( function() {
 			    			$( this ).dialog( "close" );
 			        }
 			    	}]
-			    
-
 			}).html( '<span class="confirm-submit-content" data-i18n="confirm-submit-dialog">By clicking "submit" you confirm:</span><ol type="1"><li class="translate" data-i18n="confirm-submit-subdialog1">Your answers to the Conformance Self-Certification Questionnaire are accurate and verifiable.</li><li class="translate" data-i18n="confirm-submit-subdialog2">Your answers reflect your adherence to the OpenChain Specification.</li></ol>');
 	      $('.translate').localize();
-
 	});           
 	$("#btUnSubmit").button();
 	$("#btUnSubmit").click(function(event) {
@@ -509,8 +476,7 @@ $(document).ready( function() {
 	$("#btDownloadAnswers").click(function(event) {
 	      event.preventDefault();
 	      downloadAnswers();
-	});
-	
+	});	
 	$("#btResetAnswers").button();
 	$("#btResetAnswers").click(function(event) {
 	    event.preventDefault();
@@ -532,28 +498,20 @@ $(document).ready( function() {
 		    		}
 		    	}
 		    	$( "#resetVersionSelect" ).html(items);
-		    	$( "#resetVersionSelect" ).val(maxVersion);
-		    	
-		    	resetDialog.dialog( "open" );
-		    	
+		    	$( "#resetVersionSelect" ).val(maxVersion);		    	
+		    	resetDialog.dialog( "open" );		    	
 		    },
 		    error: function( xhr, status, errorThrown ) {
 		    	handleError( xhr, status, errorThrown);
 		    }
-		});
-	  	
-	});
-	
-	
+		});	  	
+	});		
 	resetDialog = $( "#resetsurvey" ).dialog().data( "uiDialog" )._title = function(title) 
 	{
 	  	    title.html( this.options.title );
-	  	  $('#resetsurvey').dialog( "close" );
-	  	    
+	  	  $('#resetsurvey').dialog( "close" );	  	   
 	 };
-
-	resetDialog = $( "#resetsurvey" ).dialog({
-				
+	resetDialog = $( "#resetsurvey" ).dialog({				
 		title: '<span class="translate" data-i18n="Reset Answers">Reset Answers</span>',
 		autoOpen: false,
 		resizable: false,
@@ -591,12 +549,10 @@ $(document).ready( function() {
 	    			    },
 	    			    error: function( xhr, status, errorThrown ) {
 	    			    	handleError(xhr, status, errorThrown);
-	    			    }
-	    			    
+	    			    }	    			    
 	    			});
 	    			$( this ).dialog( "close" );
-	    		},
-	    		
+	    		},	    		
 	    	},
 	    	{
 	    		text: "Cancel",
@@ -604,13 +560,10 @@ $(document).ready( function() {
 	    		click: function () {
 	    			$( this ).dialog( "close" );
 	        }
-	    	}]
-	    
+	    	}]	    
 	});
 	$("#btSelectVersion").button();
-	$("#btSelectVersion").click(function(event) {
-		 
-	    
+	$("#btSelectVersion").click(function(event) {	
 	    $.ajax({
 		    url: "CertificationServlet",
 		    data: {
@@ -630,16 +583,13 @@ $(document).ready( function() {
 		    	}
 		    	$( "#versionSelect" ).html(items);
 		    	$( "#versionSelect" ).val(maxVersion);
-		    	selectVersionDialog.dialog( "open" );
-		    	
+		    	selectVersionDialog.dialog( "open" );		    	
 		    },
 		    error: function( xhr, status, errorThrown ) {
 		    	handleError( xhr, status, errorThrown);
 		    }
-		});
-	  	
-	});
-	
+		});	  	
+	});	
 	selectVersionDialog = $( "#selectversion" ).dialog().data( "uiDialog" )._title = function(title) 
 	{
 	  	    title.html( this.options.title );
@@ -689,8 +639,7 @@ $(document).ready( function() {
 	    			    }
 	    			});
 	    			$( this ).dialog( "close" );
-	    		},
-	    		
+	    		},	    		
 	    	},
 	    	{
 	    		text: "Cancel",
@@ -698,37 +647,21 @@ $(document).ready( function() {
 	    		click: function () {
 	    			$( this ).dialog( "close" );
 	        }
-	    	}]
-	    
-	});
-	
+	    	}]	    
+	});	
 	getSurvey();
-});
-
-
-
-
-
-$(document).ready(function () {
-
 	/* 001 Starts here */
-	$(document).delegate('.form-check-input','click', function($this){ 
-  	
-  	var appendimg = $(this).parent().parent().parent().parent().children(":first").children(":first").children(":first");
-
-      if ($this.target.value == 'yes') {
-      	
-        appendimg.removeClass('fa-times-circle-o');
-      	appendimg.addClass('fa-check-circle');
-      }
-      else if ($this.target.value == 'no') {
-        appendimg.removeClass('fa-check-circle');
-        appendimg.addClass('fa-times-circle-o');
-      }
-      
-  });
-	
-	/* 001 ends here */
-	
-	 
+	$(document).delegate('.form-check-input','click', function($this){   	
+  	   var appendimg = $(this).parent().parent().parent().parent().children(":first").children(":first").children(":first");
+         if ($this.target.value == 'yes') {      	
+           appendimg.removeClass('fa-times-circle-o');
+      	   appendimg.addClass('fa-check-circle');
+         }
+         else if ($this.target.value == 'no') {
+            appendimg.removeClass('fa-check-circle');
+            appendimg.addClass('fa-times-circle-o');
+         }      
+     });	
+	/* 001 ends here */	 
 });
+
