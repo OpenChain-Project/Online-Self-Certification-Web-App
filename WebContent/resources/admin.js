@@ -218,7 +218,6 @@ function fillSubmissionStatusTable(submissions) {
 			notSubmittedHtml += html;
 		}
 	}
-	html +='</tbody>';
 	var submittedAwaitingApproval = $("#submitted-awaiting-approval");
 	submittedAwaitingApproval.html(submittedAwaitingApprovalHtml);
 	var submittedApproved = $("#submitted-approved");
