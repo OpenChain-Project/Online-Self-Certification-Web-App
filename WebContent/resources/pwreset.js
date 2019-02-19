@@ -28,7 +28,7 @@ function resetPassword() {
 		    async: false, 
 		    success: function( json ) {
 		    	if ( json.status == "OK" ) {
-		    		window.location = "pwresetsuccess.html";
+		    		window.location = "pwresetsuccess.html" +'?locale='+(url('?locale') || 'en');
 		    	} else {
 		    		displayError( json.error );
 		    	} 	
@@ -39,9 +39,6 @@ function resetPassword() {
 		});
 	}
 }
-
-
-
 $(document).ready( function() {
 	$(document).on('click', '#reset-user-password', function(){resetPassword();});
 });

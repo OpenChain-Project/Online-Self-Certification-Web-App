@@ -165,6 +165,7 @@
 .custom-col > select:focus, #update-language:focus {
 	    box-shadow: none;
 }
+
 /**************************** Header CSS ******************************/
 
 
@@ -582,6 +583,7 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label, .select-lab
 	text-align: left;
 }
 #certified-table_info{float:right;}
+
 /************************************* Comforming Organisation pages ************************/
 
 
@@ -612,7 +614,6 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label, .select-lab
 		 margin: 0 auto;
 	     margin-bottom: 130px;
 	}
-	
 	.navbar{
 	padding: 1rem 1rem;
 	}

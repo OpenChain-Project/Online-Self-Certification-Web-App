@@ -28,7 +28,6 @@ function fillCertifiedTable(submissions) {
 	$("#certified-table").empty();
 	var html = '<thead><tr><th class="cert-table-cell all translate" data-i18n="Organization" >Organization</th><th class="cert-table-cell none translate" data-i18n="Specification Version">Specification Version</th><th class="cert-table-cell none translate" data-i18n="Contact Email">Contact Email</th><th class="cert-table-cell none translate" data-i18n="Contact Name">Contact Name</th></tr></thead>\n<tbody>';
 	for (var i = 0; i < submissions.length; i++) {
-
 		if (submissions[i].approved) {
 			html += '<tr id="submission-';
 			html += submissions[i].id;
@@ -54,15 +53,9 @@ function fillCertifiedTable(submissions) {
 				html += '<span class="translate" data-i18n="Not Available" >Not Available</span>';
 			}			
 			html += '</td></tr>\n';
-			
 		}
 	}
-	
-	html +='</tbody>';
-	
-	
 	$("#certified-table").html(html);
-	
 	
 	//******************** 001 starts here *******************//
 	$('#certified-table').DataTable({
@@ -72,23 +65,11 @@ function fillCertifiedTable(submissions) {
 			},
 			"fnDrawCallback": function (oSettings) {
 				$('.translate').localize();
-				}
-	
+			}	
 	});
-	
-	
 	//******************** 001 ends here *******************//
-	
-	$( ".bottom" ).addClass( "row" );            
-	$( "#certified-table_length").addClass( "col-md-3 custom-col");
-	$( "#certified-table_paginate").addClass( "col-md-9 custom-col pad-zero");
-	
-
 }
 
 $(document).ready( function() {
 	loadCertifiedTable();
-	
-
-	
 });
