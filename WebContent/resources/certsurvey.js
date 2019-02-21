@@ -68,15 +68,15 @@ function getQuestionFormHtml(questions) {
 		} else 
 			{					
 			html += '<td class="answer_cell pad_cell"><div class="form-check custom-checkbox"><label class="form-check-label">';
-			html += '<input type="radio" class="form-check-input custom-radiobtn" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"';
+			html += '<input type="radio" class="form-check-input custom-radiobtn" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes';
 			if (isSubQuestion && inSubQuestions) {
-				html += ' subquestion-of-';
+				html += '  subquestion-of-';
 				html += questions[i].subQuestionNumber;
 			}
 			html += '"  value="yes" /><span class="translate" data-i18n="Yes">Yes</span>';
 			html += '</label></div>';			
 			html += '<div class="form-check custom-checkbox"><label class="form-check-label">';		
-			html += '<input type="radio" class="form-check-input custom-radiobtn" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no"';
+			html += '<input type="radio" class="form-check-input custom-radiobtn" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no';
 			if (isSubQuestion && inSubQuestions) {
 				html += ' subquestion-of-';
 				html += questions[i].subQuestionNumber;
