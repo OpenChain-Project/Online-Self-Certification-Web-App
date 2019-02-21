@@ -14,152 +14,163 @@
  *   limitations under the License.
  *
 */
+/**
+ * Functions added by visolve
+ * 001: Pagination for Table. Note: Include DataTable library files
+ */
+var lastUpdateCommit; // Holds the last survey update commit hash
 
-function openDownloadSurveyDialog() {
-	$("#downloadsurvey").dialog("open");
-}
 
-function openUploadSurveyDialog() {
-	$("#uploadsurvey").dialog("open");
-}
-
-function openUpdateSurveyDialog() {
-	$("#updatesurvey").dialog("open");
-}
-
-function downloadSurvey() {
-	var specVersion = $("#downloadsurvey-version").val();
-	window.location="CertificationServlet?request=downloadSurvey&specVersion="+specVersion;
-}
-
-var csvFileForUpload;
-var csvFileForUpdate;
-var storeCsvFileUpload = function(event) {
-	csvFileForUpload = event.target.files[0];
-};
-var storeCsvFileUpdate = function(event) {
-	csvFileForUpdate = event.target.files[0];
-};
-
+/**
+ * On initial click of the update survey button, opens a dialog confirming you want to "updateSurveyForReal"
+ */
 function updateSurvey() {
-	$("#btUpdateSurvey").button("disable");
-	var specVersion = $("#updatesurvey-version").val();
-	if (csvFileForUpdate == null) {
-		dislplayError("No file choosen for update");
-		return;
+	
+	var tag = $( "#gitTag" ).val();
+	if ( tag == "None" ) {
+		tag = null;
 	}
-	var csvLines;
-	var reader = new FileReader();
-	reader.onload = function(){
-		var text = reader.result;
-		csvLines = text.split('\n');
-		$.ajax({
-		    url: "CertificationServlet",
-		    data:JSON.stringify({
-		        request: "updatesurvey",
-		        specVersion: specVersion,
-		        csvLines: csvLines
-		    }),
-		    type: "POST",
-		    dataType : "json",
-		    contentType: "json",
-		    success: function( json ) {
-		    	$("#btUpdateSurvey").button("enable");
-		    	if (json.status == "OK") {
-		    		$( "#status" ).dialog({
-		    			title: "Updated",
-		    			resizable: false,
-		    		    height: 200,
-		    		    width: 200,
-		    		    modal: true,
-		    		    buttons: {
-		    		        "Ok" : function () {
-		    		            $( this ).dialog( "close" );
-		    		        }
-		    		    }
-		    		}).text( "Questions successfully updated" );
-		    	} else {
-		    		displayError(json.error);
-		    	}
-		    },
-		    error: function( xhr, status, errorThrown ) {
-		    	$("#btUpdateSurvey").button("enable");
-		    	handleError( xhr, status, errorThrown);
-		    }
-		});
-	};
-	reader.onloadend = function(){
-		if (reader.error != null) {
-			displayError(reader.error.message);
-		}
-	};
-	reader.readAsText(csvFileForUpdate);
+	var commit = $( "#gitCommit" ).val();
+	if ( !commit || commit.trim() === "" ) {
+		commit = null;
+	}
+	$( "#btUpdateSurvey" ).button( "disable" );
+	$.ajax({
+	    url: "CertificationServlet",
+	    data: {
+	        request: "getUpdateSurveyResults",
+	        tag: tag,
+	        commit: commit,
+	        locale: getCurrentLanguage()
+	    },
+	    type: "GET",
+	    dataType : "json",
+	    success: function( json ) {
+	    	
+	    	lastUpdateCommit = json.commit;
+	    	var summaryHtml = "";
+	    	if ( json.warnings.length > 0 ) {
+	    		summaryHtml += "<h3 class='translate' data-i18n='Warning'> Warning <span>: </span> </h3>\n";
+	    		for (i in json.warnings) {
+	    			summaryHtml += "<p>";
+	    			summaryHtml += json.warnings[i];
+	    			summaryHtml += "</p>\n";
+	    		}
+	    	}
+    		summaryHtml += "<p> ";
+    		summaryHtml += json.versionsUpdated.length.toString();
+    		summaryHtml += "&nbsp;";
+    		summaryHtml += "<span class='translate' data-i18n='Summary-history-update'>questionnaire version/languages will be updated</span></p>\n";
+    		summaryHtml += "<p> ";
+    		summaryHtml += json.versionsAdded.length.toString();
+    		summaryHtml += "&nbsp;";
+    		summaryHtml += "<span class='translate' data-i18n='Summary-history-add'>questionnaire version/languages will be added</span></p>\n";
+	    	$("#confirm-update-tab-summary").html(summaryHtml);
+	    	var updatedHtml = "";
+	    	if ( json.versionsUpdated.length == 0 ) {
+	    		updatedHtml = "<span class='translate' data-i18n='no-update'>No questionnaire/versions were updated</span>";
+	    	} else {
+	    		for ( i in json.versionsUpdated ) {
+	    			updatedHtml += "<p>";
+	    			updatedHtml += json.versionsUpdated[i];
+	    			updatedHtml += "</p>\n";
+	    		}
+	    	}
+	    	$( "#confirm-update-tab-updates" ).html( updatedHtml );
+	    	var addedHtml = "";
+	    	if ( json.versionsAdded.length == 0 ) {
+	    		addedHtml = "<span class='translate' data-i18n='no-new-add'> No questionnaire/versions were added </span>";
+	    	} else {
+	    		for ( i in json.versionsAdded ) {
+	    			addedHtml += "<p>";
+	    			addedHtml += json.versionsAdded[i];
+	    			addedHtml += "</p>\n";
+	    		}
+	    	}
+	    	$( "#confirm-update-tab-added" ).html( addedHtml );
+	    	$( "#confirm-update-tabs" ).tabs();
+	    	
+	    	  $('.translate').localize();
+	    },
+	    error: function( xhr, status, errorThrown ) {
+	    	$( "#btUpdateSurvey" ).button( "enable" );
+	    	handleError( xhr, status, errorThrown );
+	    }
+	});
 }
 
+/**
+ * Update the survey including an update to the database
+ */
+function updateSurveyForReal( commit ) {
+	$( "#btUpdateSurvey" ).button( "disable" );
+	$.ajax({
+	    url: "CertificationServlet",
+	    data:JSON.stringify({
+	        request: "updatesurvey",
+	        tag: null,
+	        commit: lastUpdateCommit,
+	        locale: getCurrentLanguage()
+	    }),
+	    type: "POST",
+	    dataType : "json",
+	    contentType: "json",
+	    success: function( json ) {
+	    	$( "#btUpdateSurvey" ).button( "enable" );
+	    	if ( json.status == "OK" ) {
+	    		var dialogText = json.surveyUpdateResult.versionsUpdated.length.toString();
+	    		dialogText += "&nbsp;";
+	    		dialogText += "<span class='translate' data-i18n='questionnaire-updated'>questionnaire version/languages were updated</span>; ";
+	    		dialogText +="<p>";
+	    		dialogText += json.surveyUpdateResult.versionsAdded.length.toString();
+	    		dialogText += "&nbsp;";
+	    		dialogText += "<span class='translate' data-i18n='questionnaire-added'>questionnaire version/languages were added </span>";
+	    		dialogText +="<p>";
+	    		if ( json.surveyUpdateResult.warnings.length > 0 ) {
+	    			dialogText += "span class='translate' data-i18n='questionnaire-warning'> with the following warnings <span>:</span></span>";
+	    			for ( i in json.surveyUpdateResult.warnings ) {
+	    				dialogText += " '";
+	    				dialogText += json.surveyUpdateResult.warnings[i];
+	    				dialogText += "';";
+	    			}
+	    		}
+	    		$.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
+				    _title: function(title) {
+				        if (!this.options.title ) {
+				            title.html("&#160;");
+				        } else {
+				            title.html(this.options.title);
+				        }
+				    }
+				}));
+	    		$( "#status" ).dialog({
+	    			title: '<span class="translate" data-i18n="Updated">Updated</span',
+	    			resizable: false,
+	    		    height: 250,
+	    		    width: 250,
+	    		    modal: true,
+	    		    dialogClass: 'success-dialog translate',
+	    		    buttons: [{
+	    		    	text: "Ok",
+			    		"data-i18n": "Ok",
+			    		 click: function () { 
+	    		            $( this ).dialog( "close" );
+	    		            $('#UpdateSurveyModal').modal('hide');
+	    		        }
 
-function uploadSurvey() {
-	$("#btUploadSurvey").button("disable");
-	var specVersion = $("#uploadsurvey-version").val();
-	var sectionTexts = [];
-	$("#sectiontext-input-area").find(".section-text-group").each(function(index){
-		var id = $(this).attr('id');
-		var sectionName = $("#"+id+"-sname").val();
-		var sectionTitle = $("#"+id+"-stitle").val();
-		if (sectionName != null && sectionName.trim().length > 0) {
-			sectionTexts.push({name:sectionName, title:sectionTitle});
-		}
+	    		    }]
+	    		}).html( dialogText );
+	    		$('.translate').localize();
+	    	} else {
+	    		displayError( json.error );
+	    	}
+	    },
+	    error: function( xhr, status, errorThrown ) {
+	    	$( "#btUpdateSurvey" ).button( "enable" );
+	    	handleError( xhr, status, errorThrown );
+	    }
+	  
 	});
-	if (csvFileForUpload == null) {
-		dislplayError("No file choosen for upload");
-		return;
-	}
-	var csvLines;
-	var reader = new FileReader();
-	reader.onload = function(){
-		var text = reader.result;
-		csvLines = text.split('\n');
-		$.ajax({
-		    url: "CertificationServlet",
-		    data:JSON.stringify({
-		        request: "uploadsurvey",
-		        specVersion: specVersion,
-		        csvLines: csvLines,
-		        sectionTexts: sectionTexts
-		    }),
-		    type: "POST",
-		    dataType : "json",
-		    contentType: "json",
-		    success: function( json ) {
-		    	$("#btUploadSurvey").button("enable");
-		    	if (json.status == "OK") {
-		    		$( "#status" ).dialog({
-		    			title: "Uploaded",
-		    			resizable: false,
-		    		    height: 200,
-		    		    width: 200,
-		    		    modal: true,
-		    		    buttons: {
-		    		        "Ok" : function () {
-		    		            $( this ).dialog( "close" );
-		    		        }
-		    		    }
-		    		}).text( "Questions successfully uploaded" );
-		    	} else {
-		    		displayError(json.error);
-		    	}
-		    },
-		    error: function( xhr, status, errorThrown ) {
-		    	$("#btUploadSurvey").button("enable");
-		    	handleError( xhr, status, errorThrown);
-		    }
-		});
-	};
-	reader.onloadend = function(){
-		if (reader.error != null) {
-			displayError(reader.error.message);
-		}
-	};
-	reader.readAsText(csvFileForUpload);
 }
 
 function fillSubmissionStatusTable(submissions) {
@@ -167,11 +178,11 @@ function fillSubmissionStatusTable(submissions) {
 	$("#submitted-approved").empty();
 	$("#submitted-rejected").empty();
 	$("#not-submitted").empty();
-	$(".status-button").button("disable");
-	var submittedAwaitingApprovalHtml = '<tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
-	var submittedRejectedHtml = '<tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
-	var notSubmittedHtml = '<tr><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
-	var submittedApprovedHtml = '<tr><th></th><th>User Name</th><th>Organization</th><th>Email</th><th>% Complete</th><th>Score</th></tr>\n';
+	$(".status-button").attr("disbled",true);
+	var submittedAwaitingApprovalHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
+	var submittedRejectedHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
+	var notSubmittedHtml = '<thead><tr><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
+	var submittedApprovedHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
 	for (var i = 0; i < submissions.length; i++) {
 		var html = '<tr id="submission-';
 		html += submissions[i].id;
@@ -201,6 +212,7 @@ function fillSubmissionStatusTable(submissions) {
 				submittedRejectedHtml += html;
 			} else {
 				submittedAwaitingApprovalHtml += html;
+				
 			}
 		} else {
 			notSubmittedHtml += html;
@@ -217,13 +229,76 @@ function fillSubmissionStatusTable(submissions) {
 	addCheckboxButtonEnablers(submittedAwaitingApproval, $(".submitted-awaiting-approval-button"));
 	addCheckboxButtonEnablers(submittedRejected, $(".submitted-rejected-button"));
 	addCheckboxButtonEnablers(submittedApproved, $(".submitted-approved-button"));
+	
+	
+	/*************001 starts  here	************/
+	
+	if(!$.fn.dataTable.isDataTable("#submitted-awaiting-approval")){
+		$('#submitted-awaiting-approval').DataTable( {
+		       "searching" : false,
+		       "bLengthChange": false,
+		       "processing": true,
+		       "pageLength": 5,
+		       "language": {					
+		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
+		        },
+		        "fnDrawCallback": function (oSettings) {
+					$('.translate').localize();
+					}
+		} );
+		
+	}
+	if(!$.fn.dataTable.isDataTable("#submitted-approved")){
+		$('#submitted-approved').DataTable( {
+			   "searching" : false,
+		       "bLengthChange": false,
+		       "processing": true,
+		       "pageLength": 5,
+		       "language": {					
+		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
+		        },
+		        "fnDrawCallback": function (oSettings) {
+					$('.translate').localize();
+					}
+		} );
+	}
+	if(!$.fn.dataTable.isDataTable("#submitted-rejected")){
+		$('#submitted-rejected').DataTable( {
+			   "searching" : false,
+		       "bLengthChange": false,
+		       "processing": true,
+		       "pageLength": 5,
+		       "language": {					
+		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
+		        },
+		        "fnDrawCallback": function (oSettings) {
+					$('.translate').localize();
+					}
+		} );
+	}
+	if(!$.fn.dataTable.isDataTable("#not-submitted")){
+		$('#not-submitted').DataTable( {
+			   "searching" : false,
+		       "bLengthChange": false,
+		       "processing": true,
+		       "pageLength": 5,
+		       "language": {					
+		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
+		        },
+		        "fnDrawCallback": function (oSettings) {
+					$('.translate').localize();
+					}
+		});
+	}
+	/*************001 ends  here************/
+
 }
 
 function addCheckboxButtonEnablers(context, buttons) {
 	var selector = $('td input:checkbox',context);
 	selector.change(function() {
 		if($(this).prop('checked')) {
-			buttons.button("enable");
+			buttons.removeAttr("disabled");
 		} else {
 			var somethingChecked = false;
 			selector.each(function() {
@@ -232,7 +307,8 @@ function addCheckboxButtonEnablers(context, buttons) {
 				}
 			});
 			if (!somethingChecked) {
-				buttons.button("disable");
+				
+				buttons.attr("disabled",true);
 			}
 		}
 	});
@@ -249,7 +325,8 @@ function requestStatusChange(request, ids) {
 	    url: "CertificationServlet",
 	    data:JSON.stringify({
 	        request: request,
-	        ids: ids
+	        ids: ids,
+	        locale: getCurrentLanguage()
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -298,12 +375,13 @@ function reloadSubmissionStatus() {
 	$("#submitted-approved").empty();
 	$("#submitted-rejected").empty();
 	$("#not-submitted").empty();
-	$(".status-button").button("disable");
+	$(".status-button").attr("disabled",true);
 	$("#submission-status-loading").show();
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
-	        request: "getsubmissions"
+	        request: "getsubmissions",
+	        locale: getCurrentLanguage()
 	    },
 	    type: "GET",
 	    dataType : "json",
@@ -318,114 +396,84 @@ function reloadSubmissionStatus() {
 	});
 }
 
+/**
+ * Fill in the tags dropdown list
+ */
+function getTags() {
+	$( "#gitTag" ).html( '<option value="None">[Most Recent]</option>' ); // Temporary placeholder until we retrieve the information from the backend
+	$.ajax({
+	    url: "CertificationServlet",
+	    data: {
+	        request: "getGitTags",
+	        locale: getCurrentLanguage()
+	    },
+	    type: "GET",
+	    dataType : "json",
+	    success: function( json ) {
+	    	var newHtml = '<option value="None">[Most Recent]</option>';
+	    	for (s in json) {
+	    		newHtml += '\n<option value="';
+	    		newHtml += json[s];
+	    		newHtml += '">';
+	    		newHtml += json[s];
+	    		newHtml += "</option>";
+	    	}
+	    	$( "#gitTag" ).html( newHtml );
+	    },
+	    error: function( xhr, status, errorThrown ) {
+	    	handleError( xhr, status, errorThrown );
+	    }
+	});
+}
+
 $(document).ready( function() {
-	$("#downloadsurvey").dialog({
-		title: "Download Survey",
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: [{
-			text: "Download",
-			click: function() {
-				$(this).dialog("close");
-				downloadSurvey();
-			}
-		}, {
-			text: "Cancel",
-			click: function() {
-				$(this).dialog("close");
-			}
-		}]
-	}).find("form").on("submit", function(event) {
-		event.preventDefault();
-		downloadSurvey();
-	});
 	
-	$("#uploadsurvey").dialog({
-		title: "Upload Survey",
-		autoOpen: false,
-		height: 600,
-		width: 600,
-		modal: true,
-		buttons: [{
-			text: "Upload",
-			click: function() {
-				$(this).dialog("close");
-				uploadSurvey();
-			}
-		}, {
-			text: "Cancel",
-			click: function() {
-				$(this).dialog("close");
-			}
-		}]
-	}).find("form").on("submit", function(event) {
-		event.preventDefault();
-		uploadSurvey();
-	});
+	getTags();
 	
-	$("#updatesurvey").dialog({
-		title: "Update Survey Questions",
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: [{
-			text: "Update",
-			click: function() {
-				$(this).dialog("close");
-				updateSurvey();
-			}
-		}, {
-			text: "Cancel",
-			click: function() {
-				$(this).dialog("close");
-			}
-		}]
-	}).find("form").on("submit", function(event) {
-		event.preventDefault();
-		updateSurvey();
-	});
-	
-	$("#btDownloadSurvey").button().click(function(event) {
+	$( "#reallyUpdateSurvey" ).button().button().click(function(event) {
 	      event.preventDefault();
-	      openDownloadSurveyDialog();
+	      updateSurveyForReal( lastUpdateCommit );
+	      
 	});
-	$("#btUploadSurvey").button().button().click(function(event) {
-	      event.preventDefault();
-	      openUploadSurveyDialog();
-	});
+	
+	
+	$( "#confirm-update-tabs" ).tabs();
 	
 	$("#btUpdateSurvey").button().button().click(function(event) {
 	      event.preventDefault();
-	      openUpdateSurveyDialog();
+	      updateSurvey();
 	});
-	
+
 	$("#btApprove").button().button().click(function(event) {
 	      event.preventDefault();
 	      requestStatusChange("setApproved", getCheckedIds($("#submitted-awaiting-approval")));
+	      location.reload();
 	});
 	
 	$("#btReject").button().button().click(function(event) {
 	      event.preventDefault();
 	      requestStatusChange("setRejected", getCheckedIds($("#submitted-awaiting-approval")));
+	      location.reload();
+	      
 	});
 	
 	$("#btUnReject").button().button().click(function(event) {
 	      event.preventDefault();
 	      requestStatusChange("resetRejected", getCheckedIds($("#submitted-rejected")));
+	      location.reload();
 	});
 	
 	$("#btUnApprove").button().button().click(function(event) {
 	      event.preventDefault();
 	      requestStatusChange("resetApproved", getCheckedIds($("#submitted-approved")));
+	      location.reload();
 	});
 	
 	$.ajax({
 	    url: "CertificationServlet",
 	    data: {
-	        request: "version"
+	        request: "version",
+	        locale: getCurrentLanguage()
 	    },
 	    type: "GET",
 	    dataType : "json",
@@ -436,6 +484,6 @@ $(document).ready( function() {
 	    	handleError( xhr, status, errorThrown);
 	    }
 	});
-	
 	reloadSubmissionStatus();
+		
 });

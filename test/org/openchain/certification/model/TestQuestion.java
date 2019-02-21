@@ -14,6 +14,8 @@ public class TestQuestion {
 	
 	static final String ROMAN_SPEC_VERSION = "1.0.2";
 	static final String NUMERIC_SPEC_STRING = "1.0.1";
+	static final String ROMAN_LANGUAGE = "eng";
+	static final String NUMERIC_LANGUAGE = "eng";
 	
 	static final String[] ORDERED_ROMAN = new String[] {
 		"1", "1.a", "2", "2.b", "2.aa", "2.aa.i", "2.aa.ii", "2.aa.v","2.aa.c", "11"
@@ -28,8 +30,8 @@ public class TestQuestion {
 	class QuestionForTest extends Question {
 
 		public QuestionForTest(String question, String sectionName,
-				String number, String specVersion) throws QuestionException {
-			super(question, sectionName, number, specVersion);
+				String number, String specVersion, String language) throws QuestionException {
+			super(question, sectionName, number, specVersion, language);
 		}
 
 		@Override
@@ -40,6 +42,15 @@ public class TestQuestion {
 		@Override
 		protected Object getCorrectAnswer() {
 			return null;
+		}
+
+		@Override
+		public Question clone() {
+			try {
+				return new QuestionForTest(getQuestion(), getSectionName(), getNumber(), getSpecVersion(), getLanguage());
+			} catch (QuestionException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		
 	}
@@ -57,7 +68,7 @@ public class TestQuestion {
 		List<QuestionForTest> romanQuestions = new ArrayList<QuestionForTest>();
 		for (int i = ORDERED_ROMAN.length-1; i >= 0; i--) {
 			romanQuestions.add(new QuestionForTest("Q"+ORDERED_ROMAN[i],
-					"section", ORDERED_ROMAN[i], ROMAN_SPEC_VERSION));
+					"section", ORDERED_ROMAN[i], ROMAN_SPEC_VERSION, ROMAN_LANGUAGE));
 		}
 		Collections.sort(romanQuestions);
 		for (int i = 0; i  < ORDERED_ROMAN.length; i++) {
@@ -69,7 +80,7 @@ public class TestQuestion {
 		List<QuestionForTest> romanQuestions = new ArrayList<QuestionForTest>();
 		for (int i = ORDERED_NUMERIC.length-1; i >= 0; i--) {
 			romanQuestions.add(new QuestionForTest("Q"+ORDERED_NUMERIC[i],
-					"section", ORDERED_NUMERIC[i], NUMERIC_SPEC_STRING));
+					"section", ORDERED_NUMERIC[i], NUMERIC_SPEC_STRING, NUMERIC_LANGUAGE));
 		}
 		Collections.sort(romanQuestions);
 		for (int i = 0; i  < ORDERED_NUMERIC.length; i++) {

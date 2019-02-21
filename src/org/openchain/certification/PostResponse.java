@@ -29,6 +29,8 @@ public class PostResponse {
 	private String sectionName;
 	private String error;
 	private boolean admin;
+	private SurveyUpdateResult surveyUpdateResult;
+	private String languagePreference;
 
 	public PostResponse(Status status) {
 		this.status = status;
@@ -84,4 +86,19 @@ public class PostResponse {
 		return this.admin;
 	}
 
+	public void setSurveyUpdateResult(SurveyUpdateResult result) {
+		this.surveyUpdateResult = result;
+	}
+
+	public SurveyUpdateResult getSurveyUpdateResult() {
+		return this.surveyUpdateResult;
+	}
+
+	public void setLanguagePreference(String language) {
+		this.languagePreference = language;
+	}
+	
+	public String getLanguagePreference() {
+		return this.languagePreference;
+	}
 }

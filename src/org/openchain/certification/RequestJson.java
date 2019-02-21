@@ -18,6 +18,8 @@ package org.openchain.certification;
 
 import java.util.List;
 
+import org.openchain.certification.model.Survey;
+
 /**
  * Request JSON for posts 
  * @author Gary O'Neall
@@ -40,6 +42,11 @@ public class RequestJson {
 	private boolean namePermission;
 	private boolean emailPermission;
 	private boolean create;
+	private String language;
+	private Survey survey;
+	private String tag;
+	private String commit;
+	private String locale;
 	
 	/**
 	 * @return the create
@@ -217,4 +224,67 @@ public class RequestJson {
 	public void setEmailPermission(boolean emailPermission) {
 		this.emailPermission = emailPermission;
 	}
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	/**
+	 * @return the survey
+	 */
+	public Survey getSurvey() {
+		return survey;
+	}
+	/**
+	 * @param survey the survey to set
+	 */
+	public void setSurvey(Survey survey) {
+		this.survey = survey;
+	}
+	/**
+	 * @return the tag
+	 */
+	public String getTag() {
+		return tag;
+	}
+	/**
+	 * @param tag the tag to set
+	 */
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+	/**
+	 * @return the commit
+	 */
+	public String getCommit() {
+		return commit;
+	}
+	/**
+	 * @param commit the commit to set
+	 */
+	public void setCommit(String commit) {
+		this.commit = commit;
+	}
+	/**
+	 * @return the locale
+	 */
+	public String getLocale() {
+		return locale;
+	}
+	/**
+	 * @param locale the locale to set
+	 */
+	public void setLocale(String locale) {
+		this.locale = locale;
+	}
+	
+	
+	
 }

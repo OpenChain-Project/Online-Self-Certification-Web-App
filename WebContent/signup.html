@@ -1,0 +1,131 @@
+<!-- 
+Author(s): ViSolve 03/01/2019
+Description: A new Responsive Template to receive the user inputs during Signup. 
+001: Responsive Navigation bar.
+002: New Form for SignUp.
+ -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OpenChain Self Certification</title>
+    <link rel="stylesheet" href="styles/openchain.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="resources/jquery-ui/jquery-ui.min.css">
+    <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="resources/jquery.jui_dropdown.css">
+    <link rel="stylesheet" href="styles/bootstrap.min.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="styles/font-awesome-master/css/font-awesome.min.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="styles/newstyle.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" type="image/png"  href="images/favicon_openchain.png" />
+	<link rel="shortcut icon" href="images/favicon_openchain.png" type="image/png"/>
+    <script src="resources/jquery-ui/external/jquery/jquery.js"></script>
+    <script src="resources/jquery-ui/jquery-ui.min.js"></script>
+    <script src="resources/jquery.jui_dropdown.min.js"></script>
+    <script src="resources/bootstrap.min.js"></script>
+    <script src="resources/lib/url/url.min.js"></script>  
+    <script src="resources/i18next.min.js" ></script>
+    <script src="resources/jquery-i18next.min.js" ></script>
+    <script src="resources/i18nextXHRBackend.js"></script>
+    <script src="resources/global.js"></script>   
+    <script src="resources/navbar.js"></script>
+    <script>
+    // Simple script to setup the languages dropdown list
+    $(document).ready( function() {
+    	$("#signup-language").html(getLanguageSelectionHtml());
+    } );
+    </script>
+  </head>
+  <body>
+     <!-- 001 Starts here -->
+	    <div id="topnav"></div>
+	  <!-- 001 ends here -->
+	  
+    <div class="container">
+	    <div id="TitleArea">
+	        <h1 class="translate" data-i18n="title">OpenChain Self Certification</h1>
+	    </div>
+	    <h3 class="text-center sub-heading translate" data-i18n="Sign up">Sign Up</h3>		
+	    <!-- 002 Starts here -->
+		<div class="form-group">
+			<div class="wrap">
+			    <form onsubmit="return false">
+			  		<p class="validateTips"></p>
+				    <div class="row custom-row">
+					    <div class="col-md-6 col-sm-12 custom-col">
+					    	<input type="text" name="signup-name" id="signup-name" class="form-control custom-input"  >
+				      		<label class= "custom-label translate" data-i18n="Name" for="signup-name">Name</label>
+					    </div>
+					    <div class="col-md-6 col-sm-12 custom-col">
+					    	<input type="text" name="signup-email" id="signup-email" class="form-control custom-input"  >
+				      		<label class= "custom-label translate" data-i18n="Email" for="signup-email">Email</label>
+					    </div>
+				    </div>
+				    <div class="row custom-row">
+					    <div class="col-md-6 col-sm-12 custom-col">
+					    	<input type="text" name="signup-organization" id="signup-organization" class="form-control custom-input" >
+				      		<label class= "custom-label translate" data-i18n="Organization" for="signup-organization">Organization</label>
+					    </div>
+					    <div class="col-md-6 col-sm-12 custom-col">
+					    	<input type="text" name="signup-username" id="signup-username" class="form-control custom-input"  >
+				      		<label class= "custom-label translate" data-i18n="Username" for="signup-username">Username</label>
+					    </div>
+				    </div>
+				    <div class="row custom-row">
+					    <div class="col-md-6 col-sm-12 custom-col">
+					    	<input type="password" name="signup-password" id="signup-password" class="form-control custom-input"   >
+				      		<label class= "custom-label translate" data-i18n="Password" for="signup-password">Password</label>
+					    </div>
+					    <div class="col-md-6 col-sm-12 custom-col">
+					    	<input type="password" name="signup-passwordverify" id="signup-passwordverify" class="form-control custom-input"   >
+				      		<label class= "custom-label translate" data-i18n="Re-enter Password" for="signup-passwordverify">Re-enter Password</label>
+					    </div>
+				    </div>			
+				    <div class="row custom-row">
+					    <div class="col-md-12 col-sm-12 custom-col">
+	                        <label class= "custom-label translate select-label" data-i18n="Language" for="signup-language">Language</label>
+	                        <select class="form-control custom-input" id="signup-language">
+						      <option selected class="translate" data-i18n="English" value="en">English (en)</option>
+						    </select>
+	                    </div>
+                    </div>
+				    <div class="row custom-row">
+				    	<div class="col-md-12 col-sm-12 custom-col">
+					      <textarea rows="3" name="signup-address" id="signup-address" class="form-control custom-input" form="signup-form" ></textarea>
+					      <label class= "custom-label translate" data-i18n="Organization Postal Address" for="signup-address">Organization Postal Address</label>
+					     </div>
+				    </div>
+				    <div class="row">
+					    <div class="form-check">
+						    <input type="checkbox" name="approval-use-name-email" id="approval-use-name-email" class="form-check-input update-check-box" >
+						    <label class="form-check-label update-label checkbox-label translate" data-i18n="Sign Up_content_1"  for="approval-use-name-email">My name and email may be shared on conformance page of the OpenChain website</label>
+						</div>
+				    </div>
+				    <div class="row mr-top-20">
+				    
+					    <div class="form-check">
+						    <input type="checkbox" name="read-terms" id="read-terms" class="form-check-input update-check-box" >
+						    <label class="form-check-label update-label checkbox-label"  for="read-terms"><span class="translate" data-i18n="[html]Sign Up_content_2"> </span></label>
+						</div>
+				    </div>
+				     <div class="row ">
+					     <div class="ui-dialog-buttonset mr-100">
+					     	<button type="submit" class="btn btn-login btn-md translate" data-i18n="Sign Up" id="signup-button">Sign Up</button>
+					     	<button type="button" class="btn btn-cancel btn-md translate" data-i18n="Cancel" id="index-home">Cancel</button>
+					     </div>
+				     </div>
+			   </form>
+		   	</div>
+		 </div>
+		 <!-- 002 ends here -->
+  
+	    <div id="errors"></div>
+	    <div id="status"></div>
+	    <div id="resendveify"></div>
+    </div>
+        
+       
+    <div id="footer-outer"></div> 
+  </body>
+</html>

@@ -17,6 +17,7 @@
 package org.openchain.certification.model;
 
 import java.util.List;
+import java.util.ArrayList;;
 
 /**
  * Section of the OpenChain specification  A section groups questions for the 
@@ -29,6 +30,41 @@ public class Section implements Comparable<Section> {
 	private String name;
 	private String title;
 	private List<Question> questions;
+	private String language;
+
+	public Section(String language) {
+		this.language = language;
+	}
+	
+	/**
+	 * @param name
+	 * @param title
+	 * @param language tag in IETF RFC 5646 format
+	 */
+	public Section(String name, String title, String language) {
+		this(language);
+		this.name = name;
+		this.title = title;
+		questions = new ArrayList<Question>();
+	}
+	
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
+
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(String language) {
+		this.language = language;
+		for (Question question:questions) {
+			question.setLanguage(language);
+		}
+	}
+
 	/**
 	 * @return the name
 	 */
@@ -78,5 +114,17 @@ public class Section implements Comparable<Section> {
 			return 1;
 		}
 		return this.getName().compareToIgnoreCase(o.getName());
+	}
+	
+	public Section clone() {
+		Section retval = new Section(name, title, language);
+		if (questions != null) {
+			List<Question> clonedQuestions = new ArrayList<Question>();
+			for (Question question:questions) {
+				clonedQuestions.add(question.clone());
+			}
+			retval.setQuestions(clonedQuestions);
+		}
+		return retval;
 	}
 }

@@ -25,6 +25,7 @@ import java.util.Date;
  */
 public class User {
 
+	public static final String DEFAULT_LANGUAGE = "en"; //$NON-NLS-1$
 	private String username;
 	private String passwordToken;
 	private String name;
@@ -35,6 +36,8 @@ public class User {
 	private boolean admin;	// admin privileges
 	private Date verificationExpirationDate;
 	private String organization;
+	private String languagePreference;
+	
 	/**
 	 * This is a hashed version of the uuid used for the email verification
 	 */
@@ -58,9 +61,26 @@ public class User {
 		retval.setOrganization(user.getOrganization());
 		retval.setNamePermission(user.hasNamePermission());
 		retval.setEmailPermission(user.hasEmailPermission());
+		retval.setLanguagePreference(user.getLanguagePreference());
 		return retval;
 	}
 	
+	/**
+	 * @return the preferred language
+	 */
+	public String getLanguagePreference() {
+		return languagePreference;
+	}
+
+
+
+	/**
+	 * @param language the preferred language to set
+	 */
+	public void setLanguagePreference(String language) {
+		this.languagePreference = language;
+	}
+
 	/**
 	 * @return the verificationDate
 	 */

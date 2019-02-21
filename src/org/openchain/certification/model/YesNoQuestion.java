@@ -15,6 +15,8 @@
  *
 */
 package org.openchain.certification.model;
+
+
 /**
  * @author Gary O'Neall
  *
@@ -26,12 +28,21 @@ public class YesNoQuestion extends Question {
 	 * NotApplicable means that answer does not apply and NotAnswered indicates no response was given
 	 */
 	public enum YesNo {Yes, No, Any, NotApplicable, NotAnswered, YesNotApplicable, NoNotApplicable};
-	public static final String TYPE_NAME = "YES_NO";
+	public static final String TYPE_NAME = "YES_NO"; //$NON-NLS-1$
 	protected YesNo correctAnswer;
 	
+	/**
+	 * @param question Text for the question
+	 * @param sectionName Name of the section containing the question
+	 * @param number Number of the question
+	 * @param specVersion Version of the specification
+	 * @param language tag in IETF RFC 5646 format
+	 * @param correctAnswer Correct answer
+	 * @throws QuestionException
+	 */
 	public YesNoQuestion(String question, String sectionName, String number, 
-			String specVersion, YesNo correctAnswer) throws QuestionException {
-		super(question, sectionName, number, specVersion);
+			String specVersion, String language, YesNo correctAnswer) throws QuestionException {
+		super(question, sectionName, number, specVersion, language);
 		this.correctAnswer = correctAnswer;
 		this.type = TYPE_NAME;
 	}
@@ -70,4 +81,12 @@ public class YesNoQuestion extends Question {
 		return this.correctAnswer.equals(ynAnswer);
 	}
 	
+	public YesNoQuestion clone() {
+		try {
+			return new YesNoQuestion(this.getQuestion(), this.getSectionName(), this.getNumber(), 
+					this.getSpecVersion(), this.getLanguage(), this.getCorrectAnswer());
+		} catch (QuestionException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

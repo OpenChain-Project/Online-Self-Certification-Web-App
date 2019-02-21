@@ -24,13 +24,24 @@ package org.openchain.certification.model;
  */
 public class YesNoNotApplicableQuestion extends YesNoQuestion {
 	
-	public static final String TYPE_NAME = "YES_NO_NA";
+	public static final String TYPE_NAME = "YES_NO_NA"; //$NON-NLS-1$
 	
 	String notApplicablePrompt;
 
+	/**
+	 * @param question Text for the question
+	 * @param sectionName Name of the section containing the question
+	 * @param number Number for the question
+	 * @param specVersion Version of the specification
+	 * @param language tag in IETF RFC 5646 format
+	 * @param correctAnswer Correct answer
+	 * @param notApplicablePrompt Prompt to display for not applicable
+	 * @throws QuestionException
+	 */
 	public YesNoNotApplicableQuestion(String question, String sectionName,
-			String number, String specVersion, YesNo correctAnswer, String notApplicablePrompt) throws QuestionException {
-		super(question, sectionName, number, specVersion, correctAnswer);
+			String number, String specVersion, String language, 
+			YesNo correctAnswer, String notApplicablePrompt) throws QuestionException {
+		super(question, sectionName, number, specVersion, language, correctAnswer);
 		this.notApplicablePrompt = notApplicablePrompt;
 		this.type = TYPE_NAME;
 	}
@@ -47,6 +58,16 @@ public class YesNoNotApplicableQuestion extends YesNoQuestion {
 	 */
 	public void setNotApplicablePrompt(String notApplicablePrompt) {
 		this.notApplicablePrompt = notApplicablePrompt;
+	}
+	
+	@Override
+	public YesNoNotApplicableQuestion clone() {
+		try {
+			return new YesNoNotApplicableQuestion(getQuestion(), getSectionName(), getNumber(), 
+						getSpecVersion(), getLanguage(), getCorrectAnswer(), getNotApplicablePrompt());
+		} catch (QuestionException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

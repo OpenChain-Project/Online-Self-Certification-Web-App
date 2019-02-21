@@ -75,7 +75,7 @@ public class Submission {
 		int numNotAnswered = 0;
 		for (Section section:survey.getSections()) {
 			for (Question question:section.getQuestions()) {
-				if (question.getSubQuestionNumber() == null) {
+				if (question.getSubQuestionOfNumber() == null) {
 					numQuestions++ ;	// we don't want to count subquestions
 					Answer answer = answers.get(question.getNumber());
 					if (answer != null) {
@@ -90,7 +90,11 @@ public class Submission {
 				}
 			}
 		}
-		return (numCorrectAnswers * 100) / numQuestions;
+		if (numQuestions == 0) {
+			return 100;
+		} else {
+			return (numCorrectAnswers * 100) / numQuestions;
+		}
 	}
 
 	private int calcPercentComplete(Survey survey, Map<String, Answer> answers) {
@@ -98,7 +102,7 @@ public class Submission {
 		int numAnswers = 0;
 		for (Section section:survey.getSections()) {
 			for (Question question:section.getQuestions()) {
-				if (question.getSubQuestionNumber() == null) {
+				if (question.getSubQuestionOfNumber() == null) {
 					numQuestions++ ;	// we don't want to count subquestions
 					Answer answer = answers.get(question.getNumber());
 					if (answer != null) {
@@ -107,7 +111,11 @@ public class Submission {
 				}
 			}
 		}
-		return (numAnswers * 100) / numQuestions;
+		if (numQuestions == 0) {
+			return 100;
+		} else {
+			return (numAnswers * 100) / numQuestions;
+		}
 	}
 
 	/**

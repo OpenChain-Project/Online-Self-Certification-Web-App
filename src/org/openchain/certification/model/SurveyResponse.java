@@ -37,7 +37,7 @@ import com.opencsv.CSVWriter;
 public class SurveyResponse {
 	
 	transient static final String[] CSV_COLUMNS = new String[] {
-		"Number", "Question", "Answer", "Additional Information"
+		"Number", "Question", "Answer", "Additional Information" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	};
 
 	User responder;
@@ -46,6 +46,7 @@ public class SurveyResponse {
 	 */
 	Map<String, Answer> responses;
 	String specVersion;
+	String language;
 	Survey survey;
 	boolean submitted;
 
@@ -55,6 +56,14 @@ public class SurveyResponse {
 
 	private String id;
 	
+	/**
+	 * @param specVersion Version for the spec
+	 * @param language tag in IETF RFC 5646 format
+	 */
+	public SurveyResponse(String specVersion, String language) {
+		this.specVersion = specVersion;
+		this.language = language;
+	}
 	/**
 	 * @return the responder
 	 */
@@ -124,7 +133,7 @@ public class SurveyResponse {
 		Set<String> allQuestionNumbers = this.survey.getQuestionNumbers();
 		for (String questionNumber:allQuestionNumbers) {
 			Question question = this.survey.getQuestion(questionNumber);
-			if (question.getSubQuestionNumber() == null) {
+			if (question.getSubQuestionOfNumber() == null) {
 				// we ignore any subquestions since they will be covered by the parent
 				Answer answer = this.responses.get(questionNumber);
 				if (answer == null || !question.validate(answer)) {
@@ -143,7 +152,7 @@ public class SurveyResponse {
 	public void printCsv(PrintWriter out) throws IOException {
 		CSVWriter csv = new CSVWriter(out);
 		try {
-			csv.writeNext(new String[] {"Questionnaire Version=",this.getSpecVersion()});
+			csv.writeNext(new String[] {"Questionnaire Version=",this.getSpecVersion()}); //$NON-NLS-1$
 			csv.writeNext(CSV_COLUMNS);
 			
 			// sort the responses by question number
@@ -165,7 +174,7 @@ public class SurveyResponse {
 					if (entry.getValue() instanceof YesNoAnswerWithEvidence) {
 						nextLine[3] = ((YesNoAnswerWithEvidence)entry.getValue()).getEvidence();
 					} else {
-						nextLine[3] = "";
+						nextLine[3] = ""; //$NON-NLS-1$
 					}
 					csv.writeNext(nextLine);
 				}
@@ -201,4 +210,22 @@ public class SurveyResponse {
 	public String getId() {
 		return this.id;
 	}
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(String language) {
+		this.language = language;
+		// set the language for any responses
+		for (Answer answer:this.responses.values()) {
+			answer.setLanguage(language);
+		}
+	}
+	
+	
 }

@@ -24,15 +24,26 @@ import java.util.regex.Pattern;
  */
 public class YesNoQuestionWithEvidence extends YesNoQuestion {
 	
-	public static String TYPE_NAME = "YES_NO_EVIDENCE";
+	public static String TYPE_NAME = "YES_NO_EVIDENCE"; //$NON-NLS-1$
 
 	private String evidencePrompt;
 	private Pattern evidenceValidation;
 	
+	/**
+	 * @param question Text for the question
+	 * @param sectionName Name of the section containing the question
+	 * @param number Number for the question
+	 * @param specVersion Specification version
+	 * @param language tag in IETF RFC 5646 format
+	 * @param correctAnswer Correct answer
+	 * @param evidencePrompt Prompt to display when asking for the evidence
+	 * @param evidenceValidation
+	 * @throws QuestionException
+	 */
 	public YesNoQuestionWithEvidence(String question, String sectionName, 
-			String number, String specVersion, YesNo correctAnswer,
+			String number, String specVersion, String language, YesNo correctAnswer,
 			String evidencePrompt, Pattern evidenceValidation) throws QuestionException {
-		super(question, sectionName, number, specVersion, correctAnswer);
+		super(question, sectionName, number, specVersion, language, correctAnswer);
 		this.evidencePrompt = evidencePrompt;
 		this.evidenceValidation = evidenceValidation;
 		this.type = TYPE_NAME;
@@ -76,6 +87,17 @@ public class YesNoQuestionWithEvidence extends YesNoQuestion {
 			return true;
 		} else {
 			return this.evidenceValidation.matcher(evidence).matches();
+		}
+	}
+	
+	@Override
+	public YesNoQuestionWithEvidence clone() {
+		try {
+			return new YesNoQuestionWithEvidence(getQuestion(), getSectionName(), getNumber(), 
+					getSpecVersion(), getLanguage(), getCorrectAnswer(), getEvidencePrompt(),
+					getEvidenceValidation());
+		} catch (QuestionException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

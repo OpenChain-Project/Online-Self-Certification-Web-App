@@ -36,21 +36,21 @@ public class PasswordUtil {
 	 
 	 public static String getToken(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		byte[] salt;
-		salt = SecureRandom.getInstance("SHA1PRNG").generateSeed(saltLenght);
-		return Base64.encodeBase64String(salt) + "$" + hash(password, salt);
+		salt = SecureRandom.getInstance("SHA1PRNG").generateSeed(saltLenght); //$NON-NLS-1$
+		return Base64.encodeBase64String(salt) + "$" + hash(password, salt); //$NON-NLS-1$
 	 }
 	 
 	 public static boolean validate(String password, String token) throws NoSuchAlgorithmException, InvalidKeySpecException {
-		String[] saltPassword = token.split("\\$");
+		String[] saltPassword = token.split("\\$"); //$NON-NLS-1$
        if (saltPassword.length != 2) {
-           throw new IllegalStateException("Invalid format for the stored password");
+           throw new IllegalStateException("Invalid format for the stored password"); //$NON-NLS-1$
        }
        String hashOfToken = hash(password, Base64.decodeBase64(saltPassword[0]));
        return hashOfToken.equals(saltPassword[1]);
 	 }
 	 
 	 private static String hash(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
-		 SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+		 SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1"); //$NON-NLS-1$
 		 SecretKey key = factory.generateSecret(new PBEKeySpec(password.toCharArray(), 
 				 salt, iterations, desiredKeyLength));
 		 return Base64.encodeBase64String(key.getEncoded());

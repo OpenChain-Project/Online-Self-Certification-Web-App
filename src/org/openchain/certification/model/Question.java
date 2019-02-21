@@ -19,6 +19,7 @@ package org.openchain.certification.model;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.openchain.certification.I18N;
 import org.openchain.certification.model.YesNoQuestion.YesNo;
 
 /**
@@ -30,34 +31,62 @@ public abstract class Question implements Comparable<Question> {
 	protected String question;
 	protected String sectionName;
 	private String number;
-	private String subQuestionNumber = null;
+	private String subQuestionOfNumber = null;
 	protected String type;
-	protected String specVersion;
-	transient static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)(\\.\\d+)?(\\.\\d+)?");
-	transient static final Pattern NUM_ALPH_AROMAN_PATTERN = Pattern.compile("(\\d+)(\\.[a-z]+)?(\\.[ivxlmcd]+)?");
+	protected String specVersion; 
+	transient static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)(\\.\\d+)?(\\.\\d+)?"); //$NON-NLS-1$
+	transient static final Pattern NUM_ALPH_AROMAN_PATTERN = Pattern.compile("(\\d+)(\\.[a-z]+)?(\\.[ivxlmcd]+)?"); //$NON-NLS-1$
 	transient private Matcher numberMatch;
-	private String specReference = "";
-
-	public Question(String question, String sectionName, String number, String specVersion) throws QuestionException {
+	private String[] specReference = new String[0];
+	private String language;
+	
+	/**
+	 * @param question Text for the question
+	 * @param sectionName Name of the section
+	 * @param number Number of the question
+	 * @param specVersion Version for the spec
+	 * @param language tag in IETF RFC 5646 format
+	 * @throws QuestionException
+	 */
+	public Question(String question, String sectionName, String number, String specVersion, String language) throws QuestionException {
 		if (specVersion == null) {
-			throw(new QuestionException("Spec version for question was not specified"));
+			throw(new QuestionException(I18N.getMessage("Question.2",language))); //$NON-NLS-1$
 		}
 		if (number == null) {
-			throw(new QuestionException("Question number for question was not specified"));
+			throw(new QuestionException(I18N.getMessage("Question.3",language))); //$NON-NLS-1$
 		}
 		this.setNumberMatcher(number, specVersion);
 		if (!this.numberMatch.matches()) {
-			if (specVersion.compareTo("1.0.2") < 0) {
-				throw(new QuestionException("Invalid format for question number "+number+".  Must be of the format N or N.N or N.N.N"));
+			if (specVersion.compareTo("1.0.2") < 0) { //$NON-NLS-1$
+				throw(new QuestionException(I18N.getMessage("Question.6", language, number))); //$NON-NLS-1$
 			} else {
-				throw(new QuestionException("Invalid format for question number "+number+".  Must be of the format N or N.a or N.a.i"));
+				throw(new QuestionException(I18N.getMessage("Question.8", language, number))); //$NON-NLS-1$
 			}
 		}
 		this.question = question;
 		this.sectionName = sectionName;
 		this.number = number;
 		this.specVersion = specVersion;
+		this.language = language;
 	}
+
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
+
+
+
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+
 
 	/**
 	 * @return the question
@@ -86,13 +115,6 @@ public abstract class Question implements Comparable<Question> {
 	}
 
 	/**
-	 * @param section the section to set
-	 */
-	public void setSection(String sectionName) {
-		this.sectionName = sectionName;
-	}
-
-	/**
 	 * @return the number
 	 */
 	public String getNumber() {
@@ -105,22 +127,18 @@ public abstract class Question implements Comparable<Question> {
 	 */
 	public void setNumber(String number) throws QuestionException {
 		if (number == null) {
-			throw(new QuestionException("Question number for question was not specified"));
+			throw(new QuestionException(I18N.getMessage("Question.3",language))); //$NON-NLS-1$
 		}
 		setNumberMatcher(number, this.specVersion);
 		if (!this.numberMatch.matches()) {
 			setNumberMatcher(this.number, this.specVersion);
-			throw(new QuestionException("Invalid format for question number "+number+".  Must be of the format N or N.N or N.N.N"));
+			throw(new QuestionException(I18N.getMessage("Question.7",language)+number+I18N.getMessage("Question.6",language))); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		this.number = number;
 	}
-
-	public void addSubQuestionOf(String subQuestionNumber) {
-		this.subQuestionNumber = subQuestionNumber;
-	}
 	
-	public String getSubQuestionNumber() {
-		return this.subQuestionNumber;
+	public String getSubQuestionOfNumber() {
+		return this.subQuestionOfNumber;
 	}
 	
 	
@@ -150,7 +168,7 @@ public abstract class Question implements Comparable<Question> {
 	private void setNumberMatcher(String number, String specVersion) {
 		// Since we changed numbering systems after spec version 1.0.2, we need
 		// to set the appropriate pattern matches
-		if (specVersion.compareTo("1.0.2") < 0) {
+		if (specVersion.compareTo("1.0.2") < 0) { //$NON-NLS-1$
 			this.numberMatch = NUMBER_PATTERN.matcher(number);
 		} else {
 			this.numberMatch = NUM_ALPH_AROMAN_PATTERN.matcher(number);
@@ -162,7 +180,7 @@ public abstract class Question implements Comparable<Question> {
 		int retval = this.specVersion.compareToIgnoreCase(compare.getSpecVersion());
 		if (retval != 0) {
 			return retval;
-		} else if (this.specVersion.compareTo("1.0.2") < 0) {
+		} else if (this.specVersion.compareTo("1.0.2") < 0) { //$NON-NLS-1$
 				return compareNumeric(compare);
 		} else {
 			return compareNumAlphaRoman(compare);
@@ -288,14 +306,14 @@ public abstract class Question implements Comparable<Question> {
 	/**
 	 * @return the specReference
 	 */
-	public String getSpecReference() {
+	public String[] getSpecReference() {
 		return specReference;
 	}
 
 	/**
 	 * @param specReference the specReference to set
 	 */
-	public void setSpecReference(String specReference) {
+	public void setSpecReference(String[] specReference) {
 		this.specReference = specReference;
 	}
 
@@ -314,10 +332,10 @@ public abstract class Question implements Comparable<Question> {
 	}
 
 	/**
-	 * @param subQuestionNumber the subQuestionNumber to set
+	 * @param subQuestionOfNumber the subQuestionOfNumber to set
 	 */
-	public void setSubQuestionNumber(String subQuestionNumber) {
-		this.subQuestionNumber = subQuestionNumber;
+	public void setSubQuestionOfNumber(String subQuestionOfNumber) {
+		this.subQuestionOfNumber = subQuestionOfNumber;
 	}
 
 	/**
@@ -327,7 +345,7 @@ public abstract class Question implements Comparable<Question> {
 		String[] retval = new String[Survey.CSV_COLUMNS.length];
 		retval[0] = this.sectionName;
 		retval[1] = this.number;
-		retval[2] = this.specReference ;
+		retval[2] = specReferenceArrayToStr(this.specReference);
 		retval[3] = this.question;
 		retval[4] = this.type;
 		retval[5] = this.getCorrectAnswer().toString();
@@ -335,23 +353,30 @@ public abstract class Question implements Comparable<Question> {
 			YesNoQuestionWithEvidence me = (YesNoQuestionWithEvidence)this;
 			retval[6] = me.getEvidencePrompt();
 			if (me.getEvidenceValidation() == null) {
-				retval[7] = "";
+				retval[7] = ""; //$NON-NLS-1$
 			} else {
 				retval[7] = me.getEvidenceValidation().toString();
 			}		
 		} else if (this instanceof YesNoNotApplicableQuestion) {
 			retval[6] = ((YesNoNotApplicableQuestion)this).getNotApplicablePrompt();
 		} else {
-			retval[6] = "";
-			retval[7] = "";
+			retval[6] = ""; //$NON-NLS-1$
+			retval[7] = ""; //$NON-NLS-1$
 		}
-		retval[8] = this.subQuestionNumber;
+		retval[8] = this.subQuestionOfNumber;
 		return retval;
 	}
 
-	public static Question fromCsv(String[] row, String specVersion) throws QuestionException {
+	/**
+	 * @param row CSV row of columns containing the question
+	 * @param specVersion Version of the specification
+	 * @param language tag in IETF RFC 5646 format
+	 * @return
+	 * @throws QuestionException
+	 */
+	public static Question fromCsv(String[] row, String specVersion, String language) throws QuestionException {
 		if (row.length < 8) {
-			throw(new QuestionTypeException("Not enough columns.  Expected 8, found "+String.valueOf(row.length)));
+			throw(new QuestionTypeException("Not enough columns.  Expected 8, found "+String.valueOf(row.length))); //$NON-NLS-1$
 		}
 		String sectionName = row[0];
 		String number = row[1];
@@ -361,15 +386,15 @@ public abstract class Question implements Comparable<Question> {
 		String correctAnswer = row[5];
 		String evidencePrompt = row[6];
 		String evidenceValidation = row[7];
-		String subQuestionNumber = row[8];
+		String subQuestionOfNumber = row[8];
 		if (sectionName == null || sectionName.isEmpty()) {
-			throw(new QuestionTypeException("No section name specified in CSV row"));
+			throw(new QuestionTypeException("No section name specified in CSV row")); //$NON-NLS-1$
 		}
 		if (number == null || number.isEmpty()) {
-			throw(new QuestionTypeException("No number specified in CSV row"));
+			throw(new QuestionTypeException("No number specified in CSV row")); //$NON-NLS-1$
 		}
 		if (type == null) {
-			throw(new QuestionTypeException("No type specified in CSV row"));
+			throw(new QuestionTypeException("No type specified in CSV row")); //$NON-NLS-1$
 		}
 		Question retval = null;
 		if (type.equals(SubQuestion.TYPE_NAME)) {
@@ -377,32 +402,66 @@ public abstract class Question implements Comparable<Question> {
 			try {
 				minAnswers = Integer.parseInt(correctAnswer);
 			} catch(Exception ex) {
-				throw(new QuestionException("Invalid minimum number of answers for subquestion number "+
-							number+":"+correctAnswer+".  Must be a number."));
+				throw(new QuestionException("Invalid minimum number of answers for subquestion number "+ //$NON-NLS-1$
+							number+":"+correctAnswer+".  Must be a number.")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			retval = new SubQuestion(question, sectionName, number, specVersion, minAnswers);
+			retval = new SubQuestion(question, sectionName, number, specVersion, language, minAnswers);
 		} else if (type.equals(YesNoQuestion.TYPE_NAME)) {
-			retval = new YesNoQuestion(question, sectionName, number, specVersion, 
+			retval = new YesNoQuestion(question, sectionName, number, specVersion, language,
 					YesNo.valueOf(correctAnswer));
 		} else if (type.equals(YesNoQuestionWithEvidence.TYPE_NAME)) {
 			Pattern valPattern = null;
 			if (evidenceValidation != null && !evidenceValidation.isEmpty()) {
 				valPattern = Pattern.compile(evidenceValidation);
 			}
-			retval = new YesNoQuestionWithEvidence(question, sectionName, number, specVersion, 
+			retval = new YesNoQuestionWithEvidence(question, sectionName, number, specVersion, language, 
 					YesNo.valueOf(correctAnswer), evidencePrompt, valPattern);
 		} else if (type.equals(YesNoNotApplicableQuestion.TYPE_NAME)) {
-			retval = new YesNoNotApplicableQuestion(question, sectionName, number, specVersion, 
+			retval = new YesNoNotApplicableQuestion(question, sectionName, number, specVersion, language,
 					YesNo.valueOf(correctAnswer), evidencePrompt);
 		} else {
-			throw(new QuestionTypeException("Unknown question type: "+type));
+			throw(new QuestionTypeException("Unknown question type: "+type)); //$NON-NLS-1$
 		}
-		if (specReference != null) {
-			retval.setSpecReference(specReference);
-		}
-		if (subQuestionNumber != null && !subQuestionNumber.isEmpty()) {
-			retval.addSubQuestionOf(subQuestionNumber);
+		retval.setSpecReference(specReferenceStrToArray(specReference));
+		if (subQuestionOfNumber != null && !subQuestionOfNumber.isEmpty()) {
+			retval.setSubQuestionOfNumber(subQuestionOfNumber);
 		}
 		return retval;
+	}
+	
+	public abstract Question clone();
+	
+	/**
+	 * Convert a specification reference to a string using comma's to separate the spec references
+	 * @param specReference
+	 * @return
+	 */
+	public static String specReferenceArrayToStr(String[] specReference) {
+		StringBuilder specRefStr = new StringBuilder();
+		if (specReference != null && specReference.length > 0) {
+			specRefStr.append(specReference[0]);
+			for (int i = 1; i < specReference.length; i++) {
+				specRefStr.append(","); //$NON-NLS-1$
+				specRefStr.append(specReference[i]);
+			}
+		}
+		return specRefStr.toString();
+	}
+
+	/**
+	 * Convert a string to a specification reference array
+	 * @param specReferenceStr
+	 * @return
+	 */
+	public static String[] specReferenceStrToArray(String specReferenceStr) {
+		if (specReferenceStr == null) {
+			return new String[0];
+		} else {
+			String[] specReferenceAr = specReferenceStr.split(","); //$NON-NLS-1$
+			for (int i = 0; i < specReferenceAr.length; i++) {
+				specReferenceAr[i] = specReferenceAr[i].trim();
+			}
+			return specReferenceAr;
+		}
 	}
 }

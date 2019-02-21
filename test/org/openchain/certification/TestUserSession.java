@@ -44,6 +44,7 @@ public class TestUserSession {
 	
 	Connection con;
 	
+	String language = "eng";
 	String primarySpecVersion = "1.0";
 	String specVersion = primarySpecVersion + ".2";
 	String section1Name = "section1Name";
@@ -51,7 +52,7 @@ public class TestUserSession {
 	String s1q1Question="s1q1question";
 	String s1q1Number = "1.a";
 	YesNo s1q1Answer = YesNo.Yes;
-	String s1q1SpecRef = "s1q1SpecRef";
+	String[] s1q1SpecRef = new String[] {"s1q1SpecRef"};
 	YesNoQuestion s1q1;
 	Section section1;
 	Survey survey;
@@ -67,19 +68,19 @@ public class TestUserSession {
 	String s2q1Number = "2.b";
 	int s2q1MinCorrect = 4;
 	SubQuestion s2q1;
-	String s2q1SpecRef = "s2q1SpecRef";
+	String[] s2q1SpecRef = new String[] {"s2q1SpecRef"};
 	String s2q2Question="s2q2question";
 	String s2q2Number = "2.b.ii";
 	YesNo s2q2Answer = YesNo.No;
 	String s2q2Prompt = "s2q2prompt";
 	String s2q2validate = "dd";
 	YesNoQuestionWithEvidence s2q2;
-	String s2q2SpecRef = "s2q2SpecRef";
+	String[] s2q2SpecRef = new String[] {"s2q2SpecRef"};
 	String s2q3Question="s2q3question";
 	String s2q3Number = "2.b.iii";
 	YesNo s2q3Answer = YesNo.NotAnswered;
 	YesNoQuestion s2q3;
-	String s2q3SpecRef = "s2q3SpecRef";
+	String[] s2q3SpecRef = new String[] {"s2q3SpecRef"};
 	
 	String primarySpecVersion2 = "2.2";
 	String specVersion2 = primarySpecVersion2+".2";
@@ -88,10 +89,14 @@ public class TestUserSession {
 	String s1q1Question2="s1q1question2";
 	String s1q1Number2 = "1.a";
 	YesNo s1q1Answer2 = YesNo.Yes;
-	String s1q1SpecRef2 = "s1q1SpecRef2";
+	String[] s1q1SpecRef2 = new String[] {"s1q1SpecRef2"};
 	YesNoQuestion s1q12;
 	Section section12;
 	Survey survey2;
+	
+	String language2 = "fra";
+	Survey survey1lang2;
+	Survey survey2lang2;
 	
 	SurveyDbDao surveyDao;
 	User user;
@@ -100,43 +105,43 @@ public class TestUserSession {
 	public void setUp() throws Exception {
 		con = TestHelper.getConnection();
 		TestHelper.truncateDatabase(con);
-		survey = new Survey(specVersion);
+		survey = new Survey(specVersion, language);
 		List<Section> sections = new ArrayList<Section>();
-		section1 = new Section();
+		section1 = new Section(language);
 		section1.setName(section1Name);
 		section1.setTitle(section1Title);
 		List<Question> section1Questions = new ArrayList<Question>();
 		s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, specVersion, s1q1Answer);
+				section1Name, s1q1Number, specVersion, language, s1q1Answer);
 		s1q1.setSpecReference(s1q1SpecRef);
 		section1Questions.add(s1q1);
 
 		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
-				section1Name, s1q2Number, specVersion, s1q2Answer, s1q2Prompt);
-		String s1q2SpecRef = "s1q2SpecRef";
+				section1Name, s1q2Number, specVersion, language, s1q2Answer, s1q2Prompt);
+		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
 		s1q2.setSpecReference(s1q2SpecRef);
 		section1Questions.add(s1q2);
 		section1.setQuestions(section1Questions);
 		sections.add(section1);
-		section2 = new Section();
+		section2 = new Section(language);
 		section2.setName(section2Name);
 		section2.setTitle(section2Title);
 		List<Question> section2Questions = new ArrayList<Question>();
 		s2q1 = new SubQuestion(s2q1Question, 
-				section2Name, s2q1Number, specVersion, s2q1MinCorrect);
+				section2Name, s2q1Number, specVersion, language, s2q1MinCorrect);
 		s2q1.setSpecReference(s2q1SpecRef);
 		section2Questions.add(s2q1);
 
 		s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
-				section2Name, s2q2Number, specVersion, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
+				section2Name, s2q2Number, specVersion, language, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSpecReference(s2q2SpecRef);
-		s2q2.addSubQuestionOf(s2q1Number);
+		s2q2.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q2);
 
 		s2q3 = new YesNoQuestion(s2q3Question, 
-				section2Name, s2q3Number, specVersion, s2q3Answer);
+				section2Name, s2q3Number, specVersion, language, s2q3Answer);
 		s2q3.setSpecReference(s2q3SpecRef);
-		s2q3.addSubQuestionOf(s2q1Number);
+		s2q3.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q3);
 		section2.setQuestions(section2Questions);
 		sections.add(section2);
@@ -144,19 +149,27 @@ public class TestUserSession {
 		surveyDao = new SurveyDbDao(con);
 		surveyDao.addSurvey(survey);
 		
-		survey2 = new Survey(specVersion2);
+		survey2 = new Survey(specVersion2, language);
 		List<Section> sections2 = new ArrayList<Section>();
-		section12 = new Section();
+		section12 = new Section(language);
 		section12.setName(section1Name2);
 		section12.setTitle(section1Title2);
 		List<Question> section1Questions2 = new ArrayList<Question>();
 		s1q12 = new YesNoQuestion(s1q1Question2, 
-				section1Name2, s1q1Number2, specVersion2, s1q1Answer2);
+				section1Name2, s1q1Number2, specVersion2, language, s1q1Answer2);
 		s1q12.setSpecReference(s1q1SpecRef2);
 		section1Questions2.add(s1q12);
 		section12.setQuestions(section1Questions2);
 		survey2.setSections(sections2);
 		surveyDao.addSurvey(survey2);
+		
+		survey1lang2 = survey.clone();
+		survey1lang2.setLanguage(language2);
+		surveyDao.addSurvey(survey1lang2);
+		
+		survey2lang2 = survey2.clone();
+		survey2lang2.setLanguage(language2);
+		surveyDao.addSurvey(survey2lang2);
 		
 		user = new User();
 		user.setAddress("Address");
@@ -172,6 +185,7 @@ public class TestUserSession {
 		user.setVerified(true);
 		user.setNamePermission(false);
 		user.setEmailPermission(true);
+		user.setLanguagePreference(language);
 		UserDb.getUserDb(TestHelper.getTestServletConfig()).addUser(user);	
 	}
 
@@ -185,7 +199,7 @@ public class TestUserSession {
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
 		assertFalse(userSession.isLoggedIn());
-		assertTrue(userSession.login());
+		assertTrue(userSession.login(language));
 		assertTrue(userSession.isLoggedIn());
 		assertEquals(user.hasEmailPermission(), userSession.hasEmailPermission());
 		assertEquals(user.hasNamePermission(), userSession.hasNamePermission());
@@ -194,32 +208,31 @@ public class TestUserSession {
 		UserSession badUserSession = new UserSession(
 				user.getUsername(), "wrongpass", TestHelper.getTestServletConfig());
 		assertFalse(badUserSession.isLoggedIn());
-		assertFalse(badUserSession.login());
+		assertFalse(badUserSession.login(language));
 		assertTrue(badUserSession.getLastError().contains("assword"));
 	}
 
 	@Test
 	public void testUpdateAnswers() throws SQLException, SurveyResponseException, QuestionException {
-		SurveyResponse response = new SurveyResponse();
+		SurveyResponse response = new SurveyResponse(specVersion, language);
 		response.setResponder(user);
 		Map<String, Answer> responses = new HashMap<String, Answer>();
-		YesNoAnswer s1q1answer = new YesNoAnswer(YesNo.No);
-		YesNoAnswer s1q2answer = new YesNoAnswer(YesNo.NotAnswered);
+		YesNoAnswer s1q1answer = new YesNoAnswer(language, YesNo.No);
+		YesNoAnswer s1q2answer = new YesNoAnswer(language, YesNo.NotAnswered);
 
 		responses.put(s1q1Number, s1q1answer);
 		responses.put(s1q2Number, s1q2answer);
 		response.setResponses(responses);
-		response.setSpecVersion(specVersion);
 		response.setSubmitted(false);
 		response.setSurvey(survey);
 		SurveyResponseDao dao = new SurveyResponseDao(con);
-		dao.addSurveyResponse(response);
+		dao.addSurveyResponse(response, language);
 		
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		assertTrue(userSession.login());
+		assertTrue(userSession.login(language));
 		
-		SurveyResponse result = userSession.getSurveyResponse();
+		SurveyResponse result = userSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion, result.getSurvey().getSpecVersion());
 		Map<String, Answer> resultResponses = result.getResponses();
@@ -236,9 +249,9 @@ public class TestUserSession {
 		answerUpdates.add(new ResponseAnswer(s2q2Number, "NO", true, "Evidence"));
 		// The following should not be added since it is not checkd
 		answerUpdates.add(new ResponseAnswer(s2q3Number, "NA", false, null));
-		userSession.updateAnswers(answerUpdates);
+		userSession.updateAnswers(answerUpdates, language);
 		
-		result = userSession.getSurveyResponse();
+		result = userSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion, result.getSurvey().getSpecVersion());
 		resultResponses = result.getResponses();
@@ -258,7 +271,7 @@ public class TestUserSession {
 		
 		userSession.logout();
 		try {
-			result = userSession.getSurveyResponse();
+			result = userSession.getSurveyResponse(language);
 			fail("This should have failed since the user is not logged in");
 		} catch(Exception ex) {
 			assertTrue(ex.getMessage().contains("ogged"));
@@ -267,8 +280,8 @@ public class TestUserSession {
 		// Check to make sure it persists
 		UserSession newUserSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		newUserSession.login();
-		result = newUserSession.getSurveyResponse();
+		newUserSession.login(language);
+		result = newUserSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion, result.getSurvey().getSpecVersion());
 		resultResponses = result.getResponses();
@@ -288,10 +301,10 @@ public class TestUserSession {
 	}
 	
 	@Test
-	public void testUpdateUser() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidUserException, SQLException, EmailUtilException {
+	public void testUpdateUser() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidUserException, QuestionException, SurveyResponseException, SQLException, EmailUtilException {
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		assertTrue(userSession.login());
+		assertTrue(userSession.login(language));
 		assertTrue(userSession.isLoggedIn());
 		assertEquals(user.getAddress(), userSession.getAddress());
 		assertEquals(user.getEmail(), userSession.getEmail());
@@ -300,16 +313,18 @@ public class TestUserSession {
 		assertEquals(user.isAdmin(), userSession.isAdmin());
 		assertEquals(user.hasEmailPermission(), userSession.hasEmailPermission());
 		assertEquals(user.hasNamePermission(), userSession.hasNamePermission());
+		assertEquals(user.getLanguagePreference(), userSession.getLanguagePreference());
 		
 		String newName = "new Name";
 		String newEmail = "newemail@email.com";
 		String newOrganization = "new Organization";
 		String newAddress = "new Address";
 		String newPassword = "newPassword!";
+		String newLanguage = "abc";
 		boolean newNamePermission = !user.hasNamePermission();
 		boolean newEmailPermission = !user.hasEmailPermission();
 		userSession.updateUser(newName, newEmail, newOrganization, newAddress, 
-				newPassword, newNamePermission, newEmailPermission);
+				newPassword, newNamePermission, newEmailPermission, newLanguage, language);
 		assertEquals(newAddress, userSession.getAddress());
 		assertEquals(newEmail, userSession.getEmail());
 		assertEquals(newName, userSession.getName());
@@ -317,10 +332,10 @@ public class TestUserSession {
 		assertEquals(user.isAdmin(), userSession.isAdmin());
 		assertEquals(newEmailPermission, userSession.hasEmailPermission());
 		assertEquals(newNamePermission, userSession.hasNamePermission());
-		
+		assertEquals(newLanguage, userSession.getLanguagePreference());
 		UserSession newUserSession = new UserSession(
 				user.getUsername(), newPassword, TestHelper.getTestServletConfig());
-		newUserSession.login();
+		newUserSession.login(language);
 		assertEquals(newAddress, newUserSession.getAddress());
 		assertEquals(newEmail, newUserSession.getEmail());
 		assertEquals(newName, newUserSession.getName());
@@ -328,30 +343,30 @@ public class TestUserSession {
 		assertEquals(user.isAdmin(), newUserSession.isAdmin());
 		assertEquals(newEmailPermission, newUserSession.hasEmailPermission());
 		assertEquals(newNamePermission, newUserSession.hasNamePermission());
+		assertEquals(newLanguage, newUserSession.getLanguagePreference());
 	}
 
 	@Test
 	public void testResetAnswer() throws SQLException, QuestionException, SurveyResponseException {
-		SurveyResponse response = new SurveyResponse();
+		SurveyResponse response = new SurveyResponse(specVersion, language);
 		response.setResponder(user);
 		Map<String, Answer> responses = new HashMap<String, Answer>();
-		YesNoAnswer s1q1answer = new YesNoAnswer(YesNo.No);
-		YesNoAnswer s1q2answer = new YesNoAnswer(YesNo.NotAnswered);
+		YesNoAnswer s1q1answer = new YesNoAnswer(language, YesNo.No);
+		YesNoAnswer s1q2answer = new YesNoAnswer(language, YesNo.NotAnswered);
 
 		responses.put(s1q1Number, s1q1answer);
 		responses.put(s1q2Number, s1q2answer);
 		response.setResponses(responses);
-		response.setSpecVersion(specVersion);
 		response.setSubmitted(false);
 		response.setSurvey(survey);
 		SurveyResponseDao dao = new SurveyResponseDao(con);
-		dao.addSurveyResponse(response);
+		dao.addSurveyResponse(response, language);
 		
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		assertTrue(userSession.login());
+		assertTrue(userSession.login(language));
 		
-		SurveyResponse result = userSession.getSurveyResponse();
+		SurveyResponse result = userSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion, result.getSurvey().getSpecVersion());
 		Map<String, Answer> resultResponses = result.getResponses();
@@ -363,15 +378,15 @@ public class TestUserSession {
 		assertTrue(resultAnswer2 instanceof YesNoAnswer);
 		assertEquals(s1q2answer.getAnswer(), ((YesNoAnswer)resultAnswer2).getAnswer());
 		
-		userSession.resetAnswers(primarySpecVersion);
-		result = userSession.getSurveyResponse();
+		userSession.resetAnswers(primarySpecVersion, language);
+		result = userSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion, result.getSurvey().getSpecVersion());
 		resultResponses = result.getResponses();
 		assertEquals(0, resultResponses.size());
 		
-		userSession.resetAnswers(primarySpecVersion2);
-		result = userSession.getSurveyResponse();
+		userSession.resetAnswers(primarySpecVersion2, language);
+		result = userSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion2, result.getSurvey().getSpecVersion());
 		resultResponses = result.getResponses();
@@ -382,12 +397,12 @@ public class TestUserSession {
 		// Check to make sure it persists
 		UserSession newUserSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		newUserSession.login();
+		newUserSession.login(language);
 		assertTrue(newUserSession.isLoggedIn());
-		result = newUserSession.getSurveyResponse();
+		result = newUserSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
-		newUserSession.resetAnswers(primarySpecVersion2);
-		result = newUserSession.getSurveyResponse();
+		newUserSession.resetAnswers(primarySpecVersion2, language);
+		result = newUserSession.getSurveyResponse(language);
 		assertEquals(user.getUsername(), result.getResponder().getUsername());
 		assertEquals(specVersion2, result.getSurvey().getSpecVersion());
 		resultResponses = result.getResponses();
@@ -405,69 +420,101 @@ public class TestUserSession {
 	
 	@Test
 	public void testGetSurveyResponseSpecVersions() throws SQLException, QuestionException, SurveyResponseException {
-		SurveyResponse response = new SurveyResponse();
+		SurveyResponse response = new SurveyResponse(specVersion, language);
 		response.setResponder(user);
 		Map<String, Answer> responses = new HashMap<String, Answer>();
 
 		response.setResponses(responses);
-		response.setSpecVersion(specVersion);
 		response.setSubmitted(false);
 		response.setSurvey(survey);
 		SurveyResponseDao dao = new SurveyResponseDao(con);
-		dao.addSurveyResponse(response);
+		dao.addSurveyResponse(response, language);
 
-		SurveyResponse response2 = new SurveyResponse();
+		SurveyResponse response2 = new SurveyResponse(specVersion2, language);
 		response2.setResponder(user);
 
 		response2.setResponses(responses);
-		response2.setSpecVersion(specVersion2);
 		response2.setSubmitted(false);
 		response2.setSurvey(survey2);
-		dao.addSurveyResponse(response2);
+		dao.addSurveyResponse(response2, language);
 		
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		assertTrue(userSession.login());
+		assertTrue(userSession.login(language));
 		assertTrue(userSession.isLoggedIn());
-		List<String> result = userSession.getSurveyResponseSpecVersions();
+		List<String> result = userSession.getSurveyResponseSpecVersions(language);
 		assertEquals(2, result.size());
 		assertEquals(primarySpecVersion, result.get(0));
 		assertEquals(primarySpecVersion2, result.get(1));
 		// the current spec version should default to the largest value
-		assertEquals(specVersion2, userSession.getSurveyResponse().getSpecVersion());
+		assertEquals(specVersion2, userSession.getSurveyResponse(language).getSpecVersion());
 		userSession.logout();
 	}
 	
 	@Test
 	public void testSetCurrentSurveyResponse() throws SQLException, SurveyResponseException, QuestionException {
-		SurveyResponse response = new SurveyResponse();
+		SurveyResponse response = new SurveyResponse(specVersion, language);
 		response.setResponder(user);
 		Map<String, Answer> responses = new HashMap<String, Answer>();
-		YesNoAnswer s1q1answer = new YesNoAnswer(YesNo.No);
+		YesNoAnswer s1q1answer = new YesNoAnswer(language, YesNo.No);
 		responses.put(s1q1Number, s1q1answer);
 		response.setResponses(responses);
-		response.setSpecVersion(specVersion);
 		response.setSubmitted(false);
 		response.setSurvey(survey);
 		SurveyResponseDao dao = new SurveyResponseDao(con);
-		dao.addSurveyResponse(response);
+		dao.addSurveyResponse(response, language);
 		
 		UserSession userSession = new UserSession(
 				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
-		assertTrue(userSession.login());
+		assertTrue(userSession.login(language));
 		assertTrue(userSession.isLoggedIn());
-		SurveyResponse result = userSession.getSurveyResponse();
+		SurveyResponse result = userSession.getSurveyResponse(language);
 		assertEquals(specVersion, result.getSpecVersion());
 		
-		userSession.setCurrentSurveyResponse(primarySpecVersion2, true);
-		result = userSession.getSurveyResponse();
+		userSession.setCurrentSurveyResponse(primarySpecVersion2, true, language);
+		result = userSession.getSurveyResponse(language);
 		assertEquals(specVersion2, result.getSpecVersion());
 		
-		userSession.setCurrentSurveyResponse(primarySpecVersion, false);
-		result = userSession.getSurveyResponse();
+		userSession.setCurrentSurveyResponse(primarySpecVersion, false, language);
+		result = userSession.getSurveyResponse(language);
 		assertEquals(specVersion, result.getSpecVersion());
 		assertEquals(1,result.getResponses().size());
 		assertEquals(s1q1answer, result.getResponses().get(s1q1Number));
+
+		userSession.logout();
+	}
+	
+	@Test
+	public void testSetLanguage() throws SQLException, SurveyResponseException, QuestionException {
+		SurveyResponse response = new SurveyResponse(specVersion, language);
+		response.setResponder(user);
+		Map<String, Answer> responses = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer = new YesNoAnswer(language, YesNo.No);
+		responses.put(s1q1Number, s1q1answer);
+		response.setResponses(responses);
+		response.setSubmitted(false);
+		response.setSurvey(survey);
+		SurveyResponseDao dao = new SurveyResponseDao(con);
+		dao.addSurveyResponse(response, language);
+		
+		UserSession userSession = new UserSession(
+				user.getUsername(), USER_PASSWORD, TestHelper.getTestServletConfig());
+		assertTrue(userSession.login(language));
+		assertTrue(userSession.isLoggedIn());
+		userSession.setCurrentSurveyResponse(primarySpecVersion2, true, language);
+		List<SurveyResponse> result = userSession.getAllResponses();
+		assertEquals(2, result.size());
+		for (SurveyResponse res:result) {
+			assertEquals(language, res.getLanguage());
+		}
+		assertEquals(language, userSession.getLanguagePreference());
+		
+		userSession.setLanguagePreference(language2);
+		result = userSession.getAllResponses();
+		assertEquals(2, result.size());
+		for (SurveyResponse res:result) {
+			assertEquals(language2, res.getLanguage());
+		}
 
 		userSession.logout();
 	}

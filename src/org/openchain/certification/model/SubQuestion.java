@@ -17,9 +17,9 @@
 package org.openchain.certification.model;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
 /**
@@ -30,15 +30,24 @@ import java.util.Map.Entry;
  */
 public class SubQuestion extends Question {
 	
-	public static final String TYPE_NAME = "SUBQUESTIONS";
+	public static final String TYPE_NAME = "SUBQUESTIONS"; //$NON-NLS-1$
 	private int minNumberValidatedAnswers;
 	private Map<String, Question> subQuestions;
 	
+	/**
+	 * @param question Text for the question
+	 * @param sectionName Name of the section
+	 * @param number Question number
+	 * @param specVersion Version for the spec
+	 * @param language tag in IETF RFC 5646 format
+	 * @param minNumberValidatedAnswers Minimum number of valid answers
+	 * @throws QuestionException
+	 */
 	public SubQuestion(String question, String sectionName, String number,
-			String specVersion, int minNumberValidatedAnswers) throws QuestionException {
-		super(question, sectionName, number, specVersion);
+			String specVersion, String language, int minNumberValidatedAnswers) throws QuestionException {
+		super(question, sectionName, number, specVersion, language);
 		this.minNumberValidatedAnswers = minNumberValidatedAnswers;
-		this.subQuestions = new HashMap<String,Question>();
+		this.subQuestions = new TreeMap<String,Question>();
 		this.type = TYPE_NAME;
 	}
 
@@ -93,5 +102,14 @@ public class SubQuestion extends Question {
 	
 	public Collection<Question> getAllSubquestions() {
 		return this.subQuestions.values();
+	}
+	
+	public SubQuestion clone() {
+		try {
+			return new SubQuestion(question, sectionName, getNumber(),
+					specVersion, getLanguage(), minNumberValidatedAnswers);
+		} catch (QuestionException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

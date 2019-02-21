@@ -1,5 +1,5 @@
 function resetPassword() {
-	var username = $("#reset-username");
+	var username = $("#reset-acc-username");
 	var password = $("#reset-pass");
 	var passwordVerify = $("#reset-pass-verify");
 	tips = $(".validateTips");
@@ -19,7 +19,8 @@ function resetPassword() {
 		    data:JSON.stringify({
 		        request:  "changePassword",
 		        username: username.val(),
-		        password: password.val()
+		        password: password.val(),
+		        locale: getCurrentLanguage()
 		    }),
 		    type: "POST",
 		    dataType : "json",
@@ -27,7 +28,7 @@ function resetPassword() {
 		    async: false, 
 		    success: function( json ) {
 		    	if ( json.status == "OK" ) {
-		    		window.location = "pwresetsuccess.html";
+		    		window.location = "pwresetsuccess.html" +'?locale='+(url('?locale') || 'en');
 		    	} else {
 		    		displayError( json.error );
 		    	} 	
@@ -38,12 +39,6 @@ function resetPassword() {
 		});
 	}
 }
-
-
-
 $(document).ready( function() {
-	$("#pwform").find("form").on("submit", function(event) {
-		event.preventDefault();
-		resetPassword();
-	});
+	$(document).on('click', '#reset-user-password', function(){resetPassword();});
 });

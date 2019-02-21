@@ -30,6 +30,13 @@ import java.util.TreeSet;
 public class SubQuestionAnswers extends Answer {
 	
 	/**
+	 * @param language tag in IETF RFC 5646 format
+	 */
+	public SubQuestionAnswers(String language) {
+		super(language);
+	}
+	
+	/**
 	 * Map of the question number to an answer
 	 */
 	private Map<String, Answer> subAnswers = new HashMap<String, Answer>();
@@ -86,6 +93,6 @@ public class SubQuestionAnswers extends Answer {
 
 	@Override
 	public String getAnswerString() {
-		return "";	// no answer for a subquestionanswer
+		return "";	// no answer for a subquestionanswer //$NON-NLS-1$
 	}
 }

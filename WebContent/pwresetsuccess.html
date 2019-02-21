@@ -2,114 +2,45 @@
 <html>
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>OpenChain Registration</title>
     <link rel="stylesheet" href="styles/openchain.css" type="text/css" media="screen">
     <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen">
     <link rel="stylesheet" href="resources/jquery-ui/jquery-ui.min.css">
     <link rel="stylesheet" href="resources/jquery.jui_dropdown.css">
+    <link rel="stylesheet" href="styles/bootstrap.min.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="styles/font-awesome-master/css/font-awesome.min.css" type="text/css" media="screen">
+
+    <link rel="icon" type="image/png"  href="images/favicon_openchain.png" />
+	<link rel="shortcut icon" href="images/favicon_openchain.png" type="image/png"/>
+    
+    <link rel="stylesheet" href="styles/newstyle.css" type="text/css" media="screen">
     <script src="resources/jquery-ui/external/jquery/jquery.js"></script>
     <script src="resources/jquery-ui/jquery-ui.min.js"></script>
     <script src="resources/jquery.jui_dropdown.min.js"></script>
     <script src="resources/navbar.js"></script>
+    <script src="resources/bootstrap.min.js"></script>
+    <script src="resources/lib/url/url.min.js"></script>  
+    <script src="resources/i18next.min.js" ></script>
+    <script src="resources/jquery-i18next.min.js" ></script>
+    <script src="resources/i18nextXHRBackend.js"></script>
+    <script src="resources/global.js"></script>   
   </head>
   <body>
-    <div class="navbar" id="topnav"></div>
-    <div id="TitleArea">
-        <h1>Password Reset Successful</h1>
-    </div>
-    <div>
-        You're password has been reset.  Please login using the menu above to continue the self certification.
-    </div>
-    <div id="errors"></div>
-    <div id="status"></div>
-    <div id="resendveify"></div>
-    <div id="login">
-        <form>
-            <p class="validateTips"></p>
-            <fieldset>
-                <label for="login-username">Username</label>
-                <input type="text" name="login-username" id="login-username" class="text ui-widget-content ui-corner-all">
-                <label for="login-password">Password</label>
-                <input type="password" name="login-password" id="login-password" class="text ui-widget-content ui-corner-all">
-                <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-            </fieldset>
-        </form>
-        <a href="pwresetrequest.html" class="reset-password">Reset Password</a>
-    </div>
-    <div id="signup">
-            <form name="signup-form" id="signup-form">
-            <p class="validateTips"></p>
-            <fieldset>
-                <label for="signup-username">Username</label>
-                <input type="text" name="signup-username" id="signup-username" class="text ui-widget-content ui-corner-all">
-                <label for="signup-password">Password</label>
-                <input type="password" name="signup-password" id="signup-password" class="text ui-widget-content ui-corner-all">
-                <label for="signup-passwordverify">Re-enter Password</label>
-                <input type="password" name="signup-passwordverify" id="signup-passwordverify" class="text ui-widget-content ui-corner-all">
-                <label for="signup-name">Name</label>
-                <input type="text" name="signup-name" id="signup-name" class="text ui-widget-content ui-corner-all">
-                <label for="signup-organization">Organization</label>
-                <input type="text" name="signup-organization" id="signup-organization" class="text ui-widget-content ui-corner-all">
-                <label for="signup-email">Email</label>
-                <input type="text" name="signup-email" id="signup-email" class="text ui-widget-content ui-corner-all">
-                <label for="signup-address">Organization Postal Address</label>
-                <textarea rows="6" cols="50" name="signup-address" id="signup-address" class="text ui-widget-content ui-corner-all" form="signup-form"></textarea>
-                <table>
-                    <tr>
-                        <td><input type="checkbox" name="approval-use-name-email" id="approval-use-name-email" class="ui-widget-content ui-corner-all"></td>
-                        <td><label for="approval-use-name-email">My name and email may be shared on conformance page of the OpenChain website</label></td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" name="read-terms" id="read-terms" class="ui-widget-content ui-corner-all"></td>
-                        <td><label for="read-terms">I agree to the Linux Foundation <a href="https://www.openchainproject.org/terms">Terms of Use</a> and <a href="https://www.openchainproject.org/privacy">Privacy Policy</a></label></td>
-                    </tr>
-                </table>
-               <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-            </fieldset>
-        </form>
-    </div>
-    <div id="user-profile">
-            <form name="profile-form" id="profile-form">
-            <p class="validateTips"></p>
-            <fieldset>
-                <label for="update-username">Username</label>
-                <input type="text" name="update-username" id="update-username" class="text ui-widget-content ui-corner-all">
-                <label for="update-password">Password</label>
-                <input type="password" name="update-password" id="update-password" class="text ui-widget-content ui-corner-all">
-                <label for="update-passwordverify">Re-enter Password</label>
-                <input type="password" name="update-passwordverify" id="update-passwordverify" class="text ui-widget-content ui-corner-all">
-                <label for="update-name">Name</label>
-                <input type="text" name="update-name" id="update-name" class="text ui-widget-content ui-corner-all">
-                <label for="update-organization">Organization</label>
-                <input type="text" name="update-organization" id="update-organization" class="text ui-widget-content ui-corner-all">
-                <label for="update-email">Email</label>
-                <input type="text" name="update-email" id="update-email" class="text ui-widget-content ui-corner-all">
-                <label for="update-address">Organization Postal Address</label>
-                <textarea rows="6" cols="50" name="update-address" id="update-address" class="text ui-widget-content ui-corner-all" form="profile-form"></textarea>
-                <table class="checkbox-table"><tr>
-                    <td><input type="checkbox" name="update-use-name-email" id="update-use-name-email" class="ui-widget-content ui-corner-all"></td>
-                    <td><label for="update-use-name-email">My name and email may be shared on conformance page of the OpenChain website</label></td>
-                </tr></table>
-               <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-            </fieldset>
-        </form>
-    </div>
-       <div id="reset-password">
-            <form name="reset-pw-form" id="reset-pw-form">
-            <p class="validateTips"></p>
-            <fieldset>
-                <label for="reset-username">Username</label>
-                <input type="text" name="reset-username" id="reset-username" class="text ui-widget-content ui-corner-all">
-                 <label for="reset-email">Email</label>
-                <input type="text" name="reset-email" id="reset-email" class="text ui-widget-content ui-corner-all">
-               <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-            </fieldset>
-        </form>
-    </div>
+    <div id="topnav"></div>
+    <div class="container">
+	    <div id="TitleArea">
+	        <h1 class="translate" data-i18n="Password-reset-success-title">Password Reset Successful</h1>
+	    </div>
+	    <div class="translate" data-i18n="Password-reset-success-content">
+	        You're password has been reset.  Please login using the menu above to continue the self certification.
+	    </div>
+	    <div id="errors"></div>
+	    <div id="status"></div>
+	    <div id="resendveify"></div>
+	    </div>
+    
+    
     <div id="footer-outer"></div>
   </body>
 </html>

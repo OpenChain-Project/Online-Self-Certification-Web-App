@@ -1,0 +1,228 @@
+{
+  "@metadata": {
+    "authors": [
+      "visolve"
+    ],
+    "last-updated": "2019-1-8",
+    "locale": "en"
+  },
+
+  "COMMENT_1": "/****************************** TRANSLATIONS FOR THE INDEX PAGE IS GIVEN BELOW************************************/",
+
+  "title": "OpenChain Self Certification",
+  "welcome": "Welcome",
+  "welcome_content": "The OpenChain Specification represents a core set of requirements a quality FOSS compliance program must satisfy. It fosters efficient and effective compliance of open source licenses across the supply chain. By self-certifying, participants are able to confirm they are in compliance with the Specification's requirements.",
+  "Getting Started": "Getting Started",
+  "Getting Started_content": "Applicants confirm their understanding of the OpenChain Specification and the need to complete Self-Certification to become OpenChain Conformant. The Online Self-Certification requires you to:",
+  "Getting Started_content_1": "Fulfill all requirements set forth in the <a class=\"anchor\" href=\"https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf\" target=\"_blank\">Specification</a>",
+  "Getting Started_content_2":"Create an account by selecting sign-up in the user menu.",
+  "Getting Started_content_3":"Name a contact person to handle inquiries.",
+  "Getting Started_content_4":"Have an authorized representative complete the web-based Online Self-Certification by answering all the questions.",
+  "Getting Started_content_5":"Fill out the submission form.",
+  "Getting Started_content_6":"Archive a Reference Copy of all Verification Artifacts as a record in support of the Online Self-Certification.",
+  "offline-conformance-pdf" : "Do you prefer to work with a printed checklist? You can download the offline conformance handbook <a class=\"anchor\" id=\"dwnquestionnaire\" target=\"_blank\">here</a>",
+  
+
+
+  "COMMENT_2": "/****************************** TRANSLATIONS FOR THE NAVIGATION PAGE IS GIVEN BELOW************************************/",
+ 
+  "Conforming Submission":"Conforming Submission",
+  "Sign in":"Sign in",
+  "Sign up":"Sign up",
+  "Online Self-Certification":"Online Self-Certification",
+  "Admin":"Admin",
+  "Account":"Account",
+  "Update profile":"Update profile",
+  "Language":"Language",
+  "Sign out":"Sign out",
+
+  "English":"English (en)",
+  "Russian": "Russian (ru)",
+  "Spanish":"Spanish",
+  "French":"French",
+  "German":"German",
+  "Japanese":"Japanese",
+  "Chinese":"Chinese",
+  "Resend Verification" : "Resend Verification",
+  "Error" : "Error",
+  "error-msg" : "Sorry - there was a problem loading data:",
+  "verify-username" : "You have not verified the username.  Would you like to resend a verify email to the email address you registered?",
+  "profile-notification" : "Profile updated  successfully",
+
+  "COMMENT_3": "/****************************** TRANSLATIONS FOR FOOTER PAGE IS GIVEN BELOW************************************/",
+
+  "Please contact":"Please contact <a class=\"anchor\" href=\"mailto:openchain-conformance@lists.linuxfoundation.org?Subject=OpenChain%20Certification%20Feedback\" target=\"_blank\">OpenChain Support</a> to report any inaccuracies or issues.",
+  "footer_content":"Copyright 2018 The Linux Foundation. All rights reserved.The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our <a class=\"anchor\" href=\"https://www.linuxfoundation.org/trademark-usage\" target=\"_blank\">Trademark Usage</a> page. Linux is a registered trademark of Linus Torvalds. <a class=\"anchor\" href=\"https://www.openchainproject.org/privacy\">Privacy Policy</a> and <a class=\"anchor\" href=\"https://www.openchainproject.org/terms\">Terms of Use</a>",
+  
+  "COMMENT_4": "/********TRANSLATIONS FOR THE CONFIRMING PAGE IS GIVEN BELOW********* (Specification) ********************/",
+
+  "Conforming Organizations":"Conforming Organizations",
+  "Conforming Organizations_content":"The following organizations have self-certified conformance to the OpenChain <a class=\"anchor\" href=\"https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf\" target=\"_blank\">Specification.</a>",
+  "Organization":"Organization",
+  "Specification" : "Specification.",
+  "Specification Version":"Specification Version",
+  "Contact Email":"Contact Email",
+  "Contact Name":"Contact Name",
+  "Not Available" : "Not Available",
+  "sEmptyTable":     "No data available in table",
+  "sInfo":           "Showing _START_ to _END_ of _TOTAL_ entries",
+  "sInfoEmpty":      "Showing 0 to 0 of 0 entries",
+  "sInfoFiltered":   "(filtered from _MAX_ total entries)",
+  "sInfoPostFix":    "",
+  "sInfoThousands":  ",",
+  "sLengthMenu":     "Show _MENU_ entries",
+  "sLoadingRecords": "Loading...",
+  "sProcessing":     "Processing...",
+  "sSearch":         "Search:",
+  "sZeroRecords":    "No matching records found",
+  "oPaginate": {
+		"sFirst":    "First",
+		"sLast":     "Last",
+		"sNext":     "Next",
+		"sPrevious": "Previous"
+	},
+	"oAria": {
+		"sSortAscending":  ": activate to sort column ascending",
+		"sSortDescending": ": activate to sort column descending"
+	},
+
+  "COMMENT_5": "/****************************** TRANSLATIONS FOR THE SIGN IN PAGE IS GIVEN BELOW*********(title)***************************/",
+
+  "Welcome Back":"Welcome Back",
+  "Username":"Username",
+  "Password":"Password",
+  "Reset Password":"Reset Password",
+  "Login":"Login",
+  "Cancel":"Cancel",
+  "Length of password must be between 8 and 60" : "Length of password must be between 8 and 60.",
+  "Length of username must be between 3 and 40" : "Length of username must be between 3 and 40.",
+  "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter" : "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter.",
+  
+  "COMMENT_6": "/****************************** TRANSLATIONS FOR THE RESET PASSWORD PAGE IS GIVEN BELOW*********(Username,Password,Reset Password)***************************/",
+
+  "Email":"Email",
+  
+  "COMMENT_7": "/****************************** TRANSLATIONS FOR THE SIGN UP PAGE IS GIVEN BELOW*********(title,Sign up,Email,Organization,Username,Password,Terms of Use,and,Privacy Policy,Cancel)***************************/",
+
+  "Name":"Name",
+  "Re-enter Password":"Re-enter Password",
+  "Organization Postal Address":"Organization Postal Address",
+  "Sign Up":"Sign Up",
+  "Sign Up_content_1":"My name and email may be shared on conformance page of the OpenChain website",
+  "Sign Up_content_2":"I agree to the Linux Foundation&nbsp;<a class=\"anchor\" href=\"https://www.openchainproject.org/terms\" target=\"_blank\">Terms of Use</a>&nbsp;and&nbsp;<a class=\"anchor\" href=\"https://www.openchainproject.org/privacy\">Privacy Policy</a>",
+ 
+  "COMMENT_8": "/****************************** TRANSLATIONS FOR THE UPDATE PROFILE PAGE IS GIVEN BELOW*********(Username,Password,Name,Re-enter Password,Organization,Email,Organization Postal Address,Sign Up_content_1)***************************/",
+ 
+  "Update Profile":"Update Profile",
+  "Save Changes":"Save Changes",
+  "success":"Profile updated successfully",
+  "Updated":"Updated",
+  "ok":"ok",
+
+  "COMMENT_9": "/****************************** TRANSLATIONS FOR THE ADMIN IN PAGE IS GIVEN BELOW*********(Specification Version,Username,Organization,Email)***************************/",
+
+  "Admin_title":"OpenChain Self Certification Administration",
+  "Site Status":"Site Status",
+  "Site Software Version: ":"Site Software Version: ",
+  "Edit Conformance Questions":"Edit Conformance Questions",
+  "Git Tag" : "Git Tag",
+  "Git Commit" : "Git Commit",
+  "Update questionnaire" : "Update questionnaire",
+  "Confirm update":"Confirm Questionnaire Update",
+  "Submission Status":"Submission Status",
+  "Submitted Awaiting Approval":"Awaiting Approval",
+  "Approve Selected":"Approve Selected",
+  "Reject Selected":"Reject Selected",
+  "Submitted Rejected":"Rejected",
+  "UnReject Selected":"UnReject Selected",
+  "Approved":"Approved",
+  "UnApprove Selected":"UnApprove Selected",
+  "Incomplete":"Incomplete",
+  "User Name" : "User Name",
+  "% Complete":"% Complete",
+  "Score":"Score",
+  "Update Questionnaire" : "Update Questionnaire",
+  "Summary" : "Summary",
+  "Updates" : "Updates",
+  "Added" : "Added",
+  "Update" : "Update",
+  "Summary-history-update" : "questionnaire version/languages will be updated", 
+  "Summary-history-add" : "questionnaire version/languages will be added",
+  "no-update" :"No questionnaire/versions were updated",
+  "no-new-add" : "No questionnaire/versions were added",
+  "answered out of" : "answered out of",
+  "Warning" : "Warning",
+  "questionnaire-updated" : "questionnaire version/languages were updated",
+  "questionnaire-added" : "questionnaire version/languages were added",
+  "questionnaire-warning" : "with the following warnings",
+  "Site Software Version" : "Site Software Version",
+
+  "COMMENT_10": "/****************************** TRANSLATIONS FOR THE QUSETIONNAIRE PAGE IS GIVEN BELOW*********(title,Specification Version )***************************/",
+
+  "Survey_title":"OpenChain Self Certification Questionnaire",
+  "Questionnaire Revision":"Questionnaire Revision",
+  "Save Answers":"Save Answers",
+  "Save and Submit":"Save and Submit",
+  "Unsubmit":"Unsubmit",
+  "Download Answers":"Download Answers",
+  "Reset":"Reset Questionnaire",
+  "Select Version":"Select Version",
+  "select_version_content":" Select the specification version.",
+  "Version":"Version",
+  "reset_Questionnaire_content" : "This will delete all answers and start a new Questionnaire with the latest Questionnaire version.  Are you sure you want to continue?",
+  "Yes" : "Yes",
+  "No" : "No",
+  "Save-ans-dialog" : "Saved Successful",
+  "Responses Unsubmitted" : "Responses Unsubmitted",
+  "submission-notice" : "Thank you - your information has been submitted",
+  "confirm-submit-dialog" : "By clicking 'submit' you confirm:",
+  "confirm-submit-subdialog1" : "Your answers to the Conformance Self-Certification Questionnaire are accurate and verifiable.",
+  "confirm-submit-subdialog2" : "Your answers reflect your adherence to the OpenChain Specification.",
+
+  "Ok":"Ok",
+  "Saved":"Saved",
+  "Confirm Submit":"Confirm Submit",
+  "Agree":"Agree",
+  "Reset Answers":"Reset Answers",
+
+  
+   "COMMENT_11": "/****************************** TRANSLATIONS FOR RESET PASSWORD PAGE IS GIVEN BELOW***********(Username,Password,Re-Enter Password,Reset Password)*************************/",
+
+   "Password Reset" :"Password Resetklkj",
+   
+   
+   "COMMENT_12": "/****************************** TRANSLATIONS FOR PASSWORD RESET INVALID PAGE IS GIVEN BELOW************************************/",
+   
+   "Password-reset-title":"Password Reset Invalid",
+   "Password-reset-invalid-content":"The password reset link is either invalid or expired.  You can try resetting the password again or contact the OpenChain team for assistance.",
+   
+   
+   "COMMENT_13": "/****************************** TRANSLATIONS FOR PASSWORD RESET REQUEST PAGE IS GIVEN BELOW************************************/",
+   
+   "Password-reset-request-title": "Password Reset Request",
+   "Password-reset-request-content": "An email with a link to reset your password has been sent.  If you do not see the email, please check your junk email folder.  The link will expire in 24 hours.",
+   
+   
+   "COMMENT_14": "/****************************** TRANSLATIONS FOR PASSWORD RESET SUCCESS PAGE IS GIVEN BELOW************************************/",
+   
+   "Password-reset-success-title": "Password Reset Request",
+   "Password-reset-success-content": "An email with a link to reset your password has been sent.  If you do not see the email, please check your junk email folder.  The link will expire in 24 hours.",
+   
+   "COMMENT_15": "/****************************** TRANSLATIONS FOR REGISTRATION SUCCESS PAGE IS GIVEN BELOW************************************/",
+   
+   "Reg-success-title" : "Registration Successful",
+   "Reg-success-content" :"You are now successfully registered.  Please login using the menu above to continue to the self certification.",
+   
+   "COMMENT_16": "/****************************** TRANSLATIONS FOR REGISTRATION FAILED PAGE IS GIVEN BELOW************************************/",
+   
+   "Reg-failed-title" : "Registration Failed",
+   "Reg-failed-content" :"Something seems to have gone wrong in the registration. The registration may have expired. Please contact the OpenChain team for additional help.",
+   
+   
+   "COMMENT_17": "/****************************** TRANSLATIONS FOR SIGNUP SUCCESS PAGE IS GIVEN BELOW************************************/",
+   
+   "signup-success-title":"OpenChain Self Certification Signup",
+   "Verification Email" : "Verification Email",
+   "signup-success-content" : "You should receive an email from no-reply@conformance.openchainproject.org sent to the email specified in the sign-up form. Click on the link provided to complete the registration process. If you do not receive an email, check your spam folder and add no-reply@conformance.openchainproject.org to your trusted email list."
+   
+}

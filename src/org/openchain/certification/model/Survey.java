@@ -18,7 +18,10 @@ package org.openchain.certification.model;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.HashSet;
@@ -34,15 +37,36 @@ import com.opencsv.CSVWriter;
  */
 public class Survey {
 	public static final String[] CSV_COLUMNS = new String[] {
-		"Section Name", "Question Number", "Spec Reference Number", "Question Text",
-		"Answer Type", "Correct Answer", "Evidence Prompt", "Evidence Validation",
-		"Sub-Question Of Number"
+		"Section Name", "Question Number", "Spec Reference Number", "Question Text", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		"Answer Type", "Correct Answer", "Evidence Prompt", "Evidence Validation", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		"Sub-Question Of Number" //$NON-NLS-1$
 	};
-	private List<Section> sections;
 	private String specVersion;
+	private String language;
+	private List<Section> sections;
+	transient private Boolean compactAndPretty = null;	// Null indicates it has not been explicitly set
 	
-	public Survey(String specVersion) {
+	public Survey(String specVersion, String language) {
 		this.specVersion = specVersion;
+		this.language = language;
+	}
+
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(String language) {
+		this.language = language;
+		if (sections != null) {
+			for (Section section:sections) {
+				section.setLanguage(language);
+			}
+		}
 	}
 	/**
 	 * @return the sections
@@ -75,10 +99,12 @@ public class Survey {
 	 */
 	public Set<String> getQuestionNumbers() {
 		HashSet<String> retval = new HashSet<String>();
-		for (Section section:sections) {
-			List<Question> questions = section.getQuestions();
-			for (Question question:questions) {
-				retval.add(question.getNumber());
+		if (sections != null) {
+			for (Section section:sections) {
+				List<Question> questions = section.getQuestions();
+				for (Question question:questions) {
+					retval.add(question.getNumber());
+				}
 			}
 		}
 		return retval;
@@ -86,6 +112,9 @@ public class Survey {
 
 	public Question getQuestion(String questionNumber) {
 		// TODO this is not the fastest, but it is accurate
+		if (sections == null) {
+			return null;
+		}
 		for (Section section:sections) {
 			List<Question> questions = section.getQuestions();
 			for (Question question:questions) {
@@ -117,4 +146,93 @@ public class Survey {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	public Survey clone() {
+		Survey retval = new Survey(this.specVersion, this.language);
+		if (sections != null) {
+			List<Section> clonedSections = new ArrayList<Section>();
+			for (Section section:sections) {
+				clonedSections.add(section.clone());
+			}
+			retval.setSections(clonedSections);
+		}
+		return retval;
+	}
+	
+	/**
+	 * @return true if all redundant information in the sections and questions have been set to null for 
+	 * pretty printing the survey.  Null return values are likely if the Survey has not been specifically
+	 * prettified or expanded
+	 */
+	public Boolean isCompactAndPretty() {
+		return this.compactAndPretty;
+	}
+	
+	/**
+	 * Remove all redundant information such as language and specversion in the included sections and questions
+	 */
+	public void prettify() {
+		if (this.compactAndPretty != null && this.compactAndPretty) {
+			return;	// already pretty
+		}
+		for (Section section:getSections()) {
+			section.setLanguage(null);
+			Map<String, SubQuestion> questionsWithSubquestions = new HashMap<String, SubQuestion>();
+			for (Question question:section.getQuestions()) {
+				question.setSpecVersion(null);
+				question.setLanguage(null);
+				question.setSectionName(null);
+				if (question instanceof SubQuestion) {
+					questionsWithSubquestions.put(question.getNumber(), (SubQuestion)question);
+				}
+			}
+			for (SubQuestion questionsWithSubquestion:questionsWithSubquestions.values()) {
+				for (Question subQuestion:questionsWithSubquestion.getAllSubquestions()) {
+					// remove any redundant copys of the subquestion
+					section.getQuestions().remove(subQuestion);
+					// Clear the redundant subquestion of number
+					subQuestion.setSubQuestionOfNumber(null);
+				}
+			}
+		}
+		this.compactAndPretty = true;
+	}
+	
+	/**
+	 * Add information back to questions essentially reversing <code>prettify()</code>
+	 */
+	public void addInfoToSectionQuestions() {
+		if (this.compactAndPretty != null && !this.compactAndPretty) {
+			return;	// already done
+		}
+		String lang = getLanguage();
+		String specV = getSpecVersion();
+		for (Section section:getSections()) {
+			String sectionName = section.getName();
+			section.setLanguage(lang);
+			Map<String, SubQuestion> questionsWithSubquestions = new HashMap<String, SubQuestion>();
+			for (Question question:section.getQuestions()) {
+				question.setSpecVersion(specV);
+				question.setLanguage(lang);
+				question.setSectionName(sectionName);
+				if (question instanceof SubQuestion) {
+					questionsWithSubquestions.put(question.getNumber(), (SubQuestion)question);
+				}
+			}
+			for (SubQuestion questionsWithSubquestion:questionsWithSubquestions.values()) {
+				for (Question subQuestion:questionsWithSubquestion.getAllSubquestions()) {
+					subQuestion.setSpecVersion(specV);
+					subQuestion.setLanguage(lang);
+					subQuestion.setSectionName(sectionName);
+					// Add the redundant subquestion of number
+					subQuestion.setSubQuestionOfNumber(questionsWithSubquestion.getNumber());
+					// Add the redundant copy of the subquestion to the section
+					section.getQuestions().add(subQuestion);
+				}
+			}
+		}
+		this.compactAndPretty = false;
+	}
 }
