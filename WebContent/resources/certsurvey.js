@@ -206,6 +206,7 @@ function updateSectionHtml(section, numQuestions, numAnswers) {
 	html += ' <span class="translate" data-i18n="answered out of" > answered out of </span> ';
 	html += String(numQuestions);
 	headerDiv.html(html);
+	$('.translate').localize();
 }
 
 function updateSectionQuestionCounts(section) {

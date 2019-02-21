@@ -243,6 +243,8 @@ table tr:nth-child(odd) {
     margin: 2px 2px 2px 2px;
     padding: 2px 2px 2px 2px;
     width:15px;
+    position: relative;
+    top: 5px;
 }
 
 /* Navbar */
