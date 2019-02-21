@@ -37,24 +37,24 @@ function getQuestionFormHtml(questions) {
 		} 
 		else if (type=="YES_NO_NA") {
 			html += '<td class="answer_cell"><span>';
-			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes"  class="choicena-yes';
+			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes';
 			if (isSubQuestion && inSubQuestions) {
-				html += ' subquestion-of-';
+				html += 'subquestion-of-';
 				html += questions[i].subQuestionOfNumber;
 			}
-			html += '"  value="yes" />';		
-			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no" class="choicena-no';
+			html += '"  class="choicena-yes"  value="yes" />';		
+			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no';
 			if (isSubQuestion && inSubQuestions) {
-				html += ' subquestion-of-';
-				html += questions[i].subQuestionNumber;
+				html += 'subquestion-of-';
+				html += questions[i].subQuestionOfNumber;
 			}
-			html += '" value="no" />';
-			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_na" class="choicena-na';
+			html += '" class="choicena-no" value="no" />';
+			html += '<input type="radio" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_na';
 			if (isSubQuestion && inSubQuestions) {
-				html += ' subquestion-of-';
-				html += questions[i].subQuestionNumber;
+				html += 'subquestion-of-';
+				html += questions[i].subQuestionOfNumber;
 			}
-			html += '" value="na" />';
+			html += '" class="choicena-na" value="na" />';
 			html += '<span class="yesnona-switch">';
 			html += '<label for="answer-' + questions[i].number + '_yes">Yes</label>';		
 			html += '<span></span>';
@@ -70,16 +70,16 @@ function getQuestionFormHtml(questions) {
 			html += '<td class="answer_cell pad_cell"><div class="form-check custom-checkbox"><label class="form-check-label">';
 			html += '<input type="radio" class="form-check-input custom-radiobtn" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_yes';
 			if (isSubQuestion && inSubQuestions) {
-				html += '  subquestion-of-';
-				html += questions[i].subQuestionNumber;
+				html += 'subquestion-of-';
+				html += questions[i].subQuestionOfNumber;
 			}
 			html += '"  value="yes" /><span class="translate" data-i18n="Yes">Yes</span>';
 			html += '</label></div>';			
 			html += '<div class="form-check custom-checkbox"><label class="form-check-label">';		
 			html += '<input type="radio" class="form-check-input custom-radiobtn" name="answer-' + questions[i].number + '" id="answer-' + questions[i].number + '_no';
 			if (isSubQuestion && inSubQuestions) {
-				html += ' subquestion-of-';
-				html += questions[i].subQuestionNumber;
+				html += 'subquestion-of-';
+				html += questions[i].subQuestionOfNumber;
 			}
 			html += '" value="no" /><span class="translate" data-i18n="No">No</span>';
 			html += '</label></div></td>';			
