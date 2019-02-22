@@ -21,8 +21,7 @@
 /**
  * List of all supported language keyed by 2 or 3 character ISO language.  The value is the display for the language
  */
-var LANGUAGES = {"en":"English", 
-                 "ru":"Russian"};
+var LANGUAGES = {"en":"English"};
 //TODO: See if we can use I18N to populate this variable - i18next.languages should contain the language
 
 /**************** For initializing the i18next framework ***********************/
