@@ -535,10 +535,6 @@ function FileExist(urlToFile)
 }
 
 $(document).ready( function() {
-	
-	// Add languages dropdown for user profile
-	$("#update-language").html(getLanguageSelectionHtml());
-	
 	// Function Call for Signout
 	$(document).on('click', '#user-dropdown_signout', function(){signout();});
 	
