@@ -238,7 +238,7 @@ function fillSubmissionStatusTable(submissions) {
 		       "searching" : false,
 		       "bLengthChange": false,
 		       "processing": true,
-		       "pageLength": 5,
+		       "pageLength": 15,
 		       "language": {					
 		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
 		        },
@@ -253,7 +253,7 @@ function fillSubmissionStatusTable(submissions) {
 			   "searching" : false,
 		       "bLengthChange": false,
 		       "processing": true,
-		       "pageLength": 5,
+		       "pageLength": 15,
 		       "language": {					
 		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
 		        },
@@ -267,7 +267,7 @@ function fillSubmissionStatusTable(submissions) {
 			   "searching" : false,
 		       "bLengthChange": false,
 		       "processing": true,
-		       "pageLength": 5,
+		       "pageLength": 15,
 		       "language": {					
 		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
 		        },
@@ -281,7 +281,7 @@ function fillSubmissionStatusTable(submissions) {
 			   "searching" : false,
 		       "bLengthChange": false,
 		       "processing": true,
-		       "pageLength": 5,
+		       "pageLength": 15,
 		       "language": {					
 		            "url": "resources/locales/"+(url('?locale') ||'en')+"/translation.json"
 		        },
