@@ -1,0 +1,228 @@
+{
+  "@metadata": {
+    "authors": [
+      "visolve"
+    ],
+    "last-updated": "2019-1-8",
+    "locale": "ja"
+  },
+
+  "COMMENT_1": "\/****************************** TRANSLATIONS FOR THE INDEX PAGE IS GIVEN BELOW************************************\/",
+
+  "title": "OpenChain自己認証<\/b>",
+  "welcome": "ようこそ",
+  "welcome_content": "OpenChain仕様は、FOSS品質コンプライアンス プログラムが満足すべき核となる要件を明確化した仕様を提示しています。サプライチェーン全体にわたってオープンソースライセンスのコンプライアンスを効率よく、効果的に達成します。自己認証を行うことで、仕様の用件に適合していることを確認できます。",
+  "Getting Started": "はじめに",
+  "Getting Started_content": "申請者は、OpenChain仕様を理解していることと、OpenChain適合になるためには自己認証完了の必要性を確認します。オンライン自己認証には次を行なってください：",
+  "Getting Started_content_1": " <a class=\"anchor\" href=\"https:\/\/wiki.linuxfoundation.org\/_media\/openchain\/openchainspec-current.pdf\" target=\"_blank\">仕様<\/a>に規定された要件をすべて満たす。",
+  "Getting Started_content_2":"ユーザーメニューでサインアップを選択してアカウントを作成する。",
+  "Getting Started_content_3":"問い合わせに対応する担当者を指定する。",
+  "Getting Started_content_4":"代表者がすべての質問に答えて、ウェブベースのオンライン自己認証を完了する。",
+  "Getting Started_content_5":"送信フォームに記入する。",
+  "Getting Started_content_6":"すべての検証すべき証跡の参考コピーを、オンライン自己認証の裏付けとしての記録として保管する。",
+  "offline-conformance-pdf": "印刷されたチェックリストのほうがいいですか？オフラインの適合ハンドブックは <a class=\"anchor\" id=\"dwnquestionnaire\" target=\"_blank\">ここ<\/a>からダウンロードできます。",
+  
+
+
+  "COMMENT_2": "\/****************************** TRANSLATIONS FOR THE NAVIGATION PAGE IS GIVEN BELOW************************************\/",
+ 
+  "Conforming Submission":"適合提出",
+  "Sign in":"サインイン",
+  "Sign up":"登録",
+  "Online Self-Certification":"オンライン自己認証",
+  "Admin":"アドミン",
+  "Account":"アカウント",
+  "Update profile":"プロフィールを更新",
+  "Language":"言語",
+  "Sign out":"サインアウト",
+
+  "English":"英語 (en)",
+  "Russian": "ロシア語 (ru)",
+  "Spanish":"スペイン語",
+  "French":"フランス語",
+  "German":"ドイツ語",
+  "Japanese":"日本語",
+  "Chinese":"中国語",
+  "Resend Verification": "検証を再送信",
+  "Error": "エラー",
+  "error-msg": "データの読み込みに問題があります：",
+  "verify-username": "ユーザー名を確認していません。確認メールを登録したメールアドレスに再送信しますか？",
+  "profile-notification": "プロフィールが正常に更新されました。",
+
+  "COMMENT_3": "\/****************************** TRANSLATIONS FOR FOOTER PAGE IS GIVEN BELOW************************************\/",
+
+  "Please contact":"エラーや問題がある場合は<a class=\"anchor\" href=\"mailto:openchain-conformance@lists.linuxfoundation.org?Subject=OpenChain%20Certification%20Feedback\" target=\"_blank\">OpenChain サポート<\/a>に連絡してください。",
+  "footer_content":"Copyright 2018 The Linux Foundation. 無断複写・転載を禁じます。Linux Foundation は登録商標を持ち、商標を使用します。Linux Foundationの登録商標リストについては、<a class=\"anchor\" href=\"https:\/\/www.linuxfoundation.org\/trademark-usage\" target=\"_blank\">登録商標の使用<\/a>のページをご覧ください。LinuxはLinus Torvaldsの登録商標です。<a class=\"anchor\" href=\"https:\/\/www.openchainproject.org\/privacy\">プライバシーポリシー<\/a>および<a class=\"anchor\" href=\"https:\/\/www.openchainproject.org\/terms\">利用規約<\/a>",
+  
+  "COMMENT_4": "\/********TRANSLATIONS FOR THE CONFIRMING PAGE IS GIVEN BELOW********* (Specification) ********************\/",
+
+  "Conforming Organizations":"適合組織",
+  "Conforming Organizations_content":"以下の組織はOpenChain<a class=\"anchor\" href=\"https:\/\/wiki.linuxfoundation.org\/_media\/openchain\/openchainspec-current.pdf\" target=\"_blank\">仕様<\/a>への適合を自己認証しています。",
+  "Organization":"組織",
+  "Specification": "仕様",
+  "Specification Version":"仕様バージョン",
+  "Contact Email":"連絡先Email",
+  "Contact Name":"担当者名",
+  "Not Available": "利用不可",
+  "sEmptyTable":     "表にデータがありません。",
+  "sInfo":           "_TOTAL_ の内 _START_ から _END_ までの項目を表示する",
+  "sInfoEmpty":      "0 の内 0 から 0 までの項目を表示する",
+  "sInfoFiltered":   "(_MAX_全項目からフィルターされた)",
+  "sInfoPostFix":    "",
+  "sInfoThousands":  ",",
+  "sLengthMenu":     "_MENU_ 項目を表示する",
+  "sLoadingRecords": "読み込み中...",
+  "sProcessing":     "処理中...",
+  "sSearch":         "検索：",
+  "sZeroRecords":    "一致する記録がありません。",
+  "oPaginate": {
+		"sFirst":    "最初",
+		"sLast":     "最後",
+		"sNext":     "次",
+		"sPrevious": "前"
+	},
+	"oAria": {
+		"sSortAscending":  ": コラムを昇順ソートする",
+		"sSortDescending": ": コラムを降順ソートする"
+	},
+
+  "COMMENT_5": "\/****************************** TRANSLATIONS FOR THE SIGN IN PAGE IS GIVEN BELOW*********(title)***************************\/",
+
+  "Welcome Back":"おかえり",
+  "Username":"ユーザー名",
+  "Password":"パスワード",
+  "Reset Password":"パスワードを再設定",
+  "Login":"ログイン",
+  "Cancel":"キャンセル",
+  "Length of password must be between 8 and 60": "パスワードの長さは8文字から60文字です。",
+  "Length of username must be between 3 and 40": "ユーザー名の長さは3文字から40文字です。",
+  "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter": "ユーザー名は、a-z、0-9、下線、スペースで構成され、必ず文字で始めてください。",
+  
+  "COMMENT_6": "\/****************************** TRANSLATIONS FOR THE RESET PASSWORD PAGE IS GIVEN BELOW*********(Username,Password,Reset Password)***************************\/",
+
+  "Email":"Eメール",
+  
+  "COMMENT_7": "\/****************************** TRANSLATIONS FOR THE SIGN UP PAGE IS GIVEN BELOW*********(title,Sign up,Email,Organization,Username,Password,Terms of Use,and,Privacy Policy,Cancel)***************************\/",
+
+  "Name":"名前",
+  "Re-enter Password":"パスワードを再入力",
+  "Organization Postal Address":"組織の住所",
+  "Sign Up":"登録",
+  "Sign Up_content_1":"私の名前とメールはOpenChainのウェブサイト上の適合ページで共有される可能性があります。",
+  "Sign Up_content_2":"私はLinux Foundationの<a class=\"anchor\" href=\"https:\/\/www.openchainproject.org\/terms\" target=\"_blank\">利用規約<\/a>と<a class=\"anchor\" href=\"https:\/\/www.openchainproject.org\/privacy\">プライバシーポリシー<\/a>に同意します。",
+ 
+  "COMMENT_8": "\/****************************** TRANSLATIONS FOR THE UPDATE PROFILE PAGE IS GIVEN BELOW*********(Username,Password,Name,Re-enter Password,Organization,Email,Organization Postal Address,Sign Up_content_1)***************************\/",
+ 
+  "Update Profile":"プロフィールを更新",
+  "Save Changes":"変更を保存",
+  "success":"プロフィールが正常に更新されました。",
+  "Updated":"更新済み",
+  "ok":"ok",
+
+  "COMMENT_9": "\/****************************** TRANSLATIONS FOR THE ADMIN IN PAGE IS GIVEN BELOW*********(Specification Version,Username,Organization,Email)***************************\/",
+
+  "Admin_title":"OpenChain自己認証アドミニストレーション",
+  "Site Status":"サイトステータス",
+  "Site Software Version: ":"サイトソフトウェアバージョン: ",
+  "Edit Conformance Questions":"適合に関する質問を編集",
+  "Git Tag": "Git タグ",
+  "Git Commit": "Git コミット",
+  "Update questionnaire": "アンケートを更新",
+  "Confirm update":"アンケートの更新を確認",
+  "Submission Status":"送信ステータス",
+  "Submitted Awaiting Approval":"承認待ち",
+  "Approve Selected":"選択を承認",
+  "Reject Selected":"選択を拒否",
+  "Submitted Rejected":"拒否",
+  "UnReject Selected":"選択を拒否",
+  "Approved":"承認",
+  "UnApprove Selected":"選択を拒否",
+  "Incomplete":"未完了",
+  "User Name": "ユーザー名",
+  "% Complete":"% 終了",
+  "Score":"スコア",
+  "Update Questionnaire": "アンケートを更新",
+  "Summary": "まとめ",
+  "Updates": "更新",
+  "Added": "追加",
+  "Update": "更新",
+  "Summary-history-update": "アンケートバージョン\/言語が更新されます。", 
+  "Summary-history-add": "アンケートバージョン\/言語が追加されます。",
+  "no-update":"アンケートバージョン\/言語が更新されませんでした。",
+  "no-new-add": "アンケートバージョン\/言語が追加されませんでした。",
+  "answered out of": "回答数：",
+  "Warning": "警告",
+  "questionnaire-updated": "アンケートバージョン\/言語が更新されました。",
+  "questionnaire-added": "アンケートバージョン\/言語が追加されました。",
+  "questionnaire-warning": "次の警告があります。",
+  "Site Software Version": "サイトソフトウェアバージョン:",
+
+  "COMMENT_10": "\/****************************** TRANSLATIONS FOR THE QUSETIONNAIRE PAGE IS GIVEN BELOW*********(title,Specification Version )***************************\/",
+
+  "Survey_title":"OpenChain自己認証アンケート",
+  "Questionnaire Revision":"アンケート改訂",
+  "Save Answers":"回答を保存",
+  "Save and Submit":"保存して送信",
+  "Unsubmit":"未送信",
+  "Download Answers":"回答をダウンロード",
+  "Reset":"アンケートをリセット",
+  "Select Version":"バージョンを選択",
+  "select_version_content":" 仕様バージョンを選択",
+  "Version":"バージョン",
+  "reset_Questionnaire_content": "これによりすべての回答が削除され、最新バージョンの新規アンケートが開始します。続けますか？",
+  "Yes": "はい",
+  "No": "いいえ",
+  "Save-ans-dialog": "保存に成功しました。",
+  "Responses Unsubmitted": "回答が未送信",
+  "submission-notice": "情報が送信されました。",
+  "confirm-submit-dialog": "'submit'をクリックして次を確認してください：",
+  "confirm-submit-subdialog1": "適合自己認証アンケートへの回答は正確で検証可能である。",
+  "confirm-submit-subdialog2": "回答はOpenChain仕様への順守を反映している。",
+
+  "Ok":"Ok",
+  "Saved":"保存",
+  "Confirm Submit":"送信を確認",
+  "Agree":"同意",
+  "Reset Answers":"回答をリセット",
+
+  
+   "COMMENT_11": "\/****************************** TRANSLATIONS FOR RESET PASSWORD PAGE IS GIVEN BELOW***********(Username,Password,Re-Enter Password,Reset Password)*************************\/",
+
+   "Password Reset":"パスワードリセット",
+   
+   
+   "COMMENT_12": "\/****************************** TRANSLATIONS FOR PASSWORD RESET INVALID PAGE IS GIVEN BELOW************************************\/",
+   
+   "Password-reset-title":"パスワードリセットが無効",
+   "Password-reset-invalid-content":"パスワードリセットのリンクが無効か、期限切れです。もう一度パスワードをリセットしてみるか、OpenChainチームに問い合わせてください。",
+   
+   
+   "COMMENT_13": "\/****************************** TRANSLATIONS FOR PASSWORD RESET REQUEST PAGE IS GIVEN BELOW************************************\/",
+   
+   "Password-reset-request-title": "パスワードリセットのリクエスト",
+   "Password-reset-request-content": "パスワードリセットのリンク付きのメールが送信されました。メールが届かない場合は、迷惑メールフォルダーを確認してください。リンクの起源は24時間です。",
+   
+   
+   "COMMENT_14": "\/****************************** TRANSLATIONS FOR PASSWORD RESET SUCCESS PAGE IS GIVEN BELOW************************************\/",
+   
+   "Password-reset-success-title": "パスワードリセットのリクエスト",
+   "Password-reset-success-content": "パスワードリセットのリンク付きのメールが送信されました。メールが届かない場合は、迷惑メールフォルダーを確認してください。リンクの起源は24時間です。",
+   
+   "COMMENT_15": "\/****************************** TRANSLATIONS FOR REGISTRATION SUCCESS PAGE IS GIVEN BELOW************************************\/",
+   
+   "Reg-success-title": "登録完了",
+   "Reg-success-content":"登録が完了しました。上のメニューを使用してログインし、自己認証を続けてください。",
+   
+   "COMMENT_16": "\/****************************** TRANSLATIONS FOR REGISTRATION FAILED PAGE IS GIVEN BELOW************************************\/",
+   
+   "Reg-failed-title": "登録失敗",
+   "Reg-failed-content":"登録に問題があったようです。登録期限が過ぎた可能性があります。詳細についてOpenChainチームにお問い合わせください。",
+   
+   
+   "COMMENT_17": "\/****************************** TRANSLATIONS FOR SIGNUP SUCCESS PAGE IS GIVEN BELOW************************************\/",
+   
+   "signup-success-title":"OpenChain自己認証アンケート登録",
+   "Verification Email": "確認メール",
+   "signup-success-content": "no-reply@conformance.openchainproject.orgから登録フォームに入力したメール宛てにメールが送信されます。メールにあるリンクをクリックして、登録手続きを完了してください。メールが届かない場合は、迷惑メールフォルダーを確認し、no-reply@conformance.openchainproject.orgを信頼済みメールリストに加えてください。"
+   
+}
