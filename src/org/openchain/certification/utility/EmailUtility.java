@@ -236,7 +236,7 @@ public class EmailUtility {
 			logger.error("Missing return_email parameter in the web.xml file"); //$NON-NLS-1$
 			throw(new EmailUtilException(I18N.getMessage("EmailUtility.7",language))); //$NON-NLS-1$
 		}
-		String link = responseServletUrl + "?request=pwreset&username=" + username + "&uuid=" + uuid.toString(); //$NON-NLS-1$ //$NON-NLS-2$
+		String link = responseServletUrl + "?request=pwreset&username=" + username + "&uuid=" + uuid.toString() + "&locale="+language; //$NON-NLS-1$ //$NON-NLS-2$
 		String msg = I18N.getMessage("EmailUtility.91", language, link); //$NON-NLS-1$
 		Destination destination = new Destination().withToAddresses(new String[]{email});
 		Content subject = new Content().withData(I18N.getMessage("EmailUtility.96",language)); //$NON-NLS-1$

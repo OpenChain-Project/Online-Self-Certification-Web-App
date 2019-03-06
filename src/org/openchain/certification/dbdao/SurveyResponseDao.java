@@ -108,19 +108,19 @@ public class SurveyResponseDao {
 				"(select id from section where spec_version=?)), ?, ?)", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		setSubmittedQuery = con.prepareStatement("update survey_response set submitted=? where " + //$NON-NLS-1$
-				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)", //$NON-NLS-1$
+				"user_id =(select id from openchain_user where username=?) and spec_version in (select id from spec where version=?)", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		getStatusQuery = con.prepareStatement("select survey_response.id as id, approved, rejected, submitted from survey_response " + //$NON-NLS-1$
 				"join spec on survey_response.spec_version=spec.id " + //$NON-NLS-1$
 				" where user_id=? and version=?", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		setApprovedQuery = con.prepareStatement("update survey_response set approved=? where " + //$NON-NLS-1$
-				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)", //$NON-NLS-1$
+				"user_id =(select id from openchain_user where username=?) and spec_version in (select id from spec where version=?)", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		setApprovedIdsQuery = con.prepareStatement("update survey_response set approved=? where id=?", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		setRejectedQuery = con.prepareStatement("update survey_response set rejected=? where " + //$NON-NLS-1$
-				"user_id =(select id from openchain_user where username=?) and spec_version = (select id from spec where version=?)", //$NON-NLS-1$
+				"user_id =(select id from openchain_user where username=?) and spec_version in (select id from spec where version=?)", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		setRejectedIdsQuery = con.prepareStatement("update survey_response set rejected=? where id=?", //$NON-NLS-1$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -402,7 +402,7 @@ public class SurveyResponseDao {
 		ResultSet result = null;
 		try {
 			long userId = getUserId(response.getResponder().getUsername());
-			long versionId = SurveyDbDao.getSpecId(con, response.getSpecVersion(), language, true);
+			long versionId = SurveyDbDao.getSpecId(con, response.getSpecVersion(), User.DEFAULT_LANGUAGE, true);	// We always use the default language to prevent duplicates
 			addSurveyResponseQuery.setLong(1, userId);
 			addSurveyResponseQuery.setLong(2, versionId);
 			addSurveyResponseQuery.setBoolean(3, response.isSubmitted());
@@ -519,7 +519,7 @@ public class SurveyResponseDao {
 		Savepoint save = con.setSavepoint();
 		try {
 			long userId = getUserId(response.getResponder().getUsername());
-			long versionId = SurveyDbDao.getSpecId(con, response.getSpecVersion(), language, true);
+			long versionId = SurveyDbDao.getSpecId(con, response.getSpecVersion(), User.DEFAULT_LANGUAGE, true);  // Always use the default language to prevent duplicate surveys
 			_updateSurveyResponseAnswers(response, userId, versionId, language);
 		} catch(SQLException ex) {
 			logger.error("SQL exception updating survey response answers for "+response.getResponder().getUsername(),ex); //$NON-NLS-1$

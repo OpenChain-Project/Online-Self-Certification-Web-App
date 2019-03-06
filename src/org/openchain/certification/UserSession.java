@@ -340,7 +340,7 @@ public class UserSession {
 			String hashedUuid = PasswordUtil.getToken(uuid.toString());
 			user.setUuid(hashedUuid);
 			UserDb.getUserDb(config).addUser(user);
-			EmailUtility.emailVerification(name, email, uuid, username, responseServletUrl, config, languagePreference);
+			EmailUtility.emailVerification(name, email, uuid, username, responseServletUrl, config, preferredLanguage);
 	        return true;
 		} catch (SQLException e) {
 			this.lastError = I18N.getMessage("UserSession.35",locale,e.getMessage());  //$NON-NLS-1$

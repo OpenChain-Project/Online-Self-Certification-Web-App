@@ -44,7 +44,7 @@ public class TestUserSession {
 	
 	Connection con;
 	
-	String language = "eng";
+	String language = User.DEFAULT_LANGUAGE;
 	String primarySpecVersion = "1.0";
 	String specVersion = primarySpecVersion + ".2";
 	String section1Name = "section1Name";
