@@ -74,8 +74,9 @@ public class TestSurveyResponseDao {
 	SurveyDbDao surveyDao;
 	User user;
 	User user2;
-	String language1 = "abc";
+	String language1 = User.DEFAULT_LANGUAGE;
 	String language2 = "def";
+	String language3 = "hij";
 	
 	@Before
 	public void setUp() throws Exception {
@@ -124,6 +125,10 @@ public class TestSurveyResponseDao {
 		survey.setSections(sections);
 		surveyDao = new SurveyDbDao(con);
 		surveyDao.addSurvey(survey);
+		Survey survey2 = new Survey(specVersion, language3);
+		survey2.setSections(sections);
+		survey2.setLanguage(language3);
+		surveyDao.addSurvey(survey2);
 		
 		user = new User();
 		user.setAddress("Address");
