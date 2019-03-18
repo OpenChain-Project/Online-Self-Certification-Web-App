@@ -351,7 +351,7 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label, .select-lab
   
   /* color of accordion header changes when all the questions are answered */
 .all-answered {
-	    background-color: #4CAF50 !important;
+	    background-color: #E25829 !important;
 	    color:white !important;
 }
 /******************************** INDEX CSS *********************************/
