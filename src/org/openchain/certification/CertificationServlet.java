@@ -779,7 +779,7 @@ public class CertificationServlet extends HttpServlet {
 				}
 			}
 		}
-		if (!existingQuestionNumbers.containsAll(foundQuestionNumbers)) {
+		if (!foundQuestionNumbers.containsAll(existingQuestionNumbers)) {
 			throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.63",language))); //$NON-NLS-1$
 		}
 		if (updateDb) {
