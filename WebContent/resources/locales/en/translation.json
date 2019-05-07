@@ -11,16 +11,16 @@
 
   "title": "OpenChain Self Certification",
   "welcome": "Welcome",
-  "welcome_content": "The OpenChain Specification represents a core set of requirements a quality FOSS compliance program must satisfy. It fosters efficient and effective compliance of open source licenses across the supply chain. By self-certifying, participants are able to confirm they are in compliance with the Specification's requirements.",
-  "Getting Started": "Getting Started",
+  "welcome_content": "The OpenChain Specification identifies the key requirements of a quality open source compliance program. OpenChain Conformance allows organizations to show they meet these requirements. You can use this online questionnaire for free self-certification. You can also use this questionnaire for internal "health checks." Your progress and results are private until you choose to submit them for publication.",
+  "Getting Started": "Get Started",
   "Getting Started_content": "Applicants confirm their understanding of the OpenChain Specification and the need to complete Self-Certification to become OpenChain Conformant. The Online Self-Certification requires you to:",
-  "Getting Started_content_1": "Fulfill all requirements set forth in the <a class=\"anchor\" href=\"https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf\" target=\"_blank\">Specification</a>",
-  "Getting Started_content_2":"Create an account by selecting sign-up in the user menu.",
-  "Getting Started_content_3":"Name a contact person to handle inquiries.",
-  "Getting Started_content_4":"Have an authorized representative complete the web-based Online Self-Certification by answering all the questions.",
-  "Getting Started_content_5":"Fill out the submission form.",
-  "Getting Started_content_6":"Archive a Reference Copy of all Verification Artifacts as a record in support of the Online Self-Certification.",
-  "offline-conformance-pdf" : "Do you prefer to work with a printed checklist? You can download the offline conformance handbook <a class=\"anchor\" id=\"dwnquestionnaire\" target=\"_blank\">here</a>",
+  "Getting Started_content_1": "Sign-up to create an account.",
+  "Getting Started_content_2": "Complete the questionnaire.",
+  "Getting Started_content_3": "Keep a record of how you met the requirements.",
+  "Learn More": "Learn More",
+  "Learn More_content": "",
+  "Printable Guide": "Printable Version"
+  "offline-conformance-pdf": "You can get the self-certification questionnaire in a printable and sharable format. You can download that <a href="https://openchain-project.github.io/conformance-questionnaire/questionnaire.pdf">here</a>.",
   
 
 
