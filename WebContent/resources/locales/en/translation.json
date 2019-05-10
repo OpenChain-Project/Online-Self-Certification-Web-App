@@ -11,7 +11,7 @@
 
   "title": "OpenChain Self Certification",
   "welcome": "Welcome",
-  "welcome_content": "The OpenChain Specification identifies the key requirements of a quality open source compliance program. OpenChain Conformance allows organizations to show they meet these requirements. You can use this online questionnaire for free self-certification. You can also use this questionnaire for internal "health checks." Your progress and results are private until you choose to submit them for publication.",
+  "welcome_content": "The OpenChain Specification identifies the key requirements of a quality open source compliance program. OpenChain Conformance allows organizations to show they meet these requirements. You can use this online questionnaire for free self-certification. You can also use this questionnaire for internal health checks. Your progress and results are private until you choose to submit them for publication.",
   "Getting Started": "Get Started",
   "Getting Started_content": "Applicants confirm their understanding of the OpenChain Specification and the need to complete Self-Certification to become OpenChain Conformant. The Online Self-Certification requires you to:",
   "Getting Started_content_1": "Sign-up to create an account.",
@@ -19,8 +19,8 @@
   "Getting Started_content_3": "Keep a record of how you met the requirements.",
   "Learn More": "Learn More",
   "Learn More_content": "",
-  "Printable Guide": "Printable Version"
-  "offline-conformance-pdf": "You can get the self-certification questionnaire in a printable and sharable format. You can download that <a href="https://openchain-project.github.io/conformance-questionnaire/questionnaire.pdf">here</a>.",
+  "Printable Guide": "Printable Version",
+  "offline-conformance-pdf": "You can get the self-certification questionnaire in a printable and sharable format. You can download that <a class=\"anchor\" id=\"dwnquestionnaire\" target=\"_blank\">here</a>",
   
 
 
