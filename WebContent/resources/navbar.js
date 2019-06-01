@@ -164,8 +164,8 @@ function loginUser() {
 		    contentType: 'application/json; charset=utf-8',
 		    async: false, 
 		    success: function( json ) {
-		    	password.val('');
 		    	if ( json.status == "OK" ) {
+			    	password.val('');
 		    		if (json.languagePreference) {
 		    			changeLng(json.languagePreference);
 		    		}
