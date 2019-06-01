@@ -643,7 +643,7 @@ public class CertificationServlet extends HttpServlet {
 	 * @throws GitRepoException
 	 * @throws SQLException
 	 */
-	private SurveyUpdateResult updateSurvey(String tag, String commit, String language, boolean updateDb) throws GitRepoException, SQLException {
+	protected SurveyUpdateResult updateSurvey(String tag, String commit, String language, boolean updateDb) throws GitRepoException, SQLException {
 		SurveyUpdateResult result = new SurveyUpdateResult();
 		QuestionnaireGitRepo repo = QuestionnaireGitRepo.getQuestionnaireGitRepo(language);
 		repo.refresh(language);
@@ -657,66 +657,82 @@ public class CertificationServlet extends HttpServlet {
 			Iterator<File> jsonFiles = repo.getQuestionnaireJsonFiles(language);
 			while (jsonFiles.hasNext()) {
 				File jsonFile = jsonFiles.next();
-				BufferedReader reader = null;
-				try {
-					reader = new BufferedReader(new InputStreamReader(new FileInputStream(jsonFile), "UTF8"));
-					Survey survey = gson.fromJson(reader, Survey.class);
-					survey.addInfoToSectionQuestions();
-					if (dao.surveyExists(survey.getSpecVersion(), survey.getLanguage(), false)) {
-						try {
-							SurveyQuestionUpdateStats updateStats = updateSurveyQuestions(survey, language, con, updateDb);
-							if (updateStats.getNumChanges() > 0) {
-								result.addVersionUpdated(survey.getSpecVersion(), survey.getLanguage(), updateStats, language);
-							}
-						} catch (QuestionException e) {
-							logger.error("Question error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
-							result.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
-						} catch (SurveyResponseException e) {
-							logger.error("Survey response error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
-							result.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
-						} catch (UpdateSurveyException e) {
-							logger.error("Update survey error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
-							result.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
-						} catch (IOException e) {
-							logger.error("I/O error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
-							result.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
-						}
-					} else {
-						if (updateDb) {
-							try {
-								logger.info("Adding survey questions for spec version "+survey.getSpecVersion()+", "+survey.getLanguage());  //$NON-NLS-1$    //$NON-NLS-2$
-								dao.addSurvey(survey);
-							} catch (SurveyResponseException e) {
-								logger.error("Survey response error adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
-								result.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
-							} catch (QuestionException e) {
-								logger.error("Question exception adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
-								result.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
-							}
-						}
-						result.addVersionAdded(survey.getSpecVersion(), survey.getLanguage(), language);
-					}
-				} catch (FileNotFoundException e) {
-					logger.error("File not found while updating survey questions from GIT: "+jsonFile.getName()); //$NON-NLS-1$
-					result.addWarning(I18N.getMessage("CertificationServlet.27",language)); //$NON-NLS-1$
-				} catch (UnsupportedEncodingException e1) {
-					logger.error("Unsupported encoding exception found while updating survey questions from GIT: "+jsonFile.getName()); //$NON-NLS-1$
-					result.addWarning(I18N.getMessage("CertificationServlet.28",language)); //$NON-NLS-1$
-				} finally {
-					if (reader != null) {
-						try {
-							reader.close();
-						} catch (IOException e) {
-							logger.warn("Unable to close reader for "+jsonFile.getName()); //$NON-NLS-1$
-						}
-					}
-				}
+				updateSurvey(jsonFile, language, updateDb, result, dao, gson);
 			}
 			return result;
 		} finally {
 			repo.unlock();
 			if (con != null) {
 				con.close();
+			}
+		}
+	}
+
+	/**
+	 * Update the survey results from the Questionnaire GIT repository.  New languages or versions
+	 * will be added and existing versions will be updated.  Note - database will only be updated if
+	 * updateDB is set to true
+	 * @param jsonFile File containing the new survey in JSON format
+	 * @param language Language to be used for error handling
+	 * @param updateDb if true, the database will be updated.  If false, only stats will be calculated
+	 * @param stats statistics on what would be updated if the updateDb is set to true
+	 * @param dao Survey DBDAO
+	 * @throws SQLException 
+	 */
+	protected static void updateSurvey(File jsonFile, String language, boolean updateDb,
+			SurveyUpdateResult stats, SurveyDbDao dao, Gson gson) throws SQLException {
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(jsonFile), "UTF8"));
+			Survey survey = gson.fromJson(reader, Survey.class);
+			survey.addInfoToSectionQuestions();
+			if (dao.surveyExists(survey.getSpecVersion(), survey.getLanguage(), false)) {
+				try {
+					SurveyQuestionUpdateStats updateStats = updateSurveyQuestions(survey, language, dao, updateDb);
+					if (updateStats.getNumChanges() > 0) {
+						stats.addVersionUpdated(survey.getSpecVersion(), survey.getLanguage(), updateStats, language);
+					}
+				} catch (QuestionException e) {
+					logger.error("Question error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
+				} catch (SurveyResponseException e) {
+					logger.error("Survey response error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
+				} catch (UpdateSurveyException e) {
+					logger.error("Update survey error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
+				} catch (IOException e) {
+					logger.error("I/O error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
+				}
+			} else {
+				if (updateDb) {
+					try {
+						logger.info("Adding survey questions for spec version "+survey.getSpecVersion()+", "+survey.getLanguage());  //$NON-NLS-1$    //$NON-NLS-2$
+						dao.addSurvey(survey);
+					} catch (SurveyResponseException e) {
+						logger.error("Survey response error adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+						stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
+					} catch (QuestionException e) {
+						logger.error("Question exception adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+						stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
+					}
+				}
+				stats.addVersionAdded(survey.getSpecVersion(), survey.getLanguage(), language);
+			}
+		} catch (FileNotFoundException e) {
+			logger.error("File not found while updating survey questions from GIT: "+jsonFile.getName()); //$NON-NLS-1$
+			stats.addWarning(I18N.getMessage("CertificationServlet.27",language)); //$NON-NLS-1$
+		} catch (UnsupportedEncodingException e1) {
+			logger.error("Unsupported encoding exception found while updating survey questions from GIT: "+jsonFile.getName()); //$NON-NLS-1$
+			stats.addWarning(I18N.getMessage("CertificationServlet.28",language)); //$NON-NLS-1$
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					logger.warn("Unable to close reader for "+jsonFile.getName()); //$NON-NLS-1$
+				}
 			}
 		}
 	}
@@ -732,14 +748,13 @@ public class CertificationServlet extends HttpServlet {
 	 * @throws UpdateSurveyException
 	 * @throws IOException
 	 */
-	private SurveyQuestionUpdateStats updateSurveyQuestions(Survey survey, String language, Connection con, boolean updateDb) throws SQLException, QuestionException, SurveyResponseException, UpdateSurveyException, IOException {
+	protected static SurveyQuestionUpdateStats updateSurveyQuestions(Survey survey, String language, SurveyDbDao dao, boolean updateDb) throws SQLException, QuestionException, SurveyResponseException, UpdateSurveyException, IOException {
 		SurveyQuestionUpdateStats stats = new SurveyQuestionUpdateStats();
 		survey.addInfoToSectionQuestions();
-		long existingId = SurveyDbDao.getSpecId(con, survey.getSpecVersion(), survey.getLanguage(), false);
+		long existingId = dao.getSpecId(survey.getSpecVersion(), survey.getLanguage(), false);
 		if (existingId < 0) {
 			throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.58",language,survey.getSpecVersion()))); //$NON-NLS-1$
 		}
-		SurveyDbDao dao = new SurveyDbDao(con);
 		Survey existing = dao.getSurvey(survey.getSpecVersion(), survey.getLanguage());
 		if (existing == null) {
 			throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.58",language,survey.getSpecVersion()))); //$NON-NLS-1$

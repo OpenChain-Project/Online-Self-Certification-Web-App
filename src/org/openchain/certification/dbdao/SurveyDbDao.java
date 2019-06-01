@@ -682,7 +682,7 @@ public class SurveyDbDao {
 	 * @return ID from the spec table associated with the version and language. If the language is not available, the ID for the default language will be returned.
 	 * @throws SQLException
 	 */
-	private long getSpecId(String specVersion, String language, boolean allowDefaultLanguage) throws SQLException {
+	public long getSpecId(String specVersion, String language, boolean allowDefaultLanguage) throws SQLException {
 		return getSpecId(this.connection, specVersion, language, allowDefaultLanguage);
 	}
 
