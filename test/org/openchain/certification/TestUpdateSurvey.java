@@ -51,6 +51,7 @@ public class TestUpdateSurvey {
 	private static final String UPDATED_QUESTION_1 = "Test updated question?";
 	private static final String UPDATED_QUESTION_NUM_1 = "1.a";
 	private static final String INVALID_UPDATE_LESS_QUESTIONS_PATH = TEST_DIRECTORY + File.separator + "oneless_questionnaire.json";
+	private static final String INVALID_DUP_QUESTION_PATH = TEST_DIRECTORY + File.separator + "dup_question_questionnaire.json";
 	private static final int NUM_SECTION1_QUESTIONS = 14;
 	Connection con;
 	Gson gson;
@@ -90,6 +91,35 @@ public class TestUpdateSurvey {
 		assertEquals(NEW_VERSION, surveyVersions.get(0));
 		Survey survey = surveyDao.getSurvey(NEW_VERSION, LANGUAGE);
 		assertEquals(NUM_SECTIONS, survey.getSections().size());
+	}
+	
+	@Test
+	public void testInValidDupQuestionUpload() throws SQLException, QuestionException, SurveyResponseException {
+		File jsonFile = new File(INVALID_DUP_QUESTION_PATH);
+		SurveyUpdateResult stats = new SurveyUpdateResult();
+		CertificationServlet.updateSurvey(jsonFile, LANGUAGE, true, stats, surveyDao, gson);
+		assertEquals(0, stats.getVersionsAdded().size());
+		assertEquals(0, stats.getVersionsUpdated().size());
+		assertEquals(1, stats.getWarnings().size());
+		assertTrue(stats.getWarnings().get(0).contains(NEW_VERSION));
+		List<String> surveyVersions = surveyDao.getSurveyVesions();
+		assertEquals(0, surveyVersions.size());
+	}
+	
+	@Test
+	public void testInValidDupQuestionUpdate() throws SQLException, QuestionException, SurveyResponseException {
+		File jsonFile = new File(VALID_FILE_PATH);
+		SurveyUpdateResult stats = new SurveyUpdateResult();
+		CertificationServlet.updateSurvey(jsonFile, LANGUAGE, true, stats, surveyDao, gson);
+		File updateFile = new File(INVALID_DUP_QUESTION_PATH);
+		stats = new SurveyUpdateResult();
+		CertificationServlet.updateSurvey(updateFile, LANGUAGE, true, stats, surveyDao, gson);
+		assertEquals(0, stats.getVersionsAdded().size());
+		assertEquals(0, stats.getVersionsUpdated().size());
+		assertEquals(1, stats.getWarnings().size());
+		assertTrue(stats.getWarnings().get(0).contains(NEW_VERSION));
+		List<String> surveyVersions = surveyDao.getSurveyVesions();
+		assertEquals(1, surveyVersions.size());
 	}
 	
 	@Test

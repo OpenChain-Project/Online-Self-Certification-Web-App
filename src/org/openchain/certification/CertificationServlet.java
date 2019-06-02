@@ -706,19 +706,31 @@ public class CertificationServlet extends HttpServlet {
 					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
 				}
 			} else {
-				if (updateDb) {
-					try {
-						logger.info("Adding survey questions for spec version "+survey.getSpecVersion()+", "+survey.getLanguage());  //$NON-NLS-1$    //$NON-NLS-2$
-						dao.addSurvey(survey);
-					} catch (SurveyResponseException e) {
-						logger.error("Survey response error adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
-						stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
-					} catch (QuestionException e) {
-						logger.error("Question exception adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
-						stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
+				survey.addInfoToSectionQuestions();
+				List<String> surveyWarnings = survey.verify(language);
+				if (surveyWarnings.size() > 0) {
+					StringBuilder sb = new StringBuilder(surveyWarnings.get(0));
+					for (int i = 1; i < surveyWarnings.size(); i++) {
+						sb.append("; ");
+						sb.append(surveyWarnings.get(i));
 					}
+					logger.error("Errors found in survey: "+sb.toString());
+					stats.addWarning(I18N.getMessage("CertificationServlet.70",language,survey.getSpecVersion(),sb.toString()));
+				} else {
+					if (updateDb) {
+						try {
+							logger.info("Adding survey questions for spec version "+survey.getSpecVersion()+", "+survey.getLanguage());  //$NON-NLS-1$    //$NON-NLS-2$
+							dao.addSurvey(survey);
+						} catch (SurveyResponseException e) {
+							logger.error("Survey response error adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+							stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
+						} catch (QuestionException e) {
+							logger.error("Question exception adding survey version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
+							stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
+						}
+					}
+					stats.addVersionAdded(survey.getSpecVersion(), survey.getLanguage(), language);
 				}
-				stats.addVersionAdded(survey.getSpecVersion(), survey.getLanguage(), language);
 			}
 		} catch (FileNotFoundException e) {
 			logger.error("File not found while updating survey questions from GIT: "+jsonFile.getName()); //$NON-NLS-1$
@@ -751,6 +763,16 @@ public class CertificationServlet extends HttpServlet {
 	protected static SurveyQuestionUpdateStats updateSurveyQuestions(Survey survey, String language, SurveyDbDao dao, boolean updateDb) throws SQLException, QuestionException, SurveyResponseException, UpdateSurveyException, IOException {
 		SurveyQuestionUpdateStats stats = new SurveyQuestionUpdateStats();
 		survey.addInfoToSectionQuestions();
+		List<String> surveyWarnings = survey.verify(language);
+		if (surveyWarnings.size() > 0) {
+			StringBuilder sb = new StringBuilder(surveyWarnings.get(0));
+			for (int i = 1; i < surveyWarnings.size(); i++) {
+				sb.append("; ");
+				sb.append(surveyWarnings.get(i));
+			}
+			logger.error("Errors found in survey for update: "+sb.toString());
+			throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.70",language,survey.getSpecVersion(),sb.toString()))); //$NON-NLS-1$
+		}
 		long existingId = dao.getSpecId(survey.getSpecVersion(), survey.getLanguage(), false);
 		if (existingId < 0) {
 			throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.58",language,survey.getSpecVersion()))); //$NON-NLS-1$

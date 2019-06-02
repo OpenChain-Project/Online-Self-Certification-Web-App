@@ -26,6 +26,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.openchain.certification.I18N;
+
 import com.opencsv.CSVWriter;
 
 /**
@@ -234,5 +236,55 @@ public class Survey {
 			}
 		}
 		this.compactAndPretty = false;
+	}
+
+	/**
+	 * @return List of any warnings due to an invalid survey
+	 */
+	public List<String> verify(String language) {
+		List<String> retval = new ArrayList<String>();
+		Set<String> existingSections = new HashSet<String>();
+		Set<String> existingQuestions = new HashSet<String>();
+		Set<String> foundSubQuestions = new HashSet<String>();
+		for (Section section:sections) {
+			// Check for duplication section names
+			if (existingSections.contains(section.getName())) {
+				retval.add(I18N.getMessage("Survey.1", language, section.getName())); //$NON-NLS-1$
+			}
+			existingSections.add(section.getName());
+			for (Question question:section.getQuestions()) {
+				// Check for duplication question numbers
+				if (existingQuestions.contains(question.getNumber())) {
+					retval.add(I18N.getMessage("Survey.2", language, question.getNumber())); //$NON-NLS-1$
+				}
+				existingQuestions.add(question.getNumber());
+				if (!Objects.equals(question.getSectionName(), section.getName())) {
+					retval.add(I18N.getMessage("Survey.4", language, question.getNumber())); //$NON-NLS-1$
+				}
+				if (question instanceof SubQuestion) {
+					SubQuestion subq = (SubQuestion)question;
+					// Check to make sure we have enough subquestions
+					if (subq.getAllSubquestions().size() < subq.getMinNumberValidatedAnswers()) {
+						retval.add(I18N.getMessage("Survey.3", language, question.getNumber(), subq.getAllSubquestions().size(), subq.getMinNumberValidatedAnswers())); //$NON-NLS-1$
+					}
+					for (Question subquestion:subq.getAllSubquestions()) {
+						if (foundSubQuestions.contains(subquestion.getNumber())) {
+							retval.add(I18N.getMessage("Survey.2", language, question.getNumber())); //$NON-NLS-1$
+						}
+						if (!Objects.equals(subquestion.getSubQuestionOfNumber(), question.getNumber())) {
+							retval.add(I18N.getMessage("CertificationServlet.55", language, subquestion.getNumber())); //$NON-NLS-1$
+						}
+						foundSubQuestions.add(subquestion.getNumber());
+					}
+				}
+			}
+		}
+		// Make sure all subquestions are also present in the main question list
+		for (String subqnumber:foundSubQuestions) {
+			if (!existingQuestions.contains(subqnumber)) {
+				retval.add(I18N.getMessage("Survey.5", language, subqnumber)); //$NON-NLS-1$
+			}
+		}
+		return retval;
 	}
 }
