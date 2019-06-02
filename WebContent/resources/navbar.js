@@ -559,14 +559,13 @@ $(document).ready( function() {
 	$("#index-home").click(function () {
 		window.location = "index.html"+'?locale='+(url('?locale') || 'en');
 	});
-	$("#topnav").load("topnav.html");
 	$("#footer-outer").load('footer.html');
-	createNavMenu();
-	
+	$("#topnav").load("topnav.html", function() {
+		createNavMenu();
+	});
+
 	$(document).delegate("#dwnquestionnaire","click",function() 
 	{
-		
-		
 		var result = FileExist("https://openchain-project.github.io/conformance-questionnaire/questionnaire-"+(url('?locale'))+'.pdf');
 		 
 		if (result == true) 
