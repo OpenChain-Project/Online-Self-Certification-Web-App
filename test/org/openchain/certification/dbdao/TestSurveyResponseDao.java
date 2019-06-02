@@ -89,14 +89,12 @@ public class TestSurveyResponseDao {
 		section1.setTitle(section1Title);
 		List<Question> section1Questions = new ArrayList<Question>();
 		s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, specVersion, language1, s1q1Answer);
-		s1q1.setSpecReference(s1q1SpecRef);
+				section1Name, s1q1Number, specVersion, s1q1SpecRef, language1, s1q1Answer);
 		section1Questions.add(s1q1);
 
-		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
-				section1Name, s1q2Number, specVersion, language1, s1q2Answer, s1q2Prompt);
 		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
-		s1q2.setSpecReference(s1q2SpecRef);
+		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, specVersion, s1q2SpecRef, language1, s1q2Answer, s1q2Prompt);
 		section1Questions.add(s1q2);
 		section1.setQuestions(section1Questions);
 		sections.add(section1);
@@ -105,19 +103,16 @@ public class TestSurveyResponseDao {
 		section2.setTitle(section2Title);
 		List<Question> section2Questions = new ArrayList<Question>();
 		s2q1 = new SubQuestion(s2q1Question, 
-				section2Name, s2q1Number, specVersion, language1, s2q1MinCorrect);
-		s2q1.setSpecReference(s2q1SpecRef);
+				section2Name, s2q1Number, specVersion, s2q1SpecRef, language1, s2q1MinCorrect);
 		section2Questions.add(s2q1);
 
 		s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
-				section2Name, s2q2Number, specVersion, language1, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
-		s2q2.setSpecReference(s2q2SpecRef);
+				section2Name, s2q2Number, specVersion, s2q2SpecRef, language1, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q2);
 
 		s2q3 = new YesNoQuestion(s2q3Question, 
-				section2Name, s2q3Number, specVersion, language1, s2q3Answer);
-		s2q3.setSpecReference(s2q3SpecRef);
+				section2Name, s2q3Number, specVersion, s2q3SpecRef, language1, s2q3Answer);
 		s2q3.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q3);
 		section2.setQuestions(section2Questions);
@@ -198,14 +193,12 @@ public class TestSurveyResponseDao {
 		newSection1.setTitle(section1.getTitle());
 		List<Question> newQuestions1 = new ArrayList<Question>();
 		s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, laterSpecVersion, language1, s1q1Answer);
-		s1q1.setSpecReference(s1q1SpecRef);
+				section1Name, s1q1Number, laterSpecVersion, s1q1SpecRef, language1, s1q1Answer);
 		newQuestions1.add(s1q1);
 
-		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
-				section1Name, s1q2Number, laterSpecVersion, language1, s1q2Answer, s1q2Prompt);
 		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
-		s1q2.setSpecReference(s1q2SpecRef);
+		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, laterSpecVersion, s1q2SpecRef, language1, s1q2Answer, s1q2Prompt);
 		newQuestions1.add(s1q2);
 		newSection1.setQuestions(newQuestions1);
 		laterSections.add(newSection1);
@@ -214,20 +207,17 @@ public class TestSurveyResponseDao {
 		newSection2.setTitle(section2.getTitle());
 		List<Question> newQuestions2 = new ArrayList<Question>();
 		s2q1 = new SubQuestion(s2q1Question, 
-				section2Name, s2q1Number, laterSpecVersion, language1, s2q1MinCorrect);
-		s2q1.setSpecReference(s2q1SpecRef);
+				section2Name, s2q1Number, laterSpecVersion, s2q1SpecRef, language1, s2q1MinCorrect);
 		newQuestions2.add(s2q1);
 
 		s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
-				section2Name, s2q2Number, laterSpecVersion, language1, 
+				section2Name, s2q2Number, laterSpecVersion, s2q2SpecRef, language1, 
 				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
-		s2q2.setSpecReference(s2q2SpecRef);
 		s2q2.setSubQuestionOfNumber(s2q1Number);
 		newQuestions2.add(s2q2);
 
 		s2q3 = new YesNoQuestion(s2q3Question, 
-				section2Name, s2q3Number, laterSpecVersion, language1, s2q3Answer);
-		s2q3.setSpecReference(s2q3SpecRef);
+				section2Name, s2q3Number, laterSpecVersion, s2q3SpecRef, language1, s2q3Answer);
 		s2q3.setSubQuestionOfNumber(s2q1Number);
 		newQuestions2.add(s2q3);
 		newSection2.setQuestions(newQuestions2);
@@ -524,14 +514,12 @@ public class TestSurveyResponseDao {
 		newSection1.setTitle(section1.getTitle());
 		List<Question> newQuestions1 = new ArrayList<Question>();
 		s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, laterSpecVersion, language1, s1q1Answer);
-		s1q1.setSpecReference(s1q1SpecRef);
+				section1Name, s1q1Number, laterSpecVersion, s1q1SpecRef, language1, s1q1Answer);
 		newQuestions1.add(s1q1);
-
-		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
-				section1Name, s1q2Number, laterSpecVersion, language1, s1q2Answer, s1q2Prompt);
+		
 		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
-		s1q2.setSpecReference(s1q2SpecRef);
+		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, laterSpecVersion, s1q2SpecRef, language1, s1q2Answer, s1q2Prompt);
 		newQuestions1.add(s1q2);
 		newSection1.setQuestions(newQuestions1);
 		laterSections.add(newSection1);
@@ -540,20 +528,17 @@ public class TestSurveyResponseDao {
 		newSection2.setTitle(section2.getTitle());
 		List<Question> newQuestions2 = new ArrayList<Question>();
 		s2q1 = new SubQuestion(s2q1Question, 
-				section2Name, s2q1Number, laterSpecVersion, language1, s2q1MinCorrect);
-		s2q1.setSpecReference(s2q1SpecRef);
+				section2Name, s2q1Number, laterSpecVersion, s2q1SpecRef, language1, s2q1MinCorrect);
 		newQuestions2.add(s2q1);
 
 		s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
-				section2Name, s2q2Number, laterSpecVersion, language1, 
+				section2Name, s2q2Number, laterSpecVersion, s2q2SpecRef, language1, 
 				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
-		s2q2.setSpecReference(s2q2SpecRef);
 		s2q2.setSubQuestionOfNumber(s2q1Number);
 		newQuestions2.add(s2q2);
 
 		s2q3 = new YesNoQuestion(s2q3Question, 
-				section2Name, s2q3Number, laterSpecVersion, language1, s2q3Answer);
-		s2q3.setSpecReference(s2q3SpecRef);
+				section2Name, s2q3Number, laterSpecVersion, s2q3SpecRef, language1, s2q3Answer);
 		s2q3.setSubQuestionOfNumber(s2q1Number);
 		newQuestions2.add(s2q3);
 		newSection2.setQuestions(newQuestions2);
@@ -668,14 +653,12 @@ public class TestSurveyResponseDao {
 		newSection1.setTitle(section1.getTitle());
 		List<Question> newQuestions1 = new ArrayList<Question>();
 		s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, laterSpecVersion, language1, s1q1Answer);
-		s1q1.setSpecReference(s1q1SpecRef);
+				section1Name, s1q1Number, laterSpecVersion, s1q1SpecRef, language1, s1q1Answer);
 		newQuestions1.add(s1q1);
 
-		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
-				section1Name, s1q2Number, laterSpecVersion, language1, s1q2Answer, s1q2Prompt);
 		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
-		s1q2.setSpecReference(s1q2SpecRef);
+		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, laterSpecVersion, s1q2SpecRef, language1, s1q2Answer, s1q2Prompt);
 		newQuestions1.add(s1q2);
 		newSection1.setQuestions(newQuestions1);
 		laterSections.add(newSection1);
@@ -684,19 +667,16 @@ public class TestSurveyResponseDao {
 		newSection2.setTitle(section2.getTitle());
 		List<Question> newQuestions2 = new ArrayList<Question>();
 		s2q1 = new SubQuestion(s2q1Question, 
-				section2Name, s2q1Number, laterSpecVersion, language1, s2q1MinCorrect);
-		s2q1.setSpecReference(s2q1SpecRef);
+				section2Name, s2q1Number, laterSpecVersion, s2q1SpecRef, language1, s2q1MinCorrect);
 		newQuestions2.add(s2q1);
 
 		s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
-				section2Name, s2q2Number, laterSpecVersion, language1, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
-		s2q2.setSpecReference(s2q2SpecRef);
+				section2Name, s2q2Number, laterSpecVersion, s2q2SpecRef, language1, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSubQuestionOfNumber(s2q1Number);
 		newQuestions2.add(s2q2);
 
 		s2q3 = new YesNoQuestion(s2q3Question, 
-				section2Name, s2q3Number, laterSpecVersion, language1, s2q3Answer);
-		s2q3.setSpecReference(s2q3SpecRef);
+				section2Name, s2q3Number, laterSpecVersion, s2q3SpecRef, language1, s2q3Answer);
 		s2q3.setSubQuestionOfNumber(s2q1Number);
 		newQuestions2.add(s2q3);
 		newSection2.setQuestions(newQuestions2);
@@ -729,14 +709,12 @@ public class TestSurveyResponseDao {
 		nonUserSection1.setTitle(section1.getTitle());
 		List<Question> nonUserQuestions1 = new ArrayList<Question>();
 		s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, nonUserSpecVersion, language1, s1q1Answer);
-		s1q1.setSpecReference(s1q1SpecRef);
+				section1Name, s1q1Number, nonUserSpecVersion, s1q1SpecRef, language1, s1q1Answer);
 		nonUserQuestions1.add(s1q1);
 
-		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
-				section1Name, s1q2Number, nonUserSpecVersion, language1, s1q2Answer, s1q2Prompt);
 		String[] s1q2SpecRef3 = new String[] {"s1q2SpecRef3"};
-		s1q2.setSpecReference(s1q2SpecRef3);
+		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, nonUserSpecVersion, s1q2SpecRef3, language1, s1q2Answer, s1q2Prompt);
 		nonUserQuestions1.add(s1q2);
 		nonUserSection1.setQuestions(nonUserQuestions1);
 		nonUserSections.add(nonUserSection1);
@@ -745,8 +723,7 @@ public class TestSurveyResponseDao {
 		nonUserSection2.setTitle(section2.getTitle());
 		List<Question> nonUserQuestions2 = new ArrayList<Question>();
 		s2q1 = new SubQuestion(s2q1Question, 
-				section2Name, s2q1Number, nonUserSpecVersion, language1, s2q1MinCorrect);
-		s2q1.setSpecReference(s2q1SpecRef);
+				section2Name, s2q1Number, nonUserSpecVersion, s2q1SpecRef, language1, s2q1MinCorrect);
 		nonUserQuestions2.add(s2q1);
 
 		nonUserSection2.setQuestions(nonUserQuestions2);

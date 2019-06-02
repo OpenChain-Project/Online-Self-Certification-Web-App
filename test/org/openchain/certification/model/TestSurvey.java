@@ -60,8 +60,9 @@ public class TestSurvey {
 		YesNo answer = YesNo.Yes;
 		String evidence = "evidence";
 		Pattern pattern = Pattern.compile(".*");
+		String[] specRefs = new String[] {"1.0", "1.1"};
 		YesNoQuestionWithEvidence ynq = new YesNoQuestionWithEvidence(question, sectionName, 
-				number, specVersion, language, answer, evidence, pattern);
+				number, specVersion, specRefs, language, answer, evidence, pattern);
 		List<Question> questions = new ArrayList<Question>();
 		questions.add(ynq);
 		section.setQuestions(questions);
@@ -92,8 +93,9 @@ public class TestSurvey {
 		YesNo answer = YesNo.Yes;
 		String evidence = "evidence";
 		Pattern pattern = Pattern.compile(".*");
+		String[] specRefs = new String[] {"1.0", "1.1"};
 		YesNoQuestionWithEvidence ynq = new YesNoQuestionWithEvidence(question, sectionName, 
-				number, specVersion, language, answer, evidence, pattern);
+				number, specVersion, specRefs, language, answer, evidence, pattern);
 		List<Question> questions = new ArrayList<Question>();
 		questions.add(ynq);
 		section.setQuestions(questions);
@@ -101,7 +103,6 @@ public class TestSurvey {
 		sections.add(section);
 		survey.setSections(sections);
 		
-		Survey clone = survey.clone();
 		assertEquals(specVersion, survey.getSpecVersion());
 		assertEquals(language, survey.getLanguage());
 		assertEquals(1, survey.getSections().size());

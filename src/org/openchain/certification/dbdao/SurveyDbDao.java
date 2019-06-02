@@ -211,8 +211,8 @@ public class SurveyDbDao {
 					Question question;
 					if (type.equals(YesNoQuestion.TYPE_NAME)) {
 						question = new YesNoQuestion(result.getString("question"), section.getName(),  //$NON-NLS-1$
-								result.getString("number"), specVersion, language, //$NON-NLS-1$
-								YesNo.valueOf(result.getString("correct_answer"))); //$NON-NLS-1$
+								result.getString("number"), specVersion, Question.specReferenceStrToArray(result.getString("spec_reference")), //$NON-NLS-1$ //$NON-NLS-2$
+								 language, YesNo.valueOf(result.getString("correct_answer"))); //$NON-NLS-1$
 					} else if (type.equals(YesNoQuestionWithEvidence.TYPE_NAME)) {
 						Pattern evidenceValidation = null;
 						String evidenceValString = result.getString("evidence_validation"); //$NON-NLS-1$
@@ -220,13 +220,13 @@ public class SurveyDbDao {
 							evidenceValidation = Pattern.compile(evidenceValString);
 						}
 						question = new YesNoQuestionWithEvidence(result.getString("question"), section.getName(),  //$NON-NLS-1$
-								result.getString("number"), specVersion, language, //$NON-NLS-1$
+								result.getString("number"), specVersion, Question.specReferenceStrToArray(result.getString("spec_reference")), language, //$NON-NLS-1$ //$NON-NLS-2$
 								YesNo.valueOf(result.getString("correct_answer")),  //$NON-NLS-1$
 								result.getString("evidence_prompt"),  //$NON-NLS-1$
 								evidenceValidation);
 					} else if (type.equals(YesNoNotApplicableQuestion.TYPE_NAME)) {
 						question = new YesNoNotApplicableQuestion(result.getString("question"), section.getName(),  //$NON-NLS-1$
-								result.getString("number"),  specVersion, language, //$NON-NLS-1$
+								result.getString("number"),  specVersion, Question.specReferenceStrToArray(result.getString("spec_reference")), language, //$NON-NLS-1$ //$NON-NLS-2$
 								YesNo.valueOf(result.getString("correct_answer")), //$NON-NLS-1$
 										"Not required by IL"); //$NON-NLS-1$
 					} else if (type.equals(SubQuestion.TYPE_NAME)) {
@@ -240,10 +240,12 @@ public class SurveyDbDao {
 						question = foundSubQuestions.get(result.getString("number")); //$NON-NLS-1$
 						if (question == null) {
 							question = new SubQuestion(result.getString("question"), section.getName(),  //$NON-NLS-1$
-									result.getString("number"),  specVersion, language, minValidAnswers); //$NON-NLS-1$
+									result.getString("number"),  specVersion, //$NON-NLS-1$
+									Question.specReferenceStrToArray(result.getString("spec_reference")), language, minValidAnswers); //$NON-NLS-1$
 							foundSubQuestions.put(question.getNumber(), (SubQuestion)question);
 						} else {
 							question.setQuestion(result.getString("question")); //$NON-NLS-1$
+							question.setSpecReference(Question.specReferenceStrToArray(result.getString("spec_reference"))); //$NON-NLS-1$
 							((SubQuestion)question).setMinNumberValidatedAnswers(minValidAnswers);
 						}
 						
@@ -256,12 +258,12 @@ public class SurveyDbDao {
 						question.setSubQuestionOfNumber(subQuestionNumber);
 						SubQuestion parent = foundSubQuestions.get(subQuestionNumber);
 						if (parent == null) {
-							parent = new SubQuestion("", section.getName(), subQuestionNumber, specVersion, language, 0); //$NON-NLS-1$
+							parent = new SubQuestion("", section.getName(), subQuestionNumber, specVersion, //$NON-NLS-1$
+									new String[0], language, 0); //$NON-NLS-1$
 							foundSubQuestions.put(subQuestionNumber, parent);
 						}
 						parent.addSubQuestion(question);
 					}
-					question.setSpecReference(Question.specReferenceStrToArray(result.getString("spec_reference"))); //$NON-NLS-1$
 					questions.add(question);
 				}
 				Collections.sort(questions);

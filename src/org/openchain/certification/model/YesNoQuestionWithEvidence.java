@@ -15,6 +15,7 @@
  *
 */
 package org.openchain.certification.model;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -34,6 +35,7 @@ public class YesNoQuestionWithEvidence extends YesNoQuestion {
 	 * @param sectionName Name of the section containing the question
 	 * @param number Number for the question
 	 * @param specVersion Specification version
+	 * @param specRefs Specification reference numbers related to the question
 	 * @param language tag in IETF RFC 5646 format
 	 * @param correctAnswer Correct answer
 	 * @param evidencePrompt Prompt to display when asking for the evidence
@@ -41,9 +43,10 @@ public class YesNoQuestionWithEvidence extends YesNoQuestion {
 	 * @throws QuestionException
 	 */
 	public YesNoQuestionWithEvidence(String question, String sectionName, 
-			String number, String specVersion, String language, YesNo correctAnswer,
-			String evidencePrompt, Pattern evidenceValidation) throws QuestionException {
-		super(question, sectionName, number, specVersion, language, correctAnswer);
+			String number, String specVersion, String[] specRefs, String language, 
+			YesNo correctAnswer, String evidencePrompt, 
+			Pattern evidenceValidation) throws QuestionException {
+		super(question, sectionName, number, specVersion, specRefs, language, correctAnswer);
 		this.evidencePrompt = evidencePrompt;
 		this.evidenceValidation = evidenceValidation;
 		this.type = TYPE_NAME;
@@ -94,10 +97,31 @@ public class YesNoQuestionWithEvidence extends YesNoQuestion {
 	public YesNoQuestionWithEvidence clone() {
 		try {
 			return new YesNoQuestionWithEvidence(getQuestion(), getSectionName(), getNumber(), 
-					getSpecVersion(), getLanguage(), getCorrectAnswer(), getEvidencePrompt(),
-					getEvidenceValidation());
+					getSpecVersion(), getSpecReference(), getLanguage(), getCorrectAnswer(), 
+					getEvidencePrompt(), getEvidenceValidation());
 		} catch (QuestionException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	@Override
+	public boolean equivalent(Question compare) {
+		if (!(compare instanceof YesNoQuestionWithEvidence)) {
+			return false;
+		}
+		if (!super.equivalent(compare)) {
+			return false;
+		}
+		YesNoQuestionWithEvidence ycompare = (YesNoQuestionWithEvidence)compare;
+		String compPattern = "";
+		if (ycompare.getEvidenceValidation() != null) {
+			compPattern = ycompare.getEvidenceValidation().toString();
+		}
+		String myPattern = "";
+		if (this.evidenceValidation != null) {
+			myPattern = this.evidenceValidation.toString();
+		}
+		return Objects.equals(ycompare.getEvidencePrompt(), this.getEvidencePrompt()) &&
+				Objects.equals(compPattern, myPattern);
 	}
 }

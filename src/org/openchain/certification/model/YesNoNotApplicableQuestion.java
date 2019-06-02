@@ -16,6 +16,8 @@
 */
 package org.openchain.certification.model;
 
+import java.util.Objects;
+
 /**
  * Same functionality as YesNoAnswer, but allows for not applicable response
  * We are making this a separate class so that we can provide the proper formatting
@@ -33,15 +35,16 @@ public class YesNoNotApplicableQuestion extends YesNoQuestion {
 	 * @param sectionName Name of the section containing the question
 	 * @param number Number for the question
 	 * @param specVersion Version of the specification
+	 * @param specRefs Specification reference numbers related to the question
 	 * @param language tag in IETF RFC 5646 format
 	 * @param correctAnswer Correct answer
 	 * @param notApplicablePrompt Prompt to display for not applicable
 	 * @throws QuestionException
 	 */
 	public YesNoNotApplicableQuestion(String question, String sectionName,
-			String number, String specVersion, String language, 
+			String number, String specVersion, String[] specRefs, String language, 
 			YesNo correctAnswer, String notApplicablePrompt) throws QuestionException {
-		super(question, sectionName, number, specVersion, language, correctAnswer);
+		super(question, sectionName, number, specVersion, specRefs, language, correctAnswer);
 		this.notApplicablePrompt = notApplicablePrompt;
 		this.type = TYPE_NAME;
 	}
@@ -64,10 +67,22 @@ public class YesNoNotApplicableQuestion extends YesNoQuestion {
 	public YesNoNotApplicableQuestion clone() {
 		try {
 			return new YesNoNotApplicableQuestion(getQuestion(), getSectionName(), getNumber(), 
-						getSpecVersion(), getLanguage(), getCorrectAnswer(), getNotApplicablePrompt());
+						getSpecVersion(), getSpecReference(), getLanguage(), getCorrectAnswer(), 
+						getNotApplicablePrompt());
 		} catch (QuestionException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
+	@Override
+	public boolean equivalent(Question compare) {
+		if (!(compare instanceof YesNoNotApplicableQuestion)) {
+			return false;
+		}
+		if (!super.equivalent(compare)) {
+			return false;
+		}
+		YesNoNotApplicableQuestion ycompare = (YesNoNotApplicableQuestion)compare;
+		return Objects.equals(ycompare.getNotApplicablePrompt(), this.getNotApplicablePrompt());
+	}
 }

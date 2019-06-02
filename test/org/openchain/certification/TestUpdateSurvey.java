@@ -49,6 +49,7 @@ public class TestUpdateSurvey {
 	private static final String VALID_UPDATE_PATH = TEST_DIRECTORY + File.separator + "updated_questionnaire.json";
 	private static final String ORIG_QUESTION_1 = "Do you have a documented policy that governs open source license compliance of the Supplied Software distribution (e.g., via training, internal wiki, or other practical communication method)?";
 	private static final String UPDATED_QUESTION_1 = "Test updated question?";
+	private static final String UPDATED_QUESTION_NUM_1 = "1.a";
 	private static final String INVALID_UPDATE_LESS_QUESTIONS_PATH = TEST_DIRECTORY + File.separator + "oneless_questionnaire.json";
 	private static final int NUM_SECTION1_QUESTIONS = 14;
 	Connection con;
@@ -104,6 +105,7 @@ public class TestUpdateSurvey {
 		assertEquals(0, stats.getVersionsAdded().size());
 		assertEquals(1, stats.getVersionsUpdated().size());
 		assertTrue(stats.getVersionsUpdated().get(0).contains(NEW_VERSION));
+		assertTrue(stats.getVersionsUpdated().get(0).contains(UPDATED_QUESTION_NUM_1));
 		assertEquals(0, stats.getWarnings().size());
 		List<String> surveyVersions = surveyDao.getSurveyVesions();
 		assertEquals(1, surveyVersions.size());

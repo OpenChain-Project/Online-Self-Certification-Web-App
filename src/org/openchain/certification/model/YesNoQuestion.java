@@ -16,7 +16,6 @@
 */
 package org.openchain.certification.model;
 
-
 /**
  * @author Gary O'Neall
  *
@@ -36,13 +35,14 @@ public class YesNoQuestion extends Question {
 	 * @param sectionName Name of the section containing the question
 	 * @param number Number of the question
 	 * @param specVersion Version of the specification
+	 * @param specRefs Specification reference numbers related to the question
 	 * @param language tag in IETF RFC 5646 format
 	 * @param correctAnswer Correct answer
 	 * @throws QuestionException
 	 */
 	public YesNoQuestion(String question, String sectionName, String number, 
-			String specVersion, String language, YesNo correctAnswer) throws QuestionException {
-		super(question, sectionName, number, specVersion, language);
+			String specVersion, String[] specRefs, String language, YesNo correctAnswer) throws QuestionException {
+		super(question, sectionName, number, specVersion, specRefs, language);
 		this.correctAnswer = correctAnswer;
 		this.type = TYPE_NAME;
 	}
@@ -84,7 +84,7 @@ public class YesNoQuestion extends Question {
 	public YesNoQuestion clone() {
 		try {
 			return new YesNoQuestion(this.getQuestion(), this.getSectionName(), this.getNumber(), 
-					this.getSpecVersion(), this.getLanguage(), this.getCorrectAnswer());
+					this.getSpecVersion(), this.getSpecReference(), this.getLanguage(), this.getCorrectAnswer());
 		} catch (QuestionException e) {
 			throw new RuntimeException(e);
 		}

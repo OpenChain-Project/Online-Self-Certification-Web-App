@@ -54,19 +54,18 @@ public class TestSurveyDbDao {
 		String s1q1Question="s1q1question";
 		String s1q1Number = "1.a";
 		YesNo s1q1Answer = YesNo.Yes;
-		Question s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, specVersion, language, s1q1Answer);
 		String[] s1q1SpecRef = new String[] {"s1q1SpecRef"};
-		s1q1.setSpecReference(s1q1SpecRef);
+		Question s1q1 = new YesNoQuestion(s1q1Question, 
+				section1Name, s1q1Number, specVersion, s1q1SpecRef, language, s1q1Answer);
+
 		section1Questions.add(s1q1);
 		String s1q2Question="s1q2question";
 		String s1q2Number = "1.b";
 		YesNo s1q2Answer = YesNo.NotApplicable;
 		String s1q2Prompt = "s1q2prompt";
-		Question s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
-				section1Name, s1q2Number, specVersion, language, s1q2Answer, s1q2Prompt);
 		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
-		s1q2.setSpecReference(s1q2SpecRef);
+		Question s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, specVersion, s1q2SpecRef, language, s1q2Answer, s1q2Prompt);
 		section1Questions.add(s1q2);
 		section1.setQuestions(section1Questions);
 		sections.add(section1);
@@ -79,29 +78,26 @@ public class TestSurveyDbDao {
 		String s2q1Question="s2q1question";
 		String s2q1Number = "2.b";
 		int s2q1MinCorrect = 4;
-		Question s2q1 = new SubQuestion(s2q1Question, 
-				section2Name, s2q1Number, specVersion, language, s2q1MinCorrect);
 		String[] s2q1SpecRef = new String[] {"s2q1SpecRef"};
-		s2q1.setSpecReference(s2q1SpecRef);
+		Question s2q1 = new SubQuestion(s2q1Question, 
+				section2Name, s2q1Number, specVersion, s2q1SpecRef, language, s2q1MinCorrect);
 		section2Questions.add(s2q1);
 		String s2q2Question="s2q2question";
 		String s2q2Number = "2.b.ii";
 		YesNo s2q2Answer = YesNo.No;
 		String s2q2Prompt = "s2q2prompt";
 		String s2q2validate = "dd";
-		Question s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
-				section2Name, s2q2Number, specVersion, language, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		String[] s2q2SpecRef = new String[] {"s2q2SpecRef"};
-		s2q2.setSpecReference(s2q2SpecRef);
+		Question s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
+				section2Name, s2q2Number, specVersion, s2q2SpecRef, language, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q2);
 		String s2q3Question="s2q3question";
 		String s2q3Number = "1.b.iii";
 		YesNo s2q3Answer = YesNo.NotAnswered;
-		Question s2q3 = new YesNoQuestion(s2q3Question, 
-				section2Name, s2q3Number, specVersion, language, s2q3Answer);
 		String[] s2q3SpecRef = new String[] {"s2q3SpecRef"};
-		s2q3.setSpecReference(s2q3SpecRef);
+		Question s2q3 = new YesNoQuestion(s2q3Question, 
+				section2Name, s2q3Number, specVersion, s2q3SpecRef, language, s2q3Answer);
 		s2q3.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q3);
 		section2.setQuestions(section2Questions);
@@ -194,19 +190,17 @@ public class TestSurveyDbDao {
 		String s1q1Question="s1q1question";
 		String s1q1Number = "1.a";
 		YesNo s1q1Answer = YesNo.Yes;
-		Question s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, specVersion, language, s1q1Answer);
 		String[]  s1q1SpecRef = new String[] {"s1q1SpecRef"};
-		s1q1.setSpecReference(s1q1SpecRef);
+		Question s1q1 = new YesNoQuestion(s1q1Question, 
+				section1Name, s1q1Number, specVersion, s1q1SpecRef, language, s1q1Answer);
 		section1Questions.add(s1q1);
 		String s1q2Question="s1q2question";
 		String s1q2Number = "1.b";
 		YesNo s1q2Answer = YesNo.NotApplicable;
 		String s1q2Prompt = "s1q2prompt";
-		Question s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
-				section1Name, s1q2Number, specVersion, language, s1q2Answer, s1q2Prompt);
 		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
-		s1q2.setSpecReference(s1q2SpecRef);
+		Question s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, specVersion, s1q2SpecRef, language, s1q2Answer, s1q2Prompt);
 		section1Questions.add(s1q2);
 		section1.setQuestions(section1Questions);
 		sections.add(section1);
@@ -219,30 +213,27 @@ public class TestSurveyDbDao {
 		String s2q1Question="s2q1question";
 		String s2q1Number = "2.b";
 		int s2q1MinCorrect = 4;
-		Question s2q1 = new SubQuestion(s2q1Question, 
-				section2Name, s2q1Number, specVersion, language, s2q1MinCorrect);
 		String[] s2q1SpecRef = new String[] {"s2q1SpecRef"};
-		s2q1.setSpecReference(s2q1SpecRef);
+		Question s2q1 = new SubQuestion(s2q1Question, 
+				section2Name, s2q1Number, specVersion, s2q1SpecRef, language, s2q1MinCorrect);
 		section2Questions.add(s2q1);
 		String s2q2Question="s2q2question";
 		String s2q2Number = "2.b.ii";
 		YesNo s2q2Answer = YesNo.No;
 		String s2q2Prompt = "s2q2prompt";
 		String s2q2validate = "dd";
-		Question s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
-				section2Name, s2q2Number, specVersion, language, 
-				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		String[] s2q2SpecRef = new String[] {"s2q2SpecRef"};
-		s2q2.setSpecReference(s2q2SpecRef);
+		Question s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
+				section2Name, s2q2Number, specVersion, s2q2SpecRef, language, 
+				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q2);
 		String s2q3Question="s2q3question";
 		String s2q3Number = "1.b.iii";
 		YesNo s2q3Answer = YesNo.NotAnswered;
-		Question s2q3 = new YesNoQuestion(s2q3Question, 
-				section2Name, s2q3Number, specVersion, language, s2q3Answer);
 		String[] s2q3SpecRef = new String[] {"s2q3SpecRef"};
-		s2q3.setSpecReference(s2q3SpecRef);
+		Question s2q3 = new YesNoQuestion(s2q3Question, 
+				section2Name, s2q3Number, specVersion, s2q3SpecRef, language, s2q3Answer);
 		s2q3.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q3);
 		section2.setQuestions(section2Questions);
@@ -256,17 +247,15 @@ public class TestSurveyDbDao {
 		YesNo updates1q2Answer = YesNo.Any;
 		String us1q2Prompt = "Updated "+s1q2Prompt;
 		String us1q2valid = "abc";
-		Question Updateds1q2 = new YesNoQuestionWithEvidence(us1q2Question, 
-				section1Name, s1q2Number, specVersion, language, 
-				updates1q2Answer, us1q2Prompt, Pattern.compile(us1q2valid));
 		String[] us1q2specRef = new String[] {"UpdatedRef"};
-		Updateds1q2.setSpecReference(us1q2specRef);
+		Question Updateds1q2 = new YesNoQuestionWithEvidence(us1q2Question, 
+				section1Name, s1q2Number, specVersion, us1q2specRef, language, 
+				updates1q2Answer, us1q2Prompt, Pattern.compile(us1q2valid));
 		
-		String us2q3Question = "Updated " +s2q3Question;		
-		Question updateds2q3 = new YesNoQuestion(us2q3Question, 
-				section2Name, s2q3Number, specVersion, language, s2q3Answer);
+		String us2q3Question = "Updated " +s2q3Question;	
 		String[] us2q3SpecRef = new String[] {"us2q3SpecRef"};
-		updateds2q3.setSpecReference(us2q3SpecRef);
+		Question updateds2q3 = new YesNoQuestion(us2q3Question, 
+				section2Name, s2q3Number, specVersion, us2q3SpecRef, language, s2q3Answer);
 		updateds2q3.setSubQuestionOfNumber(s2q1Number);
 		List<Question> questionsToUpdate = new ArrayList<Question>();
 		questionsToUpdate.add(Updateds1q2);
@@ -362,19 +351,17 @@ public class TestSurveyDbDao {
 		String s1q1Question="s1q1question";
 		String s1q1Number = "1.a";
 		YesNo s1q1Answer = YesNo.Yes;
-		Question s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, specVersion, language, s1q1Answer);
 		String[] s1q1SpecRef = new String[] {"s1q1SpecRef"};
-		s1q1.setSpecReference(s1q1SpecRef);
+		Question s1q1 = new YesNoQuestion(s1q1Question, 
+				section1Name, s1q1Number, specVersion, s1q1SpecRef, language, s1q1Answer);
 		section1Questions.add(s1q1);
 		String s1q2Question="s1q2question";
 		String s1q2Number = "1.b";
 		YesNo s1q2Answer = YesNo.NotApplicable;
 		String s1q2Prompt = "s1q2prompt";
-		Question s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
-				section1Name, s1q2Number, specVersion, language, s1q2Answer, s1q2Prompt);
 		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
-		s1q2.setSpecReference(s1q2SpecRef);
+		Question s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, specVersion, s1q2SpecRef, language, s1q2Answer, s1q2Prompt);
 		section1Questions.add(s1q2);
 		section1.setQuestions(section1Questions);
 		sections.add(section1);
@@ -387,30 +374,27 @@ public class TestSurveyDbDao {
 		String s2q1Question="s2q1question";
 		String s2q1Number = "2.b";
 		int s2q1MinCorrect = 4;
-		Question s2q1 = new SubQuestion(s2q1Question, 
-				section2Name, s2q1Number, specVersion, language, s2q1MinCorrect);
 		String[] s2q1SpecRef = new String[] {"s2q1SpecRef"};
-		s2q1.setSpecReference(s2q1SpecRef);
+		Question s2q1 = new SubQuestion(s2q1Question, 
+				section2Name, s2q1Number, specVersion, s2q1SpecRef, language, s2q1MinCorrect);
 		section2Questions.add(s2q1);
 		String s2q2Question="s2q2question";
 		String s2q2Number = "2.b.ii";
 		YesNo s2q2Answer = YesNo.No;
 		String s2q2Prompt = "s2q2prompt";
 		String s2q2validate = "dd";
-		Question s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
-				section2Name, s2q2Number, specVersion, language,
-				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		String[] s2q2SpecRef = new String[] {"s2q2SpecRef"};
-		s2q2.setSpecReference(s2q2SpecRef);
+		Question s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
+				section2Name, s2q2Number, specVersion, s2q2SpecRef, language,
+				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q2);
 		String s2q3Question="s2q3question";
 		String s2q3Number = "1.b.iii";
 		YesNo s2q3Answer = YesNo.NotAnswered;
-		Question s2q3 = new YesNoQuestion(s2q3Question, 
-				section2Name, s2q3Number, specVersion, language, s2q3Answer);
 		String[] s2q3SpecRef = new String[] {"s2q3SpecRef"};
-		s2q3.setSpecReference(s2q3SpecRef);
+		Question s2q3 = new YesNoQuestion(s2q3Question, 
+				section2Name, s2q3Number, specVersion, s2q3SpecRef, language, s2q3Answer);
 		s2q3.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q3);
 		section2.setQuestions(section2Questions);
@@ -424,19 +408,17 @@ public class TestSurveyDbDao {
 		String s2q4Question="s2q4question";
 		String s2q4Number = "1.b.ix";
 		YesNo s2q4Answer = YesNo.No;
-		Question s2q4 = new YesNoQuestion(s2q4Question, 
-				section2Name, s2q4Number, specVersion, language, s2q4Answer);
 		String[] s2q4SpecRef = new String[] {"s2q4SpecRef"};
-		s2q4.setSpecReference(s2q4SpecRef);
+		Question s2q4 = new YesNoQuestion(s2q4Question, 
+				section2Name, s2q4Number, specVersion, s2q4SpecRef, language, s2q4Answer);
 		s2q4.setSubQuestionOfNumber(s2q1Number);
 		
 		String s2q5Question="s2q5question";
 		String s2q5Number = "1.c";
 		YesNo s2q5Answer = YesNo.Yes;
-		Question s2q5 = new YesNoQuestion(s2q5Question, 
-				section2Name, s2q5Number, specVersion, language, s2q5Answer);
 		String[] s2q5SpecRef = new String[] {"s2q5SpecRef"};
-		s2q5.setSpecReference(s2q5SpecRef);
+		Question s2q5 = new YesNoQuestion(s2q5Question, 
+				section2Name, s2q5Number, specVersion, s2q5SpecRef, language, s2q5Answer);
 
 		List<Question> added = new ArrayList<Question>();
 		added.add(s2q4);
@@ -549,19 +531,17 @@ public class TestSurveyDbDao {
 		String s1q1Question="s1q1question";
 		String s1q1Number = "1.a";
 		YesNo s1q1Answer = YesNo.Yes;
-		Question s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, specVersion, language, s1q1Answer);
 		String[] s1q1SpecRef = new String[] {"s1q1SpecRef"};
-		s1q1.setSpecReference(s1q1SpecRef);
+		Question s1q1 = new YesNoQuestion(s1q1Question, 
+				section1Name, s1q1Number, specVersion, s1q1SpecRef, language, s1q1Answer);
 		section1Questions.add(s1q1);
 		String s1q2Question="s1q2question";
 		String s1q2Number = "1.b";
 		YesNo s1q2Answer = YesNo.NotApplicable;
 		String s1q2Prompt = "s1q2prompt";
-		Question s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
-				section1Name, s1q2Number, specVersion, language, s1q2Answer, s1q2Prompt);
 		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
-		s1q2.setSpecReference(s1q2SpecRef);
+		Question s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, specVersion, s1q2SpecRef, language, s1q2Answer, s1q2Prompt);
 		section1Questions.add(s1q2);
 		section1.setQuestions(section1Questions);
 		sections.add(section1);
@@ -574,30 +554,27 @@ public class TestSurveyDbDao {
 		String s2q1Question="s2q1question";
 		String s2q1Number = "2.b";
 		int s2q1MinCorrect = 4;
-		Question s2q1 = new SubQuestion(s2q1Question, 
-				section2Name, s2q1Number, specVersion, language, s2q1MinCorrect);
 		String[] s2q1SpecRef = new String[] {"s2q1SpecRef"};
-		s2q1.setSpecReference(s2q1SpecRef);
+		Question s2q1 = new SubQuestion(s2q1Question, 
+				section2Name, s2q1Number, specVersion, s2q1SpecRef, language, s2q1MinCorrect);
 		section2Questions.add(s2q1);
 		String s2q2Question="s2q2question";
 		String s2q2Number = "2.b.ii";
 		YesNo s2q2Answer = YesNo.No;
 		String s2q2Prompt = "s2q2prompt";
 		String s2q2validate = "dd";
-		Question s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
-				section2Name, s2q2Number, specVersion, language,
-				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		String[] s2q2SpecRef = new String[] {"s2q2SpecRef"};
-		s2q2.setSpecReference(s2q2SpecRef);
+		Question s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
+				section2Name, s2q2Number, specVersion, s2q2SpecRef, language,
+				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSubQuestionOfNumber("3.a");	// this should cause an exception
 		section2Questions.add(s2q2);
 		String s2q3Question="s2q3question";
 		String s2q3Number = "1.b.iii";
 		YesNo s2q3Answer = YesNo.NotAnswered;
-		Question s2q3 = new YesNoQuestion(s2q3Question, 
-				section2Name, s2q3Number, specVersion, language, s2q3Answer);
 		String[] s2q3SpecRef = new String[] {"s2q3SpecRef"};
-		s2q3.setSpecReference(s2q3SpecRef);
+		Question s2q3 = new YesNoQuestion(s2q3Question, 
+				section2Name, s2q3Number, specVersion, s2q3SpecRef, language, s2q3Answer);
 		s2q3.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q3);
 		section2.setQuestions(section2Questions);
@@ -628,19 +605,17 @@ public class TestSurveyDbDao {
 		String s1q1Question="s1q1question";
 		String s1q1Number = "1.a";
 		YesNo s1q1Answer = YesNo.Yes;
-		Question s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, "v", language, s1q1Answer);
 		String[] s1q1SpecRef = new String[] {"s1q1SpecRef"};
-		s1q1.setSpecReference(s1q1SpecRef);
+		Question s1q1 = new YesNoQuestion(s1q1Question, 
+				section1Name, s1q1Number, "v", s1q1SpecRef, language, s1q1Answer);
 		section1Questions.add(s1q1);
 		String s1q2Question="s1q2question";
 		String s1q2Number = "1.b";
 		YesNo s1q2Answer = YesNo.NotApplicable;
 		String s1q2Prompt = "s1q2prompt";
-		Question s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
-				section1Name, s1q2Number, "v", language, s1q2Answer, s1q2Prompt);
 		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
-		s1q2.setSpecReference(s1q2SpecRef);
+		Question s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, "v", s1q2SpecRef, language, s1q2Answer, s1q2Prompt);
 		section1Questions.add(s1q2);
 		section1.setQuestions(section1Questions);
 		sections.add(section1);
@@ -684,7 +659,7 @@ public class TestSurveyDbDao {
 		String s1q1Number = "1.a";
 		YesNo s1q1Answer = YesNo.Yes;
 		Question s1q1_1 = new YesNoQuestion(s1q1_1Question, 
-				section1Name, s1q1Number, specVersion, language1, s1q1Answer);
+				section1Name, s1q1Number, specVersion, new String[0], language1, s1q1Answer);
 		section1_1Questions.add(s1q1_1);
 		section1_1.setQuestions(section1_1Questions);
 		sections1.add(section1_1);
@@ -702,7 +677,7 @@ public class TestSurveyDbDao {
 		List<Question> section1_2Questions = new ArrayList<Question>();
 		String s1q1_2Question="s1q1-2question";
 		Question s1q1_2 = new YesNoQuestion(s1q1_2Question, 
-				section2Name, s1q1Number, specVersion, language2, s1q1Answer);
+				section2Name, s1q1Number, specVersion, new String[0], language2, s1q1Answer);
 		section1_2Questions.add(s1q1_2);
 		section1_2.setQuestions(section1_2Questions);
 		sections2.add(section1_2);
@@ -737,7 +712,7 @@ public class TestSurveyDbDao {
 		String s1q1Number = "1.a";
 		YesNo s1q1Answer = YesNo.Yes;
 		Question s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, "X", "abc", s1q1Answer);
+				section1Name, s1q1Number, "X", new String[0], "abc", s1q1Answer);
 		String[] s1q1SpecRef = new String[] {"s1q1SpecRef"};
 		s1q1.setSpecReference(s1q1SpecRef);
 		section1Questions.add(s1q1);

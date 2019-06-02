@@ -31,7 +31,7 @@ public class TestQuestion {
 
 		public QuestionForTest(String question, String sectionName,
 				String number, String specVersion, String language) throws QuestionException {
-			super(question, sectionName, number, specVersion, language);
+			super(question, sectionName, number, specVersion, new String[0], language);
 		}
 
 		@Override
