@@ -773,7 +773,8 @@ public class CertificationServlet extends HttpServlet {
 				if (question.getSubQuestionOfNumber() != null) {
 					SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionOfNumber());
 					if (parentQuestion == null) {
-						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionOfNumber(), survey.getSpecVersion(), survey.getLanguage(), 0); //$NON-NLS-1$ //$NON-NLS-2$
+						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionOfNumber(), survey.getSpecVersion(), 
+								new String[0], survey.getLanguage(), 0); //$NON-NLS-1$ //$NON-NLS-2$
 						questionsWithSubs.put(question.getSubQuestionOfNumber(), parentQuestion);
 					}
 					parentQuestion.addSubQuestion(question);
@@ -788,7 +789,9 @@ public class CertificationServlet extends HttpServlet {
 					questionsWithSubs.put(question.getNumber(), (SubQuestion) question);
 				}
 				if (existingQuestionNumbers.contains(question.getNumber())) {
-					updatedQuestions.add(question);
+					if (!question.equivalent(existing.getQuestion(question.getNumber()))) {
+						updatedQuestions.add(question);
+					}
 				} else {
 					addedQuestions.add(question);
 				}

@@ -19,6 +19,7 @@ package org.openchain.certification.model;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
@@ -39,13 +40,14 @@ public class SubQuestion extends Question {
 	 * @param sectionName Name of the section
 	 * @param number Question number
 	 * @param specVersion Version for the spec
+	 * @param specRefs Specification reference numbers related to the question
 	 * @param language tag in IETF RFC 5646 format
 	 * @param minNumberValidatedAnswers Minimum number of valid answers
 	 * @throws QuestionException
 	 */
 	public SubQuestion(String question, String sectionName, String number,
-			String specVersion, String language, int minNumberValidatedAnswers) throws QuestionException {
-		super(question, sectionName, number, specVersion, language);
+			String specVersion, String[] specRefs, String language, int minNumberValidatedAnswers) throws QuestionException {
+		super(question, sectionName, number, specVersion, specRefs, language);
 		this.minNumberValidatedAnswers = minNumberValidatedAnswers;
 		this.subQuestions = new TreeMap<String,Question>();
 		this.type = TYPE_NAME;
@@ -106,10 +108,46 @@ public class SubQuestion extends Question {
 	
 	public SubQuestion clone() {
 		try {
-			return new SubQuestion(question, sectionName, getNumber(),
-					specVersion, getLanguage(), minNumberValidatedAnswers);
+			SubQuestion retval = new SubQuestion(question, sectionName, getNumber(),
+					specVersion, getSpecReference(), getLanguage(), minNumberValidatedAnswers);
+			for (Entry<String, Question> sub:subQuestions.entrySet()) {
+				retval.addSubQuestion(sub.getValue());
+			}
+			return retval;
 		} catch (QuestionException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	private boolean subQuestionsEquivalent(Collection<Question> compare) {
+		if (compare == null) {
+			return this.subQuestions == null || this.subQuestions.isEmpty();
+		}
+		if (compare.size() != this.subQuestions.size()) {
+			return false;
+		}
+		for (Question compareQuestion:compare) {
+			if (compareQuestion.getNumber() == null) {
+				return false;
+			}
+			Question match = this.subQuestions.get(compareQuestion.getNumber());
+			if (match == null || !match.equivalent(compareQuestion)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public boolean equivalent(Question compare) {
+		if (!(compare instanceof SubQuestion)) {
+			return false;
+		}
+		if (!super.equivalent(compare)) {
+			return false;
+		}
+		SubQuestion scompare = (SubQuestion)compare;
+		return Objects.equals(scompare.getMinNumberValidatedAnswers(), this.getMinNumberValidatedAnswers()) &&
+				subQuestionsEquivalent(scompare.getAllSubquestions());
 	}
 }

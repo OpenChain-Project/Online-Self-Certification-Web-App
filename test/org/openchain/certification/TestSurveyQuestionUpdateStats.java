@@ -42,12 +42,12 @@ public class TestSurveyQuestionUpdateStats {
 
 	@Before
 	public void setUp() throws Exception {
-		question1 = new YesNoQuestion(QUESTION1, SECTION1, NUM1, SPECVERSION, ENGLISH, YesNo.Any);
-		question2 = new YesNoQuestion(QUESTION2, SECTION2, NUM2, SPECVERSION, ENGLISH, YesNo.Any);
-		question3 = new YesNoQuestion(QUESTION3, SECTION2, NUM3, SPECVERSION, ENGLISH, YesNo.Any);
-		question4 = new YesNoQuestion(QUESTION4, SECTION2, NUM4, SPECVERSION, ENGLISH, YesNo.Any);
-		question5 = new YesNoQuestion(QUESTION5, SECTION2, NUM5, SPECVERSION, ENGLISH, YesNo.Any);
-		question6 = new YesNoQuestion(QUESTION6, SECTION2, NUM6, SPECVERSION, ENGLISH, YesNo.Any);
+		question1 = new YesNoQuestion(QUESTION1, SECTION1, NUM1, SPECVERSION, new String[0], ENGLISH, YesNo.Any);
+		question2 = new YesNoQuestion(QUESTION2, SECTION2, NUM2, SPECVERSION, new String[0], ENGLISH, YesNo.Any);
+		question3 = new YesNoQuestion(QUESTION3, SECTION2, NUM3, SPECVERSION, new String[0], ENGLISH, YesNo.Any);
+		question4 = new YesNoQuestion(QUESTION4, SECTION2, NUM4, SPECVERSION, new String[0], ENGLISH, YesNo.Any);
+		question5 = new YesNoQuestion(QUESTION5, SECTION2, NUM5, SPECVERSION, new String[0], ENGLISH, YesNo.Any);
+		question6 = new YesNoQuestion(QUESTION6, SECTION2, NUM6, SPECVERSION, new String[0], ENGLISH, YesNo.Any);
 	}
 
 	@After

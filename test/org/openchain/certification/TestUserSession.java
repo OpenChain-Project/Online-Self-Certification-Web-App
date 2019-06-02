@@ -112,14 +112,11 @@ public class TestUserSession {
 		section1.setTitle(section1Title);
 		List<Question> section1Questions = new ArrayList<Question>();
 		s1q1 = new YesNoQuestion(s1q1Question, 
-				section1Name, s1q1Number, specVersion, language, s1q1Answer);
-		s1q1.setSpecReference(s1q1SpecRef);
+				section1Name, s1q1Number, specVersion, s1q1SpecRef, language, s1q1Answer);
 		section1Questions.add(s1q1);
-
-		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
-				section1Name, s1q2Number, specVersion, language, s1q2Answer, s1q2Prompt);
 		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
-		s1q2.setSpecReference(s1q2SpecRef);
+		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, specVersion, s1q2SpecRef, language, s1q2Answer, s1q2Prompt);
 		section1Questions.add(s1q2);
 		section1.setQuestions(section1Questions);
 		sections.add(section1);
@@ -128,19 +125,16 @@ public class TestUserSession {
 		section2.setTitle(section2Title);
 		List<Question> section2Questions = new ArrayList<Question>();
 		s2q1 = new SubQuestion(s2q1Question, 
-				section2Name, s2q1Number, specVersion, language, s2q1MinCorrect);
-		s2q1.setSpecReference(s2q1SpecRef);
+				section2Name, s2q1Number, specVersion, s2q1SpecRef, language, s2q1MinCorrect);
 		section2Questions.add(s2q1);
 
 		s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
-				section2Name, s2q2Number, specVersion, language, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
-		s2q2.setSpecReference(s2q2SpecRef);
+				section2Name, s2q2Number, specVersion, s2q2SpecRef, language, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
 		s2q2.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q2);
 
 		s2q3 = new YesNoQuestion(s2q3Question, 
-				section2Name, s2q3Number, specVersion, language, s2q3Answer);
-		s2q3.setSpecReference(s2q3SpecRef);
+				section2Name, s2q3Number, specVersion, s2q3SpecRef, language, s2q3Answer);
 		s2q3.setSubQuestionOfNumber(s2q1Number);
 		section2Questions.add(s2q3);
 		section2.setQuestions(section2Questions);
@@ -156,8 +150,7 @@ public class TestUserSession {
 		section12.setTitle(section1Title2);
 		List<Question> section1Questions2 = new ArrayList<Question>();
 		s1q12 = new YesNoQuestion(s1q1Question2, 
-				section1Name2, s1q1Number2, specVersion2, language, s1q1Answer2);
-		s1q12.setSpecReference(s1q1SpecRef2);
+				section1Name2, s1q1Number2, specVersion2, s1q1SpecRef2, language, s1q1Answer2);
 		section1Questions2.add(s1q12);
 		section12.setQuestions(section1Questions2);
 		survey2.setSections(sections2);

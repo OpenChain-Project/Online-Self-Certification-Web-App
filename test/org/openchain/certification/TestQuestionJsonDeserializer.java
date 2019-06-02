@@ -47,10 +47,9 @@ public class TestQuestionJsonDeserializer {
 
 	@Test
 	public void testDeserializeQuestionYesNo() throws QuestionException {
-		YesNoQuestion q = new YesNoQuestion(QUESTION, SECTION, NUMBER, SPECVERSION,
+		YesNoQuestion q = new YesNoQuestion(QUESTION, SECTION, NUMBER, SPECVERSION, Question.specReferenceStrToArray(SPECREF),
 				LANGUAGE, ANSWER);
 		q.setSubQuestionOfNumber(SUBQUESTIONOF);
-		q.setSpecReference(Question.specReferenceStrToArray(SPECREF));
 		String jsonStr = gson.toJson(q);
 		Question result = gson.fromJson(jsonStr, Question.class);
 		assertTrue(result instanceof YesNoQuestion);
@@ -65,14 +64,12 @@ public class TestQuestionJsonDeserializer {
 	
 	@Test
 	public void testDeserializeQuestionSubquestion() throws QuestionException {
-		SubQuestion q = new SubQuestion(QUESTION, SECTION, NUMBER, SPECVERSION,
+		SubQuestion q = new SubQuestion(QUESTION, SECTION, NUMBER, SPECVERSION, Question.specReferenceStrToArray(SPECREF),
 				LANGUAGE,  NUMVALID);
 		q.setSubQuestionOfNumber(SUBQUESTIONOF);
-		q.setSpecReference(Question.specReferenceStrToArray(SPECREF));
-		YesNoQuestion subq1 = new YesNoQuestion("sq1-q", "sec1", "2.a", "1.1",
+		YesNoQuestion subq1 = new YesNoQuestion("sq1-q", "sec1", "2.a", "1.1",Question.specReferenceStrToArray("3.2"),
 				"du", YesNo.No);
 		subq1.setSubQuestionOfNumber(NUMBER);
-		subq1.setSpecReference(Question.specReferenceStrToArray("3.2"));
 		q.addSubQuestion(subq1);
 		String jsonStr = gson.toJson(q);
 		Question result = gson.fromJson(jsonStr, Question.class);
@@ -99,10 +96,9 @@ public class TestQuestionJsonDeserializer {
 	
 	@Test
 	public void testDeserializeQuestionYesNoNa() throws QuestionException {
-		YesNoNotApplicableQuestion q = new YesNoNotApplicableQuestion(QUESTION, SECTION, NUMBER, SPECVERSION,
+		YesNoNotApplicableQuestion q = new YesNoNotApplicableQuestion(QUESTION, SECTION, NUMBER, SPECVERSION, Question.specReferenceStrToArray(SPECREF),
 				LANGUAGE, ANSWER, NAPROMPT);
 		q.setSubQuestionOfNumber(SUBQUESTIONOF);
-		q.setSpecReference(Question.specReferenceStrToArray(SPECREF));
 		String jsonStr = gson.toJson(q);
 		Question result = gson.fromJson(jsonStr, Question.class);
 		assertTrue(result instanceof YesNoNotApplicableQuestion);
@@ -118,10 +114,10 @@ public class TestQuestionJsonDeserializer {
 	
 	@Test
 	public void testDeserializeQuestionYesNoEvidence() throws QuestionException {
-		YesNoQuestionWithEvidence q = new YesNoQuestionWithEvidence(QUESTION, SECTION, NUMBER, SPECVERSION,
+		YesNoQuestionWithEvidence q = new YesNoQuestionWithEvidence(QUESTION, SECTION, NUMBER, SPECVERSION, 
+				Question.specReferenceStrToArray(SPECREF),
 				LANGUAGE, ANSWER, EVIDENCE_PROMPT, VALIDATION);
 		q.setSubQuestionOfNumber(SUBQUESTIONOF);
-		q.setSpecReference(Question.specReferenceStrToArray(SPECREF));
 		String jsonStr = gson.toJson(q);
 		Question result = gson.fromJson(jsonStr, Question.class);
 		assertTrue(result instanceof YesNoQuestionWithEvidence);

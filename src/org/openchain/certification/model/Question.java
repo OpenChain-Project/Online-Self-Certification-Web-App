@@ -16,6 +16,8 @@
 */
 package org.openchain.certification.model;
 
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,10 +47,11 @@ public abstract class Question implements Comparable<Question> {
 	 * @param sectionName Name of the section
 	 * @param number Number of the question
 	 * @param specVersion Version for the spec
+	 * @param specRefs Specification reference numbers related to the question
 	 * @param language tag in IETF RFC 5646 format
 	 * @throws QuestionException
 	 */
-	public Question(String question, String sectionName, String number, String specVersion, String language) throws QuestionException {
+	public Question(String question, String sectionName, String number, String specVersion, String[] specRefs, String language) throws QuestionException {
 		if (specVersion == null) {
 			throw(new QuestionException(I18N.getMessage("Question.2",language))); //$NON-NLS-1$
 		}
@@ -68,6 +71,7 @@ public abstract class Question implements Comparable<Question> {
 		this.number = number;
 		this.specVersion = specVersion;
 		this.language = language;
+		this.specReference = specRefs;
 	}
 
 	/**
@@ -132,7 +136,7 @@ public abstract class Question implements Comparable<Question> {
 		setNumberMatcher(number, this.specVersion);
 		if (!this.numberMatch.matches()) {
 			setNumberMatcher(this.number, this.specVersion);
-			throw(new QuestionException(I18N.getMessage("Question.7",language)+number+I18N.getMessage("Question.6",language))); //$NON-NLS-1$ //$NON-NLS-2$
+			throw(new QuestionException(I18N.getMessage("Question.6", language, number))); //$NON-NLS-1$
 		}
 		this.number = number;
 	}
@@ -405,24 +409,23 @@ public abstract class Question implements Comparable<Question> {
 				throw(new QuestionException("Invalid minimum number of answers for subquestion number "+ //$NON-NLS-1$
 							number+":"+correctAnswer+".  Must be a number.")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			retval = new SubQuestion(question, sectionName, number, specVersion, language, minAnswers);
+			retval = new SubQuestion(question, sectionName, number, specVersion, specReferenceStrToArray(specReference), language, minAnswers);
 		} else if (type.equals(YesNoQuestion.TYPE_NAME)) {
-			retval = new YesNoQuestion(question, sectionName, number, specVersion, language,
+			retval = new YesNoQuestion(question, sectionName, number, specVersion, specReferenceStrToArray(specReference), language,
 					YesNo.valueOf(correctAnswer));
 		} else if (type.equals(YesNoQuestionWithEvidence.TYPE_NAME)) {
 			Pattern valPattern = null;
 			if (evidenceValidation != null && !evidenceValidation.isEmpty()) {
 				valPattern = Pattern.compile(evidenceValidation);
 			}
-			retval = new YesNoQuestionWithEvidence(question, sectionName, number, specVersion, language, 
+			retval = new YesNoQuestionWithEvidence(question, sectionName, number, specVersion, specReferenceStrToArray(specReference), language, 
 					YesNo.valueOf(correctAnswer), evidencePrompt, valPattern);
 		} else if (type.equals(YesNoNotApplicableQuestion.TYPE_NAME)) {
-			retval = new YesNoNotApplicableQuestion(question, sectionName, number, specVersion, language,
+			retval = new YesNoNotApplicableQuestion(question, sectionName, number, specVersion, specReferenceStrToArray(specReference), language,
 					YesNo.valueOf(correctAnswer), evidencePrompt);
 		} else {
 			throw(new QuestionTypeException("Unknown question type: "+type)); //$NON-NLS-1$
 		}
-		retval.setSpecReference(specReferenceStrToArray(specReference));
 		if (subQuestionOfNumber != null && !subQuestionOfNumber.isEmpty()) {
 			retval.setSubQuestionOfNumber(subQuestionOfNumber);
 		}
@@ -463,5 +466,42 @@ public abstract class Question implements Comparable<Question> {
 			}
 			return specReferenceAr;
 		}
+	}
+	
+	protected static boolean specRefsEquivalent(String[] specRefA, String[] specRefB) {
+		if (specRefA == null) {
+			return specRefB == null;
+		}
+		if (specRefB == null) {
+			return false;
+		}
+		if (specRefA.length != specRefB.length) {
+			return false;
+		}
+		HashSet<String> specs = new HashSet<String>();
+		for (String specRef:specRefA) {
+			specs.add(specRef);
+		}
+		for (String specRef:specRefB) {
+			if (!specs.contains(specRef)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * @param compare question to compare to
+	 * @return true if the correct answer, number, question, sectionName, specReference, specVersion and subQuestionOfNumbers are equal
+	 */
+	public boolean equivalent(Question compare) {
+		return compare != null &&
+				Objects.equals(compare.getCorrectAnswer(), this.getCorrectAnswer()) &&
+				Objects.equals(compare.getNumber(), this.getNumber()) &&
+				Objects.equals(compare.getQuestion(), this.getQuestion()) &&
+				Objects.equals(compare.getSectionName(), this.getSectionName()) &&
+				specRefsEquivalent(compare.getSpecReference(), this.getSpecReference()) &&
+				Objects.equals(compare.getSpecVersion(), this.getSpecVersion()) &&
+						Objects.equals(compare.getSubQuestionOfNumber(), this.getSubQuestionOfNumber());
 	}
 }
