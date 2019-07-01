@@ -18,9 +18,9 @@
   "Getting Started_content_2": "アンケートに答える。",
   "Getting Started_content_3": "要件をどのように満たしたかを記録する。",
   "Learn More": "さらに詳しく",
-  "Learn More_content": "OpenChainの自己認証に関する詳細は<a class=\"anchor\" href=\"https://www.openchainproject.org/get-started/conformance" target=\"_blank\">こちら<\/a>。",
+  "Learn More_content": "OpenChainの自己認証に関する詳細は<a class=\"anchor\" href=\"https://www.openchainproject.org/get-started/conformance" target=\"_blank\">こちら</a>。",
   "Printable Guide": "印刷版",
-  "offline-conformance-pdf": "自己認証アンケートは印刷可能な形式および共有可能な形式でご利用できます。ダウンロードはここから<a href=\"https:\/\/openchain-project.github.io\/conformance-questionnaire\/questionnaire.pdf\"><\/a>可能です。",
+  "offline-conformance-pdf": "自己認証アンケートは印刷可能な形式および共有可能な形式でご利用できます。ダウンロードはここから<a href=\"https:\/\/openchain-project.github.io\/conformance-questionnaire\/questionnaire.pdf\">可能です</a>。",
   
 
 
@@ -51,13 +51,13 @@
 
   "COMMENT_3": "\/****************************** TRANSLATIONS FOR FOOTER PAGE IS GIVEN BELOW************************************\/",
 
-  "Please contact":"エラーや問題がある場合は<a class=\"anchor\" href=\"mailto:openchain-conformance@lists.linuxfoundation.org?Subject=OpenChain%20Certification%20Feedback\" target=\"_blank\">OpenChain サポート<\/a>に連絡してください。",
-  "footer_content":"Copyright 2018 The Linux Foundation. 無断複写・転載を禁じます。Linux Foundation は登録商標を持ち、商標を使用します。Linux Foundationの登録商標リストについては、<a class=\"anchor\" href=\"https:\/\/www.linuxfoundation.org\/trademark-usage\" target=\"_blank\">登録商標の使用<\/a>のページをご覧ください。LinuxはLinus Torvaldsの登録商標です。<a class=\"anchor\" href=\"https:\/\/www.openchainproject.org\/privacy\">プライバシーポリシー<\/a>および<a class=\"anchor\" href=\"https:\/\/www.openchainproject.org\/terms\">利用規約<\/a>",
+  "Please contact":"エラーや問題がある場合は<a class=\"anchor\" href=\"mailto:openchain-conformance@lists.linuxfoundation.org?Subject=OpenChain%20Certification%20Feedback\" target=\"_blank\">OpenChain サポート</a>に連絡してください。",
+  "footer_content":"Copyright 2018 The Linux Foundation. 無断複写・転載を禁じます。Linux Foundation は登録商標を持ち、商標を使用します。Linux Foundationの登録商標リストについては、<a class=\"anchor\" href=\"https:\/\/www.linuxfoundation.org\/trademark-usage\" target=\"_blank\">登録商標の使用</a>のページをご覧ください。LinuxはLinus Torvaldsの登録商標です。<a class=\"anchor\" href=\"https:\/\/www.openchainproject.org\/privacy\">プライバシーポリシー</a>および<a class=\"anchor\" href=\"https:\/\/www.openchainproject.org\/terms\">利用規約</a>",
   
   "COMMENT_4": "\/********TRANSLATIONS FOR THE CONFIRMING PAGE IS GIVEN BELOW********* (Specification) ********************\/",
 
   "Conforming Organizations":"適合組織",
-  "Conforming Organizations_content":"以下の組織はOpenChain<a class=\"anchor\" href=\"https:\/\/wiki.linuxfoundation.org\/_media\/openchain\/openchainspec-current.pdf\" target=\"_blank\">仕様<\/a>への適合を自己認証しています。",
+  "Conforming Organizations_content":"以下の組織はOpenChain<a class=\"anchor\" href=\"https:\/\/wiki.linuxfoundation.org\/_media\/openchain\/openchainspec-current.pdf\" target=\"_blank\">仕様</a>への適合を自己認証しています。",
   "Organization":"組織",
   "Specification": "仕様",
   "Specification Version":"仕様バージョン",
@@ -109,7 +109,7 @@
   "Organization Postal Address":"組織の住所",
   "Sign Up":"登録",
   "Sign Up_content_1":"私の名前とメールはOpenChainのウェブサイト上の適合ページで共有される可能性があります。",
-  "Sign Up_content_2":"私はLinux Foundationの<a class=\"anchor\" href=\"https:\/\/www.openchainproject.org\/terms\" target=\"_blank\">利用規約<\/a>と<a class=\"anchor\" href=\"https:\/\/www.openchainproject.org\/privacy\">プライバシーポリシー<\/a>に同意します。",
+  "Sign Up_content_2":"私はLinux Foundationの<a class=\"anchor\" href=\"https:\/\/www.openchainproject.org\/terms\" target=\"_blank\">利用規約</a>と<a class=\"anchor\" href=\"https:\/\/www.openchainproject.org\/privacy\">プライバシーポリシー</a>に同意します。",
  
   "COMMENT_8": "\/****************************** TRANSLATIONS FOR THE UPDATE PROFILE PAGE IS GIVEN BELOW*********(Username,Password,Name,Re-enter Password,Organization,Email,Organization Postal Address,Sign Up_content_1)***************************\/",
  
