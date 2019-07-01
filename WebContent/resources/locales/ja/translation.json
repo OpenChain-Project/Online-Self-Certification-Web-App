@@ -11,16 +11,16 @@
 
   "title": "OpenChain自己認証",
   "welcome": "ようこそ",
-  "welcome_content": "OpenChain仕様は、FOSS品質コンプライアンス プログラムが満足すべき核となる要件を明確化した仕様を提示しています。サプライチェーン全体にわたってオープンソースライセンスのコンプライアンスを効率よく、効果的に達成します。自己認証を行うことで、仕様の用件に適合していることを確認できます。",
+  "welcome_content": "OpenChain仕様はオープンソース品質コンプライアンスプログラムの重要要件を定義しています。OpenChain適合によって、企業はこういった要件に適合していることを示すことができます。このオンラインアンケートを使用して、無料で自己認証が行えます。publicationまたこのアンケートを使用して、社内の「健康状態チェック」を行えます。進捗状態と結果は、公開用に提出されるまで公開されません。",
   "Getting Started": "はじめに",
   "Getting Started_content": "申請者は、OpenChain仕様を理解していることと、OpenChain適合になるためには自己認証完了の必要性を確認します。オンライン自己認証には次を行なってください：",
-  "Getting Started_content_1": " <a class=\"anchor\" href=\"https:\/\/wiki.linuxfoundation.org\/_media\/openchain\/openchainspec-current.pdf\" target=\"_blank\">仕様<\/a>に規定された要件をすべて満たす。",
-  "Getting Started_content_2":"ユーザーメニューでサインアップを選択してアカウントを作成する。",
-  "Getting Started_content_3":"問い合わせに対応する担当者を指定する。",
-  "Getting Started_content_4":"代表者がすべての質問に答えて、ウェブベースのオンライン自己認証を完了する。",
-  "Getting Started_content_5":"送信フォームに記入する。",
-  "Getting Started_content_6":"すべての検証すべき証跡の参考コピーを、オンライン自己認証の裏付けとしての記録として保管する。",
-  "offline-conformance-pdf": "印刷されたチェックリストのほうがいいですか？オフラインの適合ハンドブックは <a class=\"anchor\" id=\"dwnquestionnaire\" target=\"_blank\">ここ<\/a>からダウンロードできます。",
+  "Getting Started_content_1": "サインアップしてアカウントを作成する。",
+  "Getting Started_content_2": "アンケートに答える。",
+  "Getting Started_content_3": "要件をどのように満たしたかを記録する。",
+  "Learn More": "さらに詳しく",
+  "Learn More_content": "OpenChainの自己認証の詳細については、<a class=\"anchor\" href=\"https://www.openchainproject.org/get-started"" target=\"_blank\">こちらを参照してください。</a>",
+  "Printable Guide": "印刷版",
+  "offline-conformance-pdf": "自己認証アンケートは印刷可能な形式および共有可能な形式でご利用できます。ダウンロードはここから<a href=\"https:\/\/openchain-project.github.io\/conformance-questionnaire\/questionnaire.pdf\"><\/a>可能です。",
   
 
 
@@ -170,7 +170,7 @@
   "select_version_content":" 仕様バージョンを選択",
   "Version":"バージョン",
   "reset_Questionnaire_content": "これによりすべての回答が削除され、最新バージョンの新規アンケートが開始します。続けますか？",
-  "Yes": "はい",
+  "Yes": "Yes",
   "No": "いいえ",
   "Save-ans-dialog": "保存に成功しました。",
   "Responses Unsubmitted": "回答が未送信",
