@@ -1,0 +1,228 @@
+{
+  "@metadata": {
+    "authors": [
+      "visolve"
+    ],
+    "last-updated": "2019-1-8",
+    "locale": "ko"
+  },
+
+  "COMMENT_1": "/****************************** TRANSLATIONS FOR THE INDEX PAGE IS GIVEN BELOW************************************/",
+
+  "title": "OpenChain 자체 인증",
+  "welcome": "환영합니다.",
+  "welcome_content": "OpenChain 설명서는 우수한 오픈 소스 컴플라이언스 프로그램의 주요 요건을 정의합니다. OpenChain 준수(Conformance)를 통해 조직은 이러한 요건을 충족함을 보여줄 수 있습니다. 이 온라인 질문지를 사용하여 무료 자체 인증을받을 수 있습니다. 또한 내부 점검시에도 이 질문지를 사용할 수 있습니다. 진행 상황과 결과는 제출할 때까지 비공개입니다.",
+  "Getting Started": "시작",
+  "Getting Started_content": "신청자는 OpenChain 설명서를 이해하고 있음과 OpenChain을 준수(Conformant)하기 위해서는 자체 인증을 완료해야 함을 확인합니다. 온라인 자체 인증을 위해서는 다음이 필요합니다.", 
+  "Getting Started_content_1": "가입하기",
+  "Getting Started_content_2": "질문지를 작성하세요.",
+  "Getting Started_content_3": "요건을 어떻게 충족했는지 기록하십시오.",
+  "Learn More": "추가 정보",
+  "Learn More_content": "OpenChain 자체 인증에 대한 자세한 내용은 다음 link를 참조하십시오. : <a class=\"anchor\" href=\"https://www.openchainproject.org/get-started/conformance\">link</a>",
+  "Printable Guide": "인쇄용 버전",
+  "offline-conformance-pdf": "자체 인증 질문지를 인쇄 가능하고 공유 가능한 형식으로 얻을 수 있습니다. 다음 link에서 다운로드 할 수 있습니다. : <a class=\"anchor\" id=\"dwnquestionnaire\" target=\"_blank\">link</a>",
+  
+
+
+  "COMMENT_2": "/****************************** TRANSLATIONS FOR THE NAVIGATION PAGE IS GIVEN BELOW************************************/",
+ 
+  "Conforming Submission":"Conforming 제출",
+  "Sign in":"로그인",
+  "Sign up":"가입",
+  "Online Self-Certification":"온라인 자체 인증",
+  "Admin":"관리자",
+  "Account":"계정",
+  "Update profile":"프로필 업데이트",
+  "Language":"언어",
+  "Sign out":"로그아웃",
+
+  "English":"영어 (en)",
+  "Russian": "러시아어 (ru)",
+  "Spanish":"스페인어",
+  "French":"프랑스어",
+  "German":"독일어",
+  "Japanese":"일본어",
+  "Chinese":"중국어",
+  "Resend Verification" : "재전송 확인",
+  "Error" : "에러",
+  "error-msg" : "죄송합니다. 데이터를 로드하는 중에 문제가 발생했습니다:",
+  "verify-username" : "사용자 이름을 확인하지 않았습니다. 등록한 이메일 주소로 확인 이메일을 다시 보내시겠습니까?",
+  "profile-notification" : "프로필이 성공적으로 업데이트되었습니다",
+
+  "COMMENT_3": "/****************************** TRANSLATIONS FOR FOOTER PAGE IS GIVEN BELOW************************************/",
+
+  "Please contact":"오류나 문제가 있는 경우 <a class=\"anchor\" href=\"mailto:openchain-conformance@lists.linuxfoundation.org?Subject=OpenChain%20Certification%20Feedback\" target=\"_blank\">OpenChain Support</a>에 문의하십시오.",
+  "footer_content":"Copyright 2018 The Linux Foundation. All rights reserved.The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our <a class=\"anchor\" href=\"https://www.linuxfoundation.org/trademark-usage\" target=\"_blank\">Trademark Usage</a> page. Linux is a registered trademark of Linus Torvalds. <a class=\"anchor\" href=\"https://www.openchainproject.org/privacy\">Privacy Policy</a> and <a class=\"anchor\" href=\"https://www.openchainproject.org/terms\">Terms of Use</a>",
+  
+  "COMMENT_4": "/********TRANSLATIONS FOR THE CONFIRMING PAGE IS GIVEN BELOW********* (Specification) ********************/",
+
+  "Conforming Organizations":"Conforming 조직",
+  "Conforming Organizations_content":"다음 조직은 <a class=\"anchor\" href=\"https://wiki.linuxfoundation.org/_media/openchain/openchainspec-current.pdf\" target=\"_blank\">OpenChain 설명서</a>에 대한 자체 인증 준수(Conformnace)를 획득했습니다. ",
+  "Organization":"조직",
+  "Specification" : "설명서.",
+  "Specification Version":"설명서 버전",
+  "Contact Email":"이메일 연락처",
+  "Contact Name":"담당자 이름",
+  "Not Available" : "사용 불가",
+  "sEmptyTable":     "테이블에 데이터가 없습니다",
+  "sInfo":           "_TOTAL_ 개 항목 중 _START_ ~ _END_ 표시",
+  "sInfoEmpty":      "0에서 0까지 항목 표시",
+  "sInfoFiltered":   "(_MAX_ 총 항목 수에서 필터링 됨)",
+  "sInfoPostFix":    "",
+  "sInfoThousands":  ",",
+  "sLengthMenu":     "_MENU_ 항목 표시",
+  "sLoadingRecords": "불러오는 중...",
+  "sProcessing":     "처리 중 ...",
+  "sSearch":         "검색:",
+  "sZeroRecords":    "일치하는 레코드가 없습니다 ",
+  "oPaginate": {
+		"sFirst":    "처음",
+		"sLast":     "마지막",
+		"sNext":     "다음",
+		"sPrevious": "이전"
+	},
+	"oAria": {
+		"sSortAscending":  ": 오름차순으로 정렬",
+		"sSortDescending": ": 내림차순으로 정렬"
+	},
+
+  "COMMENT_5": "/****************************** TRANSLATIONS FOR THE SIGN IN PAGE IS GIVEN BELOW*********(title)***************************/",
+
+  "Welcome Back":"다시 오신 것을 환영합니다",
+  "Username":"사용자 이름",
+  "Password":"비밀번호",
+  "Reset Password":"비밀번호 재설정",
+  "Login":"로그인",
+  "Cancel":"취소",
+  "Length of password must be between 8 and 60" : "비밀번호 길이는 8-60이어야합니다.",
+  "Length of username must be between 3 and 40" : "사용자 이름 길이는 3에서 40 사이 여야합니다.",
+  "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter" : "사용자 이름은 a-z, 0-9, 밑줄, 공백으로 구성 될 수 있으며 문자로 시작해야합니다.",
+  
+  "COMMENT_6": "/****************************** TRANSLATIONS FOR THE RESET PASSWORD PAGE IS GIVEN BELOW*********(Username,Password,Reset Password)***************************/",
+
+  "Email":"이메일",
+  
+  "COMMENT_7": "/****************************** TRANSLATIONS FOR THE SIGN UP PAGE IS GIVEN BELOW*********(title,Sign up,Email,Organization,Username,Password,Terms of Use,and,Privacy Policy,Cancel)***************************/",
+
+  "Name":"이름",
+  "Re-enter Password":"비밀번호를 다시 입력하세요",
+  "Organization Postal Address":"조직 우편 주소",
+  "Sign Up":"가입",
+  "Sign Up_content_1":"내 이름과 이메일은 OpenChain 웹사이트의 준수(Conformance) 페이지에서 공유 될 수 있습니다",
+  "Sign Up_content_2":"나는 Linux Foundation의 <a class=\"anchor\" href=\"https://www.openchainproject.org/terms\" target=\"_blank\">Terms of Use</a>과 <a class=\"anchor\" href=\"https://www.openchainproject.org/privacy\">Privacy Policy</a>에 동의합니다.",
+ 
+  "COMMENT_8": "/****************************** TRANSLATIONS FOR THE UPDATE PROFILE PAGE IS GIVEN BELOW*********(Username,Password,Name,Re-enter Password,Organization,Email,Organization Postal Address,Sign Up_content_1)***************************/",
+ 
+  "Update Profile":"프로필 업데이트",
+  "Save Changes":"변경 사항 저장",
+  "success":"프로필 업데이트 완료",
+  "Updated":"업데이트 됨",
+  "ok":"ok",
+
+  "COMMENT_9": "/****************************** TRANSLATIONS FOR THE ADMIN IN PAGE IS GIVEN BELOW*********(Specification Version,Username,Organization,Email)***************************/",
+
+  "Admin_title":"OpenChain 자체 인증 관리",
+  "Site Status":"사이트 상태",
+  "Site Software Version: ":"사이트 소프트웨어 버전: ",
+  "Edit Conformance Questions":"준수(Conformance) 질문 편집",
+  "Git Tag" : "Git Tag",
+  "Git Commit" : "Git Commit",
+  "Update questionnaire" : "질문지 업데이트",
+  "Confirm update":"질문지 업데이트 확인",
+  "Submission Status":"제출 상태",
+  "Submitted Awaiting Approval":"승인 대기 중",
+  "Approve Selected":"선택 항목 승인",
+  "Reject Selected":"선택 항목 거부",
+  "Submitted Rejected":"거부 됨",
+  "UnReject Selected":"선택 항목 거부 취소",
+  "Approved":"승인됨",
+  "UnApprove Selected":"선택 항목 승인 취소",
+  "Incomplete":"미완료",
+  "User Name" : "사용자 이름",
+  "% Complete":"% 완료",
+  "Score":"점수",
+  "Update Questionnaire" : "질문지 업데이트",
+  "Summary" : "요약",
+  "Updates" : "업데이트",
+  "Added" : "추가됨",
+  "Update" : "업데이트",
+  "Summary-history-update" : "질문지 버전/언어가 업데이트됩니다", 
+  "Summary-history-add" : "질문지 버전/언어가 추가됩니다",
+  "no-update" :"질문지/버전이 업데이트되지 않았습니다",
+  "no-new-add" : "질문지/버전이 추가되지 않았습니다",
+  "answered out of" : "답변함",
+  "Warning" : "경고",
+  "questionnaire-updated" : "질문지 버전/언어가 업데이트되었습니다",
+  "questionnaire-added" : "질문지 버전/언어가 추가되었습니다",
+  "questionnaire-warning" : "다음 경고와 함께",
+  "Site Software Version" : "사이트 소프트웨어 버전",
+
+  "COMMENT_10": "/****************************** TRANSLATIONS FOR THE QUSETIONNAIRE PAGE IS GIVEN BELOW*********(title,Specification Version )***************************/",
+
+  "Survey_title":"OpenChain 자체 인증 질문지",
+  "Questionnaire Revision":"질문지 Revision",
+  "Save Answers":"답변 저장",
+  "Save and Submit":"저장 및 제출",
+  "Unsubmit":"제출 취소",
+  "Download Answers":"답변 다운로드",
+  "Reset":"질문지 초기화",
+  "Select Version":"버전 선택",
+  "select_version_content":"설명서 버전을 선택하십시오.",
+  "Version":"버전",
+  "reset_Questionnaire_content" : "모든 답변을 삭제하고 새로운 질문지 버전으로 시작합니다. 계속하겠습니까?",
+  "Yes" : "예",
+  "No" : "아니오",
+  "Save-ans-dialog" : "저장되었습니다",
+  "Responses Unsubmitted" : "제출되지 않은 응답",
+  "submission-notice" : "감사합니다. 정보가 제출되었습니다",
+  "confirm-submit-dialog" : "확인을 위해 '제출'을 클릭하세요.",
+  "confirm-submit-subdialog1" : "준수(Conformance) 자체 인증 질문지에 대한 당신의 답변은 정확하고 검증 가능합니다.",
+  "confirm-submit-subdialog2" : "당신의 답변은 OpenChain 설명서에 대한 당신의 준수를 반영합니다.",
+
+  "Ok":"Ok",
+  "Saved":"저장",
+  "Confirm Submit":"제출 확인",
+  "Agree":"동의",
+  "Reset Answers":"답변 초기화",
+
+  
+   "COMMENT_11": "/****************************** TRANSLATIONS FOR RESET PASSWORD PAGE IS GIVEN BELOW***********(Username,Password,Re-Enter Password,Reset Password)*************************/",
+
+   "Password Reset" :"비밀번호 재설정",
+   
+   
+   "COMMENT_12": "/****************************** TRANSLATIONS FOR PASSWORD RESET INVALID PAGE IS GIVEN BELOW************************************/",
+   
+   "Password-reset-title":"유효하지 않은 비밀번호 재설정",
+   "Password-reset-invalid-content":"비밀번호 재설정 링크가 유효하지 않거나 만료되었습니다. 비밀번호를 다시 재설정하거나 OpenChain팀에 도움을 요청하십시오.",
+   
+   
+   "COMMENT_13": "/****************************** TRANSLATIONS FOR PASSWORD RESET REQUEST PAGE IS GIVEN BELOW************************************/",
+   
+   "Password-reset-request-title": "비밀번호 재설정 요청",
+   "Password-reset-request-content": "비밀번호를 재설정 할 수있는 링크가 있는 이메일이 발송되었습니다. 이메일이 보이지 않으면 정크 이메일 폴더를 확인하십시오. 링크는 24시간 후에 만료됩니다.",
+   
+   
+   "COMMENT_14": "/****************************** TRANSLATIONS FOR PASSWORD RESET SUCCESS PAGE IS GIVEN BELOW************************************/",
+   
+   "Password-reset-success-title": "비밀번호 재설정 성공",
+   "Password-reset-success-content": "비밀번호 재설정을 성공하였습니다.",
+   
+   "COMMENT_15": "/****************************** TRANSLATIONS FOR REGISTRATION SUCCESS PAGE IS GIVEN BELOW************************************/",
+   
+   "Reg-success-title" : "등록 성공",
+   "Reg-success-content" :"이제 등록되었습니다. 자체 인증을 계속하려면 위 메뉴를 사용하여 로그인하십시오.",
+   
+   "COMMENT_16": "/****************************** TRANSLATIONS FOR REGISTRATION FAILED PAGE IS GIVEN BELOW************************************/",
+   
+   "Reg-failed-title" : "등록 실패",
+   "Reg-failed-content" :"등록에 문제가있는 것 같습니다. 등록이 만료되었을 수 있습니다. 추가 도움이 필요하면 OpenChain 팀에 문의하십시오.",
+   
+   
+   "COMMENT_17": "/****************************** TRANSLATIONS FOR SIGNUP SUCCESS PAGE IS GIVEN BELOW************************************/",
+   
+   "signup-success-title":"OpenChain 자체 인증 가입",
+   "Verification Email" : "확인 이메일",
+   "signup-success-content" : "no-reply@conformance.openchainproject.org로부터 가입 양식에 지정된 이메일로 발송 된 이메일을 받아야합니다. 제공된 링크를 클릭하여 등록 프로세스를 완료하십시오. 이메일을받지 못한 경우 스팸 폴더를 확인하고 신뢰할 수있는 이메일 목록에 no-reply@conformance.openchainproject.org를 추가하십시오."
+   
+}
