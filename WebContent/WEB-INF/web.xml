@@ -49,7 +49,7 @@
   </context-param>
   <context-param>
       <param-name>notification_email</param-name>
-      <param-value>openchain-conformance@lists.linuxfoundation.org</param-value>
+      <param-value>conformance@lists.openchainproject.org</param-value>
   </context-param>
   <filter>
  <filter-name>ExpiresFilter</filter-name>
