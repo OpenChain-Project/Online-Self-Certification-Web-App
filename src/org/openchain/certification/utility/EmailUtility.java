@@ -131,7 +131,7 @@ public class EmailUtility {
 		adminMsg.append(email);
 		adminMsg.append(" has just submitted a certification request.</div>"); //$NON-NLS-1$
 		emailAdmin("Notification - new OpenChain submission [do not reply]", adminMsg.toString(), config); //$NON-NLS-1$		
-		// EmailUtility.48=<div>Congratulations {0} .  Your certification request has been accepted.  If you did not submit a request for OpenChain certification, please notify the OpenChain group at openchain-conformance@lists.linuxfoundation.org.</div>
+		// EmailUtility.48=<div>Congratulations {0} .  Your certification request has been accepted.  If you did not submit a request for OpenChain certification, please notify the OpenChain group at conformance@lists.openchainproject.org.</div>
 		String userMsg = I18N.getMessage("EmailUtility.48",language, name); //$NON-NLS-1$
 		emailUser(email, I18N.getMessage("EmailUtility.52",language), userMsg, config, language); //$NON-NLS-1$
 

@@ -41,7 +41,7 @@
   </context-param>
   <context-param>
       <param-name>return_email</param-name>
-      <param-value>no-reply@conformance.openchainproject.org</param-value>
+      <param-value>conformance@lists.openchainproject.org</param-value>
   </context-param>
   <context-param>
       <param-name>email_ses_region</param-name>

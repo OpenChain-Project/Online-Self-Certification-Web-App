@@ -49,7 +49,7 @@
 
   "COMMENT_3": "/****************************** TRANSLATIONS FOR FOOTER PAGE IS GIVEN BELOW************************************/",
 
-  "Please contact":"Пожалуйста, свяжитесь с <a class=\"anchor\" href=\"mailto:openchain-conformance@lists.linuxfoundation.org?Subject=OpenChain%20Certification%20Feedback\" target=\"_blank\"> Поддержка OpenChian</a> сообщать о любых неточностях или проблемах.",
+  "Please contact":"Пожалуйста, свяжитесь с <a class=\"anchor\" href=\"mailto:conformance@lists.openchainproject.org?Subject=OpenChain%20Certification%20Feedback\" target=\"_blank\"> Поддержка OpenChian</a> сообщать о любых неточностях или проблемах.",
   "footer_content":"Copyright 2018 Фонд Linux. Все права защищены. Linux Foundation зарегистрировал товарные знаки и использует товарные знаки. Список торговых марок The Linux Foundation приведен на нашем <a class=\"anchor\" href=\"https://www.linuxfoundation.org/trademark-usage\" target=\"_blank\">Использование торговой марки</a> стр. Linux является зарегистрированным товарным знаком Линуса Торвальдса. <a class=\"anchor\" href=\"https://www.openchainproject.org/privacy\">политика конфиденциальности</a> а также <a class=\"anchor\" href=\"https://www.openchainproject.org/terms\">Условия эксплуатации</a>",
   
   "COMMENT_4": "/********TRANSLATIONS FOR THE CONFIRMING PAGE IS GIVEN BELOW********* (Specification) ********************/",
