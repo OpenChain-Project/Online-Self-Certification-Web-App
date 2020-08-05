@@ -51,3 +51,7 @@ local.properties
 
 # Code Recommenders
 .recommenders/
+.DS_Store
+WebContent/.DS_Store
+WebContent/resources/.DS_Store
+WebContent/resources/locales/.DS_Store
