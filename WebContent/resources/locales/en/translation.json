@@ -160,6 +160,7 @@
   "COMMENT_10": "/****************************** TRANSLATIONS FOR THE QUSETIONNAIRE PAGE IS GIVEN BELOW*********(title,Specification Version )***************************/",
 
   "Survey_title":"OpenChain Self Certification Questionnaire",
+  "preamble":"We recommend having a look at the OpenChain Reference Training Slides and the OpenChain Reference Policy Template before undergoing Self-Certification. It will help frame the questions that follow.",
   "Questionnaire Revision":"Questionnaire Revision",
   "Save Answers":"Save Answers",
   "Save and Submit":"Save and Submit",
