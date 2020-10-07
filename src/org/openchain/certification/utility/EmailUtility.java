@@ -229,6 +229,21 @@ public class EmailUtility {
 		}
 	}
 
+	
+	
+	
+	/**
+	 * Forms the password reset link
+	 * @param responseServletUrl URL for the servlet
+	 * @param username Username for the user to reset
+	 * @param uuid UUID generated for the password reset
+	 * @param language
+	 * @return URL to reset the password
+	 */
+	public static String formPasswordResetLink(String responseServletUrl, String username, UUID uuid, String language) {
+		return responseServletUrl + "?request=pwreset&username=" + username + "&uuid=" + uuid.toString() + "&locale="+language; //$NON-NLS-1$ //$NON-NLS-2$
+	}
+	
 	public static void emailPasswordReset(String name, String email, UUID uuid,
 			String username, String responseServletUrl, ServletConfig config, String language) throws EmailUtilException {
 		String fromEmail = config.getServletContext().getInitParameter("return_email"); //$NON-NLS-1$
@@ -236,7 +251,7 @@ public class EmailUtility {
 			logger.error("Missing return_email parameter in the web.xml file"); //$NON-NLS-1$
 			throw(new EmailUtilException(I18N.getMessage("EmailUtility.7",language))); //$NON-NLS-1$
 		}
-		String link = responseServletUrl + "?request=pwreset&username=" + username + "&uuid=" + uuid.toString() + "&locale="+language; //$NON-NLS-1$ //$NON-NLS-2$
+		String link = formPasswordResetLink(responseServletUrl, username, uuid, language);
 		String msg = I18N.getMessage("EmailUtility.91", language, link); //$NON-NLS-1$
 		Destination destination = new Destination().withToAddresses(new String[]{email});
 		Content subject = new Content().withData(I18N.getMessage("EmailUtility.96",language)); //$NON-NLS-1$
