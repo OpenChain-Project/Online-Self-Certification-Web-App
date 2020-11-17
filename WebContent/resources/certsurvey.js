@@ -101,6 +101,10 @@ function getQuestionFormHtml(questions) {
 	return html;
 }
 
+function sectionNameToSectionReference(name) {
+	return 'section_' + name.replace(/[^\w\-\:\.]/g,"_");
+}
+
 function getSurvey() {
 	var certForm = $("#CertForm");	
 	if (!certForm.length ) {
@@ -134,7 +138,7 @@ function getSurvey() {
 	    	submitted = surveyResponse.submitted;
 	    	var html = '';
 	    	for ( var i = 0; i < sections.length; i++ ) {
-	    		var divReference = 'section_' + sections[i].name;
+	    		var divReference = sectionNameToSectionReference(sections[i].name);
 	    		html += '<h3>' + sections[i].title + '<div  style="float:right" id="h_'+divReference+'">[NUM] answered out of [NUM]</div>'+'</h3>\n';
 	    		html += '<div id="' + divReference + '" class="no-ofquestion">\n';
 	    		html += getQuestionFormHtml(sections[i].questions);
@@ -146,7 +150,7 @@ function getSurvey() {
 	    	// For each section, set any answers, tally the num answered, and 
 	    	// set set the button click to keep track of the numbers
 	    	for ( var i = 0; i < sections.length; i++ ) {
-	    		var divReference = 'section_' + sections[i].name;
+	    		var divReference = sectionNameToSectionReference(sections[i].name);
 	    		$("#"+divReference).find(":input").each(function(index) {
 		    		var id = $(this).attr('id');
 		    		if (id.substring(0,7) == 'answer-') {
