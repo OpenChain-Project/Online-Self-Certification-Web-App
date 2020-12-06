@@ -127,7 +127,7 @@ function updateSurveyForReal( commit ) {
 	    		dialogText += "<span class='translate' data-i18n='questionnaire-added'>questionnaire version/languages were added </span>";
 	    		dialogText +="<p>";
 	    		if ( json.surveyUpdateResult.warnings.length > 0 ) {
-	    			dialogText += "span class='translate' data-i18n='questionnaire-warning'> with the following warnings <span>:</span></span>";
+	    			dialogText += "<span class='translate' data-i18n='questionnaire-warning'> with the following warnings <span>:</span></span>";
 	    			for ( i in json.surveyUpdateResult.warnings ) {
 	    				dialogText += " '";
 	    				dialogText += json.surveyUpdateResult.warnings[i];
