@@ -17,7 +17,10 @@
 package org.openchain.certification;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.openchain.certification.model.Question;
 import org.openchain.certification.model.User;
@@ -31,6 +34,7 @@ public class SurveyQuestionUpdateStats {
 	
 	private List<Question> updatedQuestions = new ArrayList<Question>();
 	private List<Question> addedQuestions = new ArrayList<Question>();
+	private Map<String, String> updatedSectionTitles = new HashMap<>();
 	
 	public SurveyQuestionUpdateStats() {
 		// empty constructor
@@ -65,7 +69,7 @@ public class SurveyQuestionUpdateStats {
 		} else if (list.size() == 2) {
 			return I18N.getMessage("SurveyQuestionUpdateStats.2list", language, list.get(0), list.get(1)); //$NON-NLS-1$
 		} else if (startIndex == list.size()-1) {
-			return I18N.getMessage("SurveyQuestionUpdateStats.1list", language, list.get(0));
+			return I18N.getMessage("SurveyQuestionUpdateStats.1list", language, list.get(0)); //$NON-NLS-1$
 		}else if (startIndex == 0) {	// must be size > 2
 			return I18N.getMessage("SurveyQuestionUpdateStats.start", language, list.get(0), buildCommaList(list, 1, language)); //$NON-NLS-1$
 		} else if (startIndex == list.size()-2) { // end of the list
@@ -103,6 +107,12 @@ public class SurveyQuestionUpdateStats {
 			sb.append(I18N.getMessage("SurveyQuestionUpdateStats.1", language, Integer.toString(this.updatedQuestions.size()))); //$NON-NLS-1$
 			sb.append(buildQuestionNumberList(this.updatedQuestions, language));
 		}
+		if (this.updatedSectionTitles.size() > 0) {
+			sb.append(String.format(I18N.getMessage("SurveyQuestionUpdateStats.6", language, Integer.toString(updatedSectionTitles.size())))); //$NON-NLS-1$
+			List<String> sectionNames = new ArrayList<>();
+			sectionNames.addAll(this.updatedSectionTitles.keySet());
+			sb.append(buildCommaList(sectionNames, 0, language));
+		}
 		if (sb.length() == 0) {
 			sb.append(I18N.getMessage("SurveyQuestionUpdateStats.2",language)); //$NON-NLS-1$
 		}
@@ -115,7 +125,24 @@ public class SurveyQuestionUpdateStats {
 	}
 	
 	public int getNumChanges() {
-		return this.addedQuestions.size() + this.updatedQuestions.size();
+		return this.addedQuestions.size() + this.updatedQuestions.size() + this.updatedSectionTitles.size();
+	}
+
+	/**
+	 * Add all of the updated section titles to the statistics for updated section titles
+	 * @param updatedSectionTitles map of section name to new section title
+	 */
+	public void addUpdatedSectionTitles(Map<String, String> updatedSectionTitles) {
+		for (Entry<String, String> entry:updatedSectionTitles.entrySet()) {
+			this.updatedSectionTitles.put(entry.getKey(), entry.getValue());
+		}
+	}
+
+	/**
+	 * @return a map of section names to altered section titles
+	 */
+	public Map<String, String> getUpdatedSectionTitles() {
+		return this.updatedSectionTitles;
 	}
 
 }

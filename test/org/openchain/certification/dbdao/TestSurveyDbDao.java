@@ -761,4 +761,99 @@ public class TestSurveyDbDao {
 		assertTrue(nullV2result != lang1v1result);
 		assertTrue(nullV2result != defaultLangv1result);
 	}
+	
+	@Test
+	public void testUpdateSectionTitle() throws QuestionException, SQLException, SurveyResponseException {
+		String specVersion = "test-spec-version";
+		String language = "abc";
+		Survey survey = new Survey(specVersion, language);
+		List<Section> sections = new ArrayList<Section>();
+		Section section1 = new Section(language);
+		String section1Name = "section1Name";
+		section1.setName(section1Name);
+		String section1Title = "section1Title";
+		section1.setTitle(section1Title);
+		List<Question> section1Questions = new ArrayList<Question>();
+		String s1q1Question="s1q1question";
+		String s1q1Number = "1.a";
+		YesNo s1q1Answer = YesNo.Yes;
+		String[] s1q1SpecRef = new String[] {"s1q1SpecRef"};
+		Question s1q1 = new YesNoQuestion(s1q1Question, 
+				section1Name, s1q1Number, specVersion, s1q1SpecRef, language, s1q1Answer);
+
+		section1Questions.add(s1q1);
+		String s1q2Question="s1q2question";
+		String s1q2Number = "1.b";
+		YesNo s1q2Answer = YesNo.NotApplicable;
+		String s1q2Prompt = "s1q2prompt";
+		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
+		Question s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, specVersion, s1q2SpecRef, language, s1q2Answer, s1q2Prompt);
+		section1Questions.add(s1q2);
+		section1.setQuestions(section1Questions);
+		sections.add(section1);
+		Section section2 = new Section(language);
+		String section2Name = "section2Name";
+		section2.setName(section2Name);
+		String section2Title = "section2Title";
+		section2.setTitle(section2Title);
+		List<Question> section2Questions = new ArrayList<Question>();
+		String s2q1Question="s2q1question";
+		String s2q1Number = "2.b";
+		int s2q1MinCorrect = 4;
+		String[] s2q1SpecRef = new String[] {"s2q1SpecRef"};
+		Question s2q1 = new SubQuestion(s2q1Question, 
+				section2Name, s2q1Number, specVersion, s2q1SpecRef, language, s2q1MinCorrect);
+		section2Questions.add(s2q1);
+		String s2q2Question="s2q2question";
+		String s2q2Number = "2.b.ii";
+		YesNo s2q2Answer = YesNo.No;
+		String s2q2Prompt = "s2q2prompt";
+		String s2q2validate = "dd";
+		String[] s2q2SpecRef = new String[] {"s2q2SpecRef"};
+		Question s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
+				section2Name, s2q2Number, specVersion, s2q2SpecRef, language, s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
+		s2q2.setSubQuestionOfNumber(s2q1Number);
+		section2Questions.add(s2q2);
+		String s2q3Question="s2q3question";
+		String s2q3Number = "1.b.iii";
+		YesNo s2q3Answer = YesNo.NotAnswered;
+		String[] s2q3SpecRef = new String[] {"s2q3SpecRef"};
+		Question s2q3 = new YesNoQuestion(s2q3Question, 
+				section2Name, s2q3Number, specVersion, s2q3SpecRef, language, s2q3Answer);
+		s2q3.setSubQuestionOfNumber(s2q1Number);
+		section2Questions.add(s2q3);
+		section2.setQuestions(section2Questions);
+		sections.add(section2);
+		survey.setSections(sections);
+		SurveyDbDao dao = new SurveyDbDao(con);
+		dao.addSurvey(survey);
+		Survey result = dao.getSurvey(specVersion, language);
+		assertEquals(specVersion, result.getSpecVersion());
+		for (Section rs:result.getSections()) {
+			if (rs.getName().equals(section1Name)) {
+				assertEquals(section1Title, rs.getTitle());
+				assertEquals(language, rs.getLanguage());
+			} else if (rs.getName().equals(section2Name)) {
+				assertEquals(section2Title, rs.getTitle());
+				assertEquals(language, rs.getLanguage());
+			} else {
+				fail("No matching section names");
+			}
+		}
+		String newSection1Title = "newOneTitle";
+		dao.updateSectionTitle(specVersion, language, section1Name, newSection1Title);
+		result = dao.getSurvey(specVersion, language);
+		for (Section rs:result.getSections()) {
+			if (rs.getName().equals(section1Name)) {
+				assertEquals(newSection1Title, rs.getTitle());
+				assertEquals(language, rs.getLanguage());
+			} else if (rs.getName().equals(section2Name)) {
+				assertEquals(section2Title, rs.getTitle());
+				assertEquals(language, rs.getLanguage());
+			} else {
+				fail("No matching section names");
+			}
+		}
+	}
 }

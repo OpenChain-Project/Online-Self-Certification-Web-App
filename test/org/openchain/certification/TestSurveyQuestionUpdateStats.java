@@ -3,7 +3,9 @@ package org.openchain.certification;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -97,6 +99,26 @@ public class TestSurveyQuestionUpdateStats {
 		assertEquals(question3.getNumber(), stats.getAddedQuestions().get(2).getNumber());
 		assertEquals(question4.getNumber(), stats.getAddedQuestions().get(3).getNumber());
 	}
+	
+	@Test
+	public void testAddChangedSectionTitles() {
+		SurveyQuestionUpdateStats stats = new SurveyQuestionUpdateStats();
+		String section1Name = "section1";
+		String section1Title = "section1Title";
+		String section2Name = "section2";
+		String section2Title = "section2Title";
+		Map<String, String> updatedSectionTitles = new HashMap<>();
+		updatedSectionTitles.put(section1Name, section1Title);
+		updatedSectionTitles.put(section2Name, section2Title);
+		assertEquals(0, stats.getNumChanges());
+		assertEquals(0, stats.getUpdatedSectionTitles().size());
+		stats.addUpdatedSectionTitles(updatedSectionTitles);
+		assertEquals(2, stats.getNumChanges());
+		Map<String, String> result = stats.getUpdatedSectionTitles();
+		assertEquals(2, result.size());
+		assertEquals(section1Title, result.get(section1Name));
+		assertEquals(section2Title, result.get(section2Name));
+	}
 
 	@Test
 	public void testToStringString() {
@@ -135,6 +157,18 @@ public class TestSurveyQuestionUpdateStats {
 		stats.addAddedQuestions(addedQuestions1);
 		result = stats.toString(ENGLISH);
 		assertEquals("Added 2 questions: 2.d and 2.e.  Updated 4 questions: 1.a, 2.a, 2.b, and 2.c.", result);
+		// One updated title
+		Map<String, String> updatedTitles = new HashMap<>();
+		updatedTitles.put("section1", "New section1 title");
+		stats.addUpdatedSectionTitles(updatedTitles);
+		result = stats.toString(ENGLISH);
+		assertEquals("Added 2 questions: 2.d and 2.e.  Updated 4 questions: 1.a, 2.a, 2.b, and 2.c.  Updated 1 section titles: section1.", result);
+		// Two updated titles
+		updatedTitles.clear();
+		updatedTitles.put("section2", "New section2 title");
+		stats.addUpdatedSectionTitles(updatedTitles);
+		result = stats.toString(ENGLISH);
+		assertEquals("Added 2 questions: 2.d and 2.e.  Updated 4 questions: 1.a, 2.a, 2.b, and 2.c.  Updated 2 section titles: section1 and section2.", result);
 	}
 
 	@Test

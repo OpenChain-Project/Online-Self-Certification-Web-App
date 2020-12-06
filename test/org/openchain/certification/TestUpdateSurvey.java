@@ -53,6 +53,8 @@ public class TestUpdateSurvey {
 	private static final String ORIG_QUESTION_1 = "Do you have a documented policy that governs open source license compliance of the Supplied Software distribution (e.g., via training, internal wiki, or other practical communication method)?";
 	private static final String UPDATED_QUESTION_1 = "Test updated question?";
 	private static final String UPDATED_QUESTION_NUM_1 = "1.a";
+	private static final String UPDATED_SECTION_NAME = "G1";
+	private static final String UPDATED_SECTION_TITLE = "G1: You Don't Know Your Open Source Responsibilities";
 	private static final String INVALID_UPDATE_LESS_QUESTIONS_PATH = TEST_DIRECTORY + File.separator + "oneless_questionnaire.json";
 	private static final String INVALID_DUP_QUESTION_PATH = TEST_DIRECTORY + File.separator + "dup_question_questionnaire.json";
 	private static final int NUM_SECTION1_QUESTIONS = 14;
@@ -139,12 +141,14 @@ public class TestUpdateSurvey {
 		assertEquals(1, stats.getVersionsUpdated().size());
 		assertTrue(stats.getVersionsUpdated().get(0).contains(NEW_VERSION));
 		assertTrue(stats.getVersionsUpdated().get(0).contains(UPDATED_QUESTION_NUM_1));
+		assertTrue(stats.getVersionsUpdated().get(0).contains(UPDATED_SECTION_NAME));
 		assertEquals(0, stats.getWarnings().size());
 		List<String> surveyVersions = surveyDao.getSurveyVesions();
 		assertEquals(1, surveyVersions.size());
 		assertEquals(NEW_VERSION, surveyVersions.get(0));
 		Survey updatedSurvey = surveyDao.getSurvey(NEW_VERSION, LANGUAGE);
 		assertEquals(UPDATED_QUESTION_1, updatedSurvey.getSections().get(0).getQuestions().get(0).getQuestion());
+		assertEquals(UPDATED_SECTION_TITLE, updatedSurvey.getSections().get(0).getTitle());
 	}
 	
 	@Test
