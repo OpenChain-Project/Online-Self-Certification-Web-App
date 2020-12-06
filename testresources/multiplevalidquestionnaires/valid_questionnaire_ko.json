@@ -1,0 +1,414 @@
+{
+  "specVersion": "2.0.0",
+  "language": "ko",
+  "title": "Conformance in Questions",
+  "contextText": "Context",
+  "questionsText": "Questions",
+  "completedText": "Completed?",
+  "statusText": "Status",
+  "answerColumnText": "Answer",
+  "sectionColumnText": "Section",
+  "numberColumnText": "Number",
+  "specRefColumnText": "Spec Ref",
+  "questionColumnText": "Question Text",
+  "tocText": "Table of Contents",
+  "preambleText": "The OpenChain Project builds trust in open source by making open source license compliance simpler and more consistent. The OpenChain Specification defines a core set of requirements every quality compliance program must satisfy. The OpenChain Curriculum provides the educational foundation for open source processes and solutions, whilst meeting a key requirement of the OpenChain Specification. OpenChain Conformance allows organizations to display their adherence to these requirements. The result is that open source license compliance becomes more predictable, understandable and efficient for participants of the software supply chain.\nThis document contains a series of questions to determine whether a company is OpenChain Conformant. If each of these questions can be answered with a \"yes\" then that company meets all the requirements of conformance to the OpenChain Specification version 1.2. If any of the questions are answered with a \"no\" then the company can clearly identify where additional investment is needed to improve the compliance process.",
+  "sections": [
+    {
+      "name": "G1",
+      "title": "G1: Know Your Open Source Responsibilities",
+      "questions": [
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a documented policy that governs open source license compliance of the Supplied Software distribution (e.g., via training, internal wiki, or other practical communication method)?",
+          "number": "1.a",
+          "type": "YES_NO",
+          "specReference": [
+            "1.1",
+            "1.1.1"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a documented procedure that communicates the existence of the open source policy to all Software Staff?",
+          "number": "1.b",
+          "type": "YES_NO",
+          "specReference": [
+            "1.1.2"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Have you identified the roles and the corresponding responsibilities that affect the performance and effectiveness of the Program?",
+          "number": "1.c",
+          "type": "YES_NO",
+          "specReference": [
+            "1.2.1"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Have you identified and documented the competencies required for each role?",
+          "number": "1.d",
+          "type": "YES_NO",
+          "specReference": [
+            "1.2",
+            "1.2.2"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Have you documented evidence of assessed competence for each Program participant?",
+          "number": "1.e",
+          "type": "YES_NO",
+          "specReference": [
+            "1.2",
+            "1.2.3"
+          ]
+        },
+        {
+          "question": "Do you have evidence documenting the awareness of your personnel of the following topics?",
+          "number": "1.f",
+          "type": "SUBQUESTIONS",
+          "specReference": [
+            "1.3",
+            "1.3.1"
+          ],
+          "minNumberValidatedAnswers": 4,
+          "subQuestions": {
+            "1.f.i": {
+              "correctAnswer": "Yes",
+              "question": "The open source policy and where to find it,",
+              "number": "1.f.i",
+              "type": "YES_NO",
+              "specReference": [
+                "1.3"
+              ]
+            },
+            "1.f.ii": {
+              "correctAnswer": "Yes",
+              "question": "The relevant open source objectives,",
+              "number": "1.f.ii",
+              "type": "YES_NO",
+              "specReference": [
+                "1.3"
+              ]
+            },
+            "1.f.iii": {
+              "correctAnswer": "Yes",
+              "question": "The contributions expected to ensure the effectiveness of the Program,",
+              "number": "1.f.iii",
+              "type": "YES_NO",
+              "specReference": [
+                "1.3"
+              ]
+            },
+            "1.f.iv": {
+              "correctAnswer": "Yes",
+              "question": "The implications of failing to follow the Program requirements,",
+              "number": "1.f.iv",
+              "type": "YES_NO",
+              "specReference": [
+                "1.3"
+              ]
+            }
+          }
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a process for determining the scope of your Program?",
+          "number": "1.g",
+          "type": "YES_NO",
+          "specReference": [
+            "1.4"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a written statement that clearly defines the scope and limits of the Program?",
+          "number": "1.h",
+          "type": "YES_NO",
+          "specReference": [
+            "1.4.1"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a process for reviewing open source license obligations, restrictions and rights?",
+          "number": "1.i",
+          "type": "YES_NO",
+          "specReference": [
+            "1.5"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a documented procedure to review and document the obligations, restrictions and rights?",
+          "number": "1.j",
+          "type": "YES_NO",
+          "specReference": [
+            "1.5.1"
+          ]
+        }
+      ]
+    },
+	{
+      "name": "G2",
+      "title": "G2: Assign Responsibility for Achieving Compliance",
+      "questions": [
+        {
+          "correctAnswer": "Yes",
+          "question": "Have you assigned individual(s) responsible for receiving external open source compliance inquiries (\"Open Source Liaison\")?",
+          "number": "2.a",
+          "type": "YES_NO",
+          "specReference": [
+            "2.1",
+            "2.2.1"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Is the Open Source Liaison function publicly identified (e.g. via an email address and/or the Linux Foundation\u0027s Open Compliance Directory)?",
+          "number": "2.b",
+          "type": "YES_NO",
+          "specReference": [
+            "2.1.1"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a documented procedure that assigns responsibility for receiving and responding to open source compliance inquiries?",
+          "number": "2.c",
+          "type": "YES_NO",
+          "specReference": [
+            "2.1.2"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Have you documented the persons, group or function supporting the Program role(s) identified?",
+          "number": "2.d",
+          "type": "YES_NO",
+          "specReference": [
+            "2.2.1"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Have the identified Program roles been properly staffed and has adequate funding provided.?",
+          "number": "2.e",
+          "type": "YES_NO",
+          "specReference": [
+            "2.2.2"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Is legal expertise pertaining to internal and external open source compliance identified?",
+          "number": "2.f",
+          "type": "YES_NO",
+          "specReference": [
+            "2.2.3"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a documented procedure assigning internal responsibilities for Open Source compliance.",
+          "number": "2.g",
+          "type": "YES_NO",
+          "specReference": [
+            "2.2.4"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a documented procedure for handling review and remediation of non-compliant cases?",
+          "number": "2.h",
+          "type": "YES_NO",
+          "specReference": [
+            "2.2.5"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "G3",
+      "title": "G3: Review and Approve Open Source Content",
+      "questions": [
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a documented procedure for identifying, tracking and archiving information about the collection of open source components from which a Supplied Software release is comprised?",
+          "number": "3.a",
+          "type": "YES_NO",
+          "specReference": [
+            "3.1.1"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have open source component records for each Supplied Software release which demonstrates the documented procedure was properly followed?",
+          "number": "3.b",
+          "type": "YES_NO",
+          "specReference": [
+            "3.1.2"
+          ]
+        },
+        {
+		  "question": "Have you implemented a procedure that handles at least the following common open source license use cases for the open source components of each supplied Supplied Software release?",
+          "number": "3.c",
+          "type": "SUBQUESTIONS",
+          "specReference": [
+            "3.2.1"
+          ],
+          "minNumberValidatedAnswers": 6,
+          "subQuestions": {
+            "3.c.i": {
+              "correctAnswer": "Yes",
+              "question": "     distributed in binary form;",
+              "number": "3.c.i",
+              "type": "YES_NO",
+              "specReference": [
+                "3.2"
+              ]
+            },
+            "3.c.ii": {
+              "correctAnswer": "Yes",
+              "question": "     distributed in source form;",
+              "number": "3.c.ii",
+              "type": "YES_NO",
+              "specReference": [
+                "3.2"
+              ]
+            },
+            "3.c.iii": {
+              "correctAnswer": "Yes",
+              "question": "     integrated with other open source such that it may trigger copyleft obligations;",
+              "number": "3.c.iii",
+              "type": "YES_NO",
+              "specReference": [
+                "3.2"
+              ]
+            },
+            "3.c.iv": {
+              "correctAnswer": "Yes",
+              "question": "     contains modified open source;",
+              "number": "3.c.iv",
+              "type": "YES_NO",
+              "specReference": [
+                "3.2"
+              ]
+            },
+            "3.c.v": {
+              "correctAnswer": "Yes",
+              "question": "     contains open source or other software under an incompatible license interacting with other components within the Supplied Software;",
+              "number": "3.c.v",
+              "type": "YES_NO",
+              "specReference": [
+                "3.2"
+              ]
+            },
+            "3.c.vi": {
+              "correctAnswer": "Yes",
+              "question": "     contains open source with attribution requirements.",
+              "number": "3.c.vi",
+              "type": "YES_NO",
+              "specReference": [
+                "3.2"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "G4",
+      "title": "G4: Deliver Open Source Compliance Artifacts",
+      "questions": [
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a documented procedure that describes a process that ensures the Compliance Artifacts are distributed with Supplied Software as required by the Identified Licenses?",
+          "number": "4.a",
+          "type": "YES_NO",
+          "specReference": [
+            "4.1.1"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you archive copies of the Compliance Artifacts of the Supplied Software?",
+          "number": "4.b",
+          "type": "YES_NO",
+          "specReference": [
+            "4.1.2"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Are the copies of the Compliance Artifacts archived for at least as long as the Supplied Software is offered or as required by the Identified Licenses (whichever is longer)?",
+          "number": "4.d",
+          "type": "YES_NO",
+          "specReference": [
+            "4.1.2"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "G5",
+      "title": "G5: Understanding Open Source Community Engagements",
+      "questions": [
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a policy that governs contributions to open source projects on behalf of the organization?",
+          "number": "5.a",
+          "type": "YES_NO",
+          "specReference": [
+            "5.1"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a documented procedure that governs Open Source contributions?",
+          "number": "5.b",
+          "type": "YES_NO",
+          "specReference": [
+            "5.1.2"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have a documented procedure that makes all Software Staff aware of the existence of the Open Source contribution policy?",
+          "number": "5.c",
+          "type": "YES_NO",
+          "specReference": [
+            "5.1.3"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "G6",
+      "title": "G6: Adherence to the Specification Requirements",
+      "questions": [
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have documentation confirming that your Program meets all the requirements of this specification?",
+          "number": "6.a",
+          "type": "YES_NO",
+          "specReference": [
+            "6.1.1"
+          ]
+        },
+        {
+          "correctAnswer": "Yes",
+          "question": "Do you have documentation confirming that your Program conformance was reviewed within the last 18 months?",
+          "number": "6.b",
+          "type": "YES_NO",
+          "specReference": [
+            "6.2.1"
+          ]
+        }
+      ]
+    }
+  ]
+}

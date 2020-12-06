@@ -657,8 +657,9 @@ public class CertificationServlet extends HttpServlet {
 			Iterator<File> jsonFiles = repo.getQuestionnaireJsonFiles(language);
 			while (jsonFiles.hasNext()) {
 				File jsonFile = jsonFiles.next();
-				updateSurvey(jsonFile, language, updateDb, result, dao, gson);
+				updateSurveyFromFile(jsonFile, language, updateDb, result, dao, gson);
 			}
+			result.verify(language);
 			return result;
 		} finally {
 			repo.unlock();
@@ -669,7 +670,7 @@ public class CertificationServlet extends HttpServlet {
 	}
 
 	/**
-	 * Update the survey results from the Questionnaire GIT repository.  New languages or versions
+	 * Update the survey results from a JSON file containing a the survey information.  New languages or versions
 	 * will be added and existing versions will be updated.  Note - database will only be updated if
 	 * updateDB is set to true
 	 * @param jsonFile File containing the new survey in JSON format
@@ -679,13 +680,14 @@ public class CertificationServlet extends HttpServlet {
 	 * @param dao Survey DBDAO
 	 * @throws SQLException 
 	 */
-	protected static void updateSurvey(File jsonFile, String language, boolean updateDb,
+	protected static void updateSurveyFromFile(File jsonFile, String language, boolean updateDb,
 			SurveyUpdateResult stats, SurveyDbDao dao, Gson gson) throws SQLException {
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new InputStreamReader(new FileInputStream(jsonFile), "UTF8"));
 			Survey survey = gson.fromJson(reader, Survey.class);
 			survey.addInfoToSectionQuestions();
+			stats.addVersionQuestions(survey.getSpecVersion(), survey.getLanguage(), survey.getQuestionNumbers(), language);
 			if (dao.surveyExists(survey.getSpecVersion(), survey.getLanguage(), false)) {
 				try {
 					SurveyQuestionUpdateStats updateStats = updateSurveyQuestions(survey, language, dao, updateDb);
@@ -706,7 +708,6 @@ public class CertificationServlet extends HttpServlet {
 					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
 				}
 			} else {
-				survey.addInfoToSectionQuestions();
 				List<String> surveyWarnings = survey.verify(language);
 				if (surveyWarnings.size() > 0) {
 					StringBuilder sb = new StringBuilder(surveyWarnings.get(0));
