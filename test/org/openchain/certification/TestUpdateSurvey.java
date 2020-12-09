@@ -58,6 +58,9 @@ public class TestUpdateSurvey {
 	private static final String INVALID_UPDATE_LESS_QUESTIONS_PATH = TEST_DIRECTORY + File.separator + "oneless_questionnaire.json";
 	private static final String INVALID_DUP_QUESTION_PATH = TEST_DIRECTORY + File.separator + "dup_question_questionnaire.json";
 	private static final int NUM_SECTION1_QUESTIONS = 14;
+	private static final String UPDATE_QUESTION_AND_SECTION_PATH = TEST_DIRECTORY + File.separator + "updated_section_question_questionnaire.json";
+	private static final CharSequence NEW_CHANGED_SECTION_NAME = "GOne";
+	
 	Connection con;
 	Gson gson;
 	SurveyDbDao surveyDao;
@@ -164,6 +167,29 @@ public class TestUpdateSurvey {
 		assertEquals(0, stats.getVersionsAdded().size());
 		assertEquals(0, stats.getVersionsUpdated().size());
 		assertEquals(1, stats.getWarnings().size());
+		List<String> surveyVersions = surveyDao.getSurveyVesions();
+		assertEquals(1, surveyVersions.size());
+		assertEquals(NEW_VERSION, surveyVersions.get(0));
+		survey = surveyDao.getSurvey(NEW_VERSION, LANGUAGE);
+		assertEquals(NUM_SECTION1_QUESTIONS, survey.getSections().get(0).getQuestions().size());
+	}
+	
+	@Test
+	public void testUpdateQuestionSectionName() throws SQLException, QuestionException, SurveyResponseException {
+		// Regression test for issue #173 Questionnaire update fails when section names change
+		File jsonFile = new File(VALID_FILE_PATH);
+		SurveyUpdateResult stats = new SurveyUpdateResult();
+		CertificationServlet.updateSurveyFromFile(jsonFile, LANGUAGE, true, stats, surveyDao, gson);
+		Survey survey = surveyDao.getSurvey(NEW_VERSION, LANGUAGE);
+		assertEquals(NUM_SECTION1_QUESTIONS, survey.getSections().get(0).getQuestions().size());
+		File updateFile = new File(UPDATE_QUESTION_AND_SECTION_PATH);
+		stats = new SurveyUpdateResult();
+		CertificationServlet.updateSurveyFromFile(updateFile, LANGUAGE, true, stats, surveyDao, gson);
+		assertEquals(0, stats.getVersionsAdded().size());
+		assertEquals(0, stats.getVersionsUpdated().size());
+		assertEquals(1, stats.getWarnings().size());
+		assertTrue(stats.getWarnings().get(0).contains("Missing"));
+		assertTrue(stats.getWarnings().get(0).contains(UPDATED_SECTION_NAME));
 		List<String> surveyVersions = surveyDao.getSurveyVesions();
 		assertEquals(1, surveyVersions.size());
 		assertEquals(NEW_VERSION, surveyVersions.get(0));

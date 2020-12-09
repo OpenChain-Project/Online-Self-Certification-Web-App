@@ -704,7 +704,7 @@ public class CertificationServlet extends HttpServlet {
 					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
 				} catch (UpdateSurveyException e) {
 					logger.error("Update survey error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
-					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
+					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage()) + "  " + e.getMessage()); //$NON-NLS-1$
 				} catch (IOException e) {
 					logger.error("I/O error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
 					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
