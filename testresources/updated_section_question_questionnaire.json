@@ -15,8 +15,8 @@
   "preambleText": "The OpenChain Project builds trust in open source by making open source license compliance simpler and more consistent. The OpenChain Specification defines a core set of requirements every quality compliance program must satisfy. The OpenChain Curriculum provides the educational foundation for open source processes and solutions, whilst meeting a key requirement of the OpenChain Specification. OpenChain Conformance allows organizations to display their adherence to these requirements. The result is that open source license compliance becomes more predictable, understandable and efficient for participants of the software supply chain.\nThis document contains a series of questions to determine whether a company is OpenChain Conformant. If each of these questions can be answered with a \"yes\" then that company meets all the requirements of conformance to the OpenChain Specification version 1.2. If any of the questions are answered with a \"no\" then the company can clearly identify where additional investment is needed to improve the compliance process.",
   "sections": [
     {
-      "name": "G1",
-      "title": "G1: You Don't Know Your Open Source Responsibilities",
+      "name": "GOne",
+      "title": "G1: Know Your Open Source Responsibilities",
       "questions": [
         {
           "correctAnswer": "Yes",

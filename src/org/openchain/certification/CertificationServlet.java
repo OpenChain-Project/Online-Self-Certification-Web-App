@@ -35,6 +35,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -369,7 +371,7 @@ public class CertificationServlet extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");  //$NON-NLS-1$
 		HttpSession session = request.getSession(true);
 		UserSession user = (UserSession)session.getAttribute(SESSION_ATTRIBUTE_USER);
-		RequestJson rj = gson.fromJson(new JsonReader(new InputStreamReader(request.getInputStream(), "UTF-8")), RequestJson.class);
+		RequestJson rj = gson.fromJson(new JsonReader(new InputStreamReader(request.getInputStream(), "UTF-8")), RequestJson.class); //$NON-NLS-1$
         PrintWriter out = response.getWriter();
         PostResponse postResponse = new PostResponse(Status.OK);
         String locale = rj.getLocale();
@@ -657,8 +659,9 @@ public class CertificationServlet extends HttpServlet {
 			Iterator<File> jsonFiles = repo.getQuestionnaireJsonFiles(language);
 			while (jsonFiles.hasNext()) {
 				File jsonFile = jsonFiles.next();
-				updateSurvey(jsonFile, language, updateDb, result, dao, gson);
+				updateSurveyFromFile(jsonFile, language, updateDb, result, dao, gson);
 			}
+			result.verify(language);
 			return result;
 		} finally {
 			repo.unlock();
@@ -669,7 +672,7 @@ public class CertificationServlet extends HttpServlet {
 	}
 
 	/**
-	 * Update the survey results from the Questionnaire GIT repository.  New languages or versions
+	 * Update the survey results from a JSON file containing a the survey information.  New languages or versions
 	 * will be added and existing versions will be updated.  Note - database will only be updated if
 	 * updateDB is set to true
 	 * @param jsonFile File containing the new survey in JSON format
@@ -679,13 +682,14 @@ public class CertificationServlet extends HttpServlet {
 	 * @param dao Survey DBDAO
 	 * @throws SQLException 
 	 */
-	protected static void updateSurvey(File jsonFile, String language, boolean updateDb,
+	protected static void updateSurveyFromFile(File jsonFile, String language, boolean updateDb,
 			SurveyUpdateResult stats, SurveyDbDao dao, Gson gson) throws SQLException {
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new InputStreamReader(new FileInputStream(jsonFile), "UTF8"));
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(jsonFile), "UTF8")); //$NON-NLS-1$
 			Survey survey = gson.fromJson(reader, Survey.class);
 			survey.addInfoToSectionQuestions();
+			stats.addVersionQuestions(survey.getSpecVersion(), survey.getLanguage(), survey.getQuestionNumbers(), language);
 			if (dao.surveyExists(survey.getSpecVersion(), survey.getLanguage(), false)) {
 				try {
 					SurveyQuestionUpdateStats updateStats = updateSurveyQuestions(survey, language, dao, updateDb);
@@ -700,22 +704,21 @@ public class CertificationServlet extends HttpServlet {
 					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
 				} catch (UpdateSurveyException e) {
 					logger.error("Update survey error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
-					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
+					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage()) + "  " + e.getMessage()); //$NON-NLS-1$
 				} catch (IOException e) {
 					logger.error("I/O error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
 					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
 				}
 			} else {
-				survey.addInfoToSectionQuestions();
 				List<String> surveyWarnings = survey.verify(language);
 				if (surveyWarnings.size() > 0) {
 					StringBuilder sb = new StringBuilder(surveyWarnings.get(0));
 					for (int i = 1; i < surveyWarnings.size(); i++) {
-						sb.append("; ");
+						sb.append("; "); //$NON-NLS-1$
 						sb.append(surveyWarnings.get(i));
 					}
-					logger.error("Errors found in survey: "+sb.toString());
-					stats.addWarning(I18N.getMessage("CertificationServlet.70",language,survey.getSpecVersion(),sb.toString()));
+					logger.error("Errors found in survey: "+sb.toString()); //$NON-NLS-1$
+					stats.addWarning(I18N.getMessage("CertificationServlet.70",language,survey.getSpecVersion(),sb.toString())); //$NON-NLS-1$
 				} else {
 					if (updateDb) {
 						try {
@@ -767,10 +770,10 @@ public class CertificationServlet extends HttpServlet {
 		if (surveyWarnings.size() > 0) {
 			StringBuilder sb = new StringBuilder(surveyWarnings.get(0));
 			for (int i = 1; i < surveyWarnings.size(); i++) {
-				sb.append("; ");
+				sb.append("; "); //$NON-NLS-1$
 				sb.append(surveyWarnings.get(i));
 			}
-			logger.error("Errors found in survey for update: "+sb.toString());
+			logger.error("Errors found in survey for update: "+sb.toString()); //$NON-NLS-1$
 			throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.70",language,survey.getSpecVersion(),sb.toString()))); //$NON-NLS-1$
 		}
 		long existingId = dao.getSpecId(survey.getSpecVersion(), survey.getLanguage(), false);
@@ -781,12 +784,26 @@ public class CertificationServlet extends HttpServlet {
 		if (existing == null) {
 			throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.58",language,survey.getSpecVersion()))); //$NON-NLS-1$
 		}
-		List<Question> updatedQuestions = new ArrayList<Question>();
-		List<Question> addedQuestions = new ArrayList<Question>();
-		Set<String> foundQuestionNumbers = new HashSet<String>();
+		List<Question> updatedQuestions = new ArrayList<>();
+		List<Question> addedQuestions = new ArrayList<>();
+		Map<String, String> updatedSectionTitles = new HashMap<>();
+		Set<String> foundQuestionNumbers = new HashSet<>();
 		Set<String> existingQuestionNumbers = existing.getQuestionNumbers();
 		Map<String, SubQuestion> questionsWithSubs = new HashMap<String, SubQuestion>();
 		for (Section section:survey.getSections()) {
+			String existingSectionTitle = null;
+			for (Section existingSection:existing.getSections()) {
+				if (Objects.equals(existingSection.getName(), section.getName())) {
+					existingSectionTitle = existingSection.getTitle();
+					break;
+				}
+			}
+			if (Objects.isNull(existingSectionTitle)) {
+				throw new UpdateSurveyException(I18N.getMessage("CertificationServlet.12", language, section.getTitle(), survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
+			}
+			if (!Objects.equals(section.getTitle(), existingSectionTitle)) {
+				updatedSectionTitles.put(section.getName(), section.getTitle());
+			}
 			for (Question question:section.getQuestions()) {
 				if (foundQuestionNumbers.contains(question.getNumber())) {
 					throw(new UpdateSurveyException(I18N.getMessage("CertificationServlet.60",language,question.getNumber()))); //$NON-NLS-1$
@@ -795,7 +812,7 @@ public class CertificationServlet extends HttpServlet {
 				if (question.getSubQuestionOfNumber() != null) {
 					SubQuestion parentQuestion = questionsWithSubs.get(question.getSubQuestionOfNumber());
 					if (parentQuestion == null) {
-						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionOfNumber(), survey.getSpecVersion(), 
+						parentQuestion = new SubQuestion("REPLACE", "REPLACE", question.getSubQuestionOfNumber(), survey.getSpecVersion(),  //$NON-NLS-1$ //$NON-NLS-2$
 								new String[0], survey.getLanguage(), 0); //$NON-NLS-1$ //$NON-NLS-2$
 						questionsWithSubs.put(question.getSubQuestionOfNumber(), parentQuestion);
 					}
@@ -826,9 +843,13 @@ public class CertificationServlet extends HttpServlet {
 			logger.info("Updating survey questions for spec version "+survey.getSpecVersion()+", "+survey.getLanguage());  //$NON-NLS-1$    //$NON-NLS-2$
 			dao.updateQuestions(updatedQuestions);
 			dao.addQuestions(addedQuestions);
+			for (Entry<String, String> updatedSectionEntry:updatedSectionTitles.entrySet()) {
+				dao.updateSectionTitle(survey.getSpecVersion(), survey.getLanguage(), updatedSectionEntry.getKey(), updatedSectionEntry.getValue());
+			}
 		}
 		stats.addUpdateQuestions(updatedQuestions);
 		stats.addAddedQuestions(addedQuestions);
+		stats.addUpdatedSectionTitles(updatedSectionTitles);
 		return stats;
 	}
 }

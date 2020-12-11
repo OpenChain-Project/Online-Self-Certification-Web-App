@@ -59,6 +59,7 @@ public class SurveyDbDao {
 	private PreparedStatement getQuestionIdQuery;
 	private PreparedStatement insertSpecQuery;
 	private PreparedStatement insertSectionQuery;
+	private PreparedStatement updateSectionTitleQuery;
 	
 	public SurveyDbDao(Connection connection) throws SQLException {
 		this.connection = connection;
@@ -735,6 +736,45 @@ public class SurveyDbDao {
 				result.close();
 			}
 			stmt.close();
+		}
+	}
+
+	/**
+	 * Updates the title for a section with sectionName in the survey specVersion,locale
+	 * @param specVersion Version of the spec
+	 * @param locale Locale or language of the spec
+	 * @param sectionName Name of the section
+	 * @param sectionTitle Title to replace the existing title with
+	 * @throws SQLException 
+	 */
+	public void updateSectionTitle(String specVersion, String locale, String sectionName, String sectionTitle) throws SQLException {
+		Savepoint save = this.connection.setSavepoint();
+		try {
+			if (updateSectionTitleQuery == null) {
+				updateSectionTitleQuery = this.connection.prepareStatement(
+						"update section set (title) = (?) " + //$NON-NLS-1$
+						"where name=? and " + //$NON-NLS-1$
+						"spec_version=(select id from spec where version=? and language=?)"); //$NON-NLS-1$
+			}
+			updateSectionTitleQuery.setString(1, sectionTitle);
+			updateSectionTitleQuery.setString(2, sectionName);
+			updateSectionTitleQuery.setString(3, specVersion);
+			updateSectionTitleQuery.setString(4, locale);
+			int numRows = updateSectionTitleQuery.executeUpdate();
+			if (numRows < 1) {
+				logger.warn("No title updated for spec version "+specVersion+" locale "+locale+" section "+sectionName); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			} else if (numRows > 1) {
+				logger.warn(Integer.toString(numRows)+"were updated in title updated for spec version "+specVersion+" locale "+locale+" section "+sectionName); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			}
+		} catch(SQLException ex) {
+			if (save != null) {
+				this.connection.rollback(save);
+			}
+			throw(ex);
+		} finally {
+			if (save != null) {
+				this.connection.commit();
+			}
 		}
 	}
 }

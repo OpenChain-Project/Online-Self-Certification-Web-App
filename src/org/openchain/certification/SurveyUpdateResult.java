@@ -17,7 +17,12 @@
 package org.openchain.certification;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Holds the results for a survey update
@@ -33,6 +38,10 @@ public class SurveyUpdateResult {
 	private List<String> versionsUpdated = new ArrayList<String>();
 	private List<String> versionsAdded = new ArrayList<String>();
 	private List<String> warnings = new ArrayList<String>();
+	/**
+	 * Map of spec version to a map of local to all question numbers - used to verify all question numbers match for a given version
+	 */
+	private Map<String, Map<String, List<String>>>  versionQuestions = new HashMap<>();
 	
 	public SurveyUpdateResult() {
 		
@@ -43,6 +52,53 @@ public class SurveyUpdateResult {
 	 */
 	public SurveyUpdateResult(String commit) {
 		this.commit = commit;
+	}
+	
+	/**
+	 * @param specVersion spec version for the question numbers
+	 * @param locale locale for the question numbers
+	 * @param questionNumbers all question numbers in the survey
+	 * @param language local language
+	 */
+	public void addVersionQuestions(String specVersion, String locale, 
+			Set<String> questionNumbers, String language) {
+		Map<String, List<String>> localQuestions = this.versionQuestions.get(specVersion);
+		if (Objects.isNull(localQuestions)) {
+			localQuestions = new HashMap<>();
+			this.versionQuestions.put(specVersion, localQuestions);
+		}
+		List<String> existingQuestionNumbers = localQuestions.get(locale);
+		if (Objects.isNull(existingQuestionNumbers)) {
+			existingQuestionNumbers = new ArrayList<>();
+			localQuestions.put(locale, existingQuestionNumbers);
+		} else {
+			this.warnings.add(I18N.getMessage("SurveyUpdateResult.0", language, specVersion, locale)); //$NON-NLS-1$
+		}
+		existingQuestionNumbers.addAll(questionNumbers);
+	}
+	
+	/**
+	 * This should be called after all questions have been added.  Miss-matched question numbers between locales for a specific spec version and adds any found errors to warnings.
+	 */
+	public void verify(String language) {
+
+		for (Entry<String, Map<String, List<String>>> versionEntry:this.versionQuestions.entrySet()) {
+			List<String> versionQuestions = null;
+			boolean questionsMatch = true;
+			for (Entry<String, List<String>> localeEntry:versionEntry.getValue().entrySet()) {
+				if (Objects.isNull(versionQuestions)) {
+					versionQuestions = localeEntry.getValue();
+				} else {
+					if (!versionQuestions.containsAll(localeEntry.getValue()) ||
+						!localeEntry.getValue().containsAll(versionQuestions)) {
+						questionsMatch = false;
+					}
+				}
+			}
+			if (!questionsMatch) {
+				warnings.add(I18N.getMessage("SurveyUpdateResult.4", language, versionEntry.getKey())); //$NON-NLS-1$
+			}
+		}
 	}
 	
 	/**

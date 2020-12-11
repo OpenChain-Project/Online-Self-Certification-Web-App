@@ -1,6 +1,6 @@
 {
   "specVersion": "2.0.0",
-  "language": "en",
+  "language": "ja",
   "title": "Conformance in Questions",
   "contextText": "Context",
   "questionsText": "Questions",
@@ -16,11 +16,11 @@
   "sections": [
     {
       "name": "G1",
-      "title": "G1: You Don't Know Your Open Source Responsibilities",
+      "title": "G1: Know Your Open Source Responsibilities",
       "questions": [
         {
           "correctAnswer": "Yes",
-          "question": "Test updated question?",
+          "question": "Do you have a documented policy that governs open source license compliance of the Supplied Software distribution (e.g., via training, internal wiki, or other practical communication method)?",
           "number": "1.a",
           "type": "YES_NO",
           "specReference": [
@@ -74,7 +74,7 @@
             "1.3",
             "1.3.1"
           ],
-          "minNumberValidatedAnswers": 4,
+          "minNumberValidatedAnswers": 3,
           "subQuestions": {
             "1.f.i": {
               "correctAnswer": "Yes",
@@ -98,15 +98,6 @@
               "correctAnswer": "Yes",
               "question": "The contributions expected to ensure the effectiveness of the Program,",
               "number": "1.f.iii",
-              "type": "YES_NO",
-              "specReference": [
-                "1.3"
-              ]
-            },
-            "1.f.iv": {
-              "correctAnswer": "Yes",
-              "question": "The implications of failing to follow the Program requirements,",
-              "number": "1.f.iv",
               "type": "YES_NO",
               "specReference": [
                 "1.3"

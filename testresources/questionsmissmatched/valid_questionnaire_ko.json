@@ -1,6 +1,6 @@
 {
   "specVersion": "2.0.0",
-  "language": "en",
+  "language": "ko",
   "title": "Conformance in Questions",
   "contextText": "Context",
   "questionsText": "Questions",
@@ -16,11 +16,11 @@
   "sections": [
     {
       "name": "G1",
-      "title": "G1: You Don't Know Your Open Source Responsibilities",
+      "title": "G1: Know Your Open Source Responsibilities",
       "questions": [
         {
           "correctAnswer": "Yes",
-          "question": "Test updated question?",
+          "question": "Do you have a documented policy that governs open source license compliance of the Supplied Software distribution (e.g., via training, internal wiki, or other practical communication method)?",
           "number": "1.a",
           "type": "YES_NO",
           "specReference": [
