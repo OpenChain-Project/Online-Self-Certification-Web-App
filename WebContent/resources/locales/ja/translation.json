@@ -176,7 +176,7 @@
   "select_version_content":" 仕様バージョンを選択",
   "Version":"バージョン",
   "reset_Questionnaire_content": "これによりすべての回答が削除され、最新バージョンの新規アンケートが開始します。続けますか？",
-  "Yes": "Yes",
+  "Yes": "はい",
   "No": "いいえ",
   "Save-ans-dialog": "保存に成功しました。",
   "Responses Unsubmitted": "回答が未送信",
