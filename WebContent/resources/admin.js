@@ -179,10 +179,10 @@ function fillSubmissionStatusTable(submissions) {
 	$("#submitted-rejected").empty();
 	$("#not-submitted").empty();
 	$(".status-button").attr("disbled",true);
-	var submittedAwaitingApprovalHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
-	var submittedRejectedHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
-	var notSubmittedHtml = '<thead><tr><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
-	var submittedApprovedHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
+	var submittedAwaitingApprovalHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="Specification Version">Specification Version</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
+	var submittedRejectedHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="Specification Version">Specification Version</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
+	var notSubmittedHtml = '<thead><tr><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="Specification Version">Specification Version</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
+	var submittedApprovedHtml = '<thead><tr><th></th><th class="translate" data-i18n="User Name">User Name</th><th class="translate" data-i18n="Organization">Organization</th><th class="translate" data-i18n="Email">Email</th><th class="translate" data-i18n="Specification Version">Specification Version</th><th class="translate" data-i18n="% Complete">% Complete</th><th class="translate" data-i18n="Score">Score</th></tr></thead>\n<tbody>';
 	for (var i = 0; i < submissions.length; i++) {
 		var html = '<tr id="submission-';
 		html += submissions[i].id;
@@ -199,7 +199,14 @@ function fillSubmissionStatusTable(submissions) {
 		html += '</td><td class="organization_col">';
 		html += submissions[i].user.organization;
 		html += '</td><td class="email_col">';
-		html += submissions[i].user.email;		
+		html += submissions[i].user.email;
+		html += '</td><td class="spec_version_col">';
+		var specVersion = submissions[i].specVersion;
+    	var versionParts = specVersion.split( "." );
+    	if ( versionParts.length > 2 ) {
+    		specVersion = versionParts[0] + "." + versionParts[1];
+    	}
+    	html += specVersion;
 		html += '</td><td class="completed_col">';
 		html += submissions[i].percentComplete;
 		html += '</td><td class="score_col">';

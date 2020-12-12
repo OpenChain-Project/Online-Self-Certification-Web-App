@@ -226,7 +226,12 @@ table tr:nth-child(odd) {
 .rejected_col {
     text-align:center;
 }
+
 .completed_col {
+    text-align:center;
+}
+
+.spec_version_col {
 	text-align:center;
 }
 
