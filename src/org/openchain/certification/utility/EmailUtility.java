@@ -122,14 +122,18 @@ public class EmailUtility {
 	}
 	
 	public static void emailCompleteSubmission(String username, String name, String email,
-			String specVersion, ServletConfig config, String language) throws EmailUtilException {
+			String specVersion, String organization, ServletConfig config, String language) throws EmailUtilException {
 		StringBuilder adminMsg = new StringBuilder("<div>User "); //$NON-NLS-1$
 		adminMsg.append(name);
+		adminMsg.append(" from organization ");
+		adminMsg.append(organization);
 		adminMsg.append(" with username "); //$NON-NLS-1$
 		adminMsg.append(username);
 		adminMsg.append(" and email "); //$NON-NLS-1$
 		adminMsg.append(email);
-		adminMsg.append(" has just submitted a certification request.</div>"); //$NON-NLS-1$
+		adminMsg.append(" has just submitted a certification request for spec version ");
+		adminMsg.append(specVersion);
+		adminMsg.append("</div>"); //$NON-NLS-1$
 		emailAdmin("Notification - new OpenChain submission [do not reply]", adminMsg.toString(), config); //$NON-NLS-1$		
 		// EmailUtility.48=<div>Congratulations {0} .  Your certification request has been accepted.  If you did not submit a request for OpenChain certification, please notify the OpenChain group at conformance@lists.openchainproject.org.</div>
 		String userMsg = I18N.getMessage("EmailUtility.48",language, name); //$NON-NLS-1$
