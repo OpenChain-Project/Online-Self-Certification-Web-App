@@ -693,7 +693,9 @@ public class UserSession {
 		EmailUtility.emailCompleteSubmission(this.username,
 				currentSurveyResponse.getResponder().getName(),
 				currentSurveyResponse.getResponder().getEmail(),
-				currentSurveyResponse.getSpecVersion(), config, languagePreference);
+				currentSurveyResponse.getSpecVersion(), 
+				currentSurveyResponse.getResponder().getOrganization(),
+				config, languagePreference);
 		return true;
 	}
 	public boolean isAdmin() {
