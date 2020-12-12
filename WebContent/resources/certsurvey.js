@@ -131,6 +131,11 @@ function getSurvey() {
 	    	}
 	    	$( "#specVersion" ).text( specVersion );
 	    	$( "#surveyVersion" ).text( surveyVersion );
+	    	if ( specVersion >= "2.1") {
+	    		$ ( "#ISOTitle" ).html("&nbsp;(ISO/IEC 5230:2020)");
+	    	} else {
+	    		$ ( "#ISOTitle" ).html("");
+	    	}
 	    	certForm.empty();
 	    	var survey = surveyResponse.survey;
 	    	var responses = surveyResponse.responses;
