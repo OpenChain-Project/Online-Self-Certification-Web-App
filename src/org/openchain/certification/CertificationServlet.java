@@ -125,7 +125,8 @@ public class CertificationServlet extends HttpServlet {
 	private static final String SET_LANGUAGE_REQUEST = "setlanguage";  //$NON-NLS-1$
 	private static final String GET_GIT_TAGS_REQUEST = "getGitTags"; //$NON-NLS-1$
 	private static final String GET_UPDATE_SURVEY_RESULTS = "getUpdateSurveyResults"; //$NON-NLS-1$
-
+	private static final String GET_SUPPORTED_SPEC_LANGUAGES = "getSupportedSpecLanguages";
+	private static final String SET_SURVEY_RESPONSE_LANGUAGE = "setSurveyResponseLanguage";
 	
 	private Gson gson;
 	
@@ -227,6 +228,8 @@ public class CertificationServlet extends HttpServlet {
 	            	gson.toJson(user.getSurveyResponse(locale), out);
 	            } else if (requestParam.equals(GET_SURVEY_VERSIONS)) {
 	            	gson.toJson(user.getSurveyResponseSpecVersions(locale), out);
+	            } else if (requestParam.equals(GET_SUPPORTED_SPEC_LANGUAGES)) {
+	            	gson.toJson(user.getSurveyResponseSpecLanguages(locale), out);
 	            } else if (requestParam.equals(GET_SUBMISSIONS)) {
 	            	if (!user.isAdmin()) {
 	            		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -445,6 +448,9 @@ public class CertificationServlet extends HttpServlet {
         		}
         	}else if (rj.getRequest().equals(SET_LANGUAGE_REQUEST)) {
         		session.setAttribute(LANGUAGE_ATTRIBUTE, rj.getLanguage());
+        		if (user != null) {
+        			user.setLanguagePreference(rj.getLanguage());
+        		}
         	} else if (user == null || !user.isLoggedIn()) {
         		if (!rj.getRequest().equals(LOGOUT_REQUEST)) {	// Ignore the logout request if not logged in
             		// Not logged in - set the status to unauthorized
@@ -472,6 +478,8 @@ public class CertificationServlet extends HttpServlet {
         		user.resetAnswers(rj.getSpecVersion(), locale);
         	} else if (rj.getRequest().equals(SET_CURRENT_SURVEY_RESPONSE)) {
         		user.setCurrentSurveyResponse(rj.getSpecVersion(), rj.isCreate(), locale);
+        	} else if (rj.getRequest().equals(SET_SURVEY_RESPONSE_LANGUAGE)) {
+        		user.setSurveyResponseLanguage(rj.getLanguage(), locale);
         	} else if (rj.getRequest().equals(REQUEST_UNSUBMIT)) {
         		user.unsubmit(locale);
         	} else if (rj.getRequest().equals(UPDATE_SURVEY_REQUEST)) {

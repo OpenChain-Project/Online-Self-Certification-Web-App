@@ -361,7 +361,7 @@ textarea:focus ~ label, input:focus ~ label, textarea:valid ~ label, .select-lab
  
  /********************************* ADMIN CSS *******************************/
  
- #btDownloadSurvey, #btUploadSurvey, #btUpdateSurvey, #btApprove, #btReject, #btSaveAnswers, #btSaveAndSubmit, #btUnSubmit, #btDownloadAnswers, #btResetAnswers, #btSelectVersion{
+ #btDownloadSurvey, #btUploadSurvey, #btUpdateSurvey, #btApprove, #btReject, #btSaveAnswers, #btSaveAndSubmit, #btUnSubmit, #btDownloadAnswers, #btResetAnswers, #btSelectVersion, #btChangeLanguage {
  	margin-bottom:15px;
  	}
  	

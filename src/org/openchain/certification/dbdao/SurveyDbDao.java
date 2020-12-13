@@ -60,6 +60,7 @@ public class SurveyDbDao {
 	private PreparedStatement insertSpecQuery;
 	private PreparedStatement insertSectionQuery;
 	private PreparedStatement updateSectionTitleQuery;
+	private PreparedStatement getLanguagesQuery;
 	
 	public SurveyDbDao(Connection connection) throws SQLException {
 		this.connection = connection;
@@ -69,7 +70,7 @@ public class SurveyDbDao {
 	/**
 	 * @param specVersion
 	 * @param language tag in IETF RFC 5646 format
-	 * @return
+	 * @return The survey for the specVersion and language.  If the language is not available, the default language will be returned
 	 * @throws SQLException
 	 * @throws QuestionException
 	 * @throws SurveyResponseException
@@ -82,7 +83,7 @@ public class SurveyDbDao {
 	 * @param con SQL Connection
 	 * @param specVersion Specification version for the survey
 	 * @param language Language.  If null, the default language will be used.
-	 * @param allowDefaultLanguage If true, use the default language if the specificed languages is not found.  If false, return a -1 if the language is not found
+	 * @param allowDefaultLanguage If true, use the default language if the specified languages is not found.  If false, return a -1 if the language is not found
 	 * @return The ID for the specification based on the version and the language.  If the language is not available, the default language will be used.
 	 * @throws SQLException
 	 */
@@ -139,7 +140,7 @@ public class SurveyDbDao {
 	 * @param con SQL connect
 	 * @param specVersion Version of the specification.  If null, will get the latest spec version available
 	 * @param language tag in IETF RFC 5646 format
-	 * @return Survey with questions (static information) for the latest version
+	 * @return Survey with questions (static information) for the specific version.  If the language isn't supported, the default language will be used
 	 * @throws SQLException
 	 * @throws SurveyResponseException 
 	 * @throws QuestionException 
@@ -774,6 +775,31 @@ public class SurveyDbDao {
 		} finally {
 			if (save != null) {
 				this.connection.commit();
+			}
+		}
+	}
+
+	/**
+	 * @param specVersion Version of the specification
+	 * @return all languages supported for the specific spec version
+	 * @throws SQLException 
+	 */
+	public List<String> getSurveyLanguages(String specVersion) throws SQLException {
+		if (this.getLanguagesQuery == null) {
+			this.getLanguagesQuery = connection.prepareStatement("select language from spec where version=?"); //$NON-NLS-1$
+		}
+		ResultSet result = null;
+		try {
+			this.getLanguagesQuery.setString(1, specVersion);
+			List<String> retval = new ArrayList<>();
+			result = this.getLanguagesQuery.executeQuery();
+			while (result.next()) {
+				retval.add(result.getString(1));
+			}
+			return retval;
+		} finally {
+			if (result != null) {
+				result.close();
 			}
 		}
 	}

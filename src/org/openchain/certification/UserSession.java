@@ -385,17 +385,6 @@ public class UserSession {
 		if (this.surveyResponses == null) {
 			_getSurveyResponses();
 		}
-		if (!Objects.equals(this.currentSurveyResponse.getLanguage(), locale)) {
-			if (!Objects.equals(this.currentSurveyResponse.getSurvey().getLanguage(), locale)) {
-				Connection con = SurveyDatabase.createConnection(config);
-				try {
-					this.currentSurveyResponse.setSurvey(SurveyDbDao.getSurvey(con, currentSurveyResponse.getSpecVersion(), locale));
-				} finally {
-					con.close();
-				}
-				this.currentSurveyResponse.setLanguage(locale);
-			}
-		}
 		return this.currentSurveyResponse;
 	}
 	
@@ -421,6 +410,32 @@ public class UserSession {
 		Collections.sort(retval);
 		return retval;
 	}
+	
+	/**
+	 * @param locale The local language of the current user
+	 * @return a list of survey response spec languages for the current selected survey response available to the user in sort order - does not include survey versions (e.g. will return 1.0 not 1.0.1)
+	 * @throws SurveyResponseException 
+	 * @throws QuestionException 
+	 * @throws SQLException 
+	 */
+	public synchronized List<String> getSurveyResponseSpecLanguages(String locale) throws SQLException, QuestionException, SurveyResponseException {
+		checkLoggedIn(locale);
+		List<String> retval = new ArrayList<String>();
+		if (surveyResponses == null) {
+			_getSurveyResponses();
+		}
+		// Fetch all of the supported language codes from the database
+		Connection con = SurveyDatabase.createConnection(config);
+		try {
+			SurveyDbDao dao = new SurveyDbDao(con);
+			retval = dao.getSurveyLanguages(this.currentSurveyResponse.getSpecVersion());
+		} finally {
+			con.close();
+		}
+		Collections.sort(retval);
+		return retval;
+	}
+	
 	
 	/**
 	 * @param specVersion
@@ -1098,6 +1113,7 @@ public class UserSession {
 	public synchronized String getLanguagePreference() {
 		return languagePreference;
 	}
+	
 	/**
 	 * @param language the language to set
 	 * @throws SurveyResponseException 
@@ -1110,17 +1126,35 @@ public class UserSession {
 		}
 		this.languagePreference = language;
 		if (this.surveyResponses != null && this.loggedIn) {
-			// Change the language for all the surveys in the survey response
-			Connection con = SurveyDatabase.createConnection(config);
-			try {
-				SurveyDbDao dao = new SurveyDbDao(con);
-				for (SurveyResponse response:this.surveyResponses) {
+			setSurveyResponseLanguage(language, language);
+		}
+	}
+	
+	/**
+	 * Set the language of the survey response for the currently active survey response
+	 * @param language Language for the survey
+	 * @param locale Locale/language for the web app UI translations
+	 * @throws SurveyResponseException 
+	 * @throws QuestionException 
+	 * @throws SQLException 
+	 */
+	public synchronized void setSurveyResponseLanguage(String language, String locale) throws SurveyResponseException, SQLException, QuestionException {
+		checkLoggedIn(locale);
+		if (surveyResponses == null) {
+			_getSurveyResponses();
+		}
+		// Change the language for all the surveys in the survey response
+		Connection con = SurveyDatabase.createConnection(config);
+		try {
+			SurveyDbDao dao = new SurveyDbDao(con);
+			for (SurveyResponse response:this.surveyResponses) {
+				if (dao.getSpecId(response.getSurvey().getSpecVersion(), language, false) > 0) {
 					response.setSurvey(dao.getSurvey(response.getSurvey().getSpecVersion(), language));
 					response.setLanguage(response.getSurvey().getLanguage());
 				}
-			} finally {
-				con.close();
 			}
+		} finally {
+			con.close();
 		}
 	}
 	
