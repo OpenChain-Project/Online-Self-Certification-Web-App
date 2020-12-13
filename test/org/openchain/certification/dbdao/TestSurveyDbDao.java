@@ -644,6 +644,72 @@ public class TestSurveyDbDao {
 	}
 	
 	@Test
+	public void testGetSurveyLanguages() throws SQLException, SurveyResponseException, QuestionException {
+		SurveyDbDao dao = new SurveyDbDao(con);
+		String language1 = "lang1";
+		String language2 = "lang2";
+		String language3 = "lang3";
+		
+		List<Section> sections = new ArrayList<Section>();
+		Section section1 = new Section(language1);
+		String section1Name = "section1Name";
+		section1.setName(section1Name);
+		String section1Title = "section1Title";
+		section1.setTitle(section1Title);
+		List<Question> section1Questions = new ArrayList<Question>();
+		String s1q1Question="s1q1question";
+		String s1q1Number = "1.a";
+		YesNo s1q1Answer = YesNo.Yes;
+		String[] s1q1SpecRef = new String[] {"s1q1SpecRef"};
+		Question s1q1 = new YesNoQuestion(s1q1Question, 
+				section1Name, s1q1Number, "v", s1q1SpecRef, language1, s1q1Answer);
+		section1Questions.add(s1q1);
+		String s1q2Question="s1q2question";
+		String s1q2Number = "1.b";
+		YesNo s1q2Answer = YesNo.NotApplicable;
+		String s1q2Prompt = "s1q2prompt";
+		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
+		Question s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, "v", s1q2SpecRef, language1, s1q2Answer, s1q2Prompt);
+		section1Questions.add(s1q2);
+		section1.setQuestions(section1Questions);
+		sections.add(section1);
+		String version = "1.0.0";
+		
+		// test no languages
+		assertEquals(0, dao.getSurveyLanguages(version).size());
+		Survey survey1 = new Survey(version, language1);
+		survey1.setSections(sections);
+		dao.addSurvey(survey1);
+		List<String> result = dao.getSurveyLanguages(version);
+		assertEquals(1, result.size());
+		assertEquals(language1, result.get(0));
+		
+		Survey survey2 = new Survey(version, language2);
+		for (Section section:sections) {
+			section.setLanguage(language2);
+		}
+		survey2.setSections(sections);
+		dao.addSurvey(survey2);
+		result = dao.getSurveyLanguages(version);
+		assertEquals(2, result.size());
+		assertTrue(result.contains(language1));
+		assertTrue(result.contains(language2));
+		
+		Survey survey3 = new Survey(version, language3);
+		for (Section section:sections) {
+			section.setLanguage(language3);
+		}
+		survey3.setSections(sections);
+		dao.addSurvey(survey3);
+		result = dao.getSurveyLanguages(version);
+		assertEquals(3, result.size());
+		assertTrue(result.contains(language1));
+		assertTrue(result.contains(language2));
+		assertTrue(result.contains(language3));
+	}
+	
+	@Test
 	public void testLanguage()  throws SQLException, SurveyResponseException, QuestionException {
 		String specVersion = "test-spec-version";
 		String language1 = "abc";

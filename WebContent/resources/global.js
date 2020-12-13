@@ -19,9 +19,13 @@
  * This is a common JavaScript file containing the code to support internationalization
  */
 /**
- * List of all supported language keyed by 2 or 3 character ISO language.  The value is the display for the language
+ * List of all supported language keyed by ISO language.  The value is the display for the language
  */
-var LANGUAGES = {"en":"English", "ja":"Japanese", "ko":"Korean"};
+var LANGUAGES = {"en":"English", "ja":"Japanese", "ko":"Korean", "ru":"Russian",
+		"es":"Spanish", "fr":"French", "de":"German", "zh":"Chinese", "zh-Hans":"Simplified Chinese",
+		"zh-Hant":"Traditional Chinese","it":"Italian", "hi":"Hindi", "he":"Hebrew"};
+// List of languages supported in the Web App translations
+const WEB_APP_LANGUAGES = ["en", "ja", "ko"];
 //TODO: See if we can use I18N to populate this variable - i18next.languages should contain the language
 
 /**************** For initializing the i18next framework ***********************/
@@ -107,7 +111,7 @@ var LANGUAGES = {"en":"English", "ja":"Japanese", "ko":"Korean"};
 
 		function changeLng(lng) 
 		{
-			if (!lng || !LANGUAGES[lng]) {
+			if (!lng || !LANGUAGES[lng] || WEB_APP_LANGUAGES.indexOf(lng) < 0) {
 				displayError( "Language not supported" );
 				return;
 			}
@@ -156,9 +160,12 @@ var LANGUAGES = {"en":"English", "ja":"Japanese", "ko":"Korean"};
 	
 		
 /****************Creates HTML choices for user dropdown list of language selections*********/
-		function getLanguageSelectionHtml() {  // Used in the profile update and user signup pages
+		function getLanguageSelectionHtml(languageCodes) {  // Used by the change languages dialog in the certsurvey.js, Used in the profile update and user signup pages (no parameter)
 			var html = '';
-			for (var lang in LANGUAGES) {
+			if (!languageCodes) {
+				languageCodes = WEB_APP_LANGUAGES;
+			}
+			for (var lang of languageCodes) {
 				html += '<option class="translate" data-i18n="';
 				html += LANGUAGES[lang];
 				html += '" value="';
@@ -170,11 +177,11 @@ var LANGUAGES = {"en":"English", "ja":"Japanese", "ko":"Korean"};
 				html += ')</option>\n';
 			}
 			return html;
-		}
-/****************Creates the HTML for the dropdown list items from the list of languages****/
+		}	
+/****************Creates the HTML for the dropdown list items from the list of web app languages****/
 		function getLanguageHtml() {	// Used for the main navigation language chooser dropdown
 			var html = '';
-			for (var lang in LANGUAGES) {
+			for (const lang of WEB_APP_LANGUAGES) {
 				html += '<li><a onclick="changeLng(';
 				html += "'";
 				html += lang;

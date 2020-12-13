@@ -19,7 +19,7 @@
  * 
  */
 
-var submitted, resetDialog, selectVersionDialog;
+var submitted, resetDialog, selectVersionDialog, changeLanguageDialog;
 
 function getQuestionFormHtml(questions) {
 	var html = '<div ><table class="questiontable ui-corner-all table table-hover ">\n';
@@ -632,6 +632,89 @@ $(document).ready( function() {
 	    			        specVersion: $( "#versionSelect" ).val(),
 	    			        create: true,
 	    			        locale: getCurrentLanguage()
+	    			    }),
+	    			    type: "POST",
+	    			    dataType : "json",
+	    			    contentType: "json",
+	    			    async: true, 
+	    			    success: function( json ) {
+	    			    	if ( json.status == "OK" ) {
+	    			    		getSurvey();
+	    			    	} else {
+	    			    		displayError( json.error );
+	    			    	} 	
+	    			    },
+	    			    error: function( xhr, status, errorThrown ) {
+	    			    	handleError(xhr, status, errorThrown);
+	    			    }
+	    			});
+	    			$( this ).dialog( "close" );
+	    		},	    		
+	    	},
+	    	{
+	    		text: "Cancel",
+	    		"data-i18n" : "Cancel",
+	    		click: function () {
+	    			$( this ).dialog( "close" );
+	        }
+	    	}]	    
+	});	
+	// Change language
+	$("#btChangeLanguage").button();
+	$("#btChangeLanguage").click(function(event) {	
+	    $.ajax({
+		    url: "CertificationServlet",
+		    data: {
+		        request: "getSupportedSpecLanguages",
+		        locale: getCurrentLanguage()
+		    },
+		    type: "GET",
+		    dataType : "json",
+		    success: function( languages ) {
+		    	var current = getCurrentLanguage();
+		    	var currentLangFound = languages.indexOf( current ) >= 0;
+		    	$( "#languageSelect" ).html(getLanguageSelectionHtml( languages ));
+		    	if ( currentLangFound ) {
+		    		$( "#languageSelect" ).val( current );
+		    	}
+		    	$('.translate').localize();
+		    	changeLanguageDialog.dialog( "open" );		    	
+		    },
+		    error: function( xhr, status, errorThrown ) {
+		    	handleError( xhr, status, errorThrown);
+		    }
+		});	  	
+	});	
+	changeLanguageDialog = $( "#changelanguage" ).dialog().data( "uiDialog" )._title = function(title) 
+	{
+	  	    title.html( this.options.title );
+	  	  $('#changelanguage').dialog( "close" );
+	  	    
+	 };
+	 changeLanguageDialog = $( "#changelanguage" ).dialog({
+		title: '<span class="translate" data-i18n="Change Language">Change Language</span>',
+		autoOpen: false,
+		resizable: false,
+	    height: 250,
+	    width: 330,
+	    modal: true,
+	    dialogClass: 'success-dialog translate',
+	    buttons: [{
+	    		text: "OK",
+	    		"data-i18n" : "Ok",
+	    		click: function () {
+	    			saveAll( false );
+	    			var certForm = $("#CertForm");
+	    			if (certForm.is(':ui-accordion')) {
+	    				certForm.accordion("destroy");
+	    			}
+	    			certForm.html('Loading <img src="resources/loading.gif" alt="Loading" class="loading" id="survey-loading">');
+	    			// This will be cleared when the form is loaded
+	    			$.ajax({
+	    			    url: "CertificationServlet",
+	    			    data:JSON.stringify({
+	    			        request:  "setSurveyResponseLanguage",
+	    			        language: $( "#languageSelect" ).val()
 	    			    }),
 	    			    type: "POST",
 	    			    dataType : "json",
