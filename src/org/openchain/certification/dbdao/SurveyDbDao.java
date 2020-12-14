@@ -753,7 +753,7 @@ public class SurveyDbDao {
 		try {
 			if (updateSectionTitleQuery == null) {
 				updateSectionTitleQuery = this.connection.prepareStatement(
-						"update section set (title) = (?) " + //$NON-NLS-1$
+						"update section set title=? " + //$NON-NLS-1$
 						"where name=? and " + //$NON-NLS-1$
 						"spec_version=(select id from spec where version=? and language=?)"); //$NON-NLS-1$
 			}
