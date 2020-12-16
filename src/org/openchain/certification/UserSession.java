@@ -817,7 +817,7 @@ public class UserSession {
 		try {
 			SurveyResponseDao dao = new SurveyResponseDao(con);
 			User saveUser = currentSurveyResponse.getResponder(); 
-			dao.deleteSurveyResponseAnswers(currentSurveyResponse);
+			dao.deleteSurveyResponseAnswers(currentSurveyResponse.getResponder().getUsername(), currentSurveyResponse.getSpecVersion());
 			surveyResponses.remove(currentSurveyResponse);
 			currentSurveyResponse = new SurveyResponse(getLatestMinorVersion(specVersion, locale), languagePreference);
 			currentSurveyResponse.setResponder(saveUser);
