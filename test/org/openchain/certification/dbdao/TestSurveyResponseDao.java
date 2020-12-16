@@ -490,7 +490,7 @@ public class TestSurveyResponseDao {
 	}
 
 	@Test
-	public void testDelete() throws SQLException, SurveyResponseException, QuestionException {
+	public void testDeleteId() throws SQLException, SurveyResponseException, QuestionException {
 		SurveyResponse response = new SurveyResponse(specVersion, language1);
 		response.setResponder(user);
 		Map<String, Answer> responses = new HashMap<String, Answer>();
@@ -597,7 +597,144 @@ public class TestSurveyResponseDao {
 		assertEquals(response2.getId(), result.getId());
 		
 		// delete the first version
-		dao.deleteSurveyResponseAnswers(response);
+		dao.deleteSurveyResponseAnswers(response.getId());
+		result = null;
+		try {
+			result = dao.getSurveyResponse(user.getUsername(), specVersion, language1);
+		} catch(Exception ex) {
+			
+		}
+		assertTrue(result == null);
+		result = dao.getSurveyResponse(user.getUsername(), laterSpecVersion, language1);
+		assertEquals(user.getUsername(), result.getResponder().getUsername());
+		assertEquals(laterSpecVersion, result.getSurvey().getSpecVersion());
+		resultResponses = result.getResponses();
+		assertEquals(4, resultResponses.size());
+		resultAnswer1 = resultResponses.get(s1q1Number);
+		assertTrue(resultAnswer1 instanceof YesNoAnswer);
+		assertEquals(s1q1answer2.getAnswer(), ((YesNoAnswer)resultAnswer1).getAnswer());
+		resultAnswer2 = resultResponses.get(s2q2Number);
+		assertTrue(resultAnswer2 instanceof YesNoAnswerWithEvidence);
+		assertEquals(s2q2Answer.getAnswer(), ((YesNoAnswerWithEvidence)resultAnswer2).getAnswer());
+		assertEquals(s2q2Answer.getEvidence(), ((YesNoAnswerWithEvidence)resultAnswer2).getEvidence());
+		resultAnswer3 = resultResponses.get(s2q3Number);
+		assertTrue(resultAnswer3 instanceof YesNoAnswer);
+		assertEquals(s2q3answer.getAnswer(), ((YesNoAnswer)resultAnswer1).getAnswer());
+		resultSubAnswer = resultResponses.get(s2q1Number);
+		subAnswer = ((SubQuestionAnswers)resultSubAnswer).getSubAnswers().get(s2q3Number);
+		assertEquals(s2q3answer.getAnswer(), ((YesNoAnswer)subAnswer).getAnswer());	
+		assertEquals(response2.getId(), result.getId());
+	}
+	
+	@Test
+	public void testDeleteUserVersion() throws SQLException, SurveyResponseException, QuestionException {
+		SurveyResponse response = new SurveyResponse(specVersion, language1);
+		response.setResponder(user);
+		Map<String, Answer> responses = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer = new YesNoAnswer(language1, YesNo.No);
+		YesNoAnswer s1q2answer = new YesNoAnswer(language1, YesNo.NotAnswered);
+
+		responses.put(s1q1Number, s1q1answer);
+		responses.put(s1q2Number, s1q2answer);
+		response.setResponses(responses);
+		response.setSubmitted(false);
+		response.setSurvey(survey);
+		response.setApproved(true);
+		response.setRejected(false);
+		SurveyResponseDao dao = new SurveyResponseDao(con);
+		dao.addSurveyResponse(response, language1);
+		String laterSpecVersion = specVersion + ".1";
+		Survey laterSurvey = new Survey(laterSpecVersion, language1);
+		List<Section> laterSections = new ArrayList<Section>();
+		Section newSection1 = new Section(language1);
+		newSection1.setName(section1.getName());
+		newSection1.setTitle(section1.getTitle());
+		List<Question> newQuestions1 = new ArrayList<Question>();
+		s1q1 = new YesNoQuestion(s1q1Question, 
+				section1Name, s1q1Number, laterSpecVersion, s1q1SpecRef, language1, s1q1Answer);
+		newQuestions1.add(s1q1);
+		
+		String[] s1q2SpecRef = new String[] {"s1q2SpecRef"};
+		s1q2 = new YesNoNotApplicableQuestion(s1q2Question, 
+				section1Name, s1q2Number, laterSpecVersion, s1q2SpecRef, language1, s1q2Answer, s1q2Prompt);
+		newQuestions1.add(s1q2);
+		newSection1.setQuestions(newQuestions1);
+		laterSections.add(newSection1);
+		Section newSection2 = new Section(language1);
+		newSection2.setName(section2.getName());
+		newSection2.setTitle(section2.getTitle());
+		List<Question> newQuestions2 = new ArrayList<Question>();
+		s2q1 = new SubQuestion(s2q1Question, 
+				section2Name, s2q1Number, laterSpecVersion, s2q1SpecRef, language1, s2q1MinCorrect);
+		newQuestions2.add(s2q1);
+
+		s2q2 = new YesNoQuestionWithEvidence(s2q2Question, 
+				section2Name, s2q2Number, laterSpecVersion, s2q2SpecRef, language1, 
+				s2q2Answer, s2q2Prompt, Pattern.compile(s2q2validate));
+		s2q2.setSubQuestionOfNumber(s2q1Number);
+		newQuestions2.add(s2q2);
+
+		s2q3 = new YesNoQuestion(s2q3Question, 
+				section2Name, s2q3Number, laterSpecVersion, s2q3SpecRef, language1, s2q3Answer);
+		s2q3.setSubQuestionOfNumber(s2q1Number);
+		newQuestions2.add(s2q3);
+		newSection2.setQuestions(newQuestions2);
+		laterSections.add(newSection2);
+		laterSurvey.setSections(laterSections);
+		surveyDao.addSurvey(laterSurvey);
+		SurveyResponse response2 = new SurveyResponse(laterSpecVersion, language1);
+		response2.setResponder(user);
+		Map<String, Answer> responses2 = new HashMap<String, Answer>();
+		YesNoAnswer s1q1answer2 = new YesNoAnswer(language1, YesNo.Yes);
+		
+		responses2.put(s1q1Number, s1q1answer2);
+
+		YesNoAnswerWithEvidence s2q2Answer = new YesNoAnswerWithEvidence(language1, YesNo.No, "s2q2evidence");
+		responses2.put(s2q2Number, s2q2Answer);
+		YesNoAnswer s2q3answer = new YesNoAnswer(language1, YesNo.Yes);
+		responses2.put(s2q3Number, s2q3answer);
+		
+		response2.setResponses(responses2);
+		response2.setSubmitted(false);
+		response2.setSurvey(laterSurvey);
+		dao.addSurveyResponse(response2, language1);
+		
+		// test the first version
+		SurveyResponse result = dao.getSurveyResponse(user.getUsername(), specVersion, language1);
+		assertEquals(user.getUsername(), result.getResponder().getUsername());
+		assertEquals(specVersion, result.getSurvey().getSpecVersion());
+		Map<String, Answer> resultResponses = result.getResponses();
+		assertEquals(2, resultResponses.size());
+		Answer resultAnswer1 = resultResponses.get(s1q1Number);
+		assertTrue(resultAnswer1 instanceof YesNoAnswer);
+		assertEquals(s1q1answer.getAnswer(), ((YesNoAnswer)resultAnswer1).getAnswer());
+		Answer resultAnswer2 = resultResponses.get(s1q2Number);
+		assertTrue(resultAnswer2 instanceof YesNoAnswer);
+		assertEquals(s1q2answer.getAnswer(), ((YesNoAnswer)resultAnswer2).getAnswer());
+		assertEquals(response.getId(), result.getId());
+		// test latest version
+		result = dao.getSurveyResponse(user.getUsername(), null, laterSpecVersion);
+		assertEquals(user.getUsername(), result.getResponder().getUsername());
+		assertEquals(laterSpecVersion, result.getSurvey().getSpecVersion());
+		resultResponses = result.getResponses();
+		assertEquals(4, resultResponses.size());
+		resultAnswer1 = resultResponses.get(s1q1Number);
+		assertTrue(resultAnswer1 instanceof YesNoAnswer);
+		assertEquals(s1q1answer2.getAnswer(), ((YesNoAnswer)resultAnswer1).getAnswer());
+		resultAnswer2 = resultResponses.get(s2q2Number);
+		assertTrue(resultAnswer2 instanceof YesNoAnswerWithEvidence);
+		assertEquals(s2q2Answer.getAnswer(), ((YesNoAnswerWithEvidence)resultAnswer2).getAnswer());
+		assertEquals(s2q2Answer.getEvidence(), ((YesNoAnswerWithEvidence)resultAnswer2).getEvidence());
+		Answer resultAnswer3 = resultResponses.get(s2q3Number);
+		assertTrue(resultAnswer3 instanceof YesNoAnswer);
+		assertEquals(s2q3answer.getAnswer(), ((YesNoAnswer)resultAnswer1).getAnswer());
+		Answer resultSubAnswer = resultResponses.get(s2q1Number);
+		Answer subAnswer = ((SubQuestionAnswers)resultSubAnswer).getSubAnswers().get(s2q3Number);
+		assertEquals(s2q3answer.getAnswer(), ((YesNoAnswer)subAnswer).getAnswer());	
+		assertEquals(response2.getId(), result.getId());
+		
+		// delete the first version
+		dao.deleteSurveyResponseAnswers(response.getResponder().getUsername(), response.getSpecVersion());
 		result = null;
 		try {
 			result = dao.getSurveyResponse(user.getUsername(), specVersion, language1);

@@ -74,6 +74,8 @@ public class SurveyResponseDao {
 	private PreparedStatement setApprovedIdsQuery;
 	private PreparedStatement setRejectedIdsQuery;
 	private PreparedStatement getStatusQuery;
+	private PreparedStatement deleteAllAnswersForResponseQuery;
+	private PreparedStatement deleteAllResponsesForSpecVersionQuery;
 	
 	public SurveyResponseDao(Connection con) throws SQLException {
 		this.con = con;
@@ -140,6 +142,12 @@ public class SurveyResponseDao {
 				"on survey_response.user_id=openchain_user.id join spec on survey_response.spec_version=spec.id" + //$NON-NLS-1$
 				" where username = ?" +	" order by username asc", //$NON-NLS-1$ //$NON-NLS-2$
 				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+		deleteAllAnswersForResponseQuery = con.prepareStatement("delete from answer where response_id in (select id from " + //$NON-NLS-1$
+				"survey_response where user_id=(select id from openchain_user where username=?) and spec_version in (select id from spec where version=?))", //$NON-NLS-1$
+				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		deleteAllResponsesForSpecVersionQuery = con.prepareStatement("delete from survey_response where " + //$NON-NLS-1$
+				"user_id=(select id from openchain_user where username=?) and spec_version in (select id from spec where version=?)", //$NON-NLS-1$
+				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 	}
 
 	/**
@@ -773,20 +781,70 @@ public class SurveyResponseDao {
 			}
 		}
 	}
-
+	
 	/**
-	 * Delete the survey response from the database
-	 * @param surveyResponse
+	 * Delete the survey response from the database for a specific spec version and user
+	 * @param userName the User Name of the user
+	 * @param specVerion the specification version
 	 * @throws SQLException 
 	 */
-	public void deleteSurveyResponseAnswers(SurveyResponse surveyResponse) throws SurveyResponseException, SQLException {
+	public void deleteSurveyResponseAnswers(String userName, String specVersion) throws SurveyResponseException, SQLException {
 		Statement stmt = null;
 		Savepoint save = null;
 		try {
 			save = con.setSavepoint();
 			stmt = con.createStatement();
-			int count = stmt.executeUpdate("delete from answer where response_id="+surveyResponse.getId()); //$NON-NLS-1$
-			count = stmt.executeUpdate("delete from survey_response where id="+surveyResponse.getId()); //$NON-NLS-1$
+			deleteAllAnswersForResponseQuery.setString(1, userName);
+			deleteAllAnswersForResponseQuery.setString(2, specVersion);
+			int count = deleteAllAnswersForResponseQuery.executeUpdate();
+			deleteAllResponsesForSpecVersionQuery.setString(1, userName);
+			deleteAllResponsesForSpecVersionQuery.setString(2, specVersion);
+			count = deleteAllResponsesForSpecVersionQuery.executeUpdate();
+			if (count != 1) {
+				logger.warn("Unexpected update count for delete survey response.  Execpted 1, found "+String.valueOf(count)); //$NON-NLS-1$
+			}
+		} catch (SQLException e) {
+			logger.error("SQL Exception deleting answers",e); //$NON-NLS-1$
+			if (save != null) {
+				try {
+					con.rollback(save);
+				} catch (SQLException e1) {
+					logger.warn("SQL Exception rolling back transaction.",e1); //$NON-NLS-1$
+				}
+				throw(e);
+			}
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					logger.warn("Error closing statement",e); //$NON-NLS-1$
+				}
+			}
+			if (save != null) {
+				try {
+					con.commit();
+				} catch (SQLException e) {
+					logger.error("SQL Exception committing transaction",e); //$NON-NLS-1$
+					throw(e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Delete the survey response from the database
+	 * @param surveyResponseId ID of the SurveyResponse
+	 * @throws SQLException 
+	 */
+	public void deleteSurveyResponseAnswers(String surveyResponseId) throws SurveyResponseException, SQLException {
+		Statement stmt = null;
+		Savepoint save = null;
+		try {
+			save = con.setSavepoint();
+			stmt = con.createStatement();
+			int count = stmt.executeUpdate("delete from answer where response_id="+surveyResponseId); //$NON-NLS-1$
+			count = stmt.executeUpdate("delete from survey_response where id="+surveyResponseId); //$NON-NLS-1$
 			if (count != 1) {
 				logger.warn("Unexpected update count for delete survey response.  Execpted 1, found "+String.valueOf(count)); //$NON-NLS-1$
 			}
