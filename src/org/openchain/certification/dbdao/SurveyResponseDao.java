@@ -403,6 +403,18 @@ public class SurveyResponseDao {
 		try {
 			long userId = getUserId(response.getResponder().getUsername());
 			long versionId = SurveyDbDao.getSpecId(con, response.getSpecVersion(), User.DEFAULT_LANGUAGE, true);	// We always use the default language to prevent duplicates
+			getStatusQuery.setLong(1, userId);
+			getStatusQuery.setString(2, response.getSpecVersion());
+			result = getStatusQuery.executeQuery();
+			try {
+				if (result.next()) {
+					logger.error("Survey response already exists for user "+response.getResponder().getUsername()+" and spec version "+response.getSpecVersion());
+					throw new SurveyResponseException("Survey response already exists for user "+response.getResponder().getUsername()+" and spec version "+response.getSpecVersion());
+				}
+			} finally {
+				result.close();
+				result = null;
+			}
 			addSurveyResponseQuery.setLong(1, userId);
 			addSurveyResponseQuery.setLong(2, versionId);
 			addSurveyResponseQuery.setBoolean(3, response.isSubmitted());
