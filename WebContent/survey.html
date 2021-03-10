@@ -3,117 +3,118 @@ Author(s): ViSolve 03/01/2019
 001: Responsive Navigation bar.
 
  -->
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>OpenChain Self Certification Questions</title>
-    <link rel="stylesheet" href="styles/openchain.css" type="text/css" media="screen">
-    <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen">
-    <link rel="stylesheet" href="resources/jquery-ui/jquery-ui.min.css">
-    <link rel="stylesheet" href="resources/jquery.jui_dropdown.css">
-    <link rel="stylesheet" href="styles/bootstrap.min.css" type="text/css" media="screen">
-    <link rel="stylesheet" href="styles/font-awesome-master/css/font-awesome.min.css" type="text/css" media="screen">
-    <link rel="stylesheet" href="styles/newstyle.css" type="text/css" media="screen">
-    <link rel="icon" type="image/png"  href="images/favicon_openchain.png" />
-	<link rel="shortcut icon" href="images/favicon_openchain.png" type="image/png"/>
-    <script src="resources/jquery-ui/external/jquery/jquery.js"></script>
-    <script src="resources/jquery-ui/jquery-ui.min.js"></script> 
-    <script src="resources/jquery.jui_dropdown.min.js"></script>
-    <script src="resources/bootstrap.min.js"></script>
-    <script src="resources/lib/url/url.min.js"></script>  
-    <script src="resources/i18next.min.js" ></script>
-    <script src="resources/jquery-i18next.min.js" ></script>
-    <script src="resources/i18nextXHRBackend.js"></script>
-    <script src="resources/global.js"></script>   
-    <script src="resources/navbar.js"></script>
-    <script src="resources/certsurvey.js"></script>
-</head>
-  <body>
-    <!-- 001 Starts here -->
-    	<div id="topnav"></div>
-    <!-- 001 Starts here -->
-    <div class="container">
-	    <div id="TitleArea">
-	        <h1 class="translate" data-i18n="Survey_title">OpenChain Self Certification Questionnaire</h1>
-	    </div>
-	    
-	    <h3 class="sub-title-area text-center" >
-	        <span class="translate" data-i18n="Specification Version">Specification Version</span> <span id="specVersion"></span><span id="ISOTitle"></span>
-	        
-	    </h3>
-	    <div id="preamble">
-		    <span class="translate" data-i18n="preamble">We recommend having a look at the OpenChain Reference Training Slides and the OpenChain Reference Policy Template before undergoing Self-Certification. It will help frame the questions that follow.</span>
-	    </div>
-	    <div class="btn-group mr-2 d-flex justify-content-center row" role="group" ><button id="btSelectVersion" type="button" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Select Version">Select Version</span></button></div>
-	    <div id="CertForm">
-	    	<form id="myform"></form>
-	    </div>
-	   
-	    <div id="CertFormButtons" class="btn-toolbar d-flex justify-content-center mr-40 " role="toolbar" aria-label="Toolbar with button groups">
-		  <div class="btn-group mr-2" role="group" aria-label="First group"><button id="btSaveAnswers" type="button" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Save Answers">Save Answers</span></button></div>
-		  <div class="btn-group mr-2" role="group" aria-label="Second group"><button id="btSaveAndSubmit" type="button" class="btn btn-success"><i class="fa fa-paper-plane" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Save and Submit">Save and Submit</span></button></div>
-		  <div class="btn-group mr-2" role="group" aria-label="Third group"><button id="btUnSubmit" type="button" class="btn btn-danger"><i class="fa fa-ban" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Unsubmit">Unsubmit</span></button></div>
-		  <div class="btn-group mr-2" role="group" aria-label="First group"><button id="btDownloadAnswers" type="button" class="btn btn-login"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Download Answers">Download Answers</span></button></div>
-		  <div class="btn-group mr-2" role="group" aria-label="Second group"><button id="btResetAnswers" type="button" class="btn btn-cancel"><i class="fa fa-refresh" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Reset">Reset Questionnaire</span></button></div>
-		  
-		  
-		</div>
-		<div class="question-revision mr-100">
-			<span class="translate" data-i18n="Questionnaire Revision">Questionnaire Revision</span>  <span id="surveyVersion"></span>
-		</div>
-	</div>
-	
-    <div id="selectversion" title="Select Version">
-	    <form>    
-	        <span class="translate" data-i18n="select_version_content">Select the specification version.</span>
-	        <fieldset>
-	            <table>
-	                <tr>
-	                    <td style="text-align: right; padding: 5px"><label for="versionSelect" class="translate" data-i18n="Version" >Version</label></td>
-	                    <td style="text-align: left; padding: 5px"><select id="versionSelect"></select></td>
-	                </tr>
-	            </table>
-	            <!-- Allow form submission with keyboard without duplicating the dialog button -->
-	            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-	        </fieldset>
-	    </form>
-    </div>
-    <div id="changelanguage" title="Change Language">
-        <form>    
-            <span class="translate" data-i18n="select_language_content">Select the languge for the questionnaire.</span>
-            <fieldset>
-                <table>
-                    <tr>
-                        <td style="text-align: right; padding: 5px"><label for="languageSelect" class="translate" data-i18n="Language" >Language</label></td>
-                        <td style="text-align: left; padding: 5px"><select id="languageSelect"></select></td>
-                    </tr>
-                </table>
-                <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-            </fieldset>
-        </form>
-    </div>
-    <div id="resetsurvey" title="Reset Survey">
-      <form>
-    <span class="translate" data-i18n="reset_Questionnaire_content">This will delete all answers and start a new Questionnaire with the latest Questionnaire version.  Are you sure you want to continue? </span>
-        <fieldset>
-            <table style="width: 100%">
-                <tr>
-                    <td style="text-align: right; padding: 5px"><label for="resetVersionSelect" class="translate" data-i18n="Version"  >Version</label></td>
-                    <td style="text-align: left; padding: 5px"><select id="resetVersionSelect"></select></td>
-                </tr>
-            </table>
-            <!-- Allow form submission with keyboard without duplicating the dialog button -->
-            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-        </fieldset>
-      </form>
-    </div>
-    <div id="submitconfirm"></div>
-    <div id="errors"></div>
-    <div id="status"></div>
-    <div id="resendveify"></div>
-    <div id="footer-outer"></div>
-  </body>
-</html>
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>OpenChain Self Certification Questions</title>
+     <link rel="stylesheet" href="styles/openchain.css" type="text/css" media="screen">
+     <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen">
+     <link rel="stylesheet" href="resources/jquery-ui/jquery-ui.min.css">
+     <link rel="stylesheet" href="resources/jquery.jui_dropdown.css">
+     <link rel="stylesheet" href="styles/bootstrap.min.css" type="text/css" media="screen">
+     <link rel="stylesheet" href="styles/font-awesome-master/css/font-awesome.min.css" type="text/css" media="screen">
+     <link rel="stylesheet" href="styles/newstyle.css" type="text/css" media="screen">
+     <link rel="icon" type="image/png"  href="images/favicon_openchain.png" />
+     <link rel="shortcut icon" href="images/favicon_openchain.png" type="image/png"/>
+     <script src="resources/jquery-ui/external/jquery/jquery.js"></script>
+     <script src="resources/jquery-ui/jquery-ui.min.js"></script> 
+     <script src="resources/jquery.jui_dropdown.min.js"></script>
+     <script src="resources/bootstrap.min.js"></script>
+     <script src="resources/lib/url/url.min.js"></script>  
+     <script src="resources/i18next.min.js" ></script>
+     <script src="resources/jquery-i18next.min.js" ></script>
+     <script src="resources/i18nextXHRBackend.js"></script>
+     <script src="resources/global.js"></script>   
+     <script src="resources/navbar.js"></script>
+     <script src="resources/certsurvey.js"></script>
+ </head>
+   <body>
+     <!-- 001 Starts here -->
+         <div id="topnav"></div>
+     <!-- 001 Starts here -->
+     <div class="container">
+         <div id="TitleArea">
+             <h1 class="translate" data-i18n="Survey_title">OpenChain Self Certification Questionnaire</h1>
+         </div>
+         
+         <h3 class="sub-title-area text-center" >
+             <span class="translate" data-i18n="Specification Version">Specification Version</span> <span id="specVersion"></span><span id="ISOTitle"></span>
+             
+         </h3>
+         <div id="CertChoiceButtonBar" class="btn-toolbar d-flex justify-content-center mr-40 " role="toolbar" aria-label="Toolbar with button groups">
+            <div class="btn-group mr-2" role="group" aria-label="First group"><button id="btSelectVersion" type="button" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Select Version">Select Version</span></button></div>
+            <div class="btn-group mr-2" role="group"  aria-label="Second group"><button id="btChangeLanguage" type="button" class="btn btn-primary"><i class="fa fa-language" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Change Language">Change Language</span></button></div>
+         </div>
+         <div id="CertForm">
+             <form id="myform"></form>
+         </div>
+        
+         <div id="CertFormButtons" class="btn-toolbar d-flex justify-content-center mr-40 " role="toolbar" aria-label="Toolbar with button groups">
+           <div class="btn-group mr-2" role="group" aria-label="First group"><button id="btSaveAnswers" type="button" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Save Answers">Save Answers</span></button></div>
+           <div class="btn-group mr-2" role="group" aria-label="Second group"><button id="btSaveAndSubmit" type="button" class="btn btn-success"><i class="fa fa-paper-plane" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Save and Submit">Save and Submit</span></button></div>
+           <div class="btn-group mr-2" role="group" aria-label="Third group"><button id="btUnSubmit" type="button" class="btn btn-danger"><i class="fa fa-ban" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Unsubmit">Unsubmit</span></button></div>
+           <div class="btn-group mr-2" role="group" aria-label="First group"><button id="btDownloadAnswers" type="button" class="btn btn-login"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Download Answers">Download Answers</span></button></div>
+           <div class="btn-group mr-2" role="group" aria-label="Second group"><button id="btResetAnswers" type="button" class="btn btn-cancel"><i class="fa fa-refresh" aria-hidden="true"></i>&nbsp;<span class="translate" data-i18n="Reset">Reset Questionnaire</span></button></div>
+           
+           
+         </div>
+         <div class="question-revision mr-100">
+             <span class="translate" data-i18n="Questionnaire Revision">Questionnaire Revision</span>  <span id="surveyVersion"></span>
+         </div>
+     </div>
+     
+     <div id="selectversion" title="Select Version">
+         <form>    
+             <span class="translate" data-i18n="select_version_content">Select the specification version.</span>
+             <fieldset>
+                 <table>
+                     <tr>
+                         <td style="text-align: right; padding: 5px"><label for="versionSelect" class="translate" data-i18n="Version" >Version</label></td>
+                         <td style="text-align: left; padding: 5px"><select id="versionSelect"></select></td>
+                     </tr>
+                 </table>
+                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+             </fieldset>
+         </form>
+     </div>
+     <div id="changelanguage" title="Change Language">
+         <form>    
+             <span class="translate" data-i18n="select_language_content">Select the languge for the questionnaire.</span>
+             <fieldset>
+                 <table>
+                     <tr>
+                         <td style="text-align: right; padding: 5px"><label for="languageSelect" class="translate" data-i18n="Language" >Language</label></td>
+                         <td style="text-align: left; padding: 5px"><select id="languageSelect"></select></td>
+                     </tr>
+                 </table>
+                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+             </fieldset>
+         </form>
+     </div>
+     <div id="resetsurvey" title="Reset Survey">
+       <form>
+     <span class="translate" data-i18n="reset_Questionnaire_content">This will delete all answers and start a new Questionnaire with the latest Questionnaire version.  Are you sure you want to continue? </span>
+         <fieldset>
+             <table style="width: 100%">
+                 <tr>
+                     <td style="text-align: right; padding: 5px"><label for="resetVersionSelect" class="translate" data-i18n="Version"  >Version</label></td>
+                     <td style="text-align: left; padding: 5px"><select id="resetVersionSelect"></select></td>
+                 </tr>
+             </table>
+             <!-- Allow form submission with keyboard without duplicating the dialog button -->
+             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+         </fieldset>
+       </form>
+     </div>
+     <div id="submitconfirm"></div>
+     <div id="errors"></div>
+     <div id="status"></div>
+     <div id="resendveify"></div>
+     <div id="footer-outer"></div>
+   </body>
+ </html>
+ 
