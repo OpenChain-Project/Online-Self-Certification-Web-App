@@ -79,7 +79,7 @@ public class CertificationServlet extends HttpServlet {
 	/**
 	 * Version of this software - should be updated before every release
 	 */
-	static final String version = "1.2.10"; //$NON-NLS-1$
+	static final String version = "1.2.11"; //$NON-NLS-1$
 	
 	static final Logger logger = Logger.getLogger(CertificationServlet.class);
 	
@@ -430,7 +430,9 @@ public class CertificationServlet extends HttpServlet {
             		}
         		}
         	} else if (rj.getRequest().equals(SIGNUP_REQUEST)) {
-        		if (user != null) {
+        		postResponse.setStatus(Status.ERROR);
+    			postResponse.setError("New user sign ups are currently disabled during system maintence.  Please check back after 24 hours"); //$NON-NLS-1$
+        		/*  if (user != null) {
         			user.logout();
         		}
         		UserSession newUser = new UserSession(rj.getUsername(), rj.getPassword(), getServletConfig());
@@ -440,7 +442,7 @@ public class CertificationServlet extends HttpServlet {
         				rj.getLanguage(), locale)) {
         			postResponse.setStatus(Status.ERROR);
         			postResponse.setError(I18N.getMessage("CertificationServlet.22",locale,newUser.getLastError())); //$NON-NLS-1$
-        		}
+        		} */
         	} else if (rj.getRequest().equals(REQUEST_RESET_PASSWORD)) {
         		if (!resetPassword(rj.getUsername(), rj.getEmail(), getServletConfig(), request.getRequestURL().toString())) {
 	        		postResponse.setStatus(Status.ERROR);
