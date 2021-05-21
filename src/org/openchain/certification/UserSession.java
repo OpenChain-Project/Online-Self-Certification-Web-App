@@ -64,6 +64,7 @@ import org.openchain.certification.utility.PasswordUtil;
  */
 public class UserSession {
 	static final transient Logger logger = Logger.getLogger(UserSession.class);
+	static final long MILLIS_PER_DAY = 86400000;	
 	
 	private boolean loggedIn = false;
 	private String username;
@@ -761,6 +762,17 @@ public class UserSession {
 			logger.error("Unexpected Invalid Key Spec error logging in user",e);  //$NON-NLS-1$
 			return false;
 		}
+		Date newExpirationDate = generateVerificationExpirationDate();
+		if (Objects.nonNull(user.getVerificationExpirationDate())) {
+			// Check to make sure we are not getting multiple requests for resets
+			long millisSinceLast = newExpirationDate.getTime() - user.getVerificationExpirationDate().getTime();
+			long daysSinceLast = millisSinceLast / MILLIS_PER_DAY;
+			if (daysSinceLast == 0) {
+				this.lastError = "Verification email has just been sent.  Please check your email "+user.getEmail()+".";
+				logger.error("Multiple verification requests for email "+user.getEmail());  //$NON-NLS-1$
+				return false;
+			}
+		}
 		UUID uuid = UUID.randomUUID();
 		String hashedUuid;
 		try {
@@ -775,7 +787,7 @@ public class UserSession {
 			return false;
 		}
 		user.setUuid(hashedUuid);
-		user.setVerificationExpirationDate(generateVerificationExpirationDate());
+		user.setVerificationExpirationDate(newExpirationDate);
 		try {
 			UserDb.getUserDb(config).updateUser(user);
 		} catch (SQLException e) {

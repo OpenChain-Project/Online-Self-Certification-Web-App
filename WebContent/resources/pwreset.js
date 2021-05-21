@@ -20,7 +20,8 @@ function resetPassword() {
 		        request:  "changePassword",
 		        username: username.val(),
 		        password: password.val(),
-		        locale: getCurrentLanguage()
+		        locale: getCurrentLanguage(),
+		        reCaptchaResponse: grecaptcha.getResponse(resetWidgetId)
 		    }),
 		    type: "POST",
 		    dataType : "json",
@@ -31,10 +32,12 @@ function resetPassword() {
 		    		window.location = "pwresetsuccess.html" +'?locale='+(url('?locale') || 'en');
 		    	} else {
 		    		displayError( json.error );
+		    		grecaptcha.reset(resetWidgetId);
 		    	} 	
 		    },
 		    error: function( xhr, status, errorThrown ) {
 		    	handleError(xhr, status, errorThrown);
+		    	grecaptcha.reset(resetWidgetId);
 		    }
 		});
 	}

@@ -178,8 +178,6 @@ public class CertificationServlet extends HttpServlet {
 	            	}
 	            	gson.toJson(certifiedSubmissions, out);
 	            } else if (requestParam.equals(REGISTER_USER)) {
-	            	response.sendRedirect("regcomplete.html?locale="+locale); //$NON-NLS-1$
-	            	/*
 	            	String username = request.getParameter(PARAMETER_USERNAME);
 	            	String uuid = request.getParameter(PARAMETER_UUID);
 	            	try {
@@ -187,11 +185,9 @@ public class CertificationServlet extends HttpServlet {
 	            		response.sendRedirect("regcomplete.html?locale="+locale); //$NON-NLS-1$
 	            	} catch (Exception ex) {
 	            		response.sendRedirect("regfailed.html?locale="+locale); //$NON-NLS-1$
-	            	}	           
-	            	*/ 	
+	            	}
 	            } else if (requestParam.equals(COMPLETE_PASSWORD_RESET)) {	// result from clicking email link on reset password
-	            	response.sendRedirect("pwresetinvalid.html?locale="+locale); //$NON-NLS-1$
-	            	/*String username = request.getParameter(PARAMETER_USERNAME);
+	            	String username = request.getParameter(PARAMETER_USERNAME);
 	            	String uuid = request.getParameter(PARAMETER_UUID);
 	            	if (user != null && user.isLoggedIn()) {
 	            		user.logout();
@@ -203,7 +199,6 @@ public class CertificationServlet extends HttpServlet {
 	            	} else {
 	            		response.sendRedirect("pwresetinvalid.html?locale="+locale); //$NON-NLS-1$
 	            	}
-	            	*/
 	            } else if (requestParam.equals(GET_USER)) {
 	            	if (user == null) {
 	            		user = new UserSession(getServletConfig());	// creates a new user that is not logged in and a null username
@@ -395,27 +390,31 @@ public class CertificationServlet extends HttpServlet {
     			response.setContentType("text");  //$NON-NLS-1$
     			out.println(I18N.getMessage("CertificationServlet.17",locale)); //$NON-NLS-1$
         	} else if (rj.getRequest().equals(LOGIN_REQUEST)) {
-        		if (user != null) {
-        			user.logout();
-        		}
-        		UserSession newUser = new UserSession(rj.getUsername(),rj.getPassword(), getServletConfig());
-        		if (newUser.login(locale)) {
-        			session.setAttribute(SESSION_ATTRIBUTE_USER, newUser);
-        			postResponse.setAdmin(newUser.isAdmin());
-        			postResponse.setLanguagePreference(newUser.getLanguagePreference());
-        		} else if (newUser.isValidPasswordAndNotVerified(locale)) {
-        			postResponse.setStatus(Status.NOT_VERIFIED);
-        			postResponse.setError(I18N.getMessage("CertificationServlet.18",locale)); //$NON-NLS-1$
+        		if (!ReCaptcha.verifyReCaptcha(rj.getReCaptchaResponse())) {
+	        		postResponse.setStatus(Status.ERROR);
+	    			postResponse.setError("User verification faild.  Please check re-captha and submit.");
         		} else {
-        			postResponse.setStatus(Status.ERROR);
-        			postResponse.setError(I18N.getMessage("CertificationServlet.19",locale,newUser.getLastError())); //$NON-NLS-1$
+        			if (user != null) {
+            			user.logout();
+            		}
+            		UserSession newUser = new UserSession(rj.getUsername(),rj.getPassword(), getServletConfig());
+            		if (newUser.login(locale)) {
+            			session.setAttribute(SESSION_ATTRIBUTE_USER, newUser);
+            			postResponse.setAdmin(newUser.isAdmin());
+            			postResponse.setLanguagePreference(newUser.getLanguagePreference());
+            		} else if (newUser.isValidPasswordAndNotVerified(locale)) {
+            			postResponse.setStatus(Status.NOT_VERIFIED);
+            			postResponse.setError(I18N.getMessage("CertificationServlet.18",locale)); //$NON-NLS-1$
+            		} else {
+            			postResponse.setStatus(Status.ERROR);
+            			postResponse.setError(I18N.getMessage("CertificationServlet.19",locale,newUser.getLastError())); //$NON-NLS-1$
+            		}
         		}
         	} else if (rj.getRequest().equals(PASSWORD_CHANGE_REQUEST)) {	// request from the pwreset.html form
-        		postResponse.setStatus(Status.ERROR);
-				logger.error("Unable to set password for user "+rj.getUsername());  //$NON-NLS-1$
-				postResponse.setError("Unable to reset passwords at this time - please try again in 24 hours");
-				/*
-        		if (user == null || !user.isPasswordReset()) {
+        		if (!ReCaptcha.verifyReCaptcha(rj.getReCaptchaResponse())) {
+	        		postResponse.setStatus(Status.ERROR);
+	    			postResponse.setError("User verification faild.  Please check re-captha and submit.");
+        		} else if (user == null || !user.isPasswordReset()) {
         			postResponse.setStatus(Status.ERROR);
         			logger.error("Invalid state for password reset for user "+ rj.getUsername());  //$NON-NLS-1$
         			postResponse.setError(I18N.getMessage("CertificationServlet.20",locale)); //$NON-NLS-1$
@@ -426,22 +425,19 @@ public class CertificationServlet extends HttpServlet {
         				postResponse.setError(user.getLastError());
         			}
         		}
-        		*/
         	} else if (rj.getRequest().equals(RESEND_VERIFICATION)) {
+        		//Note: We do not need to check any reCaptchas since the passwords must match for the resend verification to work
+        		//      and the captcha was already verified during the previous login
         		if (user != null && user.isLoggedIn()) {
         			postResponse.setStatus(Status.ERROR);
         			postResponse.setError(I18N.getMessage("CertificationServlet.21",locale)); //$NON-NLS-1$
         		} else {
-        			postResponse.setStatus(Status.ERROR);
-        			postResponse.setError("Resending verification currently disabled during system maintenence.  Please retry in 24 hours"); //$NON-NLS-1$
-        			/*
-            		UserSession newUser = new UserSession(rj.getUsername(),rj.getPassword(), getServletConfig());
+        			UserSession newUser = new UserSession(rj.getUsername(),rj.getPassword(), getServletConfig());
             		String verificationUrl = request.getRequestURL().toString();
             		if (!newUser.resendVerification(rj.getUsername(), rj.getPassword(), verificationUrl, locale)) {
             			postResponse.setStatus(Status.ERROR);
             			postResponse.setError(I18N.getMessage("CertificationServlet.22",locale,newUser.getLastError())); //$NON-NLS-1$
             		}
-            		*/
         		}
         	} else if (rj.getRequest().equals(SIGNUP_REQUEST)) {
         		if (!ReCaptcha.verifyReCaptcha(rj.getReCaptchaResponse())) {
@@ -461,14 +457,13 @@ public class CertificationServlet extends HttpServlet {
             		}
         		}
         	} else if (rj.getRequest().equals(REQUEST_RESET_PASSWORD)) {
-        		postResponse.setStatus(Status.ERROR);
-        		postResponse.setError("Password reset feature is currently disabled - please rety in 24 hours"); //$NON-NLS-1$
-        		/*
-        		if (!resetPassword(rj.getUsername(), rj.getEmail(), getServletConfig(), request.getRequestURL().toString())) {
+        		if (!ReCaptcha.verifyReCaptcha(rj.getReCaptchaResponse())) {
+	        		postResponse.setStatus(Status.ERROR);
+	    			postResponse.setError("User verification faild.  Please check re-captha and submit.");
+        		} else if (!resetPassword(rj.getUsername(), rj.getEmail(), getServletConfig(), request.getRequestURL().toString())) {
 	        		postResponse.setStatus(Status.ERROR);
 	        		postResponse.setError(I18N.getMessage("CertificationServlet.24",locale)); //$NON-NLS-1$
         		}
-        		*/
         	}else if (rj.getRequest().equals(SET_LANGUAGE_REQUEST)) {
         		session.setAttribute(LANGUAGE_ATTRIBUTE, rj.getLanguage());
         		if (user != null) {

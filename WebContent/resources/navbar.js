@@ -122,12 +122,15 @@ function openResendVerificationDialog(username, password) {
 	    			    		// redirect to the successful signup page
 	    			    		window.location = "signupsuccess.html"+'?locale='+(url('?locale') || 'en');
 	    			    	} else {
+	    			    		password.val('');
 	    			    		displayError( json.error );
+	    			    		grecaptcha.reset(loginWidgetId);
 	    			    	} 	
 	    			    },
 	    			    error: function( xhr, status, errorThrown ) {
 	    			    	password.val('');
 	    			    	handleError(xhr, status, errorThrown);
+	    			    	grecaptcha.reset(loginWidgetId);
 	    			    }
 	    			});
 	    			$( this ).dialog( "close" );
@@ -154,7 +157,8 @@ function loginUser() {
 	        request:  "login",
 	        username: username.val(),
 	        password: password.val(),
-	        locale: getCurrentLanguage()
+	        locale: getCurrentLanguage(),
+	        reCaptchaResponse: grecaptcha.getResponse(loginWidgetId)
 	    });
 		$.ajax({
 		    url: "CertificationServlet",
@@ -180,10 +184,12 @@ function loginUser() {
 		    	} else {
 		    		password.val('');
 		    		displayError( json.error );
+		    		grecaptcha.reset(loginWidgetId);
 		    	} 	
 		    },
 		    error: function( xhr, status, errorThrown ) {
 		    	handleError(xhr, status, errorThrown);
+		    	grecaptcha.reset(loginWidgetId);
 		    }
 		});
 	}
@@ -396,10 +402,12 @@ function signup(username, password, name, address, organization, email,
 	    		window.location = "signupsuccess.html"+'?locale='+(url('?locale') || 'en');
 	    	} else {
 	    		displayError( json.error );
+	    		grecaptcha.reset(signupWidgetId);
 	    	} 	
 	    },
 	    error: function( xhr, status, errorThrown ) {
 	    	handleError(xhr, status, errorThrown);
+	    	grecaptcha.reset(signupWidgetId);
 	    }
 	});
 }
@@ -500,7 +508,8 @@ function requestPasswordReset() {
 		        request:  "requestResetPassword",
 		        username: username.val(),
 		        email: email.val(),
-		        locale: getCurrentLanguage()
+		        locale: getCurrentLanguage(),
+		        reCaptchaResponse: grecaptcha.getResponse(loginWidgetId)
 		    }),
 		    type: "POST",
 		    dataType : "json",
@@ -512,6 +521,7 @@ function requestPasswordReset() {
 		    		// redirect to the pw reset request page
 		    		window.location = "pwresetrequest.html"+'?locale='+(url('?locale') || 'en');
 		    	} else {
+		    		$("#resetpasswordModal").modal('hide');
 		    		displayError( json.error );
 		    	} 	
 		    },

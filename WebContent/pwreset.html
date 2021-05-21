@@ -25,10 +25,20 @@ Author(s): ViSolve 03/01/2019
     <script src="resources/lib/url/url.min.js"></script>  
     <script src="resources/i18next.min.js" ></script>
     <script src="resources/jquery-i18next.min.js" ></script>
+    <script type="text/javascript">
+      var resetWidgetId;
+      var resetOnloadCallback = function() {
+    	  resetWidgetId = grecaptcha.render('re-captcha-resetpw', {
+            'sitekey' : '6Lf8wt4aAAAAAASwZBTJy2-Eqjin2M7Yo9ds26db',
+            hl : getCurrentLanguage()
+        });
+      };
+    </script>
     <script src="resources/i18nextXHRBackend.js"></script>
     <script src="resources/global.js"></script>   
     <script src="resources/navbar.js"></script>
     <script src="resources/pwreset.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=resetOnloadCallback&render=explicit" async defer></script>
   </head>
   <body>
   
@@ -58,6 +68,10 @@ Author(s): ViSolve 03/01/2019
 					      <label class= "custom-label translate" data-i18n="Re-enter Password" for="reset-pass-verify">Re-Enter Password</label>
 
 					    </div>
+					    <div class="row">
+                          <div id="re-captcha-resetpw">
+                        </div>
+                     </div>
 					     <div class="row">
 						     <div class="ui-dialog-buttonset">
 						     	<button type="submit" class="btn btn-login btn-md translate" data-i18n="Reset Password" id="reset-user-password">Reset Password</button>
