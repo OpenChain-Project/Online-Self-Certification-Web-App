@@ -47,6 +47,7 @@ public class RequestJson {
 	private String tag;
 	private String commit;
 	private String locale;
+	private String reCaptchaResponse;
 	
 	/**
 	 * @return the create
@@ -284,7 +285,16 @@ public class RequestJson {
 	public void setLocale(String locale) {
 		this.locale = locale;
 	}
-	
-	
-	
+	/**
+	 * @return the reCaptchaResponse
+	 */
+	public String getReCaptchaResponse() {
+		return reCaptchaResponse;
+	}
+	/**
+	 * @param reCaptchaResponse the reCaptchaResponse to set
+	 */
+	public void setReCaptchaResponse(String reCaptchaResponse) {
+		this.reCaptchaResponse = reCaptchaResponse;
+	}
 }

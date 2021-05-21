@@ -39,6 +39,7 @@ The following outline the steps used to create an Eclipse based development envi
 6. Right click on the test folder and add as a source directory to the build path
 7. Configure a PostgreSQL server on local host and create a database with the configuration specified in the org.openchain.certification.TestHelper.java file.
 8. You should be able to run the unit tests successfully
-7. At this point, there should be no compiler errors and you should be able to successfully run the unit tests
+9. At this point, there should be no compiler errors and you should be able to successfully run the unit tests
 To run the actual application locally, create a Tomcat 7 server in eclipse and run the application under the Tomcat server
 You may need to create a database or modify some of the database parameters.
+10. To test any features requiring [ReCaptcha](), the system property RECAPTCHA_SECRET must be set by adding -DRECAPTCHA_SECRET="xxx" to the launch configuration for the Tomcat server

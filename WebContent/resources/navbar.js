@@ -383,7 +383,8 @@ function signup(username, password, name, address, organization, email,
 	        emailPermission: approveUseNameEmail,
 	        namePermission: approveUseNameEmail,
 	        language: preferredLanguage,
-	        locale: getCurrentLanguage()
+	        locale: getCurrentLanguage(),
+	        reCaptchaResponse: grecaptcha.getResponse(signupWidgetId)
 	    }),
 	    type: "POST",
 	    dataType : "json",
@@ -583,6 +584,4 @@ $(document).ready( function() {
         $(this).css('cursor','pointer');
         $(this).css('text-decoration', 'underline');
     });
-	
-	
 });

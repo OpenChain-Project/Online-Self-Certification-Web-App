@@ -27,9 +27,19 @@ Description: A new Responsive Template to receive the user inputs during Signup.
     <script src="resources/lib/url/url.min.js"></script>  
     <script src="resources/i18next.min.js" ></script>
     <script src="resources/jquery-i18next.min.js" ></script>
+    <script type="text/javascript">
+      var signupWidgetId;
+      var onloadCallback = function() {
+    	  signupWidgetId = grecaptcha.render('re-captcha-signup', {
+            'sitekey' : '6Lf8wt4aAAAAAASwZBTJy2-Eqjin2M7Yo9ds26db',
+            hl : getCurrentLanguage()
+        });
+      };
+    </script>
     <script src="resources/i18nextXHRBackend.js"></script>
     <script src="resources/global.js"></script>   
     <script src="resources/navbar.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
     <script>
     // Simple script to setup the languages dropdown list
     $(document).ready( function() {
@@ -108,7 +118,11 @@ Description: A new Responsive Template to receive the user inputs during Signup.
 						    <label class="form-check-label update-label checkbox-label"  for="read-terms"><span class="translate" data-i18n="[html]Sign Up_content_2"> </span></label>
 						</div>
 				    </div>
-				     <div class="row ">
+				    <div class="row">
+                         <div id="re-captcha-signup">
+                         </div>
+                     </div>
+				     <div class="row">
 					     <div class="ui-dialog-buttonset mr-100">
 					     	<button type="submit" class="btn btn-login btn-md translate" data-i18n="Sign Up" id="signup-button">Sign Up</button>
 					     	<button type="button" class="btn btn-cancel btn-md translate" data-i18n="Cancel" id="index-home">Cancel</button>
