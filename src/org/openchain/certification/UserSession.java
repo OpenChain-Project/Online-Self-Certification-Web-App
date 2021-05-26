@@ -768,7 +768,7 @@ public class UserSession {
 			long millisSinceLast = newExpirationDate.getTime() - user.getVerificationExpirationDate().getTime();
 			long daysSinceLast = millisSinceLast / MILLIS_PER_DAY;
 			if (daysSinceLast == 0) {
-				this.lastError = "Verification email has just been sent.  Please check your email "+user.getEmail()+".";
+				this.lastError = I18N.getMessage("UserSession.108", locale, user.getEmail()); //$NON-NLS-1$
 				logger.error("Multiple verification requests for email "+user.getEmail());  //$NON-NLS-1$
 				return false;
 			}

@@ -41,7 +41,7 @@ public class ReCaptcha {
 
 	static final Logger logger = Logger.getLogger(ReCaptcha.class);
 	public static final String RECAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify"; //$NON-NLS-1$
-	private static final String USER_AGENT = "Mozilla/5.0";
+	private static final String USER_AGENT = "Mozilla/5.0"; //$NON-NLS-1$
 	
 	private static Gson gson = new Gson();
 	
@@ -52,25 +52,25 @@ public class ReCaptcha {
 	 * @return
 	 * @throws ReCaptchaException 
 	 */
-	public static boolean verifyReCaptcha(String reCaptchaResponse) throws ReCaptchaException {
+	public static boolean verifyReCaptcha(String reCaptchaResponse, String locale) throws ReCaptchaException {
 		if (Objects.isNull(reCaptchaResponse) || reCaptchaResponse.isEmpty()) {
 			return false;
 		}
-		String secret = System.getProperty("RECAPTCHA_SECRET");
+		String secret = System.getProperty("RECAPTCHA_SECRET"); //$NON-NLS-1$
 		URL reCaptchaUrl = null;
 		try {
 			reCaptchaUrl = new URL(RECAPTCHA_URL);
 		} catch(MalformedURLException ex) {
-			logger.error("Unexpected URL error accessing the ReCaptcha service.", ex);
-			throw new ReCaptchaException("Unexpected URL error accessing the ReCaptcha service.  Please notify the OpenChain group at conformance@lists.openchainproject.org.");
+			logger.error("Unexpected URL error accessing the ReCaptcha service.", ex); //$NON-NLS-1$
+			throw new ReCaptchaException(I18N.getMessage("ReCaptcha.3", locale)); //$NON-NLS-1$
 		}
 		try {
 			HttpsURLConnection con = (HttpsURLConnection) reCaptchaUrl.openConnection();
-			con.setRequestMethod("POST");
-			con.setRequestProperty("User-Agent", USER_AGENT);
-			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+			con.setRequestMethod("POST"); //$NON-NLS-1$
+			con.setRequestProperty("User-Agent", USER_AGENT); //$NON-NLS-1$
+			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5"); //$NON-NLS-1$ //$NON-NLS-2$
 
-			String postParams = "secret=" + secret + "&response="
+			String postParams = "secret=" + secret + "&response=" //$NON-NLS-1$ //$NON-NLS-2$
 					+ reCaptchaResponse;
 
 			// Send post request
@@ -83,8 +83,8 @@ public class ReCaptcha {
 			int responseCode = con.getResponseCode();
 			if (responseCode > 399) {
 				// Some type of error
-				logger.error("Error response code returned from ReCaptcha post: "+responseCode);
-				throw new ReCaptchaException("ReCaptcha service returned an error code.  Please notify the OpenChain group at conformance@lists.openchainproject.org.");
+				logger.error("Error response code returned from ReCaptcha post: "+responseCode); //$NON-NLS-1$
+				throw new ReCaptchaException(I18N.getMessage("ReCaptcha.11", locale)); //$NON-NLS-1$
 			}
 			
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -98,11 +98,11 @@ public class ReCaptcha {
 				return response.isSuccess();
 			}
 		} catch (IOException ex) {
-			logger.error("I/O error accessing the ReCaptcha service",ex);
-			throw new ReCaptchaException("I/O error accessing the ReCaptcha service - please try again later.");
+			logger.error("I/O error accessing the ReCaptcha service",ex); //$NON-NLS-1$
+			throw new ReCaptchaException(I18N.getMessage("ReCaptcha.13", locale)); //$NON-NLS-1$
 		} catch (Exception ex) {
-			logger.error("Unexpected error accessing the ReCaptcha service",ex);
-			throw new ReCaptchaException("Unexpected error accessing the ReCaptcha service.  Please notify the OpenChain group at conformance@lists.openchainproject.org.");
+			logger.error("Unexpected error accessing the ReCaptcha service",ex); //$NON-NLS-1$
+			throw new ReCaptchaException(I18N.getMessage("ReCaptcha.15", locale)); //$NON-NLS-1$
 		}
 	}
 

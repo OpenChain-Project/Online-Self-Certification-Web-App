@@ -125,8 +125,8 @@ public class CertificationServlet extends HttpServlet {
 	private static final String SET_LANGUAGE_REQUEST = "setlanguage";  //$NON-NLS-1$
 	private static final String GET_GIT_TAGS_REQUEST = "getGitTags"; //$NON-NLS-1$
 	private static final String GET_UPDATE_SURVEY_RESULTS = "getUpdateSurveyResults"; //$NON-NLS-1$
-	private static final String GET_SUPPORTED_SPEC_LANGUAGES = "getSupportedSpecLanguages";
-	private static final String SET_SURVEY_RESPONSE_LANGUAGE = "setSurveyResponseLanguage";
+	private static final String GET_SUPPORTED_SPEC_LANGUAGES = "getSupportedSpecLanguages"; //$NON-NLS-1$
+	private static final String SET_SURVEY_RESPONSE_LANGUAGE = "setSurveyResponseLanguage"; //$NON-NLS-1$
 	
 	private Gson gson;
 	
@@ -390,9 +390,9 @@ public class CertificationServlet extends HttpServlet {
     			response.setContentType("text");  //$NON-NLS-1$
     			out.println(I18N.getMessage("CertificationServlet.17",locale)); //$NON-NLS-1$
         	} else if (rj.getRequest().equals(LOGIN_REQUEST)) {
-        		if (!ReCaptcha.verifyReCaptcha(rj.getReCaptchaResponse())) {
+        		if (!ReCaptcha.verifyReCaptcha(rj.getReCaptchaResponse(), locale)) {
 	        		postResponse.setStatus(Status.ERROR);
-	    			postResponse.setError("User verification faild.  Please check re-captha and submit.");
+	    			postResponse.setError(I18N.getMessage("CertificationServlet.71", locale)); //$NON-NLS-1$
         		} else {
         			if (user != null) {
             			user.logout();
@@ -411,9 +411,9 @@ public class CertificationServlet extends HttpServlet {
             		}
         		}
         	} else if (rj.getRequest().equals(PASSWORD_CHANGE_REQUEST)) {	// request from the pwreset.html form
-        		if (!ReCaptcha.verifyReCaptcha(rj.getReCaptchaResponse())) {
+        		if (!ReCaptcha.verifyReCaptcha(rj.getReCaptchaResponse(), locale)) {
 	        		postResponse.setStatus(Status.ERROR);
-	    			postResponse.setError("User verification faild.  Please check re-captha and submit.");
+	    			postResponse.setError(I18N.getMessage("CertificationServlet.71", locale)); //$NON-NLS-1$
         		} else if (user == null || !user.isPasswordReset()) {
         			postResponse.setStatus(Status.ERROR);
         			logger.error("Invalid state for password reset for user "+ rj.getUsername());  //$NON-NLS-1$
@@ -440,9 +440,9 @@ public class CertificationServlet extends HttpServlet {
             		}
         		}
         	} else if (rj.getRequest().equals(SIGNUP_REQUEST)) {
-        		if (!ReCaptcha.verifyReCaptcha(rj.getReCaptchaResponse())) {
+        		if (!ReCaptcha.verifyReCaptcha(rj.getReCaptchaResponse(), locale)) {
 	        		postResponse.setStatus(Status.ERROR);
-	    			postResponse.setError("User verification faild.  Please check re-captha and submit.");
+	    			postResponse.setError(I18N.getMessage("CertificationServlet.71", locale)); //$NON-NLS-1$
         		} else {
         			if (user != null) {
             			user.logout();
@@ -457,9 +457,9 @@ public class CertificationServlet extends HttpServlet {
             		}
         		}
         	} else if (rj.getRequest().equals(REQUEST_RESET_PASSWORD)) {
-        		if (!ReCaptcha.verifyReCaptcha(rj.getReCaptchaResponse())) {
+        		if (!ReCaptcha.verifyReCaptcha(rj.getReCaptchaResponse(), locale)) {
 	        		postResponse.setStatus(Status.ERROR);
-	    			postResponse.setError("User verification faild.  Please check re-captha and submit.");
+	    			postResponse.setError(I18N.getMessage("CertificationServlet.71", locale)); //$NON-NLS-1$
         		} else if (!resetPassword(rj.getUsername(), rj.getEmail(), getServletConfig(), request.getRequestURL().toString())) {
 	        		postResponse.setStatus(Status.ERROR);
 	        		postResponse.setError(I18N.getMessage("CertificationServlet.24",locale)); //$NON-NLS-1$
@@ -736,7 +736,7 @@ public class CertificationServlet extends HttpServlet {
 					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
 				} catch (UpdateSurveyException e) {
 					logger.error("Update survey error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
-					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage()) + "  " + e.getMessage()); //$NON-NLS-1$
+					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage()) + "  " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 				} catch (IOException e) {
 					logger.error("I/O error updating spec version "+survey.getSpecVersion()+" language "+survey.getLanguage(),e);  //$NON-NLS-1$    //$NON-NLS-2$
 					stats.addWarning(I18N.getMessage("CertificationServlet.8", language, survey.getSpecVersion(), survey.getLanguage())); //$NON-NLS-1$
