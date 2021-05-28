@@ -27,8 +27,18 @@ Description: A new Responsive Template for login
     <script src="resources/i18next.min.js" ></script>
     <script src="resources/jquery-i18next.min.js" ></script>
     <script src="resources/i18nextXHRBackend.js"></script>
+    <script type="text/javascript">
+      var loginWidgetId;
+      var loginOnloadCallback = function() {
+    	  loginWidgetId = grecaptcha.render('re-captcha-login', {
+            'sitekey' : '6Lf8wt4aAAAAAASwZBTJy2-Eqjin2M7Yo9ds26db',
+            hl : getCurrentLanguage()
+        });
+      };
+    </script>
     <script src="resources/global.js"></script>   
     <script src="resources/navbar.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=loginOnloadCallback&render=explicit" async defer></script>
   </head>
   <body>
   
@@ -56,6 +66,10 @@ Description: A new Responsive Template for login
 				    <div class="row">
 				     	<a data-toggle="modal" data-target="#resetpasswordModal" class="reset-password translate" data-i18n="Reset Password">Reset Password</a>
 				     </div> 
+				     <div class="row">
+                         <div id="re-captcha-login">
+                         </div>
+                     </div>
 				    <!-- 002 starts here -->
 				     <div class="row">
 					     <div class="ui-dialog-buttonset">
