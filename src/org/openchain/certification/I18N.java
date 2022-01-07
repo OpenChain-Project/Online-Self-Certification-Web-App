@@ -16,8 +16,9 @@
 */
 package org.openchain.certification;
 
-import org.apache.log4j.Logger;
 import org.openchain.certification.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -32,7 +33,7 @@ import java.util.ResourceBundle;
  */
 public final class I18N {
 	
-	static final Logger logger = Logger.getLogger(I18N.class);
+	static final Logger logger = LoggerFactory.getLogger(I18N.class);
 
 	private static final String BASE_RESOURCE_NAME = "messages"; //$NON-NLS-1$
 

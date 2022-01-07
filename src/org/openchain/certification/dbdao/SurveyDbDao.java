@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.openchain.certification.model.Question;
 import org.openchain.certification.model.QuestionException;
 import org.openchain.certification.model.QuestionTypeException;
@@ -43,6 +42,8 @@ import org.openchain.certification.model.YesNoNotApplicableQuestion;
 import org.openchain.certification.model.YesNoQuestion;
 import org.openchain.certification.model.YesNoQuestion.YesNo;
 import org.openchain.certification.model.YesNoQuestionWithEvidence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DB Data Access Object for the survey.
@@ -51,7 +52,7 @@ import org.openchain.certification.model.YesNoQuestionWithEvidence;
  */
 public class SurveyDbDao {
 	
-	static final Logger logger = Logger.getLogger(SurveyDbDao.class);
+	static final Logger logger = LoggerFactory.getLogger(SurveyDbDao.class);
 	
 	Connection connection = null;
 	private PreparedStatement updateQuestionQuery;

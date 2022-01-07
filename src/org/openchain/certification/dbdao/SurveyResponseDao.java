@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.openchain.certification.model.QuestionException;
 import org.openchain.certification.model.QuestionTypeException;
 import org.openchain.certification.model.SubQuestion;
@@ -46,6 +45,8 @@ import org.openchain.certification.model.YesNoNotApplicableQuestion;
 import org.openchain.certification.model.YesNoQuestion;
 import org.openchain.certification.model.YesNoQuestionWithEvidence;
 import org.openchain.certification.model.YesNoQuestion.YesNo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manage data access for Survey Responses
@@ -55,7 +56,7 @@ import org.openchain.certification.model.YesNoQuestion.YesNo;
  *
  */
 public class SurveyResponseDao {
-	static final Logger logger = Logger.getLogger(SurveyResponseDao.class);
+	static final Logger logger = LoggerFactory.getLogger(SurveyResponseDao.class);
 	Connection con;
 	private PreparedStatement getUserQuery;
 	private PreparedStatement getLatestSpecVersionForUserQuery;

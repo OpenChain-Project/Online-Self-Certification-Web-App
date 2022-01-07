@@ -21,9 +21,10 @@ import java.util.UUID;
 
 import javax.servlet.ServletConfig;
 
-import org.apache.log4j.Logger;
 import org.openchain.certification.I18N;
 import org.openchain.certification.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -46,7 +47,7 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest;
  *
  */
 public class EmailUtility {
-	static final Logger logger = Logger.getLogger(EmailUtility.class);
+	static final Logger logger = LoggerFactory.getLogger(EmailUtility.class);
 	private static final String ACCESS_KEY_VAR = "AWS_ACCESS_KEY_ID"; //$NON-NLS-1$
 	private static final String SECRET_KEY_VAR = "AWS_SECRET_ACCESS_KEY"; //$NON-NLS-1$
 	

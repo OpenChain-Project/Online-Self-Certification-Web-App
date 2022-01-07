@@ -26,7 +26,8 @@ import java.util.Objects;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -39,7 +40,7 @@ import com.google.gson.Gson;
  */
 public class ReCaptcha {
 
-	static final Logger logger = Logger.getLogger(ReCaptcha.class);
+	static final Logger logger = LoggerFactory.getLogger(ReCaptcha.class);
 	public static final String RECAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify"; //$NON-NLS-1$
 	private static final String USER_AGENT = "Mozilla/5.0"; //$NON-NLS-1$
 	
