@@ -26,9 +26,10 @@ import java.util.List;
 
 import javax.servlet.ServletConfig;
 
-import org.apache.log4j.Logger;
 import org.openchain.certification.InvalidUserException;
 import org.openchain.certification.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a singleton DAO - since the requests will be relatively short and
@@ -40,7 +41,7 @@ import org.openchain.certification.model.User;
  */
 public class UserDb {
 	
-	static final Logger logger = Logger.getLogger(UserDb.class);
+	static final Logger logger = LoggerFactory.getLogger(UserDb.class);
 	
 	private static UserDb _userDb;
 	private Connection connection;

@@ -47,7 +47,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
 import org.openchain.certification.PostResponse.Status;
 import org.openchain.certification.dbdao.SurveyDatabase;
 import org.openchain.certification.dbdao.SurveyDbDao;
@@ -67,6 +66,8 @@ import org.openchain.certification.model.User;
 import org.openchain.certification.utility.EmailUtilException;
 import org.openchain.certification.utility.EmailUtility;
 import org.openchain.certification.utility.PasswordUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -79,9 +80,9 @@ public class CertificationServlet extends HttpServlet {
 	/**
 	 * Version of this software - should be updated before every release
 	 */
-	static final String version = "1.2.14"; //$NON-NLS-1$
+	static final String version = "1.2.15"; //$NON-NLS-1$
 	
-	static final Logger logger = Logger.getLogger(CertificationServlet.class);
+	static final Logger logger = LoggerFactory.getLogger(CertificationServlet.class);
 	
 	private static final long serialVersionUID = 1L;  //$NON-NLS-1$
 	static final String SESSION_ATTRIBUTE_USER = "user";  //$NON-NLS-1$
@@ -402,6 +403,7 @@ public class CertificationServlet extends HttpServlet {
             			session.setAttribute(SESSION_ATTRIBUTE_USER, newUser);
             			postResponse.setAdmin(newUser.isAdmin());
             			postResponse.setLanguagePreference(newUser.getLanguagePreference());
+            			logger.info("User "+rj.getUsername()+" logged in");
             		} else if (newUser.isValidPasswordAndNotVerified(locale)) {
             			postResponse.setStatus(Status.NOT_VERIFIED);
             			postResponse.setError(I18N.getMessage("CertificationServlet.18",locale)); //$NON-NLS-1$
@@ -416,7 +418,7 @@ public class CertificationServlet extends HttpServlet {
 	    			postResponse.setError(I18N.getMessage("CertificationServlet.71", locale)); //$NON-NLS-1$
         		} else if (user == null || !user.isPasswordReset()) {
         			postResponse.setStatus(Status.ERROR);
-        			logger.error("Invalid state for password reset for user "+ rj.getUsername());  //$NON-NLS-1$
+        			logger.info("Invalid state for password reset for user "+ rj.getUsername());  //$NON-NLS-1$
         			postResponse.setError(I18N.getMessage("CertificationServlet.20",locale)); //$NON-NLS-1$
         		} else {
         			if (!user.setPassword(rj.getUsername(), rj.getPassword(), locale)) {

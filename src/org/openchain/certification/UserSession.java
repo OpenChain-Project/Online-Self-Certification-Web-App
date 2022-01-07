@@ -32,7 +32,6 @@ import java.util.UUID;
 
 import javax.servlet.ServletConfig;
 
-import org.apache.log4j.Logger;
 import org.openchain.certification.dbdao.SurveyDatabase;
 import org.openchain.certification.dbdao.SurveyDbDao;
 import org.openchain.certification.dbdao.SurveyResponseDao;
@@ -54,6 +53,8 @@ import org.openchain.certification.model.YesNoQuestionWithEvidence;
 import org.openchain.certification.utility.EmailUtilException;
 import org.openchain.certification.utility.EmailUtility;
 import org.openchain.certification.utility.PasswordUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
@@ -63,7 +64,7 @@ import org.openchain.certification.utility.PasswordUtil;
  *
  */
 public class UserSession {
-	static final transient Logger logger = Logger.getLogger(UserSession.class);
+	static final transient Logger logger = LoggerFactory.getLogger(UserSession.class);
 	static final long MILLIS_PER_DAY = 86400000;	
 	
 	private boolean loggedIn = false;

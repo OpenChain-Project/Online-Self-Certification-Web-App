@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.CanceledException;
@@ -50,6 +49,8 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.openchain.certification.I18N;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -127,7 +128,7 @@ public class QuestionnaireGitRepo {
 	
 	public static final String TMP_DIR = System.getProperty("java.io.tmpdir");  //$NON-NLS-1$
 	public static final String REPO_DIR_NAME = "questionnaire_repo";  //$NON-NLS-1$
-	static final Logger logger = Logger.getLogger(QuestionnaireGitRepo.class);
+	static final Logger logger = LoggerFactory.getLogger(QuestionnaireGitRepo.class);
 	
 	File workingDir = null;
 	Repository repo = null;

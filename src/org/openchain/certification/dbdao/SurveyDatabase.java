@@ -21,8 +21,9 @@ import java.sql.SQLException;
 
 import javax.servlet.ServletConfig;
 
-import org.apache.log4j.Logger;
 import org.postgresql.ds.PGSimpleDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Singleton class to manage the database datasource and connection
@@ -31,7 +32,7 @@ import org.postgresql.ds.PGSimpleDataSource;
  */
 public class SurveyDatabase {
 	
-	static final Logger logger = Logger.getLogger(SurveyDatabase.class);
+	static final Logger logger = LoggerFactory.getLogger(SurveyDatabase.class);
 	//TODO: Add connection pooling if needed for performance
 	
 	private static SurveyDatabase surveyDatabase;
