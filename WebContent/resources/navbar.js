@@ -69,7 +69,7 @@ function checkEquals(a, b, n) {
 }
 function updateTips( t ) {
     tips
-      .html('<p class="translate" data-i18n="'+t+'">Error!!</p>')
+      .html('<p class="translate" data-i18n="'+t+'">'+t+'</p>')
       .addClass( "ui-state-highlight" );
     $('.translate').localize();
     setTimeout(function() {
