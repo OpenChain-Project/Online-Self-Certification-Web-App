@@ -398,7 +398,7 @@ public class CertificationServlet extends HttpServlet {
         			if (user != null) {
             			user.logout();
             		}
-            		UserSession newUser = new UserSession(rj.getUsername(),rj.getPassword(), getServletConfig());
+            		UserSession newUser = new UserSession(rj.getUsername().trim(),rj.getPassword(), getServletConfig());
             		if (newUser.login(locale)) {
             			session.setAttribute(SESSION_ATTRIBUTE_USER, newUser);
             			postResponse.setAdmin(newUser.isAdmin());
@@ -421,7 +421,7 @@ public class CertificationServlet extends HttpServlet {
         			logger.info("Invalid state for password reset for user "+ rj.getUsername());  //$NON-NLS-1$
         			postResponse.setError(I18N.getMessage("CertificationServlet.20",locale)); //$NON-NLS-1$
         		} else {
-        			if (!user.setPassword(rj.getUsername(), rj.getPassword(), locale)) {
+        			if (!user.setPassword(rj.getUsername().trim(), rj.getPassword(), locale)) {
         				postResponse.setStatus(Status.ERROR);
         				logger.error("Unable to set password for user "+rj.getUsername());  //$NON-NLS-1$
         				postResponse.setError(user.getLastError());
@@ -434,9 +434,9 @@ public class CertificationServlet extends HttpServlet {
         			postResponse.setStatus(Status.ERROR);
         			postResponse.setError(I18N.getMessage("CertificationServlet.21",locale)); //$NON-NLS-1$
         		} else {
-        			UserSession newUser = new UserSession(rj.getUsername(),rj.getPassword(), getServletConfig());
+        			UserSession newUser = new UserSession(rj.getUsername().trim(),rj.getPassword(), getServletConfig());
             		String verificationUrl = request.getRequestURL().toString();
-            		if (!newUser.resendVerification(rj.getUsername(), rj.getPassword(), verificationUrl, locale)) {
+            		if (!newUser.resendVerification(rj.getUsername().trim(), rj.getPassword(), verificationUrl, locale)) {
             			postResponse.setStatus(Status.ERROR);
             			postResponse.setError(I18N.getMessage("CertificationServlet.22",locale,newUser.getLastError())); //$NON-NLS-1$
             		}
@@ -449,7 +449,7 @@ public class CertificationServlet extends HttpServlet {
         			if (user != null) {
             			user.logout();
             		}
-            		UserSession newUser = new UserSession(rj.getUsername(), rj.getPassword(), getServletConfig());
+            		UserSession newUser = new UserSession(rj.getUsername().trim(), rj.getPassword(), getServletConfig());
             		String verificationUrl = request.getRequestURL().toString();
             		if (!newUser.signUp(rj.getName(), rj.getAddress(), rj.getOrganization(), 
             				rj.getEmail(), verificationUrl, rj.getNamePermission(), rj.getEmailPermission(), 
@@ -462,7 +462,7 @@ public class CertificationServlet extends HttpServlet {
         		if (!ReCaptcha.verifyReCaptcha(rj.getReCaptchaResponse(), locale)) {
 	        		postResponse.setStatus(Status.ERROR);
 	    			postResponse.setError(I18N.getMessage("CertificationServlet.71", locale)); //$NON-NLS-1$
-        		} else if (!resetPassword(rj.getUsername(), rj.getEmail(), getServletConfig(), request.getRequestURL().toString())) {
+        		} else if (!resetPassword(rj.getUsername().trim(), rj.getEmail(), getServletConfig(), request.getRequestURL().toString())) {
 	        		postResponse.setStatus(Status.ERROR);
 	        		postResponse.setError(I18N.getMessage("CertificationServlet.24",locale)); //$NON-NLS-1$
         		}
