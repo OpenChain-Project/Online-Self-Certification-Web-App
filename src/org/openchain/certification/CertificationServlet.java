@@ -80,7 +80,7 @@ public class CertificationServlet extends HttpServlet {
 	/**
 	 * Version of this software - should be updated before every release
 	 */
-	static final String version = "1.2.15"; //$NON-NLS-1$
+	static final String version = "1.2.16"; //$NON-NLS-1$
 	
 	static final Logger logger = LoggerFactory.getLogger(CertificationServlet.class);
 	

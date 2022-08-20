@@ -41,7 +41,7 @@ import com.google.gson.Gson;
 public class ReCaptcha {
 
 	static final Logger logger = LoggerFactory.getLogger(ReCaptcha.class);
-	public static final String RECAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify"; //$NON-NLS-1$
+	public static final String RECAPTCHA_URL = "https://www.recaptcha.net/recaptcha/api/siteverify"; //$NON-NLS-1$
 	private static final String USER_AGENT = "Mozilla/5.0"; //$NON-NLS-1$
 	
 	private static Gson gson = new Gson();
