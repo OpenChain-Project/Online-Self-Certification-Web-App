@@ -1,3 +1,13 @@
+# Online Self-Certification WebApp
+
+## RETIRED
+
+This project is now retired.  Up until November, 2023 this app was used for self certifying conformance to the OpenChain specification.  It has been replaced by a manual documentation based process.
+
+## Original README
+
+Below is the original readme text for the app:
+
 This is the source code for the OpenChain Online Self-Certification WebApp.
 
 The application is located at https://certification.openchainproject.org
